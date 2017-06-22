@@ -298,10 +298,11 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_smooth_mtree_halos( self, index=None ):
+  def save_smooth_mtree_halos( self,  snapshot_times_dir, index=None ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
     Args:
+      snapshot_times_dir (str): The directory the snapshot_times are stored in.
       index (str) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
         'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
         'int' : Index by integer.
@@ -311,7 +312,7 @@ class AHFReader( object ):
     self.get_mtree_halos( index=index )
 
     # Smooth the halos
-    self.smooth_mtree_halos()
+    self.smooth_mtree_halos( snapshot_times_dir )
 
     # Save the halos
     self.save_mtree_halos( 'smooth' )

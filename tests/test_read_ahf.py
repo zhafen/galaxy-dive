@@ -216,7 +216,7 @@ class TestAHFReader( unittest.TestCase ):
   def test_save_smooth_mtree_halos( self ):
 
     # Get the results
-    self.ahf_reader.save_smooth_mtree_halos( 'snum' )
+    self.ahf_reader.save_smooth_mtree_halos( data_sdir, 'snum', )
 
     # Load the saved files
     self.ahf_reader.get_mtree_halos( 'snum', 'smooth' )
