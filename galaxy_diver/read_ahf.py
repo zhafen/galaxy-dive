@@ -12,6 +12,8 @@ import os
 import pandas as pd
 import string
 
+import read_metafile
+
 ########################################################################
 ########################################################################
 
@@ -41,6 +43,7 @@ class AHFReader( object ):
 
     Modifies:
       self.mtree_halos (dict of pd.DataFrames): DataFrames containing the requested data. The key for a given dataframe is that dataframe's Merger Tree Halo ID
+      self.index (str): The users value for the index.
     '''
 
     def get_halo_filepaths( unexpanded_filename ):
@@ -110,6 +113,9 @@ class AHFReader( object ):
       # Store the data
       self.mtree_halos[ halo_num ] = mtree_halo
       self.mtree_halo_filepaths[ halo_num ] = halo_filepath
+
+    # Save the index as an attribute
+    self.index = index
 
   ########################################################################
 
@@ -222,6 +228,8 @@ class AHFReader( object ):
     # Load the data if it's not already loaded.
     if not hasattr( self, 'mtree_halos' ):
       self.get_mtree_halos( index )
+    else:
+      assert index == self.index
 
     mtree_halo_quantity = [] 
     for halo_id in self.mtree_halos.keys():
@@ -229,6 +237,31 @@ class AHFReader( object ):
       mtree_halo_quantity.append( self.mtree_halos[ halo_id ][ quantity ][ indice ] )
 
     return np.array( mtree_halo_quantity )
+
+  ########################################################################
+
+  def get_accurate_redshift( self, snapshot_times_dir ):
+    '''Get a better values of the redshift than what's stored in the AHF filename, by loading them from an external file.
+
+    Args:
+      snapshot_times_dir (str): The directory the snapshot_times are stored in.
+
+    Modifies:
+      self.mtree_halos (dict of pd.DataFrames): Updates the redshift column
+    '''
+
+    # Get the redshift data out
+    metafile_reader = read_metafile.MetafileReader( snapshot_times_dir )
+    metafile_reader.get_snapshot_times()
+
+    # Replace the old data
+    for halo_id in self.mtree_halos.keys():
+
+      mtree_halo = self.mtree_halos[ halo_id ]
+
+      # Read and replace the new redshift
+      new_redshift = metafile_reader.snapshot_times['redshift'][ mtree_halo.index ]
+      mtree_halo['redshift'] = new_redshift
 
   ########################################################################
 

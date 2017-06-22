@@ -177,6 +177,20 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  def test_get_accurate_redshift( self ):
+
+    expected = 0.000159
+
+    self.ahf_reader.get_mtree_halos( 'snum' )
+
+    self.ahf_reader.get_accurate_redshift( './tests/test_data/test_sdir' )
+
+    actual = self.ahf_reader.mtree_halos[0]['redshift'][599]
+
+    npt.assert_allclose( expected, actual, rtol=1e-2 )
+
+  ########################################################################
+
   def test_smooth_mtree_halos( self ):
     
     self.ahf_reader.get_mtree_halos( 'snum' )
