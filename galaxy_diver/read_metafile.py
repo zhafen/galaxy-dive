@@ -6,17 +6,15 @@
 @status: Development
 '''
 
-import glob
 import numpy as np
 import os
 import pandas as pd
-import string
 
 ########################################################################
 ########################################################################
 
 class MetafileReader( object ):
-  '''Read metafiles.
+  '''Read simulation metafiles, e.g. snapshot_times.txt
   '''
 
   def __init__( self, sdir ):
@@ -33,5 +31,10 @@ class MetafileReader( object ):
   def get_snapshot_times( self ):
     '''Load the snapshot_times.txt files that are in the simulation directories.
     '''
+
+    filepath = os.path.join( self.sdir, 'snapshot_times.txt' )
     
-    pass
+    # Column names
+    names = [ 'snum', 'scale-factor', 'redshift', 'time[Gyr]', 'time_width[Myr]' ]
+
+    self.snapshot_times = pd.read_csv( filepath, delim_whitespace=True, skiprows=3, index_col=0, names=names ) 
