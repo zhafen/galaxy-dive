@@ -265,21 +265,35 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def smooth_mtree_halos( self ):
+  def smooth_mtree_halos( self, snapshot_times_dir ):
     '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the AHF-calculated merger tree.
+
+    Args:
+      snapshot_times_dir (str): The directory the snapshot_times are stored in.
 
     Modifies:
       self.mtree_halos (dict of pd.DataFrames) : Changes self.mtree_halos[halo_id]['Rvir'] and self.mtree_halos[halo_id]['Mvir']
                                                  to be monotonically increasing.
     '''
 
+    # We need to get an accurate redshift in order to smooth properly
+    self.get_accurate_redshift( snapshot_times_dir )
+
     for halo_id in self.mtree_halos.keys():
 
       # Load the data
       mtree_halo = self.mtree_halos[ halo_id ]
 
-      # Smooth Rvir and Mvir
-      mtree_halo['Rvir'] = np.maximum.accumulate( mtree_halo['Rvir'][::-1] )[::-1]
+      # Convert into physical coords for smoothing (we'll still leave the 1/h in place)
+      r_vir_phys = mtree_halo['Rvir']/( 1. + mtree_halo['redshift'] )
+
+      # Smooth r_vir
+      r_vir_phys_smooth = np.maximum.accumulate( r_vir_phys[::-1] )[::-1]
+
+      # Convert back into comoving and save
+      mtree_halo['Rvir'] = r_vir_phys_smooth*( 1. + mtree_halo['redshift'] )
+
+      # Smooth Mvir
       mtree_halo['Mvir'] = np.maximum.accumulate( mtree_halo['Mvir'][::-1] )[::-1]
 
   ########################################################################
