@@ -13,7 +13,7 @@ import os
 import pdb
 import unittest
 
-from galaxy_diver import ahf_reader
+from galaxy_diver import read_ahf
 
 sdir = './tests/test_data/ahf_test_data'
 
@@ -23,7 +23,7 @@ class TestAHFReader( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.ahf_reader = ahf_reader.AHFReader( sdir )
+    self.ahf_reader = read_ahf.AHFReader( sdir )
 
     # Remove smooth halo files that are generated
     halo_filepaths = glob.glob( './tests/test_data/ahf_test_data/halo_*_smooth.dat' )
@@ -154,7 +154,7 @@ class TestAHFReader( unittest.TestCase ):
     self.ahf_reader.save_mtree_halos( save_tag )
 
     # Load
-    new_ahf_reader = ahf_reader.AHFReader( sdir )
+    new_ahf_reader = read_ahf.AHFReader( sdir )
     new_ahf_reader.get_mtree_halos( 'snum', tag=save_tag )
     actual = new_ahf_reader.mtree_halos[10]['ID']
     actual_detail = new_ahf_reader.mtree_halos[0]['ID'][500]
