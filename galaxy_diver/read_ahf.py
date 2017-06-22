@@ -40,6 +40,7 @@ class AHFReader( object ):
       index (str) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
         'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
         'int' : Index by integer.
+      tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for 'halo_00000_smooth.dat', etc.
 
     Modifies:
       self.mtree_halos (dict of pd.DataFrames): DataFrames containing the requested data. The key for a given dataframe is that dataframe's Merger Tree Halo ID
@@ -114,8 +115,9 @@ class AHFReader( object ):
       self.mtree_halos[ halo_num ] = mtree_halo
       self.mtree_halo_filepaths[ halo_num ] = halo_filepath
 
-    # Save the index as an attribute
+    # Save the index and tag as an attribute
     self.index = index
+    self.tag = tag
 
   ########################################################################
 
@@ -211,7 +213,7 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def get_mtree_halo_quantity( self, quantity, indice, index=None ):
+  def get_mtree_halo_quantity( self, quantity, indice, index=None, tag=None ):
     '''Get a desired quantity for all halos at a particular snapshot.
 
     Args:
@@ -220,6 +222,7 @@ class AHFReader( object ):
       index (str) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
         'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
         'int' : Index by integer.
+      tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for 'halo_00000_smooth.dat', etc.
 
     Returns:
       mtree_halo_quantity (np.array): The ith index is the requested quantity for ith MT halo.
@@ -227,9 +230,10 @@ class AHFReader( object ):
 
     # Load the data if it's not already loaded.
     if not hasattr( self, 'mtree_halos' ):
-      self.get_mtree_halos( index )
+      self.get_mtree_halos( index=index, tag=tag )
     else:
       assert index == self.index
+      assert tag == self.tag
 
     mtree_halo_quantity = [] 
     for halo_id in self.mtree_halos.keys():
