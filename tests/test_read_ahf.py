@@ -95,7 +95,7 @@ class TestAHFReader( unittest.TestCase ):
     self.ahf_reader.get_mtree_halos( 'snum' )
 
     actual = self.ahf_reader.get_mtree_halo_quantity( 'ID', 600, 'snum' )
-    expected = np.arange( 0, 20 )
+    expected = np.array([ 0, 1, 2, 10 ])
 
     npt.assert_allclose( expected, actual )
 

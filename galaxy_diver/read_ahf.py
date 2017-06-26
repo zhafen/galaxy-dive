@@ -236,7 +236,7 @@ class AHFReader( object ):
       assert tag == self.tag
 
     mtree_halo_quantity = [] 
-    for halo_id in self.mtree_halos.keys():
+    for halo_id in sorted( self.mtree_halos.keys() ):
       
       mtree_halo_quantity.append( self.mtree_halos[ halo_id ][ quantity ][ indice ] )
 
