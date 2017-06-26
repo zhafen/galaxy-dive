@@ -36,6 +36,7 @@ class MetafileReader( object ):
     '''
 
     # FIRE-2 snapshot times
+    # Assumes the file is named snapshot_times.txt
     try:
       filepath = os.path.join( self.sdir, 'snapshot_times.txt' )
       
@@ -44,7 +45,8 @@ class MetafileReader( object ):
 
       self.snapshot_times = pd.read_csv( filepath, delim_whitespace=True, skiprows=3, index_col=0, names=names ) 
 
-    # FIRE-1 snapshot times
+    # FIRE-1 snapshot times (these are simpler)
+    # Assumes the file is named output_times.txt
     except:
 
       filepath = os.path.join( self.sdir, 'output_times.txt' )
