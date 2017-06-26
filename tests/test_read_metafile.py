@@ -13,6 +13,7 @@ import unittest
 from galaxy_diver import read_metafile
 
 sdir = './tests/test_data/test_sdir'
+sdir2 = './tests/test_data/test_sdir2'
 
 ########################################################################
 
@@ -31,5 +32,20 @@ class TestMetafileReader( unittest.TestCase ):
     self.metafile_reader.get_snapshot_times()
 
     actual = self.metafile_reader.snapshot_times['time[Gyr]'][580]
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_snapshot_times_old_filename( self ):
+
+    expected = 0.0049998745585804194
+
+    # Give it the right directory
+    self.metafile_reader.sdir = sdir2
+
+    self.metafile_reader.get_snapshot_times()
+
+    actual = self.metafile_reader.snapshot_times['redshift'][439]
 
     npt.assert_allclose( expected, actual )
