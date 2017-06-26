@@ -17,6 +17,7 @@ from galaxy_diver import read_ahf
 
 sdir = './tests/test_data/test_analysis_dir'
 data_sdir = './tests/test_data/test_sdir'
+data_sdir2 = './tests/test_data/test_sdir2'
 
 ########################################################################
 
@@ -213,6 +214,27 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  def test_smooth_mtree_halos_fire1( self ):
+    
+    self.ahf_reader.get_mtree_halos( 'snum' )
+
+    self.ahf_reader.smooth_mtree_halos( data_sdir2 )
+
+    # Test that the redshift worked.
+    redshift_expected_439 = 0.0049998743750157
+    redshift_actual = self.ahf_reader.mtree_halos[0]['redshift'][439]
+    npt.assert_allclose( redshift_expected_439, redshift_actual )
+
+    # Test that r_vir worked (that we never make a dip down in the early snapshot)
+    r_vir_min = self.ahf_reader.mtree_halos[0]['Rvir'][326].min()
+    assert r_vir_min > 100.
+
+    # Test that m_vir worked (that we never make a dip down in the early snapshot)
+    m_vir_min = self.ahf_reader.mtree_halos[0]['Mvir'][326].min()
+    assert m_vir_min > 1e11
+
+  ########################################################################
+
   def test_save_smooth_mtree_halos( self ):
 
     # Get the results
@@ -233,4 +255,6 @@ class TestAHFReader( unittest.TestCase ):
     # Test that m_vir worked (that we never make a dip down in the early snapshot)
     m_vir_min = self.ahf_reader.mtree_halos[0]['Mvir'][210].min()
     assert m_vir_min > 1e11
+
+  ########################################################################
 
