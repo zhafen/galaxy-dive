@@ -271,6 +271,7 @@ class AHFReader( object ):
 
   def smooth_mtree_halos( self, snapshot_times_dir ):
     '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the AHF-calculated merger tree.
+    NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.
 
     Args:
       snapshot_times_dir (str): The directory the snapshot_times are stored in.
