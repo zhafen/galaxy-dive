@@ -241,7 +241,9 @@ class TestAHFReader( unittest.TestCase ):
 
   def test_smooth_mtree_halos_fire1( self ):
     
-    self.ahf_reader.get_mtree_halos( 'snum' )
+    # Get the right directory
+    self.ahf_reader.sdir = sdir2
+    self.ahf_reader.get_mtree_halos( 440 )
 
     self.ahf_reader.smooth_mtree_halos( data_sdir2 )
 
@@ -280,6 +282,35 @@ class TestAHFReader( unittest.TestCase ):
     # Test that m_vir worked (that we never make a dip down in the early snapshot)
     m_vir_min = self.ahf_reader.mtree_halos[0]['Mvir'][210].min()
     assert m_vir_min > 1e11
+
+  ########################################################################
+
+  def test_save_smooth_mtree_halos_different_snum( self ):
+  
+    # Pass it the right directory
+    self.ahf_reader.sdir = sdir2
+
+    # Get the results
+    self.ahf_reader.save_smooth_mtree_halos( data_sdir2, 440, )
+
+    # Load the saved files
+    self.ahf_reader.get_mtree_halos( 440, 'smooth' )
+
+    # Test that the redshift worked.
+    redshift_expected_439 = 0.0049998743750157
+    redshift_actual = self.ahf_reader.mtree_halos[0]['redshift'][439]
+    npt.assert_allclose( redshift_expected_439, redshift_actual )
+
+    # Test that r_vir worked (that we never make a dip down in the early snapshot)
+    r_vir_min = self.ahf_reader.mtree_halos[0]['Rvir'][210].min()
+    assert r_vir_min > 30.
+
+    # Test that m_vir worked (that we never make a dip down in the early snapshot)
+    m_vir_min = self.ahf_reader.mtree_halos[0]['Mvir'][210].min()
+    assert m_vir_min > 1e11
+
+    # Make sure there aren't NaN's
+    assert self.ahf_reader.mtree_halos[0]['Rvir'][440] > 0
 
   ########################################################################
 
