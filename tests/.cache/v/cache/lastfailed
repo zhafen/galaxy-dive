@@ -1,0 +1,18 @@
+{
+  "test_hdf5_wrapper.py::TestHDF5Wrapper::test_copy_and_subsample_particle_snapshot": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_accurate_redshift": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_halos": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_mtree_halo_files": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_mtree_halo_files_multiple_files": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_mtree_halo_quantity": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_mtree_idx": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_pos_or_vel": true, 
+  "test_read_ahf.py::TestAHFReader::test_get_pos_or_vel_ahf_halos": true, 
+  "test_read_ahf.py::TestAHFReader::test_mtree_halo_id_matches": true, 
+  "test_read_ahf.py::TestAHFReader::test_save_and_load_mtree_halo_files": true, 
+  "test_read_ahf.py::TestAHFReader::test_save_smooth_mtree_halos": true, 
+  "test_read_ahf.py::TestAHFReader::test_smooth_mtree_halos": true, 
+  "test_read_ahf.py::TestAHFReader::test_smooth_mtree_halos_fire1": true, 
+  "test_read_metafile.py::TestMetafileReader::test_get_snapshot_times": true, 
+  "test_read_metafile.py::TestMetafileReader::test_get_snapshot_times_old_filename": true
+}

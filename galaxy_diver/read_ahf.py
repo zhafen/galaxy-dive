@@ -37,9 +37,12 @@ class AHFReader( object ):
     '''Get halo files (e.g. halo_00000.dat) in a dictionary of pandas DataFrames.
 
     Args:
-      index (str) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
+      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
         'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
-        'int' : Index by integer.
+                 Identical to passing the integer 600. (See below.)
+        'range' : Index by an increasing range.
+        int : If an integer, then this integer should be the final snapshot number for the simulation.
+              In this case, indexes by snapshot number, starting at the final snapshot number and counting down. Only viable with snapshot steps of 1!!
       tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for 'halo_00000_smooth.dat', etc.
 
     Modifies:
@@ -101,13 +104,17 @@ class AHFReader( object ):
         halo_num_str = string.split( halo_num_str, '_' )[0]
       halo_num = int( string.split( halo_num_str, '.' )[0] )
 
-      if index == 'snum':
+      if index == 'range':
+        pass
+      elif (index == 'snum') or (type(index) == int):
+        if index == 'snum':
+          final_snapshot_number = 600
+        else:
+          final_snapshot_number = index
         # Set the index, assuming we have steps of one snapshot
         n_rows = mtree_halo.shape[0]
-        mtree_halo['snum'] = range( 600, 600 - n_rows, -1)
+        mtree_halo['snum'] = range( final_snapshot_number, final_snapshot_number - n_rows, -1)
         mtree_halo = mtree_halo.set_index( 'snum', )
-      elif index == 'int':
-        pass
       else:
         raise Exception( "index type not selected" )
 
@@ -219,9 +226,8 @@ class AHFReader( object ):
     Args:
       quantity (str): mtree_halo key to load in the dataset
       indice (int): Indice of the quantity to load, as indicated by the index.
-      index (str) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
-        'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
-        'int' : Index by integer.
+      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes.
+                           See get_mtree_halos() for a full description.
       tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for 'halo_00000_smooth.dat', etc.
 
     Returns:
@@ -308,9 +314,8 @@ class AHFReader( object ):
 
     Args:
       snapshot_times_dir (str): The directory the snapshot_times are stored in.
-      index (str) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
-        'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
-        'int' : Index by integer.
+      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes.
+                           See get_mtree_halos() for a full description.
     '''
     
     # Load the data

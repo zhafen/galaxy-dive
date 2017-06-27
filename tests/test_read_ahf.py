@@ -16,6 +16,7 @@ import unittest
 from galaxy_diver import read_ahf
 
 sdir = './tests/test_data/test_analysis_dir'
+sdir2 = './tests/test_data/test_analysis_dir2'
 data_sdir = './tests/test_data/test_sdir'
 data_sdir2 = './tests/test_data/test_sdir2'
 
@@ -85,6 +86,30 @@ class TestAHFReader( unittest.TestCase ):
 
     # ID at snapshot 30 for halo file 2
     expected = 60
+    actual = self.ahf_reader.mtree_halos[2]['ID'][30]
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_mtree_halo_files_explicit_snapshot_number( self ):
+
+    # Set the directory to the correct one for FIRE-1 data
+    self.ahf_reader.sdir = sdir2
+
+    self.ahf_reader.get_mtree_halos( 440 )
+
+    # Halo mass at z=0 for mtree_halo_id = 0
+    expected = 7.95197e+11
+    actual = self.ahf_reader.mtree_halos[0]['Mvir'][440]
+    npt.assert_allclose( expected, actual )
+
+    # ID at an early snapshot (snap 30) for halo file 0
+    expected = 13
+    actual = self.ahf_reader.mtree_halos[0]['ID'][30]
+    npt.assert_allclose( expected, actual )
+
+    # ID at snapshot 30 for halo file 2
+    expected = 15
     actual = self.ahf_reader.mtree_halos[2]['ID'][30]
     npt.assert_allclose( expected, actual )
 
