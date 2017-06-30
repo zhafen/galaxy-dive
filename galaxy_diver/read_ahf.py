@@ -244,7 +244,17 @@ class AHFReader( object ):
     mtree_halo_quantity = [] 
     for halo_id in sorted( self.mtree_halos.keys() ):
       
-      mtree_halo_quantity.append( self.mtree_halos[ halo_id ][ quantity ][ indice ] )
+      try:
+        mtree_halo_quantity.append( self.mtree_halos[ halo_id ][ quantity ][ indice ] )
+
+      # When we're past the point of galaxies being identified (i.e. high redshift, galaxies aren't formed yet), set the values by hand.
+      except KeyError:
+
+        if quantity == 'Mvir':
+          mtree_halo_quantity.append( 0. )
+
+        else:
+          raise Exception( "Value of {} not specified before galaxies form".format( quantity ) )
 
     return np.array( mtree_halo_quantity )
 

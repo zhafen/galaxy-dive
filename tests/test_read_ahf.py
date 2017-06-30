@@ -126,6 +126,17 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  def test_get_mtree_halo_quantity_low_redshift( self ):
+
+    self.ahf_reader.get_mtree_halos( 'snum' )
+
+    actual = self.ahf_reader.get_mtree_halo_quantity( 'Mvir', 5, 'snum' )
+    expected = np.array([ 0., 5.731000e+07, 0., 0. ])
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_mtree_halo_id_matches( self ):
     '''Test that the ID in the mtree_halo_id is exactly what we expect it to be.'''
 
