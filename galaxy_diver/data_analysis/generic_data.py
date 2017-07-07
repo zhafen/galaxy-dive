@@ -9,14 +9,13 @@ Purpose: Base class for dealing with gas data from a zoom-simulation
 import copy
 import h5py
 import numpy as np
-import pdb
 import string
 
 
 # Imports from my own stuff
-import galaxy_diver.constants as constants
-import galaxy_diver.dataio as dataio
-import galaxy_diver.read_snapshot as read_snapshot
+import galaxy_diver.utils.constants as constants
+import galaxy_diver.utils.dataio as dataio
+import galaxy_diver.read_data.read_snapshot as read_snapshot
 
 ########################################################################
 

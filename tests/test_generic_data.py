@@ -8,7 +8,7 @@ import pdb
 import unittest
 
 import galaxy_diver.data_analysis.generic_data as generic_data
-import galaxy_diver.read_snapshot as read_snapshot
+import galaxy_diver.read_data.read_snapshot as read_snapshot
 
 ########################################################################
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''Testing for tracking.py
+'''Testing for read_ahf.py
 
 @author: Zach Hafen
 @contact: zachary.h.hafen@gmail.com
@@ -13,7 +13,7 @@ import os
 import pdb
 import unittest
 
-from galaxy_diver import read_ahf
+import galaxy_diver.read_data.read_ahf as read_ahf
 
 sdir = './tests/test_data/test_analysis_dir'
 sdir2 = './tests/test_data/test_analysis_dir2'
