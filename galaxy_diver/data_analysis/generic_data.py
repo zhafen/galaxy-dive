@@ -12,22 +12,11 @@ import numpy as np
 import pdb
 import string
 
-# Add onto the pythonpath, to handle odd environments.
-import sys,os,os.path
-sys.path.append('/home1/03057/zhafen/repos/zhh_python/zooms-analysis')
-sys.path.append('/home1/03057/zhafen/repos/zhh_python/tools')
-sys.path.append('/home1/03057/zhafen/repos/cafg_python/zooms-analysis')
-sys.path.append('/home1/03057/zhafen/repos/cafg_python/tools')
-sys.path.append('/home1/03057/zhafen/repos/pfh_python')
-
-
-# Third party imports
-import Cosmology
-import galaxy_diver.read_snapshot as read_snapshot
 
 # Imports from my own stuff
-import zhh_constants
+import galaxy_diver.constants as constants
 import zhh_dataio
+import galaxy_diver.read_snapshot as read_snapshot
 
 ########################################################################
 
@@ -142,7 +131,7 @@ class GasData(object):
     self.CoM_coords = (halo_data[10], halo_data[11], halo_data[12]) 
 
     # Calculate the circular velocity
-    self.v_c = np.sqrt(zhh_constants.G*self.M_vir*zhh_constants.Msun_to_kg / (self.R_vir*zhh_constants.kpc_to_km*1.e9))
+    self.v_c = np.sqrt(constants.G*self.M_vir*constants.Msun_to_kg / (self.R_vir*constants.kpc_to_km*1.e9))
 
     self.halo_data_retrieved = True
 
@@ -402,7 +391,7 @@ class GasData(object):
   def calc_num_den(self):
     '''Calculate the number density (it's just a simple conversion...).'''
 
-    self.data['NumDen'] = self.data['Den']*zhh_constants.gas_den_to_nb
+    self.data['NumDen'] = self.data['Den']*constants.gas_den_to_nb
 
   ########################################################################
 
@@ -412,7 +401,7 @@ class GasData(object):
     # Assume Hydrogen makes up 75% of the gas
     X_H = 0.75
 
-    self.data['HDen'] = X_H*self.data['Den']*zhh_constants.gas_den_to_nb
+    self.data['HDen'] = X_H*self.data['Den']*constants.gas_den_to_nb
 
   ########################################################################
 
@@ -423,7 +412,7 @@ class GasData(object):
     X_H = 0.75
 
     # Calculate the hydrogen density
-    HDen = X_H*self.data['Den']*zhh_constants.gas_den_to_nb 
+    HDen = X_H*self.data['Den']*constants.gas_den_to_nb 
 
     self.data['HIDen'] = self.data['nHI']*HDen
 
@@ -837,9 +826,9 @@ class LOSData(GasData):
     '''Calculate the mass for LOS cells.'''
 
     # Use the total H column density, and convert to total gas mass
-    self.data['M'] = self.get_data('H')/0.75*zhh_constants.M_P
-    self.data['M'] *= (self.data_attrs['cell_length']*zhh_constants.kpc_to_cm)**2.
-    self.data['M'] /= zhh_constants.Msun_to_kg*1000. # Finish converting
+    self.data['M'] = self.get_data('H')/0.75*constants.M_P
+    self.data['M'] *= (self.data_attrs['cell_length']*constants.kpc_to_cm)**2.
+    self.data['M'] /= constants.Msun_to_kg*1000. # Finish converting
 
 ########################################################################
 ########################################################################
@@ -1106,7 +1095,7 @@ class ParticleData(GasData):
 
     mu = self.calc_mu()
     u_cgs = self.data['U']*1.e10
-    self.data['T'] = zhh_constants.m_p*mu*(gamma - 1)*u_cgs/zhh_constants.k_b
+    self.data['T'] = constants.m_p*mu*(gamma - 1)*u_cgs/constants.k_b
 
   ########################################################################
 
