@@ -49,3 +49,15 @@ class TestMetafileReader( unittest.TestCase ):
     actual = self.metafile_reader.snapshot_times['redshift'][439]
 
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_used_parameters( self ):
+
+    OmegaBaryon_expected = 0.0455
+
+    self.metafile_reader.get_used_parameters()
+
+    OmegaBaryon_actual = float( self.metafile_reader.used_parameters['OmegaBaryon'] )
+
+    npt.assert_allclose( OmegaBaryon_expected, OmegaBaryon_actual )

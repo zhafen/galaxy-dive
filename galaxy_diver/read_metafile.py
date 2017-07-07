@@ -6,6 +6,7 @@
 @status: Development
 '''
 
+import glob
 import numpy as np
 import os
 import pandas as pd
@@ -62,3 +63,32 @@ class MetafileReader( object ):
 
       # Get the redshift
       self.snapshot_times['redshift'] = 1./self.snapshot_times['scale-factor'] - 1.
+
+  ########################################################################
+
+  def get_used_parameters( self ):
+    '''Load parameters used to run the simulation from, e.g. the gizmo_parameters.txt-usedvalues file.
+
+    Modifies:
+      self.used_parameters( pd.DataFrame): A dataframe containing the parameters.
+    '''
+
+    potential_filepaths = glob.glob( '{}/*usedvalues'.format( self.sdir ) )
+
+    assert len( potential_filepaths ) == 1, 'Multiple options to choose the parameter file from.'
+
+    parameter_filepath = potential_filepaths[0]
+
+    self.used_parameters = {}
+    with open(parameter_filepath,'r') as input_file:
+
+      # Loop through the lines
+      for i, line in enumerate( input_file ):
+
+        # Split the line up
+        split_line = line.split()
+        
+        # Check for lines that don't fit the expectations
+        assert len( split_line ) == 2, 'Unexpected format in Line {}'.format( i )
+
+        self.used_parameters[split_line[0]] = split_line[1]

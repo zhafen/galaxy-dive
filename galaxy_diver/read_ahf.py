@@ -319,13 +319,30 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_smooth_mtree_halos( self,  snapshot_times_dir, index=None ):
+  def get_analytic_concentration_mtree_halos( self ):
+    '''Get analytic values for the halo concentration, using colossus, Benedikt Diemer's cosmology code.
+    ( https://bitbucket.org/bdiemer/colossus ; http://www.benediktdiemer.com/code/colossus/ )
+
+    Assumptions:
+      - We're using the default formula of Diemer&Kravtstov15
+      - We're using the Bryan&Norman1998 version of the virial radius.
+
+    Returns
+      c_vir (np.array of floats): The concentration, defined as R_vir/r_scale.
+    '''
+
+    # Include imports here, because these may not in general work if colossus is not available.
+
+  ########################################################################
+
+  def save_smooth_mtree_halos( self,  snapshot_times_dir, index=None, include_concentration=False ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
     Args:
       snapshot_times_dir (str): The directory the snapshot_times are stored in.
       index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes.
                            See get_mtree_halos() for a full description.
+      include_concentration (bool): Whether or not to add an additional column that gives an analytic value for the halo concentration.
     '''
     
     # Load the data
@@ -333,6 +350,10 @@ class AHFReader( object ):
 
     # Smooth the halos
     self.smooth_mtree_halos( snapshot_times_dir )
+
+    # Include the concentration, if chosen.
+    if include_concentration:
+      self.get_analytic_concentration_mtree_halos()
 
     # Save the halos
     self.save_mtree_halos( 'smooth' )
