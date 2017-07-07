@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''Tools for reading ahf output files.
+'''Tools for reading AHF output files.
 
 @author: Zach Hafen
 @contact: zachary.h.hafen@gmail.com
@@ -12,7 +12,7 @@ import os
 import pandas as pd
 import string
 
-import read_metafile
+import galaxy_diver.read_data.metafile as read_metafile
 
 ########################################################################
 ########################################################################

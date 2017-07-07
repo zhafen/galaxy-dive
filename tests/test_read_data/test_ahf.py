@@ -13,7 +13,7 @@ import os
 import pdb
 import unittest
 
-import galaxy_diver.read_data.read_ahf as read_ahf
+import galaxy_diver.read_data.ahf as read_ahf
 
 sdir = './tests/test_data/test_analysis_dir'
 sdir2 = './tests/test_data/test_analysis_dir2'

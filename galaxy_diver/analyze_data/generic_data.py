@@ -15,7 +15,7 @@ import string
 # Imports from my own stuff
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.dataio as dataio
-import galaxy_diver.read_data.read_snapshot as read_snapshot
+import galaxy_diver.read_data.snapshot as read_snapshot
 
 ########################################################################
 

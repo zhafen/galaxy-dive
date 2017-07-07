@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+'''Tools for generic data handling.
+
+@author: Zach Hafen
+@contact: zachary.h.hafen@gmail.com
+@status: Development
+'''
 
 import numpy as np
 import transformations
