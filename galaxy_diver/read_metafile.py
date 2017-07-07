@@ -75,7 +75,7 @@ class MetafileReader( object ):
 
     potential_filepaths = glob.glob( '{}/*usedvalues'.format( self.sdir ) )
 
-    assert len( potential_filepaths ) == 1, 'Multiple options to choose the parameter file from.'
+    assert len( potential_filepaths ) < 2, 'Multiple options to choose the parameter file from.'
 
     parameter_filepath = potential_filepaths[0]
 
@@ -92,3 +92,5 @@ class MetafileReader( object ):
         assert len( split_line ) == 2, 'Unexpected format in Line {}'.format( i )
 
         self.used_parameters[split_line[0]] = split_line[1]
+
+

@@ -260,18 +260,18 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def get_accurate_redshift( self, snapshot_times_dir ):
+  def get_accurate_redshift( self, metafile_dir ):
     '''Get a better values of the redshift than what's stored in the AHF filename, by loading them from an external file.
 
     Args:
-      snapshot_times_dir (str): The directory the snapshot_times are stored in.
+      metafile_dir (str): The directory the snapshot_times are stored in.
 
     Modifies:
       self.mtree_halos (dict of pd.DataFrames): Updates the redshift column
     '''
 
     # Get the redshift data out
-    metafile_reader = read_metafile.MetafileReader( snapshot_times_dir )
+    metafile_reader = read_metafile.MetafileReader( metafile_dir )
     metafile_reader.get_snapshot_times()
 
     # Replace the old data
@@ -285,12 +285,12 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def smooth_mtree_halos( self, snapshot_times_dir ):
+  def smooth_mtree_halos( self, metafile_dir ):
     '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the AHF-calculated merger tree.
     NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.
 
     Args:
-      snapshot_times_dir (str): The directory the snapshot_times are stored in.
+      metafile_dir (str): The directory the snapshot_times are stored in.
 
     Modifies:
       self.mtree_halos (dict of pd.DataFrames) : Changes self.mtree_halos[halo_id]['Rvir'] and self.mtree_halos[halo_id]['Mvir']
@@ -298,7 +298,7 @@ class AHFReader( object ):
     '''
 
     # We need to get an accurate redshift in order to smooth properly
-    self.get_accurate_redshift( snapshot_times_dir )
+    self.get_accurate_redshift( metafile_dir )
 
     for halo_id in self.mtree_halos.keys():
 
@@ -319,9 +319,12 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def get_analytic_concentration_mtree_halos( self ):
+  def get_analytic_concentration_mtree_halos( self, metafile_dir ):
     '''Get analytic values for the halo concentration, using colossus, Benedikt Diemer's cosmology code.
     ( https://bitbucket.org/bdiemer/colossus ; http://www.benediktdiemer.com/code/colossus/ )
+
+    Args:
+      metafile_dir (str): The directory the snapshot_times are stored in.
 
     Assumptions:
       - We're using the default formula of Diemer&Kravtstov15
@@ -331,15 +334,52 @@ class AHFReader( object ):
       c_vir (np.array of floats): The concentration, defined as R_vir/r_scale.
     '''
 
-    # Include imports here, because these may not in general work if colossus is not available.
+    # Include imports here, because this function may not in general work if colossus is not available,
+    # and the rest of the module should still be made useable
+    # There may be some warnings here about the version of scipy colossus uses, as opposed to the version galaxy_diver uses
+    import colossus.cosmology.cosmology as co_cosmology
+    import colossus.halo.concentration as co_concentration
+
+    # Get simulation parameters, for use in creating a cosmology
+    metafile_reader = read_metafile.MetafileReader( metafile_dir )
+    metafile_reader.get_used_parameters()
+
+    # Setup the cosmology used by the simulations
+    sim_cosmo = {
+      'flat': True,
+      'H0' : float( metafile_reader.used_parameters['HubbleParam'] )*100.,
+      'Om0' : float( metafile_reader.used_parameters['Omega0'] ),
+      'Ob0' : float( metafile_reader.used_parameters['OmegaBaryon'] ),
+      'sigma8' : co_cosmology.cosmologies['WMAP9']['sigma8'], # Use WMAP9 for values we don't store in our simulations explicitly.
+      'ns' : co_cosmology.cosmologies['WMAP9']['ns'], # Use WMAP9 for values we don't store in our simulations explicitly.
+    }
+    cosmo = co_cosmology.setCosmology( 'sim_cosmo', sim_cosmo )
+
+    # Loop over all mt halos
+    for halo_id in self.mtree_halos.keys():
+
+      # Load the data
+      mtree_halo = self.mtree_halos[ halo_id ]
+
+      # Get the concentration out
+      c_vir = []
+      for m_vir, z in zip( mtree_halo['Mvir'], mtree_halo['redshift'] ):
+        c = co_concentration.concentration( m_vir, 'vir', z, model='diemer15', statistic='median')
+        c_vir.append( c )
+
+      # Turn the concentration into an array
+      c_vir = np.array( c_vir )
+
+      # Save the concentration
+      mtree_halo['cAnalytic'] = c_vir
 
   ########################################################################
 
-  def save_smooth_mtree_halos( self,  snapshot_times_dir, index=None, include_concentration=False ):
+  def save_smooth_mtree_halos( self,  metafile_dir, index=None, include_concentration=False ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
     Args:
-      snapshot_times_dir (str): The directory the snapshot_times are stored in.
+      metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.
       index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes.
                            See get_mtree_halos() for a full description.
       include_concentration (bool): Whether or not to add an additional column that gives an analytic value for the halo concentration.
@@ -349,11 +389,11 @@ class AHFReader( object ):
     self.get_mtree_halos( index=index )
 
     # Smooth the halos
-    self.smooth_mtree_halos( snapshot_times_dir )
+    self.smooth_mtree_halos( metafile_dir )
 
     # Include the concentration, if chosen.
     if include_concentration:
-      self.get_analytic_concentration_mtree_halos()
+      self.get_analytic_concentration_mtree_halos( metafile_dir )
 
     # Save the halos
     self.save_mtree_halos( 'smooth' )

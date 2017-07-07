@@ -325,28 +325,13 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
-  def test_save_smooth_mtree_halos_cDiemer( self ):
-
-    # Get the results
-    self.ahf_reader.save_smooth_mtree_halos( data_sdir, 'snum', include_concentration=True )
+  def test_get_analytic_concentration_mtree_halos( self ):
 
     # Load the saved files
-    self.ahf_reader.get_mtree_halos( 'snum', 'smooth' )
+    self.ahf_reader.get_mtree_halos( 'snum', )
+    self.ahf_reader.get_analytic_concentration_mtree_halos( data_sdir )
 
-    # Test that the redshift worked.
-    redshift_expected_598 = 0.00031860
-    redshift_actual = self.ahf_reader.mtree_halos[0]['redshift'][598]
-    npt.assert_allclose( redshift_expected_598, redshift_actual )
+    c_vir_z0_expected = 10.66567139
+    c_vir_z0_actual = self.ahf_reader.mtree_halos[0]['cAnalytic'][600]
 
-    # Test that r_vir worked (that we never make a dip down in the early snapshot)
-    r_vir_min = self.ahf_reader.mtree_halos[0]['Rvir'][210].min()
-    assert r_vir_min > 30.
-
-    # Test that m_vir worked (that we never make a dip down in the early snapshot)
-    m_vir_min = self.ahf_reader.mtree_halos[0]['Mvir'][210].min()
-    assert m_vir_min > 1e11
-
-    # Test that we got the concentration
-    c_vir_z0_expected = 10.81332878
-    c_vir_z0_actual = self.ahf_reader.mtree_halos[0]['cDiemer'][600]
-
+    npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual )
