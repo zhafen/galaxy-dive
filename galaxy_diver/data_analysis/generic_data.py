@@ -15,7 +15,7 @@ import string
 
 # Imports from my own stuff
 import galaxy_diver.constants as constants
-import zhh_dataio
+import galaxy_diver.dataio as dataio
 import galaxy_diver.read_snapshot as read_snapshot
 
 ########################################################################
@@ -112,7 +112,7 @@ class GasData(object):
         self.halo_number = 0
 
     # Get the halo data
-    halo_data = zhh_dataio.getHaloDataRedshift(self.data_p['sdir'], self.halo_number, self.data_attrs['redshift'])
+    halo_data = dataio.getHaloDataRedshift(self.data_p['sdir'], self.halo_number, self.data_attrs['redshift'])
 
     # Get rid of 1/h factors in the halo data
     vals_to_be_converted = range(3, 13) 
@@ -706,7 +706,7 @@ class LOSData(GasData):
   def retrieve_data(self):
 
     # Open file
-    self.LOS_data_file_name = zhh_dataio.getLOSDataFilename(self.data_p['sdir'], self.data_p['Nx'], self.data_p['gridsize'], self.data_p['face'], \
+    self.LOS_data_file_name = dataio.getLOSDataFilename(self.data_p['sdir'], self.data_p['Nx'], self.data_p['gridsize'], self.data_p['face'], \
                                                             self.data_p['comp_method'], self.data_p['ionized'], self.data_p['den_weight'])
     f = h5py.File(self.LOS_data_file_name, 'r')
     snapshot_data = f[str(self.data_p['snum'])]
@@ -866,7 +866,7 @@ class GriddedData(GasData):
   def retrieve_data(self):
 
     # Open file
-    self.grid_file_name = zhh_dataio.getGridFilename(self.data_p['sdir'], self.data_p['snum'], self.data_p['Nx'], self.data_p['gridsize'], self.data_p['ionized'], \
+    self.grid_file_name = dataio.getGridFilename(self.data_p['sdir'], self.data_p['snum'], self.data_p['Nx'], self.data_p['gridsize'], self.data_p['ionized'], \
                           ion_grid=self.is_ion_grid)
     f = h5py.File(self.grid_file_name, 'r')
 
