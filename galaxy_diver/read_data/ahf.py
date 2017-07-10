@@ -173,6 +173,9 @@ class AHFReader( object ):
     # Rename the index to a more suitable name, without the '#' and the (1)
     self.ahf_halos.index.names = ['ID']
 
+    # Save the snapshot number of the ahf halos file.
+    self.ahf_halos_snum = snum
+
   ########################################################################
 
   def get_mtree_idx( self, snum ):
@@ -319,12 +322,14 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def get_analytic_concentration_mtree_halos( self, metafile_dir ):
+  def get_analytic_concentration( self, metafile_dir, type_of_halo_id='merger_tree' ):
     '''Get analytic values for the halo concentration, using colossus, Benedikt Diemer's cosmology code.
     ( https://bitbucket.org/bdiemer/colossus ; http://www.benediktdiemer.com/code/colossus/ )
 
     Args:
       metafile_dir (str): The directory the snapshot_times are stored in.
+      type_of_halo_id (str): 'merger_tree' if the halo id is a merger tree halo id.
+                             'ahf_halos' if the halo id is a *.AHF_halos halo id.
 
     Assumptions:
       - We're using the default formula of Diemer&Kravtstov15
@@ -355,23 +360,35 @@ class AHFReader( object ):
     }
     cosmo = co_cosmology.setCosmology( 'sim_cosmo', sim_cosmo )
 
-    # Loop over all mt halos
-    for halo_id in self.mtree_halos.keys():
+    if type_of_halo_id == 'merger_tree':
 
-      # Load the data
-      mtree_halo = self.mtree_halos[ halo_id ]
+      # Loop over all mt halos
+      for halo_id in self.mtree_halos.keys():
 
-      # Get the concentration out
-      c_vir = []
-      for m_vir, z in zip( mtree_halo['Mvir'], mtree_halo['redshift'] ):
-        c = co_concentration.concentration( m_vir, 'vir', z, model='diemer15', statistic='median')
-        c_vir.append( c )
+        # Load the data
+        mtree_halo = self.mtree_halos[ halo_id ]
 
-      # Turn the concentration into an array
-      c_vir = np.array( c_vir )
+        # Get the concentration out
+        c_vir = []
+        for m_vir, z in zip( mtree_halo['Mvir'], mtree_halo['redshift'] ):
+          c = co_concentration.concentration( m_vir, 'vir', z, model='diemer15', statistic='median')
+          c_vir.append( c )
 
-      # Save the concentration
-      mtree_halo['cAnalytic'] = c_vir
+        # Turn the concentration into an array
+        c_vir = np.array( c_vir )
+
+        # Save the concentration
+        mtree_halo['cAnalytic'] = c_vir
+
+    elif type_of_halo_id == 'ahf_halos':
+
+      metafile_reader.get_snapshot_times()
+      redshift = metafile_reader.snapshot_times['redshift'][self.ahf_halos_snum]
+
+      c = co_concentration.concentration( self.ahf_halos['Mvir'], 'vir', redshift, model='diemer15', statistic='median')
+
+      self.ahf_halos_add = pd.DataFrame( { 'cAnalytic' : c }, index=self.ahf_halos.index )
+      self.ahf_halos_add.index.names = ['ID']
 
   ########################################################################
 

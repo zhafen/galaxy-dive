@@ -329,9 +329,28 @@ class TestAHFReader( unittest.TestCase ):
 
     # Load the saved files
     self.ahf_reader.get_mtree_halos( 'snum', )
-    self.ahf_reader.get_analytic_concentration_mtree_halos( data_sdir )
+    self.ahf_reader.get_analytic_concentration( data_sdir )
 
     c_vir_z0_expected = 10.66567139
     c_vir_z0_actual = self.ahf_reader.mtree_halos[0]['cAnalytic'][600]
 
     npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual )
+
+  ########################################################################
+
+  def test_get_analytic_concentration_ahf_halos( self ):
+
+    # Load the saved files
+    self.ahf_reader.get_halos( 600 )
+    self.ahf_reader.get_analytic_concentration( data_sdir, 'ahf_halos' )
+
+    c_vir_z0_expected = 10.66567139
+    c_vir_z0_actual = self.ahf_reader.ahf_halos_add['cAnalytic'][0]
+
+    npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual )
+
+  ########################################################################
+
+  def test_save_ahf_halos_add( self ):
+
+    assert False, 'Need to do this.'
