@@ -342,15 +342,24 @@ class TestAHFReader( unittest.TestCase ):
 
     # Load the saved files
     self.ahf_reader.get_halos( 600 )
-    self.ahf_reader.get_analytic_concentration( data_sdir, 'ahf_halos' )
+    c_analytic = self.ahf_reader.get_analytic_concentration( data_sdir, 'ahf_halos' )
 
     c_vir_z0_expected = 10.66567139
-    c_vir_z0_actual = self.ahf_reader.ahf_halos_add['cAnalytic'][0]
+    c_vir_z0_actual = c_analytic[0]
 
     npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual )
 
   ########################################################################
 
-  def test_save_ahf_halos_add( self ):
+  def test_save_and_load_ahf_halos_add( self ):
 
-    assert False, 'Need to do this.'
+    # Save halos_add
+    self.ahf_reader.save_ahf_halos_add( 600, data_sdir )
+
+    # Load halos_add
+    self.ahf_reader.get_halos_add( 600 )
+
+    c_vir_z0_expected = 10.66567139
+    c_vir_z0_actual = self.ahf_reader.ahf_halos_add['cAnalytic'][0]
+
+    npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual )

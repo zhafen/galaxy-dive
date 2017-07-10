@@ -161,8 +161,8 @@ class AHFReader( object ):
     '''
 
     # Load the data
-    ahf_halos_path = self.get_filepath( snum, 'AHF_halos' )
-    self.ahf_halos = pd.read_csv( ahf_halos_path, sep='\t', index_col=0 )
+    self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos' )
+    self.ahf_halos = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
 
     # Delete a column that shows up as a result of formatting
     del self.ahf_halos[ 'Unnamed: 92' ]
@@ -175,6 +175,22 @@ class AHFReader( object ):
 
     # Save the snapshot number of the ahf halos file.
     self.ahf_halos_snum = snum
+
+  ########################################################################
+
+  def get_halos_add( self, snum ):
+    '''Get *.AHF_halos_add file for a particular snapshot.
+
+    Args:
+      snum (int): Snapshot number to load.
+
+    Modifies:
+      self.ahf_halos_add (pd.DataFrame): Dataframe containing the requested data.
+    '''
+
+    # Load the data
+    self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos_add' )
+    self.ahf_halos = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
 
   ########################################################################
 
@@ -382,13 +398,14 @@ class AHFReader( object ):
 
     elif type_of_halo_id == 'ahf_halos':
 
+      # Get the redshift for the halo file.
       metafile_reader.get_snapshot_times()
       redshift = metafile_reader.snapshot_times['redshift'][self.ahf_halos_snum]
 
+      # Get the concentration
       c = co_concentration.concentration( self.ahf_halos['Mvir'], 'vir', redshift, model='diemer15', statistic='median')
 
-      self.ahf_halos_add = pd.DataFrame( { 'cAnalytic' : c }, index=self.ahf_halos.index )
-      self.ahf_halos_add.index.names = ['ID']
+      return c
 
   ########################################################################
 
@@ -414,6 +431,30 @@ class AHFReader( object ):
 
     # Save the halos
     self.save_mtree_halos( 'smooth' )
+
+  ########################################################################
+
+  def save_ahf_halos_add( self, snum, metafile_dir ):
+    '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
+
+    Args:
+      snum (int): Snapshot number to load.
+      metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.
+    '''
+
+    # Load the AHF_halos data
+    self.get_halos( snum )
+
+    # Create AHF_halos add
+    self.ahf_halos_add = pd.DataFrame( {}, index=self.ahf_halos.index )
+    self.ahf_halos_add.index.names = ['ID']
+
+    # Get the analytic concentration
+    self.ahf_halos_add['cAnalytic'] = self.get_analytic_concentration( metafile_dir, type_of_halo_id='ahf_halos' )
+
+    # Save AHF_halos add
+    save_filepath = '{}_add'.format( self.ahf_halos_path )
+    self.ahf_halos_add.to_csv( save_filepath, sep='\t' )
 
   ########################################################################
 
