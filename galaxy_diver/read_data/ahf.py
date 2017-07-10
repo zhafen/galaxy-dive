@@ -128,28 +128,6 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_mtree_halos( self, tag ):
-    '''Save loaded mergertree halo files in a csv file.
-
-    Args:
-      tag (str) : If the previous file was for example '/path/to/file/halo_00000.dat',
-                  the new file will be '/path/to/file/halo_00000_{}.dat'.format( tag )
-    '''
-
-    for halo_id in self.mtree_halos.keys():
-
-      # Load the data
-      mtree_halo = self.mtree_halos[ halo_id ]
-      halo_filepath = self.mtree_halo_filepaths[ halo_id ]
-
-      # Create the new filename
-      filepath_base, file_ext = os.path.splitext( halo_filepath )
-      save_filepath = '{}_{}{}'.format( filepath_base, tag, file_ext )
-
-      mtree_halo.to_csv( save_filepath, sep='\t' )
-
-  ########################################################################
-
   def get_halos( self, snum ):
     '''Get *.AHF_halos file for a particular snapshot.
 
@@ -409,6 +387,78 @@ class AHFReader( object ):
 
   ########################################################################
 
+  def get_pos_or_vel( self, pos_or_vel, halo_id, inds, type_of_halo_id='merger_tree' ):
+    '''Get the position or velocity of a mt halo (three dimensional).
+
+    Args:
+      pos_or_vel (str): Get position ('pos') or velocity ('vel').
+      halo_id (int): Merger tree halo ID for the position or velocity you want.
+      inds (int or np.array of ints): Indices you want the position or velocity for.
+                                      If type_of_halo_id == 'merger_tree', uses same index as mtree_halos.
+                                      Elif type_of_halo_id == 'ahf_halos', can only be a single int,
+                                      which should be the snapshot number.
+      type_of_halo_id (str): 'merger_tree' if the halo id is a merger tree halo id.
+                             'ahf_halos' if the halo id is a *.AHF_halos halo id.
+
+    Returns:
+      p_or_v ( [len(inds), 3] np.array ): Position or velocity for the specified inds.
+    '''
+
+    # Choose the indices we'll access the data through
+    if pos_or_vel == 'pos':
+      keys = [ 'Xc', 'Yc', 'Zc' ]
+    elif pos_or_vel == 'vel':
+      keys = [ 'VXc', 'VYc', 'VZc' ]
+    else:
+      raise Exception( 'Unrecognized pos_or_vel, {}'.format( pos_or_vel ) )
+
+    # Get the ahf_halo data, if requested.
+    if type_of_halo_id == 'ahf_halos':
+      self.get_halos( inds )
+
+    # Get the data.
+    p_or_v = []
+    for key in keys:
+
+      # Get the part
+      if type_of_halo_id == 'merger_tree':
+        p_or_v_part = self.mtree_halos[ halo_id ][ key ][ inds ] 
+      elif type_of_halo_id == 'ahf_halos':
+        p_or_v_part = self.ahf_halos[ key ][ halo_id ] 
+      else:
+        raise Exception( 'Unrecognized type_of_halo_id, {}'.format( type_of_halo_id ) )
+
+      p_or_v.append( p_or_v_part )
+
+    # Finish formatting.
+    p_or_v = np.array( p_or_v ).transpose()
+
+    return p_or_v
+
+  ########################################################################
+
+  def save_mtree_halos( self, tag ):
+    '''Save loaded mergertree halo files in a csv file.
+
+    Args:
+      tag (str) : If the previous file was for example '/path/to/file/halo_00000.dat',
+                  the new file will be '/path/to/file/halo_00000_{}.dat'.format( tag )
+    '''
+
+    for halo_id in self.mtree_halos.keys():
+
+      # Load the data
+      mtree_halo = self.mtree_halos[ halo_id ]
+      halo_filepath = self.mtree_halo_filepaths[ halo_id ]
+
+      # Create the new filename
+      filepath_base, file_ext = os.path.splitext( halo_filepath )
+      save_filepath = '{}_{}{}'.format( filepath_base, tag, file_ext )
+
+      mtree_halo.to_csv( save_filepath, sep='\t' )
+
+  ########################################################################
+
   def save_smooth_mtree_halos( self,  metafile_dir, index=None, include_concentration=False ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
@@ -458,50 +508,20 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def get_pos_or_vel( self, pos_or_vel, halo_id, inds, type_of_halo_id='merger_tree' ):
-    '''Get the position or velocity of a mt halo (three dimensional).
+  def save_multiple_ahf_halos_adds( self, metafile_dir, snum_start, snum_end, snum_step ):
+    '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
+    Do this for every *.AHF_halos file in self.sdir.
 
     Args:
-      pos_or_vel (str): Get position ('pos') or velocity ('vel').
-      halo_id (int): Merger tree halo ID for the position or velocity you want.
-      inds (int or np.array of ints): Indices you want the position or velocity for.
-                                      If type_of_halo_id == 'merger_tree', uses same index as mtree_halos.
-                                      Elif type_of_halo_id == 'ahf_halos', can only be a single int,
-                                      which should be the snapshot number.
-      type_of_halo_id (str): 'merger_tree' if the halo id is a merger tree halo id.
-                             'ahf_halos' if the halo id is a *.AHF_halos halo id.
-
-    Returns:
-      p_or_v ( [len(inds), 3] np.array ): Position or velocity for the specified inds.
+      metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.
+      snum_start (int): Starting snapshot.
+      snum_end (int): Ending snapshot.
+      snum_step (int): Step between snapshots.
     '''
 
-    # Choose the indices we'll access the data through
-    if pos_or_vel == 'pos':
-      keys = [ 'Xc', 'Yc', 'Zc' ]
-    elif pos_or_vel == 'vel':
-      keys = [ 'VXc', 'VYc', 'VZc' ]
-    else:
-      raise Exception( 'Unrecognized pos_or_vel, {}'.format( pos_or_vel ) )
+    # Save the halos
+    for snum in range( snum_start, snum_end+snum_step, snum_step):
 
-    # Get the ahf_halo data, if requested.
-    if type_of_halo_id == 'ahf_halos':
-      self.get_halos( inds )
+      # Save the data
+      self.save_ahf_halos_add( snum, metafile_dir )
 
-    # Get the data.
-    p_or_v = []
-    for key in keys:
-
-      # Get the part
-      if type_of_halo_id == 'merger_tree':
-        p_or_v_part = self.mtree_halos[ halo_id ][ key ][ inds ] 
-      elif type_of_halo_id == 'ahf_halos':
-        p_or_v_part = self.ahf_halos[ key ][ halo_id ] 
-      else:
-        raise Exception( 'Unrecognized type_of_halo_id, {}'.format( type_of_halo_id ) )
-
-      p_or_v.append( p_or_v_part )
-
-    # Finish formatting.
-    p_or_v = np.array( p_or_v ).transpose()
-
-    return p_or_v

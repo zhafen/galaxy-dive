@@ -7,6 +7,7 @@
 '''
 
 import glob
+from mock import call, patch
 import numpy as np
 import numpy.testing as npt
 import os
@@ -338,19 +339,6 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
-  def test_get_analytic_concentration_ahf_halos( self ):
-
-    # Load the saved files
-    self.ahf_reader.get_halos( 600 )
-    c_analytic = self.ahf_reader.get_analytic_concentration( data_sdir, 'ahf_halos' )
-
-    c_vir_z0_expected = 10.66567139
-    c_vir_z0_actual = c_analytic[0]
-
-    npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual )
-
-  ########################################################################
-
   def test_save_and_load_ahf_halos_add( self ):
 
     # Save halos_add
@@ -359,7 +347,24 @@ class TestAHFReader( unittest.TestCase ):
     # Load halos_add
     self.ahf_reader.get_halos_add( 600 )
 
+    # Check that we calculated the concentration correctly.
     c_vir_z0_expected = 10.66567139
     c_vir_z0_actual = self.ahf_reader.ahf_halos_add['cAnalytic'][0]
-
     npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual )
+
+  ########################################################################
+
+  @patch( 'galaxy_diver.read_data.ahf.AHFReader.save_ahf_halos_add' )
+  def test_save_multiple_ahf_halos_adds( self, mock_save_ahf_halos_add ):
+
+    self.ahf_reader.save_multiple_ahf_halos_adds( data_sdir, 500, 600, 50 )
+
+    calls = [
+      call(500, data_sdir),
+      call(550, data_sdir),
+      call(600, data_sdir),
+      ]
+    mock_save_ahf_halos_add.assert_has_calls( calls, any_order=True )
+
+    
+
