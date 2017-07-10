@@ -12,6 +12,7 @@ import numpy as np
 import numpy.testing as npt
 import os
 import pdb
+import pytest
 import unittest
 
 import galaxy_diver.read_data.ahf as read_ahf
@@ -20,6 +21,14 @@ sdir = './tests/test_data/test_analysis_dir'
 sdir2 = './tests/test_data/test_analysis_dir2'
 data_sdir = './tests/test_data/test_sdir'
 data_sdir2 = './tests/test_data/test_sdir2'
+
+########################################################################
+
+# Decorator for skipping slow tests
+slow = pytest.mark.skipif(
+    not pytest.config.getoption("--runslow"),
+    reason="need --runslow option to run"
+)
 
 ########################################################################
 
@@ -326,6 +335,7 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  @slow
   def test_get_analytic_concentration_mtree_halos( self ):
 
     # Load the saved files
@@ -339,6 +349,7 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  @slow
   def test_save_and_load_ahf_halos_add( self ):
 
     # Save halos_add
