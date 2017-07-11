@@ -168,7 +168,7 @@ class AHFReader( object ):
 
     # Load the data
     self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos_add' )
-    self.ahf_halos = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
+    self.ahf_halos_add = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
 
   ########################################################################
 
@@ -492,6 +492,8 @@ class AHFReader( object ):
       metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.
     '''
 
+    print 'Saving *.AHF_halos_add for snum {}'.format( snum )
+
     # Load the AHF_halos data
     self.get_halos( snum )
 
@@ -521,8 +523,6 @@ class AHFReader( object ):
 
     # Save the halos
     for snum in range( snum_start, snum_end+snum_step, snum_step):
-
-      print 'Saving *.AHF_halos_add for snum {}'.format( snum )
 
       # Save the data
       self.save_ahf_halos_add( snum, metafile_dir )
