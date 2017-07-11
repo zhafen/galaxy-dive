@@ -76,6 +76,7 @@ class MetafileReader( object ):
     potential_filepaths = glob.glob( '{}/*usedvalues'.format( self.sdir ) )
 
     assert len( potential_filepaths ) < 2, 'Multiple options to choose the parameter file from.'
+    assert len( potential_filepaths ) != 0, 'No used parameter file found (e.g. gizmo_parameters.txt-usedvalues).'
 
     parameter_filepath = potential_filepaths[0]
 

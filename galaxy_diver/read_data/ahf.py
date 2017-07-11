@@ -477,7 +477,7 @@ class AHFReader( object ):
 
     # Include the concentration, if chosen.
     if include_concentration:
-      self.get_analytic_concentration_mtree_halos( metafile_dir )
+      self.get_analytic_concentration( metafile_dir )
 
     # Save the halos
     self.save_mtree_halos( 'smooth' )
@@ -521,6 +521,8 @@ class AHFReader( object ):
 
     # Save the halos
     for snum in range( snum_start, snum_end+snum_step, snum_step):
+
+      print 'Saving *.AHF_halos_add for snum {}'.format( snum )
 
       # Save the data
       self.save_ahf_halos_add( snum, metafile_dir )
