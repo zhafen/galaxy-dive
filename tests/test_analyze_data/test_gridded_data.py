@@ -1,4 +1,4 @@
-'''Testing for generic_data.py
+'''Testing for gridded_data.py
 '''
 
 from mock import patch
@@ -7,7 +7,7 @@ import numpy.testing as npt
 import pdb
 import unittest
 
-import galaxy_diver.analyze_data.generic_data as generic_data
+import galaxy_diver.analyze_data.gridded_data as gridded_data
 import galaxy_diver.read_data.snapshot as read_snapshot
 
 ########################################################################
@@ -31,7 +31,7 @@ class TestGriddedData(unittest.TestCase):
 
   def setUp(self):
 
-    self.test_class = generic_data.GriddedData
+    self.test_class = gridded_data.GriddedData
 
     self.data_p = {
       'sdir' : './tests/test_data/test_analysis_dir',
@@ -123,43 +123,4 @@ class TestGriddedData(unittest.TestCase):
     dist = -instance.data_attrs['gridsize']/2.
     expected = np.array( [ dist + 78.974358452690979, dist + 78.974358452690979*2., ] )
     npt.assert_allclose(actual, expected)
-
-########################################################################
-
-class TestParticleData(unittest.TestCase):
-
-  def setUp(self):
-
-    self.test_class = generic_data.ParticleData
-
-    self.data_p = {
-      'sdir' : './tests/test_data/test_sdir3/output',
-      'snum' : 600,
-      'ptype' : 0,
-      }
-
-  ########################################################################
-
-  def test_init(self):
-
-    instance = self.test_class(self.data_p)
-
-    assert instance.data['P'] is not None
-
-  ########################################################################
-
-  def test_gets_new_ids( self ):
-
-    self.data_p['load_additional_ids'] = True
-
-    instance = self.test_class(self.data_p)
-
-    P = read_snapshot.readsnap( self.data_p['sdir'], self.data_p['snum'], self.data_p['ptype'], True )
-
-    npt.assert_allclose( P['id'], instance.data['ID'] )
-    npt.assert_allclose( P['child_id'], instance.data['ChildID'] )
-    npt.assert_allclose( P['id_gen'], instance.data['IDGen'] )
-
-
-    
 
