@@ -13,6 +13,7 @@ import os
 
 import matplotlib
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import galaxy_diver.utils.dataio as dataio
 
