@@ -38,7 +38,6 @@ class GasData( object ):
       z_sun (float, optional) : Used mass fraction for solar metallicity.
     '''
 
-
     # Store the arguments
     self.averaging_frac = averaging_frac
     self.centered = centered
