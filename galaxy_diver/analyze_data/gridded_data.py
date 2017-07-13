@@ -17,40 +17,42 @@ import generic_data
 
 class GriddedData( generic_data.GasData ):
 
-  def __init__(self, data_p, **kw_args):
+  def __init__(self, sdir=None, snum=None, Nx=None, gridsize=None, ionized=None, ion_grid=False, **kwargs):
     '''
     data_p : Parameters specifying the gridded snapshot file. Must include...
-    "    "['sdir'] : Directory the snaphost is stored in
-    "    "['snum'] : Snapshot number
-    "    "['Nx'] : Number of grid cells on a side
-    "    "['gridsize'] : How large the grid is
-    "    "['ionized'] : Legacy name. Originally how the ionization state is calculated. 
+      sdir (str) : Directory the snaphost is stored in
+      snum (str) : Snapshot number
+      Nx (int) : Number of grid cells on a side
+      gridsize (float or str) : How large the grid is
+      ionized (str) : Legacy name. Originally how the ionization state is calculated. 
                         Currently any identifying string added to the end of the filename.
                         'R13' : Ionization state calculated using Rahmati+13 fitting function
-    "    "['ion_grid'] : Whether or not this is a grid containing ion information.
+      ion_grid (bool) : Whether or not this is a grid containing ion information.
     '''
+    # Store args
+    for arg in locals().keys():
+      setattr( self, arg, locals()[arg] )
 
-    super(GriddedData, self).__init__(data_p, **kw_args)
+    # Make sure that all the arguments have been specified.
+    for attr in vars( self ).keys():
+      if attr == 'kwargs' :
+        continue
+      if getattr( self, attr ) == None:
+        raise Exception( '{} not specified'.format( attr ) )
 
-    # Check if we have an ion grid
-    if 'ion_grid' in data_p:
-      self.is_ion_grid = data_p['ion_grid']
-    else:
-      self.is_ion_grid = False
+    # Note that we assume the grid is centered.
+    super( GriddedData, self ).__init__( centered=True, **kwargs )
 
     self.retrieve_data()
-
-    # State that we assume the grid is centered at the start
-    self.centered = True
 
   ########################################################################
 
   def retrieve_data(self):
 
     # Open file
-    self.grid_file_name = dataio.getGridFilename(self.data_p['sdir'], self.data_p['snum'], self.data_p['Nx'], self.data_p['gridsize'], self.data_p['ionized'], \
-                          ion_grid=self.is_ion_grid)
-    f = h5py.File(self.grid_file_name, 'r')
+    self.grid_file_name = dataio.getGridFilename( self.sdir, self.snum, self.Nx, self.gridsize, self.ionized, \
+                          ion_grid=self.ion_grid )
+    f = h5py.File( self.grid_file_name, 'r' )
 
     # Get the grid attributes
     self.data_attrs = {}
@@ -108,9 +110,9 @@ class GriddedData( generic_data.GasData ):
         self.data[key] = f[key][...]
 
     # Load the data
-    if not self.is_ion_grid:
+    if not self.ion_grid:
       load_data(f)
-    elif self.is_ion_grid:
+    elif self.ion_grid:
       load_ion_data(f)
     else:
       raise Exception('Unrecognized ion_grid')
@@ -119,7 +121,7 @@ class GriddedData( generic_data.GasData ):
 
   ########################################################################
 
-  def calc_positions(self):
+  def calc_positions( self ):
     '''Calculate the positions of gridcells.'''
 
     # Get how the spacing on one side
@@ -134,7 +136,7 @@ class GriddedData( generic_data.GasData ):
 
   ########################################################################
 
-  def calc_face_positions(self, data_key):
+  def calc_face_positions( self, data_key ):
     '''Calculate positions if you're just looking at one face of a grid.'''
 
     # Figure out which face to calculate for
@@ -153,7 +155,7 @@ class GriddedData( generic_data.GasData ):
 
   ########################################################################
 
-  def calc_mass(self):
+  def calc_mass( self ):
     '''Calculate the mass per grid cell.'''
 
     # Calculate the mass per grid cell, for easy use later
@@ -161,7 +163,7 @@ class GriddedData( generic_data.GasData ):
 
   ########################################################################
 
-  def calc_column_density(self, key, face):
+  def calc_column_density( self, key, face ):
     '''Calculate the column density for a targeted key.
 
     Args --

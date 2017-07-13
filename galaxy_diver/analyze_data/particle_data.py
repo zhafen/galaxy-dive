@@ -13,31 +13,39 @@ import galaxy_diver.read_data.snapshot as read_snapshot
 
 class ParticleData( generic_data.GasData ):
   '''Subclass for particle data.
-
-  Args --
-  data_p : Parameters specifying the gridded snapshot file. Includes...
-  "    "['sdir'] : Directory the snaphost is stored in
-  "    "['snum'] : Snapshot number
-  "    "['ptype'] : Type of particle we're gridding. Usually 0 for gas
   '''
 
-  def __init__(self, data_p, **kw_args):
+  def __init__( self, sdir=None, snum=None, ptype=None, load_additional_ids=False, **kwargs ):
+    '''Initialize.
 
-    super(ParticleData, self).__init__(data_p, **kw_args)
+    Args:
+      sdir (str) : Directory the snaphost is stored in
+      snum (int) : Snapshot number to open
+      ptype (int) : Particle type to load.
+      load_additional_ids (bool, optional) : Whether or not to load child_ids, etc, if they exist.
+    '''
 
-    self.retrieve_data(**kw_args)
+    # Store args
+    for arg in locals().keys():
+      setattr( self, arg, locals()[arg] )
+
+    # Make sure that all the arguments have been specified.
+    for attr in vars( self ).keys():
+      if attr == 'kwargs' :
+        continue
+      if getattr( self, attr ) == None:
+        raise Exception( '{} not specified'.format( attr ) )
+
+    super( ParticleData, self ).__init__( **kwargs )
+
+    self.retrieve_data()
 
   ########################################################################
 
-  def retrieve_data(self, **kw_args):
-
-    if 'load_additional_ids' in self.data_p:
-      load_additional_ids = self.data_p['load_additional_ids']
-    else:
-      load_additional_ids = False
+  def retrieve_data( self ):
 
     # Assume we convert from cosmological units
-    P = read_snapshot.readsnap(self.data_p['sdir'], self.data_p['snum'], self.data_p['ptype'], load_additional_ids=load_additional_ids, cosmological=1, **kw_args)
+    P = read_snapshot.readsnap( self.sdir, self.snum, self.ptype, load_additional_ids=self.load_additional_ids, cosmological=True, )
 
     # Parse the keys and put in a more general format
     # All units should be the standard GIZMO output units

@@ -19,35 +19,38 @@ import galaxy_diver.utils.dataio as dataio
 
 ########################################################################
 
-class GasData(object):
+class GasData( object ):
 
-  def __init__(self, data_p, **kw_args):
-    '''
-    data_p : Parameters specifying the gridded snapshot file. Depends on the particle type
+  def __init__( self,
+                averaging_frac = 0.05,
+                centered = False,
+                vel_centered = False,
+                hubble_corrected = False,
+                z_sun = constants.Z_MASSFRAC_SUN,
+                **kwargs ):
+    '''Initialize.
+
+    Args:
+      averaging_frac (float): What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
+      centered (bool): Whether or not the coordinates are centered on the galaxy of choice at the start.
+      vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
+      hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities must be centered).
+      z_sun (float, optional) : Used mass fraction for solar metallicity.
     '''
 
-    self.data_p = data_p
+
+    # Store the arguments
+    self.averaging_frac = averaging_frac
+    self.centered = centered
+    self.vel_centered = vel_centered
+    self.hubble_corrected = hubble_corrected
+    self.z_sun = z_sun
+
+    # Store the keyword arguments
+    self.kwargs = kwargs
 
     # For storing masks to look at the data through
     self.masks = []
-
-    # What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
-    self.averaging_frac=0.05
-
-    # State that we assume the data isn't centered at the start
-    self.centered = False
-
-    # State that we don't center the particles on the target galaxy in position or velocity space
-    self.vel_centered = False
-
-    # State that the halo data isn't stored
-    self.halo_data_retrieved = False
-
-    # Note whether or not the data has been corrected for the hubble flow
-    self.hubble_corrected = False
-
-    # Default solar metallicity (Aspund+09)
-    self.Z_sun = 0.014
 
     # Array for containing units
     self.units = {}
@@ -560,7 +563,7 @@ class GasData(object):
         else:
           raise Exception ("NULL units for data_key={}".format(data_key))
       else:
-        data /= self.Z_sun
+        data /= self.z_sun
 
     # Make appropriate units into log
     non_log_keys = ['P', 'R', 'Rx', 'Ry', 'Rz', 'Rho', 'V', 'Vr', 'Vx', 'Vy', 'Vz', 'h', 'Phi', 'AbsPhi', 'Cl']

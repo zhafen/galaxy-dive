@@ -33,7 +33,7 @@ class TestGriddedData(unittest.TestCase):
 
     self.test_class = gridded_data.GriddedData
 
-    self.data_p = {
+    self.kwargs = {
       'sdir' : './tests/test_data/test_analysis_dir',
       'snum' : 600,
       'Nx' : 10,
@@ -45,7 +45,7 @@ class TestGriddedData(unittest.TestCase):
 
   def test_init(self):
 
-    instance = self.test_class(self.data_p)
+    instance = self.test_class( **self.kwargs )
 
     actual = instance.data['Den'][...][0,0,0]
     expected = 8.9849813e-08
@@ -55,11 +55,11 @@ class TestGriddedData(unittest.TestCase):
 
   def test_load_ion_grid(self):
 
-    self.data_p['ion_grid'] = True
+    self.kwargs['ion_grid'] = True
 
-    instance = self.test_class(self.data_p)
+    instance = self.test_class( **self.kwargs )
 
-    assert instance.is_ion_grid
+    assert instance.ion_grid
 
     actual = instance.data['H_p0_number_density'][...][0,0,0]
     expected = 1.0840375843397891e-11
@@ -69,9 +69,9 @@ class TestGriddedData(unittest.TestCase):
 
   def test_calc_ion_column_densties(self):
 
-    self.data_p['ion_grid'] = True
+    self.kwargs['ion_grid'] = True
 
-    instance = self.test_class(self.data_p)
+    instance = self.test_class( **self.kwargs )
 
     hi_col_den = instance.calc_column_density( 'H_p0_number_density', 2 )
     
@@ -84,9 +84,9 @@ class TestGriddedData(unittest.TestCase):
 
   def test_calc_rx_and_ry_for_ions(self):
 
-    self.data_p['ion_grid'] = True
+    self.kwargs['ion_grid'] = True
 
-    instance = self.test_class(self.data_p)
+    instance = self.test_class( **self.kwargs )
 
     positions = instance.get_data('P')
 
@@ -104,9 +104,9 @@ class TestGriddedData(unittest.TestCase):
 
   def test_calc_rx_and_ry_for_columns(self):
 
-    self.data_p['ion_grid'] = True
+    self.kwargs['ion_grid'] = True
 
-    instance = self.test_class(self.data_p)
+    instance = self.test_class( **self.kwargs )
 
     rx_face = instance.get_data('Rx_face_xy')
     ry_face = instance.get_data('Ry_face_xy')

@@ -33,7 +33,7 @@ class TestParticleData(unittest.TestCase):
 
     self.test_class = particle_data.ParticleData
 
-    self.data_p = {
+    self.kwargs = {
       'sdir' : './tests/test_data/test_sdir3/output',
       'snum' : 600,
       'ptype' : 0,
@@ -43,7 +43,7 @@ class TestParticleData(unittest.TestCase):
 
   def test_init(self):
 
-    instance = self.test_class(self.data_p)
+    instance = self.test_class( **self.kwargs )
 
     assert instance.data['P'] is not None
 
@@ -51,11 +51,11 @@ class TestParticleData(unittest.TestCase):
 
   def test_gets_new_ids( self ):
 
-    self.data_p['load_additional_ids'] = True
+    self.kwargs['load_additional_ids'] = True
 
-    instance = self.test_class(self.data_p)
+    instance = self.test_class( **self.kwargs )
 
-    P = read_snapshot.readsnap( self.data_p['sdir'], self.data_p['snum'], self.data_p['ptype'], True )
+    P = read_snapshot.readsnap( self.kwargs['sdir'], self.kwargs['snum'], self.kwargs['ptype'], True )
 
     npt.assert_allclose( P['id'], instance.data['ID'] )
     npt.assert_allclose( P['child_id'], instance.data['ChildID'] )
