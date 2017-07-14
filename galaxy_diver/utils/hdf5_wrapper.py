@@ -346,9 +346,13 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, n_files='default' ):
   print 'Done!'
 
 ########################################################################
-    
+# Misc Functions
+########################################################################
+
 def make_dir( path ):
-  '''Make a path to a file.'''
+  '''Make a path to a file.
+  Args:
+    path (str): Path to the file.'''
 
   try:
     os.makedirs( path )

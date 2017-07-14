@@ -10,7 +10,7 @@ import h5py
 import numpy as np
 import string
 
-import galaxy_diver.utils.dataio as dataio
+import galaxy_diver.utils.io as io
 import generic_data
 
 ########################################################################
@@ -50,7 +50,7 @@ class GriddedData( generic_data.GasData ):
   def retrieve_data(self):
 
     # Open file
-    self.grid_file_name = dataio.getGridFilename( self.sdir, self.snum, self.Nx, self.gridsize, self.ionized, \
+    self.grid_file_name = io.getGridFilename( self.sdir, self.snum, self.Nx, self.gridsize, self.ionized, \
                           ion_grid=self.ion_grid )
     f = h5py.File( self.grid_file_name, 'r' )
 

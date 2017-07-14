@@ -15,7 +15,7 @@ import string
 
 # Imports from my own stuff
 import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.dataio as dataio
+import galaxy_diver.utils.io as io
 
 ########################################################################
 
@@ -113,7 +113,7 @@ class GasData( object ):
         self.halo_number = 0
 
     # Get the halo data
-    halo_data = dataio.getHaloDataRedshift(self.data_p['sdir'], self.halo_number, self.data_attrs['redshift'])
+    halo_data = io.getHaloDataRedshift(self.data_p['sdir'], self.halo_number, self.data_attrs['redshift'])
 
     # Get rid of 1/h factors in the halo data
     vals_to_be_converted = range(3, 13) 
