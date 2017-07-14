@@ -6,6 +6,7 @@ import numpy as np
 import numpy.testing as npt
 import os
 import pdb
+import subprocess
 import unittest
 
 import galaxy_diver.utils.utilities as utilities
@@ -36,6 +37,16 @@ class TestGetCodeVersion( unittest.TestCase ):
     # Change back
     os.chdir( cwd )
 
+  ########################################################################
+
+  def test_works_for_modules( self ):
+
+    actual = utilities.get_code_version( utilities, instance_type='module' )
+
+    expected = subprocess.check_output( [ 'git', 'describe', '--always'] )
+
+    assert actual == expected
+
 ########################################################################
 
 class TestGetInstanceSourceDir( unittest.TestCase ):
@@ -45,5 +56,15 @@ class TestGetInstanceSourceDir( unittest.TestCase ):
     actual = utilities.get_instance_source_dir( self )
 
     expected = os.path.join( os.getcwd(), 'tests/test_utils' )
+
+    assert actual == expected
+
+  ########################################################################
+
+  def test_works_for_modules( self ):
+
+    actual = utilities.get_instance_source_dir( utilities, 'module' )
+
+    expected = os.path.join( os.getcwd(), 'galaxy_diver/utils' )
 
     assert actual == expected
