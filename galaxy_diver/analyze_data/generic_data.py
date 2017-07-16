@@ -39,14 +39,8 @@ class GasData( object ):
     '''
 
     # Store the arguments
-    self.averaging_frac = averaging_frac
-    self.centered = centered
-    self.vel_centered = vel_centered
-    self.hubble_corrected = hubble_corrected
-    self.z_sun = z_sun
-
-    # Store the keyword arguments
-    self.kwargs = kwargs
+    for arg in locals().keys():
+      setattr( self, arg, locals()[arg] )
 
     # For storing masks to look at the data through
     self.masks = []
