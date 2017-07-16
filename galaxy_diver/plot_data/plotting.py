@@ -15,8 +15,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-import galaxy_diver.utils.dataio as dataio
-
 ########################################################################
 
 def add_colorbar( fig_or_ax, color_object, method='fig', ax_location=[0.9, 0.1, 0.03, 0.8], **kw_args ):
