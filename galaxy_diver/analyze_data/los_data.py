@@ -10,7 +10,7 @@ import generic_data
 
 ########################################################################
 
-class LOSData( generic_data.GasData ):
+class LOSData( generic_data.GenericData ):
 
   def __init__(self, data_p, **kw_args):
     '''Class for data that's a number of lines of sight in a grid shap.

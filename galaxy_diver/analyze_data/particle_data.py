@@ -11,7 +11,7 @@ import galaxy_diver.read_data.snapshot as read_snapshot
 
 ########################################################################
 
-class ParticleData( generic_data.GasData ):
+class ParticleData( generic_data.GenericData ):
   '''Subclass for particle data.
   '''
 
@@ -36,7 +36,7 @@ class ParticleData( generic_data.GasData ):
       if getattr( self, attr ) == None:
         raise Exception( '{} not specified'.format( attr ) )
 
-    super( ParticleData, self ).__init__( **kwargs )
+    super( ParticleData, self ).__init__( sdir=sdir, snum=snum, **kwargs )
 
     self.retrieve_data()
 

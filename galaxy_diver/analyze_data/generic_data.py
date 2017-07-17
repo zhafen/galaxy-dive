@@ -8,10 +8,12 @@
 
 # Base python imports
 import copy
+from functools import wraps
 import h5py
 import numpy as np
 import numpy.testing as npt
 import string
+import warnings
 
 
 # Imports from my own stuff
@@ -25,32 +27,46 @@ import galaxy_diver.utils.io as io
 class GenericData( object ):
 
   def __init__( self,
+                sdir = None,
+                analysis_dir = None,
+                snum = None,
+                ahf_index = None,
+
                 averaging_frac = 0.05,
                 centered = False,
                 vel_centered = False,
                 hubble_corrected = False,
+
                 z_sun = constants.Z_MASSFRAC_SUN,
+
                 ahf_tag = 'smooth',
-                main_mt_halo_id = 0,
+                main_halo_id = 0,
+                center_method = 'halo',
+
                 **kwargs ):
     '''Initialize.
 
     Args:
-      averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
-      centered (bool, optional): Whether or not the coordinates are centered on the galaxy of choice at the start.
-      vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
-      hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities must be centered).
-      z_sun (float, optional) : Used mass fraction for solar metallicity.
-      ahf_tag (str, optional) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type 'halo_00000_{}.dat'.format( tag ).
-      main_mt_halo_id (int, optional) : What is the halo ID of the main galaxy in the simulation?
-
-    Keyword Args:
       sdir (str, required) : Directory the simulation is contained in.
+      analysis_dir (str, optional) : Directory simulation analysis is contained in. Defaults to sdir
       snum (int, required) : Snapshot to inspect.
       ahf_index (str, required) : What to index the snapshots by. Should be the last snapshot in the simulation *if* AHF was run backwards from the last snapshot.
                                   Required to put in manually to avoid easy mistakes.
 
-      analysis_dir (str, optional) : Directory simulation analysis is contained in. Defaults to sdir
+      averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
+      centered (bool, optional): Whether or not the coordinates are centered on the galaxy of choice at the start.
+      vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
+      hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities must be centered).
+
+      z_sun (float, optional) : Used mass fraction for solar metallicity.
+
+      ahf_tag (str, optional) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type 'halo_00000_{}.dat'.format( tag ).
+      main_halo_id (int, optional) : What is the halo ID of the main galaxy in the simulation?
+      center_method (str or np.array of size 3, optional) : How to center the coordinates. Options...
+        'halo' (default) : Centers the dataset on the main halo (main_halo_id) using AHF halo data.
+        np.array of size 3 : Centers the dataset on this coordinate.
+
+    Keyword Args:
       function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
     '''
 
@@ -58,15 +74,30 @@ class GenericData( object ):
     for arg in locals().keys():
       setattr( self, arg, locals()[arg] )
 
-    # Set the analysis dir to sdir, if not given
-    if 'analysis_dir' not in self.kwargs:
-      self.kwargs['analysis_dir'] = self.kwargs['sdir']
+    # Make sure that all the arguments have been specified.
+    for attr in vars( self ).keys():
+      if attr == 'kwargs':
+        continue
+      if getattr( self, attr ) == None:
+
+        # Set the analysis dir to sdir if not given
+        if attr == 'analysis_dir':
+          self.analysis_dir = self.sdir
+
+        elif attr == 'ahf_index':
+          warnings.warn( "AHF index not specified. Will be unable to use halo finding data." )
+
+        else:
+          raise Exception( '{} not specified'.format( attr ) )
 
     # For storing masks to look at the data through
     self.masks = []
 
     # Array for containing units
     self.units = {}
+
+    # By definition, the halo data should not be retrieved when the class is first initiated.
+    self.halo_data_retrieved = False
 
   ########################################################################
 
@@ -118,11 +149,11 @@ class GenericData( object ):
   def retrieve_halo_data( self ):
 
     # Load the AHF data
-    ahf_reader = read_ahf.AHFReader( self.kwargs['analysis_dir'] )
-    ahf_reader.get_mtree_halos( index=self.kwargs['ahf_index'], tag=self.ahf_tag )
+    ahf_reader = read_ahf.AHFReader( self.analysis_dir )
+    ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
     # Select the main halo at the right redshift
-    mtree_halo = ahf_reader.mtree_halos[self.main_mt_halo_id].loc[self.kwargs['snum']]
+    mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum]
 
     # Add the halo data to the class.
     self.redshift = mtree_halo['redshift']
@@ -254,27 +285,42 @@ class GenericData( object ):
 
   ########################################################################
 
-  def change_coords_center( self, center_method='halo' ):
-    '''Change the location of the origin.
+  def center_coords( self, func ):
+    '''Change the location of the origin, if the data isn't already centered.
+
+    Args:
+      func (function) : Function to decorate.
+
+    Modifies:
+      self.data['P'] : Shifts the coordinates to the center.
     '''
 
-    raise Exception( "TODO: Test this, turn into a decorator" )
+    @wraps( func )
+    def wrapper( *args, **kwargs ):
 
-    # Make sure not to change the coords multiple times
-    if self.centered:
-      return 0
+      if not self.centered:
 
-    if center_method == 'halo':
-      if not self.halo_data_retrieved:
-        self.retrieve_halo_data()
-    else:
-      self.peak_coords = center_method
+        if isinstance( self.center_method, np.ndarray ):
+          self.origin = copy.copy( self.center_method )
 
-    self.data['P'][0] -= self.peak_coords[0]
-    self.data['P'][1] -= self.peak_coords[1]
-    self.data['P'][2] -= self.peak_coords[2]
+        elif self.center_method == 'halo':
+          if not self.halo_data_retrieved:
+            self.retrieve_halo_data()
+          self.origin = copy.copy( self.halo_coords )
 
-    self.centered = True
+        else:
+          raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
+
+        # Do it like this because we don't know the shape of self.data['P'][0]
+        for i in range( 3 ):
+          self.data['P'][i] -= self.origin[i]
+
+      # Note that we're now centered
+      self.centered = True
+
+      return func( *args, **kwargs )
+
+    return wrapper
 
   ########################################################################
 
@@ -512,19 +558,7 @@ class GenericData( object ):
       try:
 
         if data_key[0] == 'R':
-
-          # Center our position
-          self.change_coords_center()
-
-          # Transpose in order to account for when the data isn't regularly shaped
-          if data_key == 'Rx':
-            data = self.data['P'][0,:]
-          elif data_key == 'Ry':
-            data = self.data['P'][1,:]
-          elif data_key == 'Rz':
-            data = self.data['P'][2,:]
-          else:
-            data = self.data[data_key]
+          self.get_position_data( data_key )
 
         # Velocities
         elif data_key[0] == 'V':
@@ -564,6 +598,24 @@ class GenericData( object ):
 
       break
   
+    return data
+
+  ########################################################################
+
+  # DEBUG
+  #@center_coords
+  def get_position_data( self, data_key ):
+
+    # Transpose in order to account for when the data isn't regularly shaped
+    if data_key == 'Rx':
+      data = self.data['P'][0,:]
+    elif data_key == 'Ry':
+      data = self.data['P'][1,:]
+    elif data_key == 'Rz':
+      data = self.data['P'][2,:]
+    else:
+      data = self.data[data_key]
+
     return data
 
   ########################################################################

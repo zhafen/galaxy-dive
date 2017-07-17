@@ -37,6 +37,7 @@ class TestParticleData(unittest.TestCase):
       'sdir' : './tests/test_data/test_sdir3/output',
       'snum' : 600,
       'ptype' : 0,
+      'ahf_index' : 600,
       }
 
   ########################################################################

@@ -39,6 +39,7 @@ class TestGriddedData(unittest.TestCase):
       'Nx' : 10,
       'gridsize' : 'vary',
       'ionized' : 'test',
+      'ahf_index' : 600,
       }
 
   ########################################################################

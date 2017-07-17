@@ -15,11 +15,12 @@ import generic_data
 
 ########################################################################
 
-class GriddedData( generic_data.GasData ):
+class GriddedData( generic_data.GenericData ):
+  '''Class for handling data that forms a Cartesian grid.'''
 
   def __init__(self, sdir=None, snum=None, Nx=None, gridsize=None, ionized=None, ion_grid=False, **kwargs):
     '''
-    data_p : Parameters specifying the gridded snapshot file. Must include...
+    Args:
       sdir (str) : Directory the snaphost is stored in
       snum (str) : Snapshot number
       Nx (int) : Number of grid cells on a side
@@ -41,7 +42,7 @@ class GriddedData( generic_data.GasData ):
         raise Exception( '{} not specified'.format( attr ) )
 
     # Note that we assume the grid is centered.
-    super( GriddedData, self ).__init__( centered=True, **kwargs )
+    super( GriddedData, self ).__init__( sdir=sdir, snum=snum, centered=True, **kwargs )
 
     self.retrieve_data()
 
