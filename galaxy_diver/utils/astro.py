@@ -12,7 +12,7 @@ import constants
 
 ########################################################################
 
-def hubble_z(redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728):
+def hubble_z( redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728 ):
   '''Return Hubble factor in 1/sec for a given redshift.
 
   Args:
@@ -32,7 +32,7 @@ def hubble_z(redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728):
 
 ########################################################################
 
-def age_of_universe( redshift, h=0.71, omega_matter=0.27):
+def age_of_universe( redshift, h=0.71, omega_matter=0.27 ):
   '''Get the exact solution to the age of universe (for a flat universe) to a given redshift
 
   Args:
@@ -52,3 +52,28 @@ def age_of_universe( redshift, h=0.71, omega_matter=0.27):
   t *= 13.777 * (0.71/h) ## in Gyr
 
   return t
+
+########################################################################
+
+def circular_velocity( r_vir, m_vir ):
+  '''Calculate the circular velocity of a halo in km/s.
+
+  Args:
+    r_vir (float or array-like) : The virial radius in pkpc.
+    m_vir (float or array-like) : The halo mass in Msun.
+
+  Returns:
+    v_c : Circular velocity of the halo in km/s, indexed the same way that ahf_reader.mtree_halos[i] is.
+  '''
+  
+  # Convert r_vir and m_vir to cgs
+  r_vir_cgs = r_vir*constants.CM_PER_KPC
+  m_vir_cgs = m_vir*constants.MSUN
+
+  # Get v_c
+  v_c_cgs = np.sqrt( constants.G_UNIV * m_vir_cgs / r_vir_cgs )
+
+  # Convert to km/s
+  v_c = v_c_cgs / constants.CM_PER_KM
+
+  return v_c

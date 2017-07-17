@@ -10,6 +10,7 @@
 import copy
 import h5py
 import numpy as np
+import numpy.testing as npt
 import string
 
 
@@ -20,7 +21,7 @@ import galaxy_diver.utils.io as io
 
 ########################################################################
 
-class GasData( object ):
+class GenericData( object ):
 
   def __init__( self,
                 averaging_frac = 0.05,
@@ -28,19 +29,26 @@ class GasData( object ):
                 vel_centered = False,
                 hubble_corrected = False,
                 z_sun = constants.Z_MASSFRAC_SUN,
+                ahf_tag = 'smooth',
+                main_mt_halo_id = 0,
                 **kwargs ):
     '''Initialize.
 
     Args:
-      averaging_frac (float): What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
-      centered (bool): Whether or not the coordinates are centered on the galaxy of choice at the start.
+      averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
+      centered (bool, optional): Whether or not the coordinates are centered on the galaxy of choice at the start.
       vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
       hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities must be centered).
       z_sun (float, optional) : Used mass fraction for solar metallicity.
+      ahf_tag (str, optional) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type 'halo_00000_{}.dat'.format( tag ).
+      main_mt_halo_id (int, optional) : What is the halo ID of the main galaxy in the simulation?
 
     Keyword Args:
       sdir (str, required) : Directory the simulation is contained in.
       snum (int, required) : Snapshot to inspect.
+      ahf_index (str, required) : What to index the snapshots by. Should be the last snapshot in the simulation *if* AHF was run backwards from the last snapshot.
+                                  Required to put in manually to avoid easy mistakes.
+
       analysis_dir (str, optional) : Directory simulation analysis is contained in. Defaults to sdir
       function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
     '''
@@ -108,8 +116,12 @@ class GasData( object ):
   # Get the halo data out
   def retrieve_halo_data( self ):
 
-    self.ahf_reader = read_ahf.AHFReader( self.kwargs['sdir'] )
-    self.ahf_reader.get_halos( self.kwargs['snum'] )
+    # Load the AHF data
+    ahf_reader = read_ahf.AHFReader( self.kwargs['analysis_dir'] )
+    ahf_reader.get_mtree_halos( index=self.kwargs['ahf_index'], tag=self.ahf_tag )
+
+    # Select the main halo at the right redshift
+    mtree_halo = ahf_reader.mtree_halos[self.main_mt_halo_id].loc[self.kwargs['snum']]
 
     ## Get the halo number
     #if 'halo_number' in self.kwargs:
@@ -131,19 +143,19 @@ class GasData( object ):
     #for val_index in vals_to_be_converted:
     #  halo_data[val_index] /= self.data_attrs['hubble']
 
-    ## Add the halo data to the class.
-    #self.redshift = halo_data[0]
-    #self.halo_ID = halo_data[1]
-    #self.host_ID = halo_data[2]
-    #self.peak_coords = (halo_data[3], halo_data[4], halo_data[5])
-    #self.R_vir = halo_data[6]
-    #self.M_vir = halo_data[7]
-    #self.M_gas = halo_data[8]
-    #self.M_star = halo_data[9]
-    #self.CoM_coords = (halo_data[10], halo_data[11], halo_data[12]) 
+    # Add the halo data to the class.
+    self.redshift = mtree_halo['redshift']
+    self.halo_coords = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )/(1. + self.redshift)/self.data_attrs['hubble']
+    self.R_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
+    self.M_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
+    self.M_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
+    self.M_star = mtree_halo['M_star']/self.data_attrs['hubble']
 
-    ## Calculate the circular velocity
-    #self.v_c = np.sqrt(constants.G*self.M_vir*constants.Msun_to_kg / (self.R_vir*constants.kpc_to_km*1.e9))
+    if 'redshift' in self.data_attrs:
+      npt.assert_allclose( self.redshift, self.data_attrs['redshift'] )
+
+    # Calculate the circular velocity
+    self.v_c = np.sqrt(constants.G*self.M_vir*constants.Msun_to_kg / (self.R_vir*constants.kpc_to_km*1.e9))
 
   ########################################################################
 
