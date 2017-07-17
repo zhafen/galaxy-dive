@@ -14,6 +14,7 @@ import string
 
 
 # Imports from my own stuff
+import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.io as io
 
@@ -36,11 +37,21 @@ class GasData( object ):
       vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
       hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities must be centered).
       z_sun (float, optional) : Used mass fraction for solar metallicity.
+
+    Keyword Args:
+      sdir (str, required) : Directory the simulation is contained in.
+      snum (int, required) : Snapshot to inspect.
+      analysis_dir (str, optional) : Directory simulation analysis is contained in. Defaults to sdir
+      function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
     '''
 
     # Store the arguments
     for arg in locals().keys():
       setattr( self, arg, locals()[arg] )
+
+    # Set the analysis dir to sdir, if not given
+    if 'analysis_dir' not in self.kwargs:
+      self.kwargs['analysis_dir'] = self.kwargs['sdir']
 
     # For storing masks to look at the data through
     self.masks = []
@@ -54,6 +65,8 @@ class GasData( object ):
     '''
     data_key : key that produced the data key error
     '''
+
+    raise Exception( "TODO: Test this" )
 
     print 'Data key not found in data. Attempting to calculate.'
 
@@ -92,50 +105,54 @@ class GasData( object ):
   # Get Additional Data
   ########################################################################
 
-  def retrieve_halo_data(self):
+  # Get the halo data out
+  def retrieve_halo_data( self ):
 
-    # Get the halo number
-    if 'halo_number' in self.data_p:
-      self.halo_number = self.data_p['halo_number']
-    # Assume that the halo files are as default if the halo number isn't given explicitely
-    else: 
-      sim_name = string.split(self.data_p['sdir'], '/')[-1]
-      sims_w_halo_1 = ['B1_hr_Dec5_2013_11',]
-      if sim_name in sims_w_halo_1:
-        self.halo_number = 1
-      else:
-        self.halo_number = 0
+    self.ahf_reader = read_ahf.AHFReader( self.kwargs['sdir'] )
+    self.ahf_reader.get_halos( self.kwargs['snum'] )
 
-    # Get the halo data
-    halo_data = io.getHaloDataRedshift(self.data_p['sdir'], self.halo_number, self.data_attrs['redshift'])
+    ## Get the halo number
+    #if 'halo_number' in self.kwargs:
+    #  self.halo_number = self.kwargs['halo_number']
+    ## Assume that the halo files are as default if the halo number isn't given explicitely
+    #else: 
+    #  sim_name = string.split(self.kwargs['sdir'], '/')[-1]
+    #  sims_w_halo_1 = ['B1_hr_Dec5_2013_11',]
+    #  if sim_name in sims_w_halo_1:
+    #    self.halo_number = 1
+    #  else:
+    #    self.halo_number = 0
 
-    # Get rid of 1/h factors in the halo data
-    vals_to_be_converted = range(3, 13) 
-    for val_index in vals_to_be_converted:
-      halo_data[val_index] /= self.data_attrs['hubble']
+    ## Get the halo data
+    #halo_data = io.getHaloDataRedshift(self.kwargs['sdir'], self.halo_number, self.data_attrs['redshift'])
 
-    # Add the halo data to the class.
-    self.redshift = halo_data[0]
-    self.halo_ID = halo_data[1]
-    self.host_ID = halo_data[2]
-    self.peak_coords = (halo_data[3], halo_data[4], halo_data[5])
-    self.R_vir = halo_data[6]
-    self.M_vir = halo_data[7]
-    self.M_gas = halo_data[8]
-    self.M_star = halo_data[9]
-    self.CoM_coords = (halo_data[10], halo_data[11], halo_data[12]) 
+    ## Get rid of 1/h factors in the halo data
+    #vals_to_be_converted = range(3, 13) 
+    #for val_index in vals_to_be_converted:
+    #  halo_data[val_index] /= self.data_attrs['hubble']
 
-    # Calculate the circular velocity
-    self.v_c = np.sqrt(constants.G*self.M_vir*constants.Msun_to_kg / (self.R_vir*constants.kpc_to_km*1.e9))
+    ## Add the halo data to the class.
+    #self.redshift = halo_data[0]
+    #self.halo_ID = halo_data[1]
+    #self.host_ID = halo_data[2]
+    #self.peak_coords = (halo_data[3], halo_data[4], halo_data[5])
+    #self.R_vir = halo_data[6]
+    #self.M_vir = halo_data[7]
+    #self.M_gas = halo_data[8]
+    #self.M_star = halo_data[9]
+    #self.CoM_coords = (halo_data[10], halo_data[11], halo_data[12]) 
 
-    self.halo_data_retrieved = True
+    ## Calculate the circular velocity
+    #self.v_c = np.sqrt(constants.G*self.M_vir*constants.Msun_to_kg / (self.R_vir*constants.kpc_to_km*1.e9))
 
   ########################################################################
 
   def get_header_values(self):
     '''Get some overall values for the snapshot.'''
 
-    header = read_snapshot.readsnap(self.data_p['sdir'], self.data_p['snum'], 0, cosmological=1, header_only=1)
+    raise Exception( "TODO: Test this/get rid of it" )
+
+    header = read_snapshot.readsnap(self.kwargs['sdir'], self.kwargs['snum'], 0, cosmological=1, header_only=1)
 
     self.k = header['k']
     self.redshift = header['redshift']
@@ -146,9 +163,10 @@ class GasData( object ):
   # Calculate simple net values of the simulation
   ########################################################################
 
-
   def calc_total_ang_momentum(self):
     '''Calculate the total angular momentum vector.'''
+
+    raise Exception( "TODO: Test this" )
 
     # Exit early if already calculated.
     try:
@@ -192,6 +210,8 @@ class GasData( object ):
                 'BN' Calculates R_vir from the mass and redshift
     '''
 
+    raise Exception( "TODO: Test this" )
+
     # Choose cosmology
     cosmo = Cosmology.setCosmology('WMAP9')
 
@@ -219,11 +239,13 @@ class GasData( object ):
     return dN_halo
 
   ########################################################################
-  # Internal changes to the data
+  # Decorators for returning the data
   ########################################################################
 
   def correct_hubble_flow(self):
     '''Correct for hubble flow movement.'''
+
+    raise Exception( "TODO: Test this" )
 
     # Make sure we're centered
     self.change_coords_center()
@@ -239,8 +261,11 @@ class GasData( object ):
 
   ########################################################################
 
-  def change_coords_center(self, center_method='halo'):
-    '''Change the location of the origin to center on the main halo.'''
+  def change_coords_center( self, center_method='halo' ):
+    '''Change the location of the origin.
+    '''
+
+    raise Exception( "TODO: Test this, turn into a decorator" )
 
     # Make sure not to change the coords multiple times
     if self.centered:
@@ -262,6 +287,8 @@ class GasData( object ):
 
   def change_vel_coords_center(self):
     '''Get velocity coordinates to center on the main halo.'''
+
+    raise Exception( "TODO: Test this" )
 
     if self.vel_centered:
       return 0
@@ -300,9 +327,13 @@ class GasData( object ):
     self.vel_centered = True
 
   ########################################################################
+  # Complicated results of data
+  ########################################################################
 
   def calc_radial_distance(self):
     '''Calculate the distance from the origin for a given particle.'''
+
+    raise Exception( "TODO: Test this" )
 
     # Make sure we're centered
     self.change_coords_center()
@@ -313,6 +344,8 @@ class GasData( object ):
 
   def calc_radial_velocity(self):
     '''Calculate the radial velocity.'''
+
+    raise Exception( "TODO: Test this" )
 
     # Center velocity and radius
     self.change_coords_center()
@@ -325,6 +358,8 @@ class GasData( object ):
 
   def calc_ang_momentum(self):
     '''Calculate the angular momentum.'''
+
+    raise Exception( "TODO: Test this" )
 
     # Make sure we're centered.
     self.change_coords_center()
@@ -339,6 +374,8 @@ class GasData( object ):
   def calc_inds(self):
     '''Calculate the indices the data are located at, prior to any masks.'''
 
+    raise Exception( "TODO: Test this" )
+
     # Flattened index array
     flat_inds = np.arange(self.get_data('Den').size)
 
@@ -350,11 +387,13 @@ class GasData( object ):
   def calc_phi(self, vector='total gas ang momentum'):
     '''Calculate the angle (in degrees) from some vector.'''
 
+    raise Exception( "TODO: Test this" )
+
     if vector == 'total ang momentum':
       # Calculate the total angular momentum vector, if it's not calculated yet
       self.v = self.calc_total_ang_momentum()
     elif vector == 'total gas ang momentum':
-      p_d = ParticleData(self.data_p)
+      p_d = ParticleData(self.kwargs)
       self.v = p_d.calc_total_ang_momentum()
     else:
       self.v = vector
@@ -376,6 +415,8 @@ class GasData( object ):
   def calc_abs_phi(self, vector='total gas ang momentum'):
     '''Calculate the angle (in degrees) from some vector, but don't mirror it around 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).'''
 
+    raise Exception( "TODO: Test this" )
+
     # Get the original Phi
     self.calc_phi(vector)
 
@@ -386,12 +427,16 @@ class GasData( object ):
   def calc_num_den(self):
     '''Calculate the number density (it's just a simple conversion...).'''
 
+    raise Exception( "TODO: Test this" )
+
     self.data['NumDen'] = self.data['Den']*constants.gas_den_to_nb
 
   ########################################################################
 
   def calc_H_den(self):
     '''Calculate the H density in cgs (cm^-3). Assume the H fraction is ~0.75'''
+
+    raise Exception( "TODO: Test this" )
 
     # Assume Hydrogen makes up 75% of the gas
     X_H = 0.75
@@ -402,6 +447,8 @@ class GasData( object ):
 
   def calc_HI_den(self):
     '''Calculate the HI density in cgs (cm^-3).'''
+
+    raise Exception( "TODO: Test this" )
 
     # Assume Hydrogen makes up 75% of the gas
     X_H = 0.75
@@ -420,6 +467,8 @@ class GasData( object ):
 
     point : np array that gives the point
     '''
+
+    raise Exception( "TODO: Test this/update to use scipy cdist" )
 
     # Calculate the distance to the point
     relative_positions = self.get_data('P').transpose() - np.array(point)
@@ -440,6 +489,8 @@ class GasData( object ):
   def calc_mu(self):
     '''Calculate the mean molecular weight. '''
 
+    raise Exception( "TODO: Test this" )
+
     y_helium = self.data['Z_Species'][:,0] # Get the mass fraction of helium
     mu = 1./(1. - 0.75*y_helium + self.data['ne'])
 
@@ -451,13 +502,24 @@ class GasData( object ):
 
   def get_data(self, data_key):
     '''Get the data from within the class. Only for getting the data. No post-processing or changing the data (putting it in particular units, etc.)
-    The idea is to calculate necessary quantities as the need arises, hence a whole function for getting the data.'''
+    The idea is to calculate necessary quantities as the need arises, hence a whole function for getting the data.
+
+    Args:
+      data_key (str) : Key in the data dictionary for the key we want to get
+
+    Returns:
+      data
+    '''
+
+    raise Exception( "TODO: Test this" )
 
     # Loop through, handling issues
-    for i in range(50):
+    n_tries = 10
+    for i in range( n_tries ):
       try:
 
         if data_key[0] == 'R':
+
           # Center our position
           self.change_coords_center()
 
@@ -490,11 +552,13 @@ class GasData( object ):
         # Arbitrary functions of the data
         elif data_key == 'Function':
 
+          raise Exception( "TODO: Test this" )
+
           # Use the keys to get the data
-          input_data = [self.get_data(function_data_key) for function_data_key in self.data_p['function_p']['function_data_keys']]
+          input_data = [ self.get_data(function_data_key) for function_data_key in self.kwargs['function_args']['function_data_keys'] ]
           
           # Apply the function
-          data = self.data_p['function_p']['function'](input_data)
+          data = self.kwargs['function_args']['function']( input_data )
 
         # Other
         else:
@@ -502,7 +566,7 @@ class GasData( object ):
 
       # Calculate missing data
       except KeyError, e:
-        self.handle_data_key_error(data_key)
+        self.handle_data_key_error( data_key )
         continue
 
       break
@@ -513,6 +577,8 @@ class GasData( object ):
 
   def get_processed_data(self, data_key):
     '''Get post-processed data. (Accounting for fractions, log-space, etc.).'''
+
+    raise Exception( "TODO: Test this" )
 
     # Account for fractional data keys
     fraction_flag = False
@@ -569,7 +635,7 @@ class GasData( object ):
       data =  np.log10(data)
 
     # Shift or multiply the data by some amount
-    if 'shift' in self.data_p:
+    if 'shift' in self.kwargs:
       self.shift(data, data_key)
 
     return data
@@ -581,11 +647,13 @@ class GasData( object ):
 
     data : data to be shifted
     data_key : Data key for the parameters to be shifted
-    Parameters are a subdictionariy of data_p
+    Parameters are a subdictionary of self.kwargs
     'data_key' : What data key the data is shifted for
     '''
 
-    shift_p = self.data_p['shift']
+    raise Exception( "TODO: Test this" )
+
+    shift_p = self.kwargs['shift']
 
     # Exit early if not the right data key
     if shift_p['data_key'] != data_key:
@@ -607,6 +675,8 @@ class GasData( object ):
   def add_mask(self, data_key, data_min, data_max, return_or_add='add'):
     '''Get only the particle data within a certain range. Note that it retrieves the processed data.'''
 
+    raise Exception( "TODO: Test this" )
+
     # Get the mask
     data = self.get_processed_data(data_key)
     data_ma = np.ma.masked_outside(data, data_min, data_max)
@@ -627,6 +697,8 @@ class GasData( object ):
 
   def get_total_mask(self):
 
+    raise Exception( "TODO: Test this" )
+
     # Compile masks
     all_masks = []
     for mask_dict in self.masks:
@@ -640,12 +712,16 @@ class GasData( object ):
   def get_masked_data_for_all_masks(self, data_key):
     '''Wrapper for compliance w/ old scripts.'''
 
+    raise Exception( "TODO: Test this" )
+
     return self.get_masked_data(data_key, mask='total')
 
   ########################################################################
 
   def get_masked_data(self, data_key, mask='total'):
     '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.'''
+
+    raise Exception( "TODO: Test this" )
 
     # Get the appropriate mask
     if mask == 'total':

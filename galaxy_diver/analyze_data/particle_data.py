@@ -122,8 +122,8 @@ class ParticleData( generic_data.GasData ):
     'tracked_p_file_tag' : Identifying tag for the tracked-particle data.
     '''
 
-    sim_name = string.split(self.data_p['sdir'], '/')[-1]
-    full_data_dir = '{}/{}'.format(self.data_p['tracked_p_data_dir'], sim_name)
+    sim_name = string.split( self.data_p['sdir'], '/' )[-1]
+    full_data_dir = os.path.join( self.data_p['tracked_p_data_dir'], sim_name )
 
     # Load the actual tracked particle data
     tracked_p_data = tracked_particle_data_handling.TrackedParticleDataHandler(full_data_dir, self.data_p['tracked_p_file_tag'])
