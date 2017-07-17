@@ -16,6 +16,7 @@ import string
 
 # Imports from my own stuff
 import galaxy_diver.read_data.ahf as read_ahf
+import galaxy_diver.utils.astro as astro
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.io as io
 
@@ -123,26 +124,6 @@ class GenericData( object ):
     # Select the main halo at the right redshift
     mtree_halo = ahf_reader.mtree_halos[self.main_mt_halo_id].loc[self.kwargs['snum']]
 
-    ## Get the halo number
-    #if 'halo_number' in self.kwargs:
-    #  self.halo_number = self.kwargs['halo_number']
-    ## Assume that the halo files are as default if the halo number isn't given explicitely
-    #else: 
-    #  sim_name = string.split(self.kwargs['sdir'], '/')[-1]
-    #  sims_w_halo_1 = ['B1_hr_Dec5_2013_11',]
-    #  if sim_name in sims_w_halo_1:
-    #    self.halo_number = 1
-    #  else:
-    #    self.halo_number = 0
-
-    ## Get the halo data
-    #halo_data = io.getHaloDataRedshift(self.kwargs['sdir'], self.halo_number, self.data_attrs['redshift'])
-
-    ## Get rid of 1/h factors in the halo data
-    #vals_to_be_converted = range(3, 13) 
-    #for val_index in vals_to_be_converted:
-    #  halo_data[val_index] /= self.data_attrs['hubble']
-
     # Add the halo data to the class.
     self.redshift = mtree_halo['redshift']
     self.halo_coords = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )/(1. + self.redshift)/self.data_attrs['hubble']
@@ -155,7 +136,7 @@ class GenericData( object ):
       npt.assert_allclose( self.redshift, self.data_attrs['redshift'] )
 
     # Calculate the circular velocity
-    self.v_c = np.sqrt(constants.G*self.M_vir*constants.Msun_to_kg / (self.R_vir*constants.kpc_to_km*1.e9))
+    self.v_c = astro.circular_velocity( self.R_vir, self.M_vir )
 
   ########################################################################
 
