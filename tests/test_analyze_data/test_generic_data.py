@@ -61,11 +61,22 @@ class TestGetData( unittest.TestCase ):
       'redshift' : 0.16946,
     }
 
+    # Setup some necessary data
+    self.g_data.data = {
+      'P' : np.random.rand( 3, 4 ),
+    }
+
   ########################################################################
 
   def test_get_position_data( self ):
 
-    assert False, "Need to do this"
+    rx_before = copy.copy( self.g_data.data['P'][0] )
+
+    actual = self.g_data.get_position_data( 'Rx' )
+
+    expected = rx_before - self.g_data.halo_coords[0]
+
+    npt.assert_allclose( expected, actual )
 
 ########################################################################
 
@@ -91,14 +102,10 @@ class TestCenterCoords( unittest.TestCase ):
 
     self.g_data.center_method = np.array([ 0.5, 0.5, 0.5 ])
 
-    @self.g_data.center_coords
-    def return_position( g_data ):
+    expected = copy.copy( self.g_data.data['P'] - self.g_data.center_method[:,np.newaxis] )
 
-      return g_data.data['P']
-  
-    expected = self.g_data.data['P'] - self.g_data.center_method[:,np.newaxis]
-
-    actual = return_position( self.g_data )
+    self.g_data.center_coords()
+    actual = self.g_data.data['P']
 
     npt.assert_allclose( expected, actual )
 
@@ -110,14 +117,10 @@ class TestCenterCoords( unittest.TestCase ):
 
     self.g_data.center_method = np.array([ 0.5, 0.5, 0.5 ])
 
-    @self.g_data.center_coords
-    def return_position( g_data ):
+    expected = copy.copy( self.g_data.data['P'] )
 
-      return g_data.data['P']
-  
-    expected = self.g_data.data['P']
-
-    actual = return_position( self.g_data )
+    self.g_data.center_coords()
+    actual = self.g_data.data['P']
 
     npt.assert_allclose( expected, actual )
 
@@ -125,16 +128,10 @@ class TestCenterCoords( unittest.TestCase ):
 
   def test_center_coords_halo_method( self ):
 
-    self.g_data.center_method = 'halo'
-
     pos_before = copy.copy( self.g_data.data['P'] )
 
-    @self.g_data.center_coords
-    def return_position( g_data ):
-
-      return g_data.data['P']
-  
-    actual = return_position( self.g_data )
+    self.g_data.center_coords()
+    actual = self.g_data.data['P']
 
     expected = pos_before - self.g_data.halo_coords[:,np.newaxis]
 

@@ -285,42 +285,32 @@ class GenericData( object ):
 
   ########################################################################
 
-  def center_coords( self, func ):
+  def center_coords( self ):
     '''Change the location of the origin, if the data isn't already centered.
-
-    Args:
-      func (function) : Function to decorate.
 
     Modifies:
       self.data['P'] : Shifts the coordinates to the center.
     '''
 
-    @wraps( func )
-    def wrapper( *args, **kwargs ):
+    if not self.centered:
 
-      if not self.centered:
+      if isinstance( self.center_method, np.ndarray ):
+        self.origin = copy.copy( self.center_method )
 
-        if isinstance( self.center_method, np.ndarray ):
-          self.origin = copy.copy( self.center_method )
+      elif self.center_method == 'halo':
+        if not self.halo_data_retrieved:
+          self.retrieve_halo_data()
+        self.origin = copy.copy( self.halo_coords )
 
-        elif self.center_method == 'halo':
-          if not self.halo_data_retrieved:
-            self.retrieve_halo_data()
-          self.origin = copy.copy( self.halo_coords )
+      else:
+        raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
 
-        else:
-          raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
+      # Do it like this because we don't know the shape of self.data['P'][0]
+      for i in range( 3 ):
+        self.data['P'][i] -= self.origin[i]
 
-        # Do it like this because we don't know the shape of self.data['P'][0]
-        for i in range( 3 ):
-          self.data['P'][i] -= self.origin[i]
-
-      # Note that we're now centered
-      self.centered = True
-
-      return func( *args, **kwargs )
-
-    return wrapper
+    # Note that we're now centered
+    self.centered = True
 
   ########################################################################
 
@@ -602,9 +592,10 @@ class GenericData( object ):
 
   ########################################################################
 
-  # DEBUG
-  #@center_coords
   def get_position_data( self, data_key ):
+
+    if not self.centered:
+      self.center_coords()
 
     # Transpose in order to account for when the data isn't regularly shaped
     if data_key == 'Rx':
