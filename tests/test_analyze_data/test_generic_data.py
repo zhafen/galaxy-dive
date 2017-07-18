@@ -48,6 +48,9 @@ class TestGenericData( unittest.TestCase ):
     expected = np.array( [ 29414.96458784,  30856.75007114,  32325.90901812] )/(1. + 0.16946 )/0.70199999999999996
     npt.assert_allclose( expected, actual )
 
+    actual = self.g_data.halo_velocity
+    expected = np.array( [-48.89,  73.77,  97.25] )
+
 ########################################################################
 
 class TestGetData( unittest.TestCase ):

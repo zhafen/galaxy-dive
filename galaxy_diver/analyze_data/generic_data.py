@@ -168,6 +168,7 @@ class GenericData( object ):
     # Add the halo data to the class.
     self.redshift = mtree_halo['redshift']
     self.halo_coords = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )/(1. + self.redshift)/self.data_attrs['hubble']
+    self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
     self.R_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
     self.M_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
     self.M_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
@@ -178,6 +179,8 @@ class GenericData( object ):
 
     # Calculate the circular velocity
     self.v_c = astro.circular_velocity( self.R_vir, self.M_vir )
+
+    self.halo_data_retrieved = True
 
   ########################################################################
 
@@ -315,8 +318,7 @@ class GenericData( object ):
       self.origin = copy.copy( self.center_method )
 
     elif self.center_method == 'halo':
-      if not self.halo_data_retrieved:
-        self.retrieve_halo_data()
+      self.retrieve_halo_data()
       self.origin = copy.copy( self.halo_coords )
 
     else:
@@ -345,8 +347,7 @@ class GenericData( object ):
       self.origin = copy.copy( self.vel_center_method )
 
     elif self.vel_center_method == 'halo':
-      if not self.halo_data_retrieved:
-        self.retrieve_halo_data()
+      self.retrieve_halo_data()
       self.origin = copy.copy( self.halo_velocity )
 
     else:
@@ -658,8 +659,7 @@ class GenericData( object ):
     if fraction_flag:
 
       # Get halo data, if not retrieved
-      if not self.halo_data_retrieved:
-        self.retrieve_halo_data()
+      self.retrieve_halo_data()
 
       # Put distances in units of the virial radius
       if data_key[0] == 'R':
