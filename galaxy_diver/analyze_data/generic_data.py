@@ -33,6 +33,7 @@ class GenericData( object ):
                 ahf_index = None,
 
                 averaging_frac = 0.05,
+                halo_data_retrieved = False,
                 centered = False,
                 vel_centered = False,
                 hubble_corrected = False,
@@ -42,6 +43,7 @@ class GenericData( object ):
                 ahf_tag = 'smooth',
                 main_halo_id = 0,
                 center_method = 'halo',
+                vel_center_method = 'halo',
 
                 **kwargs ):
     '''Initialize.
@@ -54,6 +56,7 @@ class GenericData( object ):
                                   Required to put in manually to avoid easy mistakes.
 
       averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
+      halo_data_retrieved (bool, optional) : Whether or not we retrieved relevant values from the AHF halo data.
       centered (bool, optional): Whether or not the coordinates are centered on the galaxy of choice at the start.
       vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
       hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities must be centered).
@@ -65,6 +68,10 @@ class GenericData( object ):
       center_method (str or np.array of size 3, optional) : How to center the coordinates. Options...
         'halo' (default) : Centers the dataset on the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
+      vel_center_method (str or np.array of size 3, optional) : How to center the velocity coordinates, i.e. what the velocity is relative to. Options...
+        'halo' (default) : Sets velocity relative to the main halo (main_halo_id) using AHF halo data.
+        np.array of size 3 : Centers the dataset on this coordinate.
+      
 
     Keyword Args:
       function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
@@ -148,6 +155,9 @@ class GenericData( object ):
   # Get the halo data out
   def retrieve_halo_data( self ):
 
+    if self.halo_data_retrieved:
+      return
+
     # Load the AHF data
     ahf_reader = read_ahf.AHFReader( self.analysis_dir )
     ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
@@ -176,7 +186,7 @@ class GenericData( object ):
 
     raise Exception( "TODO: Test this/get rid of it" )
 
-    header = read_snapshot.readsnap(self.kwargs['sdir'], self.kwargs['snum'], 0, cosmological=1, header_only=1)
+    header = read_snapshot.readsnap( self.sdir, self.snum, 0, cosmological=1, header_only=1 )
 
     self.k = header['k']
     self.redshift = header['redshift']
@@ -187,10 +197,16 @@ class GenericData( object ):
   # Calculate simple net values of the simulation
   ########################################################################
 
+  def calc_com_velocity( self ):
+
+    pass
+
+  ########################################################################
+
   def calc_total_ang_momentum(self):
     '''Calculate the total angular momentum vector.'''
 
-    raise Exception( "TODO: Test this" )
+    raise Exception( "TODO: Test and memoize this, and other attributes" )
 
     # Exit early if already calculated.
     try:
@@ -272,7 +288,7 @@ class GenericData( object ):
     raise Exception( "TODO: Test this" )
 
     # Make sure we're centered
-    self.change_coords_center()
+    self.center_coords()
 
     # Hubble constant
     H0 = self.data_attrs['hubble']*100.
@@ -292,66 +308,53 @@ class GenericData( object ):
       self.data['P'] : Shifts the coordinates to the center.
     '''
 
-    if not self.centered:
+    if self.centered:
+      return
 
-      if isinstance( self.center_method, np.ndarray ):
-        self.origin = copy.copy( self.center_method )
+    if isinstance( self.center_method, np.ndarray ):
+      self.origin = copy.copy( self.center_method )
 
-      elif self.center_method == 'halo':
-        if not self.halo_data_retrieved:
-          self.retrieve_halo_data()
-        self.origin = copy.copy( self.halo_coords )
+    elif self.center_method == 'halo':
+      if not self.halo_data_retrieved:
+        self.retrieve_halo_data()
+      self.origin = copy.copy( self.halo_coords )
 
-      else:
-        raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
+    else:
+      raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
 
-      # Do it like this because we don't know the shape of self.data['P'][0]
-      for i in range( 3 ):
-        self.data['P'][i] -= self.origin[i]
+    # Do it like this because we don't know the shape of self.data['P'][0]
+    for i in range( 3 ):
+      self.data['P'][i] -= self.origin[i]
 
     # Note that we're now centered
     self.centered = True
 
   ########################################################################
 
-  def change_vel_coords_center(self):
-    '''Get velocity coordinates to center on the main halo.'''
+  def center_vel_coords( self ):
+    '''Get velocity coordinates to center on the main halo.
 
-    raise Exception( "TODO: Test this" )
+    Modifies:
+      self.data['P'] : Shifts the coordinates to the center.
+    '''
 
     if self.vel_centered:
-      return 0
+      return
 
-    # Make sure necessary ingredients are calculated
-    if self.halo_data_retrieved == False:
-      self.retrieve_halo_data()
-    if self.hubble_corrected == False:
-      self.correct_hubble_flow()
+    if isinstance( self.vel_center_method, np.ndarray ):
+      self.origin = copy.copy( self.vel_center_method )
 
-    # Get mask for only inner components
-    r_mask = self.add_mask('R', 0., self.averaging_frac*self.R_vir, return_or_add='return')
+    elif self.vel_center_method == 'halo':
+      if not self.halo_data_retrieved:
+        self.retrieve_halo_data()
+      self.origin = copy.copy( self.halo_velocity )
 
-    # Adapt for application to 'v', which is a multidimensional array
-    inner_mask = np.array([r_mask]*3)
+    else:
+      raise KeyError( "Unrecognized vel_center_method, {}".format( self.vel_center_method ) )
 
-    # Get mass array to multiply by
-    m_ma = np.ma.masked_array(self.get_data('M'), mask=r_mask)
-    m_ma_mult = np.array([m_ma]*3)
-
-    # Apply masks
-    v_ma = np.ma.masked_array(self.data['V'], mask=inner_mask)
-
-    # Get the average velocity
-    weighted_v = m_ma_mult*v_ma
-    self.v_center = np.zeros(3)
-    for i in range(3):
-      self.v_center[i] = weighted_v[i,:].sum()
-    self.v_center /= m_ma.sum()
-
-    # Apply the average velocity
-    self.data['V'][0] -= self.v_center[0]
-    self.data['V'][1] -= self.v_center[1]
-    self.data['V'][2] -= self.v_center[2]
+    # Do it like this because we don't know the shape of self.data['V'][0]
+    for i in range( 3 ):
+      self.data['V'][i] -= self.origin[i]
 
     self.vel_centered = True
 

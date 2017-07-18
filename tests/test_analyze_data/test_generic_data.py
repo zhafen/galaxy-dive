@@ -142,3 +142,127 @@ class TestCenterCoords( unittest.TestCase ):
     expected = pos_before - self.g_data.halo_coords[:,np.newaxis]
 
     npt.assert_allclose( expected, actual )
+
+########################################################################
+
+class TestCenterVelCoords( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.g_data = generic_data.GenericData( **default_kwargs )
+
+    self.g_data.data_attrs = {
+      'hubble' : 0.70199999999999996,
+      'redshift' : 0.16946,
+    }
+
+    # Setup some necessary data
+    self.g_data.data = {
+      'V' : np.random.rand( 3, 4 ),
+    }
+
+  ########################################################################
+
+  def test_center_vel_coords_origin_passed( self ):
+
+    self.g_data.vel_center_method = np.array([ 0.5, 0.5, 0.5 ])
+
+    expected = copy.copy( self.g_data.data['V'] - self.g_data.vel_center_method[:,np.newaxis] )
+
+    self.g_data.center_vel_coords()
+    actual = self.g_data.data['V']
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_center_vel_coords_already_centered( self ):
+
+    self.g_data.vel_centered = True
+
+    self.g_data.vel_center_method = np.array([ 0.5, 0.5, 0.5 ])
+
+    expected = copy.copy( self.g_data.data['V'] )
+
+    self.g_data.center_vel_coords()
+    actual = self.g_data.data['V']
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_center_vel_coords_halo_method( self ):
+
+    vel_before = copy.copy( self.g_data.data['V'] )
+
+    self.g_data.center_vel_coords()
+    actual = self.g_data.data['V']
+
+    expected = vel_before - self.g_data.halo_coords[:,np.newaxis]
+
+    npt.assert_allclose( expected, actual )
+
+########################################################################
+
+class TestTotalCalculations( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.g_data = generic_data.GenericData( **default_kwargs )
+
+    self.g_data.data_attrs = {
+      'hubble' : 0.70199999999999996,
+      'redshift' : 0.16946,
+    }
+
+    self.g_data.retrieve_halo_data()
+
+  ########################################################################
+
+  def test_calc_com_velocity( self ):
+
+    self.g_data.data = {
+
+      # Have two particles inside and one outside the region.
+      'P' :  np.array( [
+        [  0.,   2.,   1., ],
+        [  1.,   0.,   0., ],
+        [  0.,   0.,   0., ],
+        [  0.,   0.,   0., ],
+        ] )*self.g_data.R_vir*self.g_data.averaging_frac,
+
+      # Have the particle outside have an insane velocity so we notice if it's affecting things.
+      'V' :  np.array( [
+        [  0., 200.,  10., ],
+        [ 10.,   0.,   0., ],
+        [  0.,   10.,   0., ],
+        [  0.,   0.,   0., ],
+        ] ),
+
+      'M' : np.array( [ 1., 1., 1. ] )
+
+    }
+
+    actual = self.g_data.calc_com_velocity()
+
+    expected = np.array( [ 10./4., ]*3 )
+
+    npt.assert_allclose( expected, actual )
+
+########################################################################
+
+class TestHubbleFlow( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.g_data = generic_data.GenericData( **default_kwargs )
+
+    self.g_data.data_attrs = {
+      'hubble' : 0.70199999999999996,
+      'redshift' : 0.16946,
+    }
+
+    # Setup some necessary data
+    self.g_data.data = {
+      'V' : np.random.rand( 3, 4 ),
+    }
