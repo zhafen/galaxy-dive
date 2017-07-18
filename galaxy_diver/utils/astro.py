@@ -18,8 +18,8 @@ def hubble_z( redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728 ):
   Args:
     redshift (float): The input redshift.
     h (float): The hubble parameter.
-    omega_matter (float): TODO
-    omega_lambda (float): TODO
+    omega_matter (float): Cosmological mass fraction of matter.
+    omega_lambda (float): Cosmological mass fraction of dark energy.
 
   Returns:
     hubble_a (float): Hubble factor in 1/sec
@@ -38,7 +38,7 @@ def age_of_universe( redshift, h=0.71, omega_matter=0.27 ):
   Args:
     redshift (float): The input redshift.
     h (float): The hubble parameter.
-    omega_matter (float): TODO
+    omega_matter (float): Cosmological mass fraction of matter.
 
   Returns:
     t (float): Age of the universe in Gyr

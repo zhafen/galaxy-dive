@@ -68,3 +68,4 @@ class TestGetInstanceSourceDir( unittest.TestCase ):
     expected = os.path.join( os.getcwd(), 'galaxy_diver/utils' )
 
     assert actual == expected
+

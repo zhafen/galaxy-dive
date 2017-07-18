@@ -537,7 +537,7 @@ class GenericData( object ):
       data_key (str) : Key in the data dictionary for the key we want to get
 
     Returns:
-      data
+      data (np.ndarray) : Requested data.
     '''
 
     raise Exception( "TODO: Test this" )
@@ -552,19 +552,7 @@ class GenericData( object ):
 
         # Velocities
         elif data_key[0] == 'V':
-
-          # Center velocity
-          self.change_vel_coords_center()
-
-          # Get data
-          if data_key == 'Vx':
-            data = self.data['V'][0,:]
-          if data_key == 'Vy':
-            data = self.data['V'][1,:]
-          if data_key == 'Vz':
-            data = self.data['V'][2,:]
-          else:
-            data = self.data[data_key]
+          self.get_velocity_data( data_key )
 
         # Arbitrary functions of the data
         elif data_key == 'Function':
@@ -593,9 +581,16 @@ class GenericData( object ):
   ########################################################################
 
   def get_position_data( self, data_key ):
+    '''Get position data (assuming the data starts with an 'R')
 
-    if not self.centered:
-      self.center_coords()
+    Args:
+      data_key (str) : Key in the data dictionary for the key we want to get
+
+    Returns:
+      data (np.ndarray) : Requested data.
+    '''
+
+    self.center_coords()
 
     # Transpose in order to account for when the data isn't regularly shaped
     if data_key == 'Rx':
@@ -608,6 +603,30 @@ class GenericData( object ):
       data = self.data[data_key]
 
     return data
+
+  ########################################################################
+
+  def get_velocity_data( self, data_key ):
+    '''Get position data (assuming the data starts with a 'V')
+
+    Args:
+      data_key (str) : Key in the data dictionary for the key we want to get
+
+    Returns:
+      data (np.ndarray) : Requested data.
+    '''
+
+    self.center_vel_coords()
+
+    # Get data
+    if data_key == 'Vx':
+      data = self.data['V'][0,:]
+    if data_key == 'Vy':
+      data = self.data['V'][1,:]
+    if data_key == 'Vz':
+      data = self.data['V'][2,:]
+    else:
+      data = self.data[data_key]
 
   ########################################################################
 

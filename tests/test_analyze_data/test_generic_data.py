@@ -78,6 +78,12 @@ class TestGetData( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_get_velocity_data( self ):
+    
+    assert False, "TODO"
+
 ########################################################################
 
 class TestCenterCoords( unittest.TestCase ):
