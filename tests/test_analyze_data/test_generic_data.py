@@ -334,6 +334,22 @@ class TestDataMasker( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_get_masked_data_multi_dim_weird_shape( self ):
+    '''Test we can get masked data even when we request P.'''
+
+    mask = np.array( [ [ 1, 0, ], [ 1, 0 ] ] ).astype( bool )
+
+    pos = np.random.rand( 3, 2, 2, )
+    self.data_masker.generic_data.data['P'] = pos
+
+    actual = self.data_masker.get_masked_data( 'P', mask=mask )
+
+    expected = np.array( [ [ pos[i,0,1], pos[i,1,1] ] for i in range(3) ] )
+
+    npt.assert_allclose( expected, actual )
+
 ########################################################################
 
 class TestCenterVelCoords( unittest.TestCase ):
