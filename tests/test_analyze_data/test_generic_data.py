@@ -284,6 +284,18 @@ class TestProperties( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_redshift_halo_data( self ):
+
+    del self.g_data.data_attrs['redshift']
+
+    expected = 0.16946
+
+    actual = self.g_data.redshift
+
+    npt.assert_allclose( expected, actual )
+
 ########################################################################
 
 class TestHubbleFlow( unittest.TestCase ):

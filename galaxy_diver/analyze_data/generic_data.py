@@ -275,14 +275,29 @@ class GenericData( object ):
 
   @property
   def redshift( self ):
-    '''Simulation redshift.'''
+    '''Property for simulation redshift.'''
 
     if not hasattr( self, '_redshift' ):
 
+      # Try to get it from the attributes.
       if 'redshift' in self.data_attrs:
         self._redshift = self.data_attrs['redshift']
 
+      # If not, retrieve halo data, which should set it, and fail if we got the wrong halo data.
+      self.retrieve_halo_data()
+
     return self._redshift
+
+  @redshift.setter
+  def redshift( self, value ):
+    '''Setting function for simulation redshift property.'''
+
+    # If we try to set it, make sure that if it already exists we don't change it.
+    if hasattr( self, '_redshift' ):
+      assert value == self._redshift
+
+    else:
+      self._redshift = value
 
   ########################################################################
 
