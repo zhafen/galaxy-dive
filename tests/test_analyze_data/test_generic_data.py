@@ -2,8 +2,7 @@
 '''
 
 import copy
-from mock import patch
-from mock import sentinel
+from mock import patch, sentinel
 import numpy as np
 import numpy.testing as npt
 import pdb
@@ -95,6 +94,21 @@ class TestGetData( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_get_data_fails( self ):
+
+    self.assertRaises( KeyError, self.g_data.get_data, 'NonexistentData' )
+
+  ########################################################################
+
+  @patch( 'galaxy_diver.analyze_data.generic_data.GenericData.handle_data_key_error' )
+  def test_fails_after_too_many_attempts( self, mock_handle_data_key_error ):
+
+    data_key = 'NonExistentData'
+
+    self.assertRaises( KeyError, self.g_data.get_data, data_key )
+
 ########################################################################
 
 class TestHandleDataKeyError( unittest.TestCase ):
@@ -120,6 +134,12 @@ class TestHandleDataKeyError( unittest.TestCase ):
 
     for key in mocks.keys():
       mocks[key].assert_called_once()
+
+  ########################################################################
+
+  def test_fails( self ):
+
+    self.assertRaises( KeyError, self.g_data.handle_data_key_error, 'NonexistentData' )
 
 ########################################################################
 

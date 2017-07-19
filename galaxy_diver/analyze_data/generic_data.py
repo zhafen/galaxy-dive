@@ -563,7 +563,6 @@ class GenericData( object ):
         # Velocities
         elif data_key[0] == 'V':
 
-          raise Exception( "TODO: Test this" )
           data = self.get_velocity_data( data_key )
 
         # Arbitrary functions of the data
@@ -589,8 +588,8 @@ class GenericData( object ):
 
       break
 
-    if i > n_tries:
-      raise Exception( "After {} tries, unable to find or create data_key, {}".format( i, data_key ) )
+    if 'data' not in locals().keys():
+      raise KeyError( "After {} tries, unable to find or create data_key, {}".format( i+1, data_key ) )
   
     return data
 
@@ -648,9 +647,14 @@ class GenericData( object ):
 
   ########################################################################
 
-  def handle_data_key_error(self, data_key):
-    '''
-    data_key : key that produced the data key error
+  def handle_data_key_error( self, data_key ):
+    '''When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.
+
+    Args:
+      data_key (str) : Key to try and generate data for
+
+    Modifies:
+      self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so
     '''
 
     print( 'Data key not found in data. Attempting to calculate.' )
@@ -675,6 +679,7 @@ class GenericData( object ):
     elif data_key == 'HIDen':
       self.calc_HI_den()
 
+    # TODO: Move these to the subclasses somehow.
     # Subclass methods
     elif data_key ==  'Rx' or data_key ==  'Ry' or data_key ==  'Rz' or data_key == 'P':
       self.calc_positions()
@@ -686,7 +691,7 @@ class GenericData( object ):
       self.calc_mass()
 
     else:
-      raise Exception('NULL data_key, data_key = {}'.format(data_key))
+      raise KeyError( 'NULL data_key, data_key = {}'.format( data_key ) )
 
   ########################################################################
 
