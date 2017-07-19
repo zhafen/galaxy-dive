@@ -109,9 +109,6 @@ class GenericData( object ):
     # For storing masks to look at the data through
     self.masks = []
 
-    # Array for containing units
-    self.units = {}
-
     # By definition, the halo data should not be retrieved when the class is first initiated.
     self.halo_data_retrieved = False
 
@@ -353,6 +350,14 @@ class GenericData( object ):
     '''Property for fiducial simulation velocity scale.'''
 
     return self.v_c
+
+  ########################################################################
+
+  @property
+  def metallicity_scale( self ):
+    '''Property for fiducial simulation metallicity scale.'''
+
+    return self.z_sun
 
   ########################################################################
 
@@ -816,18 +821,12 @@ class GenericData( object ):
       elif self.key_parser.is_velocity_key( data_key ):
         data /= self.velocity_scale
 
+      # Put the metallicity in solar units
+      elif data_key == 'Z':
+        data /= self.metallicity_scale
+
       else:
         raise Exception('Fraction type not recognized')
-
-    # Put the metallicity in solar units
-    if data_key == 'Z':
-      if 'Z' in self.units:
-        if self.units['Z'] == 'solar':
-          pass
-        else:
-          raise Exception ("NULL units for data_key={}".format(data_key))
-      else:
-        data /= self.z_sun
 
     # Make appropriate units into log
     if log_flag:

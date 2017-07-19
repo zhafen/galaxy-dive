@@ -1,1 +1,3 @@
-{}
+{
+  "test_generic_data.py::TestProperties::test_calc_com_velocity": true
+}

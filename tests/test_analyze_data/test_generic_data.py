@@ -448,6 +448,17 @@ class TestProperties( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_metallicity_scale( self ):
+    '''Default options.'''
+
+    expected = self.g_data.z_sun
+
+    actual = self.g_data.metallicity_scale
+
+    npt.assert_allclose( expected, actual )
+
 ########################################################################
 
 class TestHubbleFlow( unittest.TestCase ):
