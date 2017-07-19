@@ -147,6 +147,7 @@ class TestGetData( unittest.TestCase ):
     actual = self.g_data.get_processed_data( 'Zf' )
     npt.assert_allclose( expected, actual )
 
+
 ########################################################################
 
 class TestHandleDataKeyError( unittest.TestCase ):

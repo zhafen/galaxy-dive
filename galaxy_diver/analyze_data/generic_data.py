@@ -795,16 +795,10 @@ class GenericData( object ):
     '''Get post-processed data. (Accounting for fractions, log-space, etc.).'''
 
     # Account for fractional data keys
-    fraction_flag = False
-    if data_key[-1] == 'f':
-      data_key = data_key[:-1]
-      fraction_flag = True
+    data_key, fraction_flag = self.key_parser.is_fraction_key( data_key )
 
     # Account for logarithmic data
-    log_flag = False
-    if data_key[0:3] == 'log':
-      data_key = data_key[3:]
-      log_flag = True
+    data_key, log_flag = self.key_parser.is_log_key( data_key )
 
     # Get the data and make a copy to avoid altering
     data_original = self.get_data(data_key)
@@ -963,7 +957,40 @@ class DataKeyParser( object ):
     return ( data_key[0] == 'V' )
 
 
+  ########################################################################
 
+  def is_fraction_key( self, data_key ):
+    '''Check if the data should be some fraction of its relevant scale.
 
+    Args:
+      data_key (str) : Data key to check.
+  
+    Returns:
+      is_fraction_key (bool) : True if the data should be scaled as a fraction of the relevant scale.
+    '''
 
+    fraction_flag = False
+    if data_key[-1] == 'f':
+      data_key = data_key[:-1]
+      fraction_flag = True
 
+    return data_key, fraction_flag
+
+  ########################################################################
+
+  def is_log_key( self, data_key ):
+    '''Check if the data key indicates the data should be put in log scale.
+
+    Args:
+      data_key (str) : Data key to check.
+  
+    Returns:
+      is_log_key (bool) : True if the data should be taken log10 of
+    '''
+
+    log_flag = False
+    if data_key[0:3] == 'log':
+      data_key = data_key[3:]
+      log_flag = True
+
+    return data_key, log_flag
