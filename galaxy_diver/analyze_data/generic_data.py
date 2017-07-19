@@ -132,16 +132,16 @@ class GenericData( object ):
     self.redshift = mtree_halo['redshift']
     self.halo_coords = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )/(1. + self.redshift)/self.data_attrs['hubble']
     self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
-    self.R_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
-    self.M_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
-    self.M_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
-    self.M_star = mtree_halo['M_star']/self.data_attrs['hubble']
+    self.r_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
+    self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
+    self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
+    self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
 
     if 'redshift' in self.data_attrs:
       npt.assert_allclose( self.redshift, self.data_attrs['redshift'] )
 
     # Calculate the circular velocity
-    self.v_c = astro.circular_velocity( self.R_vir, self.M_vir )
+    self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
 
     self.halo_data_retrieved = True
 
@@ -263,6 +263,28 @@ class GenericData( object ):
 
     else:
       self._redshift = value
+
+  ########################################################################
+
+  @property
+  def r_vir( self ):
+    '''Property for virial radius.'''
+
+    if not hasattr( self, '_r_vir' ):
+
+      self.retrieve_halo_data()
+
+    return self._r_vir
+
+  @r_vir.setter
+  def r_vir( self, value ):
+
+    # If we try to set it, make sure that if it already exists we don't change it.
+    if hasattr( self, '_r_vir' ):
+      npt.assert_allclose( value, self._r_vir )
+
+    else:
+      self._r_vir = value
 
   ########################################################################
 
@@ -557,6 +579,7 @@ class GenericData( object ):
     for i in range( n_tries ):
       try:
 
+        # Positions
         if (data_key[0] == 'R') or (data_key == 'P'):
           data = self.get_position_data( data_key )
 
@@ -697,8 +720,6 @@ class GenericData( object ):
 
   def get_processed_data(self, data_key):
     '''Get post-processed data. (Accounting for fractions, log-space, etc.).'''
-
-    raise Exception( "TODO: Test this" )
 
     # Account for fractional data keys
     fraction_flag = False

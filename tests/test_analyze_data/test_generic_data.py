@@ -68,6 +68,7 @@ class TestGetData( unittest.TestCase ):
     self.g_data.data = {
       'P' : np.random.rand( 3, 4 ),
       'V' : np.random.rand( 3, 4 ),
+      'Den' : np.random.rand( 4 ),
     }
 
   ########################################################################
@@ -104,10 +105,38 @@ class TestGetData( unittest.TestCase ):
 
   @patch( 'galaxy_diver.analyze_data.generic_data.GenericData.handle_data_key_error' )
   def test_fails_after_too_many_attempts( self, mock_handle_data_key_error ):
+    '''By mocking handle_data_key error, we can emulate it trying to do something'''
 
-    data_key = 'NonExistentData'
+    self.assertRaises( KeyError, self.g_data.get_data, 'NonexistentData' )
 
-    self.assertRaises( KeyError, self.g_data.get_data, data_key )
+  ########################################################################
+
+  def test_get_processed_data_standard( self ):
+    '''When nothing changes and processed is the regular.'''
+
+    expected = self.g_data.get_data( 'Rx' )
+    actual = self.g_data.get_processed_data( 'Rx' )
+    npt.assert_allclose( expected, actual )
+
+    expected = self.g_data.get_data( 'Den' )
+    actual = self.g_data.get_processed_data( 'Den' )
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_processed_data_log( self ):
+
+    expected = np.log10( self.g_data.get_data( 'Den' ) )
+    actual = self.g_data.get_processed_data( 'logDen' )
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_processed_data_fraction( self ):
+
+    expected = self.g_data.get_data( 'Rx' )/self.g_data.length_scale
+    actual = self.g_data.get_processed_data( 'Rxf' )
+    npt.assert_allclose( expected, actual )
 
 ########################################################################
 
@@ -274,7 +303,6 @@ class TestProperties( unittest.TestCase ):
       'redshift' : 0.16946,
     }
 
-
   ########################################################################
 
   def test_calc_com_velocity( self ):
@@ -332,6 +360,7 @@ class TestProperties( unittest.TestCase ):
 
   def test_redshift( self ):
 
+    # By hand
     expected = 0.16946
 
     actual = self.g_data.redshift
@@ -344,9 +373,65 @@ class TestProperties( unittest.TestCase ):
 
     del self.g_data.data_attrs['redshift']
 
+    # By hand
     expected = 0.16946
 
     actual = self.g_data.redshift
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_r_vir( self ):
+
+    # By hand
+    expected = 239.19530785947771
+
+    actual = self.g_data.r_vir
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_r_scale( self ):
+
+    # By hand
+    expected = 25.718158280533068
+
+    actual = self.r_scale
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_v_c( self ):
+
+    # By hand
+    expected = 134.93489906417346
+
+    actual = self.v_c
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_length_scale( self ):
+    '''Default options.'''
+
+    expected = self.g_data.r_scale
+
+    actual = self.g_data.length_scale
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_velocity_scale( self ):
+    '''Default options.'''
+
+    expected = self.g_data.v_c
+
+    actual = self.g_data.velocity_scale
 
     npt.assert_allclose( expected, actual )
 

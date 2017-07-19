@@ -37,16 +37,20 @@ class AHFReader( object ):
     '''Get halo files (e.g. halo_00000.dat) in a dictionary of pandas DataFrames.
 
     Args:
-      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes. Options are...
+      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose
+        an index, to avoid easy mistakes. Options are...
         'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
                  Identical to passing the integer 600. (See below.)
         'range' : Index by an increasing range.
         int : If an integer, then this integer should be the final snapshot number for the simulation.
-              In this case, indexes by snapshot number, starting at the final snapshot number and counting down. Only viable with snapshot steps of 1!!
-      tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for 'halo_00000_smooth.dat', etc.
+              In this case, indexes by snapshot number, starting at the final snapshot number and counting down.
+              Only viable with snapshot steps of 1!!
+      tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for
+        'halo_00000_smooth.dat', etc.
 
     Modifies:
-      self.mtree_halos (dict of pd.DataFrames): DataFrames containing the requested data. The key for a given dataframe is that dataframe's Merger Tree Halo ID
+      self.mtree_halos (dict of pd.DataFrames): DataFrames containing the requested data. The key for a given dataframe
+        is that dataframe's Merger Tree Halo ID
       self.index (str): The users value for the index.
     '''
 
