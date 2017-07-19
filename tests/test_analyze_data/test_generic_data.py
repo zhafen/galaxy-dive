@@ -215,6 +215,8 @@ class TestProperties( unittest.TestCase ):
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
+      'omega_matter' : 0.272,
+      'omega_lambda' : 0.728,
       'redshift' : 0.16946,
     }
 
@@ -261,7 +263,7 @@ class TestProperties( unittest.TestCase ):
 
     actual = self.g_data.hubble_z
 
-    npt.assert_allclose( expected, actual )
+    npt.assert_allclose( expected, actual, rtol=1e-4 )
 
 ########################################################################
 

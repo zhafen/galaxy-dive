@@ -800,7 +800,8 @@ class GenericData( object ):
     '''Hubble function at specified redshift.'''
 
     if not hasattr( self, '_hubble_z' ):
-      self._hubble_z = astro.hubble_z( self.redshift, self.data_attrs['hubble'], self.data_attrs['omega_matter'], self.data_attrs['omega_lambda'] )
+      self._hubble_z = astro.hubble_parameter( self.redshift, h=self.data_attrs['hubble'],
+        omega_matter=self.data_attrs['omega_matter'], omega_lambda=self.data_attrs['omega_lambda'], units='km/s/kpc' )
 
     return self._hubble_z
 

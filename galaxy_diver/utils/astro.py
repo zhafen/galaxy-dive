@@ -34,6 +34,8 @@ def hubble_parameter( redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728,
 
   if units == 'km/s/Mpc':
     pass
+  elif units == 'km/s/kpc':
+    hubble_z /= 1e3
   elif units == '1/s':
     hubble_z /= constants.KM_PER_KPC*1e3
   else:
