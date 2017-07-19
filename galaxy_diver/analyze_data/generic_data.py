@@ -346,6 +346,14 @@ class GenericData( object ):
   ########################################################################
 
   @property
+  def velocity_scale( self ):
+    '''Property for fiducial simulation velocity scale.'''
+
+    return self.v_c
+
+  ########################################################################
+
+  @property
   def hubble_z( self ):
     '''Property for the hubble function at specified redshift.'''
 
