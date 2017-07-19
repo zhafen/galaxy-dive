@@ -61,6 +61,8 @@ class TestGetData( unittest.TestCase ):
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
+      'omega_matter' : 0.272,
+      'omega_lambda' : 0.728,
       'redshift' : 0.16946,
     }
 
@@ -87,6 +89,9 @@ class TestGetData( unittest.TestCase ):
   ########################################################################
 
   def test_get_velocity_data( self ):
+
+    # So we don't try and find the hubble velocity
+    self.g_data.hubble_corrected = True
 
     vx_before = copy.copy( self.g_data.data['V'][0] )
 
@@ -430,33 +435,36 @@ class TestProperties( unittest.TestCase ):
     '''Get the com velocity'''
 
 
+    # So that we don't deal with cosmological junk when testing.
     self.g_data.centered = True
+    self.g_data.vel_centered = True
+    self.g_data.hubble_corrected = True
 
     self.g_data.data = {
 
       # Have two particles inside and one outside the region.
-      'P' :  np.array( [
-        [  0.,   2.,   1., ],
-        [  1.,   0.,   0., ],
-        [  0.,   0.,   0., ],
-        [  0.,   0.,   0., ],
-        ] )*self.g_data.length_scale*self.g_data.averaging_frac,
+      'P' : np.array( [
+        [ 1., 0., 0., 0., ],
+        [ 2., 0., 0., 0., ],
+        [ 0., 1., 0., 0., ],
+      ] )*self.g_data.length_scale*self.g_data.averaging_frac*0.9,
 
       # Have the particle outside have an insane velocity so we notice if it's affecting things.
-      'V' :  np.array( [
-        [  0., 200.,  10., ],
-        [ 10.,   0.,   0., ],
-        [  0.,   10.,   0., ],
-        [  0.,   0.,   0., ],
+      'V' : np.array( [
+        [ 10., 0., -10., 0., ],
+        [ 200., 0., 10., -10., ],
+        [ 0., 10., 0., 0., ],
         ] ),
 
-      'M' : np.array( [ 1., 1., 1. ] )
+      'M' : np.array( [ 1., 1., 1., 1. ] ),
+
+      'Den' : np.random.rand( 4 ),
 
     }
 
     actual = self.g_data.v_com
 
-    expected = np.array( [ 10./4., ]*3 )
+    expected = np.array( [ 10./3., 0., -10./3. ] )
 
     npt.assert_allclose( expected, actual )
 

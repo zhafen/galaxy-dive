@@ -496,7 +496,7 @@ class GenericData( object ):
   def calc_radial_distance(self):
     '''Calculate the distance from the origin for a given particle.'''
 
-    self.data['R'] = np.sqrt(self.get_data('Rx')**2. + self.get_data('Ry')**2. + self.get_data('Rz')**2.)
+    self.data['R'] = np.sqrt( self.get_data( 'Rx' )**2. + self.get_data( 'Ry' )**2. + self.get_data( 'Rz' )**2. )
 
   ########################################################################
 
@@ -751,6 +751,7 @@ class GenericData( object ):
     '''
 
     self.center_vel_coords()
+    self.add_hubble_flow()
 
     # Get data
     if data_key == 'Vx':
