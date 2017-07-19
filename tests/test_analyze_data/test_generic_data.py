@@ -566,6 +566,21 @@ class TestProperties( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_data_shape( self ):
+
+    self.g_data.data = { 'Den' : np.random.rand( 5, 3, 2 ), }
+
+    expected = ( 5, 3, 2 )
+    actual = self.g_data.data_shape
+    npt.assert_allclose( expected, actual )
+
+    def try_to_change_shape():
+      self.g_data.data_shape = ( 5, )
+
+    self.assertRaises( AssertionError, try_to_change_shape, )
+
 ########################################################################
 
 class TestHubbleFlow( unittest.TestCase ):

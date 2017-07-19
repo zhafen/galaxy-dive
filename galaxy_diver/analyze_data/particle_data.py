@@ -45,7 +45,8 @@ class ParticleData( generic_data.GenericData ):
   def retrieve_data( self ):
 
     # Assume we convert from cosmological units
-    P = read_snapshot.readsnap( self.sdir, self.snum, self.ptype, load_additional_ids=self.load_additional_ids, cosmological=True, )
+    P = read_snapshot.readsnap( self.sdir, self.snum, self.ptype, load_additional_ids=self.load_additional_ids,
+                                cosmological=True, )
 
     # Parse the keys and put in a more general format
     # All units should be the standard GIZMO output units
@@ -54,7 +55,8 @@ class ParticleData( generic_data.GenericData ):
     for key in P.keys():
 
       # Get the attributes
-      attrs_keys = ['redshift', 'omega_lambda', 'flag_metals', 'flag_cooling', 'omega_matter', 'flag_feedbacktp', 'time', 'boxsize', 'hubble', 'flag_sfr', 'flag_stellarage', 'k']
+      attrs_keys = ['redshift', 'omega_lambda', 'flag_metals', 'flag_cooling', 'omega_matter', 'flag_feedbacktp',
+                    'time', 'boxsize', 'hubble', 'flag_sfr', 'flag_stellarage', 'k']
       if key in attrs_keys:
         self.data_attrs[key] = P[key]
 
@@ -126,7 +128,8 @@ class ParticleData( generic_data.GenericData ):
     full_data_dir = os.path.join( self.data_p['tracked_p_data_dir'], sim_name )
 
     # Load the actual tracked particle data
-    tracked_p_data = tracked_particle_data_handling.TrackedParticleDataHandler(full_data_dir, self.data_p['tracked_p_file_tag'])
+    tracked_p_data = tracked_particle_data_handling.TrackedParticleDataHandler(full_data_dir,
+                                                                               self.data_p['tracked_p_file_tag'])
 
     # Get the classifications
     self.data['Cl'] = tracked_p_data.classify_dataset(self.data['ID'], self.data_attrs['redshift'])

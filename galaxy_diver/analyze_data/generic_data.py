@@ -266,6 +266,30 @@ class GenericData( object ):
   ########################################################################
 
   @property
+  def data_shape( self ):
+    '''Property for simulation redshift.'''
+
+    if not hasattr( self, '_data_shape' ):
+
+      # Use Density as the default data we assume will usually be there. This breaks for star particles, probably.
+      self._data_shape = self.data['Den'].shape
+
+    return self._data_shape
+
+  @data_shape.setter
+  def data_shape( self, value ):
+    '''Setting function for simulation redshift property.'''
+
+    # If we try to set it, make sure that if it already exists we don't change it.
+    if hasattr( self, '_data_shape' ):
+      assert self._data_shape == value
+
+    else:
+      self._data_shape = value
+
+  ########################################################################
+
+  @property
   def redshift( self ):
     '''Property for simulation redshift.'''
 
