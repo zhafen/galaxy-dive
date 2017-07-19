@@ -32,7 +32,8 @@ class GenericData( object ):
                 snum = None,
                 ahf_index = None,
 
-                averaging_frac = 0.05,
+                averaging_frac = 0.5,
+                length_scale_used = 'r_scale',
                 halo_data_retrieved = False,
                 centered = False,
                 vel_centered = False,
@@ -44,7 +45,6 @@ class GenericData( object ):
                 main_halo_id = 0,
                 center_method = 'halo',
                 vel_center_method = 'halo',
-                length_scale_used = 'r_scale',
 
                 **kwargs ):
     '''Initialize.
@@ -58,7 +58,11 @@ class GenericData( object ):
                                   Required to put in manually to avoid easy mistakes.
 
       averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and
-                                        similar properties? (centered on the origin)
+        similar properties? (centered on the origin)
+      length_scale_used (str) : What length scale to use for the simulation. Will be used to put lengths in fractions.
+        Options...
+        'r_scale' : Scale radius.
+        'R_vir' : Virial radius.
       halo_data_retrieved (bool, optional) : Whether or not we retrieved relevant values from the AHF halo data.
       centered (bool, optional): Whether or not the coordinates are centered on the galaxy of choice at the start.
       vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
@@ -77,10 +81,6 @@ class GenericData( object ):
                                                                 velocity is relative to. Options are...
         'halo' (default) : Sets velocity relative to the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
-      length_scale_used (str) : What length scale to use for the simulation. Will be used to put lengths in fractions.
-        Options...
-        'r_scale' : Scale radius.
-        'R_vir' : Virial radius.
 
     Keyword Args:
       function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
@@ -114,6 +114,9 @@ class GenericData( object ):
 
     # By definition, the halo data should not be retrieved when the class is first initiated.
     self.halo_data_retrieved = False
+
+    # Setup a data key parser
+    self.key_parser = DataKeyParser()
 
   ########################################################################
   # Get Additional Data
@@ -645,11 +648,11 @@ class GenericData( object ):
       try:
 
         # Positions
-        if (data_key[0] == 'R') or (data_key == 'P'):
+        if self.key_parser.is_position_key( data_key ):
           data = self.get_position_data( data_key )
 
         # Velocities
-        elif data_key[0] == 'V':
+        elif self.key_parser.is_velocity_key( data_key ):
 
           data = self.get_velocity_data( data_key )
 
@@ -806,12 +809,12 @@ class GenericData( object ):
     if fraction_flag:
 
       # Put distances in units of the virial radius
-      if data_key[0] == 'R':
-        data /= self.R_vir
+      if self.key_parser.is_position_key( data_key ):
+        data /= self.length_scale
 
       # Put velocities in units of the circular velocity
-      elif data_key[0] == 'V':
-        data /= self.v_c
+      elif self.key_parser.is_velocity_key( data_key ):
+        data /= self.velocity_scale
 
       else:
         raise Exception('Fraction type not recognized')
@@ -925,4 +928,43 @@ class GenericData( object ):
     data_ma = np.ma.array(data, mask=tot_mask)
 
     return data_ma.compressed()
+
+########################################################################
+########################################################################
+
+class DataKeyParser( object ):
+  '''Class for parsing data_keys provided to GenericData.'''
+
+  ########################################################################
+
+  def is_position_key( self, data_key ):
+    '''Checks if the data key deals with position primarily.
+
+    Args:
+      data_key (str) : Data key to check.
+  
+    Returns:
+      is_position_key (bool) : True if deals with position.
+    '''
+
+    return ( data_key[0] == 'R' ) | ( data_key == 'P' )
+
+  ########################################################################
+
+  def is_velocity_key( self, data_key ):
+    '''Checks if the data key deals with velocity primarily.
+
+    Args:
+      data_key (str) : Data key to check.
+  
+    Returns:
+      is_velocity_key (bool) : True if deals with velocity.
+    '''
+
+    return ( data_key[0] == 'V' )
+
+
+
+
+
 

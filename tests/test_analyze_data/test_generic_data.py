@@ -317,7 +317,7 @@ class TestProperties( unittest.TestCase ):
         [  1.,   0.,   0., ],
         [  0.,   0.,   0., ],
         [  0.,   0.,   0., ],
-        ] )*self.g_data.R_vir*self.g_data.averaging_frac,
+        ] )*self.g_data.r_vir*self.g_data.averaging_frac,
 
       # Have the particle outside have an insane velocity so we notice if it's affecting things.
       'V' :  np.array( [
@@ -482,3 +482,24 @@ class TestHubbleFlow( unittest.TestCase ):
     assert self.g_data.centered
     assert self.g_data.vel_centered
 
+########################################################################
+
+class TestDataKeyParser( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.key_parser = generic_data.DataKeyParser()
+
+  ########################################################################
+
+  def test_is_position_data_key( self ):
+
+    for data_key in [ 'Rx', 'Ry', 'Rz', 'R', 'P' ]:
+      assert self.key_parser.is_position_key( data_key )
+
+  ########################################################################
+
+  def test_is_velocity_data_key( self ):
+
+    for data_key in [ 'Vx', 'Vy', 'Vz', 'Vr', ]:
+      assert self.key_parser.is_velocity_key( data_key )
