@@ -18,7 +18,7 @@ import generic_data
 class GriddedData( generic_data.GenericData ):
   '''Class for handling data that forms a Cartesian grid.'''
 
-  def __init__(self, sdir=None, snum=None, Nx=None, gridsize=None, ionized=None, ion_grid=False, **kwargs):
+  def __init__( self, sdir=None, snum=None, Nx=None, gridsize=None, ionized=None, ion_grid=False, **kwargs ):
     '''
     Args:
       sdir (str) : Directory the snaphost is stored in
@@ -48,7 +48,7 @@ class GriddedData( generic_data.GenericData ):
 
   ########################################################################
 
-  def retrieve_data(self):
+  def retrieve_data( self ):
 
     # Open file
     self.grid_file_name = io.getGridFilename( self.sdir, self.snum, self.Nx, self.gridsize, self.ionized, \

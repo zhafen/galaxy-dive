@@ -463,14 +463,15 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_smooth_mtree_halos( self,  metafile_dir, index=None, include_concentration=False ):
+  def save_smooth_mtree_halos( self,  metafile_dir, index=None, include_concentration=True ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
     Args:
       metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.
-      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes.
-                           See get_mtree_halos() for a full description.
-      include_concentration (bool): Whether or not to add an additional column that gives an analytic value for the halo concentration.
+      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an
+        index, to avoid easy mistakes. See get_mtree_halos() for a full description.
+      include_concentration (bool): Whether or not to add an additional column that gives an analytic value for the
+        halo concentration.
     '''
     
     # Load the data

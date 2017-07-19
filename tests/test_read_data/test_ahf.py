@@ -283,6 +283,7 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  @slow
   def test_save_smooth_mtree_halos( self ):
 
     # Get the results
@@ -312,7 +313,7 @@ class TestAHFReader( unittest.TestCase ):
     self.ahf_reader.sdir = sdir2
 
     # Get the results
-    self.ahf_reader.save_smooth_mtree_halos( data_sdir2, 440, )
+    self.ahf_reader.save_smooth_mtree_halos( data_sdir2, 440, False )
 
     # Load the saved files
     self.ahf_reader.get_mtree_halos( 440, 'smooth' )

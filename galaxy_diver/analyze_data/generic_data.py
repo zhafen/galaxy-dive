@@ -134,16 +134,14 @@ class GenericData( object ):
 
     # Add the halo data to the class.
     self.redshift = mtree_halo['redshift']
-    self.halo_coords = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )/(1. + self.redshift)/self.data_attrs['hubble']
+    halo_coords_comoving = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )
+    self.halo_coords = halo_coords_comoving/(1. + self.redshift)/self.data_attrs['hubble']
     self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
     self.r_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
     self.r_scale = self.r_vir/mtree_halo['cAnalytic']
     self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
     self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
     self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
-
-    if 'redshift' in self.data_attrs:
-      npt.assert_allclose( self.redshift, self.data_attrs['redshift'] )
 
     # Calculate the circular velocity
     self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
@@ -242,6 +240,33 @@ class GenericData( object ):
   ########################################################################
 
   @property
+  def length_scale( self ):
+    '''Property for fiducial simulation length scale.'''
+
+    if self.length_scale_used == 'R_vir':
+      return self.r_vir
+    else:
+      return self.r_scale
+
+  ########################################################################
+
+  @property
+  def velocity_scale( self ):
+    '''Property for fiducial simulation velocity scale.'''
+
+    return self.v_c
+
+  ########################################################################
+
+  @property
+  def metallicity_scale( self ):
+    '''Property for fiducial simulation metallicity scale.'''
+
+    return self.z_sun
+
+  ########################################################################
+
+  @property
   def redshift( self ):
     '''Property for simulation redshift.'''
 
@@ -331,33 +356,6 @@ class GenericData( object ):
 
     else:
       self._v_c = value
-
-  ########################################################################
-
-  @property
-  def length_scale( self ):
-    '''Property for fiducial simulation length scale.'''
-
-    if self.length_scale_used == 'R_vir':
-      return self.r_vir
-    else:
-      return self.r_scale
-
-  ########################################################################
-
-  @property
-  def velocity_scale( self ):
-    '''Property for fiducial simulation velocity scale.'''
-
-    return self.v_c
-
-  ########################################################################
-
-  @property
-  def metallicity_scale( self ):
-    '''Property for fiducial simulation metallicity scale.'''
-
-    return self.z_sun
 
   ########################################################################
 
