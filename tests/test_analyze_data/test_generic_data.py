@@ -398,7 +398,7 @@ class TestProperties( unittest.TestCase ):
     # By hand
     expected = 25.718158280533068
 
-    actual = self.r_scale
+    actual = self.g_data.r_scale
 
     npt.assert_allclose( expected, actual )
 

@@ -133,6 +133,7 @@ class GenericData( object ):
     self.halo_coords = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )/(1. + self.redshift)/self.data_attrs['hubble']
     self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
     self.r_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
+    self.r_scale = self.r_vir/mtree_halo['cAnalytic']
     self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
     self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
     self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
@@ -271,7 +272,6 @@ class GenericData( object ):
     '''Property for virial radius.'''
 
     if not hasattr( self, '_r_vir' ):
-
       self.retrieve_halo_data()
 
     return self._r_vir
@@ -285,6 +285,27 @@ class GenericData( object ):
 
     else:
       self._r_vir = value
+
+  ########################################################################
+
+  @property
+  def r_scale( self ):
+    '''Property for virial radius.'''
+
+    if not hasattr( self, '_r_scale' ):
+      self.retrieve_halo_data()
+
+    return self._r_scale
+
+  @r_scale.setter
+  def r_scale( self, value ):
+
+    # If we try to set it, make sure that if it already exists we don't change it.
+    if hasattr( self, '_r_scale' ):
+      npt.assert_allclose( value, self._r_scale )
+
+    else:
+      self._r_scale = value
 
   ########################################################################
 
