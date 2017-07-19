@@ -330,7 +330,7 @@ class TestDataMasker( unittest.TestCase ):
 
     actual = self.data_masker.get_masked_data( 'P', mask=mask )
 
-    expected = np.array( [ [ self.data['P'][i,2], ] for i in range(3) ] )
+    expected = np.array( [ [ self.data_masker.generic_data.data['P'][i,2], ] for i in range(3) ] )
 
     npt.assert_allclose( expected, actual )
 
@@ -568,16 +568,16 @@ class TestProperties( unittest.TestCase ):
 
   ########################################################################
 
-  def test_data_shape( self ):
+  def test_base_data_shape( self ):
 
     self.g_data.data = { 'Den' : np.random.rand( 5, 3, 2 ), }
 
     expected = ( 5, 3, 2 )
-    actual = self.g_data.data_shape
+    actual = self.g_data.base_data_shape
     npt.assert_allclose( expected, actual )
 
     def try_to_change_shape():
-      self.g_data.data_shape = ( 5, )
+      self.g_data.base_data_shape = ( 5, )
 
     self.assertRaises( AssertionError, try_to_change_shape, )
 

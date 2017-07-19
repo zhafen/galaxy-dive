@@ -266,26 +266,26 @@ class GenericData( object ):
   ########################################################################
 
   @property
-  def data_shape( self ):
+  def base_data_shape( self ):
     '''Property for simulation redshift.'''
 
-    if not hasattr( self, '_data_shape' ):
+    if not hasattr( self, '_base_data_shape' ):
 
       # Use Density as the default data we assume will usually be there. This breaks for star particles, probably.
-      self._data_shape = self.data['Den'].shape
+      self._base_data_shape = self.data['Den'].shape
 
-    return self._data_shape
+    return self._base_data_shape
 
-  @data_shape.setter
-  def data_shape( self, value ):
+  @base_data_shape.setter
+  def base_data_shape( self, value ):
     '''Setting function for simulation redshift property.'''
 
     # If we try to set it, make sure that if it already exists we don't change it.
-    if hasattr( self, '_data_shape' ):
-      assert self._data_shape == value
+    if hasattr( self, '_base_data_shape' ):
+      assert self._base_data_shape == value
 
     else:
-      self._data_shape = value
+      self._base_data_shape = value
 
   ########################################################################
 
@@ -1042,7 +1042,13 @@ class DataMasker( object ):
     data = self.generic_data.get_processed_data( data_key )
 
     # Test for if the data fits the mask, or if it's multi-dimensional
+    if len( data.shape ) > len( self.generic_data.base_data_shape ):
+      data_ma = [ np.ma.array( data_part, mask=used_mask ) for data_part in data ]
+      data_ma = [ data_ma_part.compressed() for data_ma_part in data_ma ]
+      data_ma = np.array( data_ma )
 
-    data_ma = np.ma.array( data, mask=used_mask )
+    else:
+      data_ma = np.ma.array( data, mask=used_mask )
+      data_ma = data_ma.compressed()
 
-    return data_ma.compressed()
+    return data_ma
