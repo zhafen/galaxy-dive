@@ -52,23 +52,28 @@ class GenericData( object ):
       sdir (str, required) : Directory the simulation is contained in.
       analysis_dir (str, optional) : Directory simulation analysis is contained in. Defaults to sdir
       snum (int, required) : Snapshot to inspect.
-      ahf_index (str, required) : What to index the snapshots by. Should be the last snapshot in the simulation *if* AHF was run backwards from the last snapshot.
+      ahf_index (str, required) : What to index the snapshots by. Should be the last snapshot in the simulation *if*
+                                  AHF was run backwards from the last snapshot.
                                   Required to put in manually to avoid easy mistakes.
 
-      averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and similar properties? (centered on the origin)
+      averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and
+                                        similar properties? (centered on the origin)
       halo_data_retrieved (bool, optional) : Whether or not we retrieved relevant values from the AHF halo data.
       centered (bool, optional): Whether or not the coordinates are centered on the galaxy of choice at the start.
       vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
-      hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities must be centered).
+      hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities
+                                          must be centered).
 
       z_sun (float, optional) : Used mass fraction for solar metallicity.
 
-      ahf_tag (str, optional) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type 'halo_00000_{}.dat'.format( tag ).
+      ahf_tag (str, optional) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type
+                                'halo_00000_{}.dat'.format( tag ).
       main_halo_id (int, optional) : What is the halo ID of the main galaxy in the simulation?
       center_method (str or np.array of size 3, optional) : How to center the coordinates. Options...
         'halo' (default) : Centers the dataset on the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
-      vel_center_method (str or np.array of size 3, optional) : How to center the velocity coordinates, i.e. what the velocity is relative to. Options...
+      vel_center_method (str or np.array of size 3, optional) : How to center the velocity coordinates, i.e. what the
+                                                                velocity is relative to. Options are...
         'halo' (default) : Sets velocity relative to the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
       
@@ -233,25 +238,25 @@ class GenericData( object ):
     '''Get velocity coordinates to center on the main halo.
 
     Modifies:
-      self.data['P'] : Shifts the coordinates to the center.
+      self.data['V'] : Makes all velocities relative to self.vel_origin
     '''
 
     if self.vel_centered:
       return
 
     if isinstance( self.vel_center_method, np.ndarray ):
-      self.origin = copy.copy( self.vel_center_method )
+      self.vel_origin = copy.copy( self.vel_center_method )
 
     elif self.vel_center_method == 'halo':
       self.retrieve_halo_data()
-      self.origin = copy.copy( self.halo_velocity )
+      self.vel_origin = copy.copy( self.halo_velocity )
 
     else:
       raise KeyError( "Unrecognized vel_center_method, {}".format( self.vel_center_method ) )
 
     # Do it like this because we don't know the shape of self.data['V'][0]
     for i in range( 3 ):
-      self.data['V'][i] -= self.origin[i]
+      self.data['V'][i] -= self.vel_origin[i]
 
     self.vel_centered = True
 
@@ -283,7 +288,9 @@ class GenericData( object ):
       if 'redshift' in self.data_attrs:
         self._redshift = self.data_attrs['redshift']
 
-      # If not, retrieve halo data, which should set it, and fail if we got the wrong halo data.
+      # If not, retrieve halo data, which should set it.
+      # In fact, if we call self.retrieve_halo_data() somewhere else and we already set redshift by getting it from
+      # the attributes, it will check that it matches.
       self.retrieve_halo_data()
 
     return self._redshift
@@ -294,7 +301,7 @@ class GenericData( object ):
 
     # If we try to set it, make sure that if it already exists we don't change it.
     if hasattr( self, '_redshift' ):
-      assert value == self._redshift
+      npt.assert_allclose( value, self._redshift, atol=1e-10 )
 
     else:
       self._redshift = value
@@ -303,7 +310,7 @@ class GenericData( object ):
 
   @property
   def hubble_z( self ):
-    '''Hubble function at specified redshift.'''
+    '''Property for the hubble function at specified redshift.'''
 
     if not hasattr( self, '_hubble_z' ):
       self._hubble_z = astro.hubble_parameter( self.redshift, h=self.data_attrs['hubble'],
@@ -315,9 +322,12 @@ class GenericData( object ):
 
   @property
   def com_velocity( self ):
+    '''Property for the velocity of the center of mass.'''
 
-    # TODO
-    pass
+    if not hasattr( self, '_com_velocity' ):
+      pass
+
+    return self._com_velocity
 
   ########################################################################
 
@@ -669,12 +679,14 @@ class GenericData( object ):
     # Get data
     if data_key == 'Vx':
       data = self.data['V'][0,:]
-    if data_key == 'Vy':
+    elif data_key == 'Vy':
       data = self.data['V'][1,:]
-    if data_key == 'Vz':
+    elif data_key == 'Vz':
       data = self.data['V'][2,:]
     else:
       data = self.data[data_key]
+
+    return data
 
   ########################################################################
 
@@ -702,9 +714,6 @@ class GenericData( object ):
     # Actually calculate the fractional data
     if fraction_flag:
 
-      # Get halo data, if not retrieved
-      self.retrieve_halo_data()
-
       # Put distances in units of the virial radius
       if data_key[0] == 'R':
         data /= self.R_vir
@@ -727,18 +736,8 @@ class GenericData( object ):
         data /= self.z_sun
 
     # Make appropriate units into log
-    non_log_keys = ['P', 'R', 'Rx', 'Ry', 'Rz', 'Rho', 'V', 'Vr', 'Vx', 'Vy', 'Vz', 'h', 'Phi', 'AbsPhi', 'Cl']
-    if data_key in non_log_keys:
-      if log_flag:
-        data =  np.log10(data)
-      else:
-        pass
-    else:
-      data =  np.log10(data)
-
-    # Shift or multiply the data by some amount
-    if 'shift' in self.kwargs:
-      self.shift(data, data_key)
+    if log_flag:
+      data =  np.log10( data )
 
     return data
 

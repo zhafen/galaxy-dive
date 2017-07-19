@@ -1,6 +1,6 @@
 {
   "tests/test_analyze_data/test_generic_data.py::TestGetData::test_get_velocity_data": true, 
-  "tests/test_analyze_data/test_gridded_data.py::TestGriddedData::test_calc_ion_column_densties": true, 
+  "tests/test_analyze_data/test_generic_data.py::TestProperties::test_calc_com_velocity": true, 
   "tests/test_analyze_data/test_gridded_data.py::TestGriddedData::test_calc_rx_and_ry_for_columns": true, 
   "tests/test_analyze_data/test_gridded_data.py::TestGriddedData::test_calc_rx_and_ry_for_ions": true
 }

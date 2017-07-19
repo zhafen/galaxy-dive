@@ -67,6 +67,7 @@ class TestGetData( unittest.TestCase ):
     # Setup some necessary data
     self.g_data.data = {
       'P' : np.random.rand( 3, 4 ),
+      'V' : np.random.rand( 3, 4 ),
     }
 
   ########################################################################
@@ -84,8 +85,14 @@ class TestGetData( unittest.TestCase ):
   ########################################################################
 
   def test_get_velocity_data( self ):
-    
-    assert False, "TODO"
+
+    vx_before = copy.copy( self.g_data.data['V'][0] )
+
+    actual = self.g_data.get_velocity_data( 'Vx' )
+
+    expected = vx_before - self.g_data.halo_velocity[0]
+
+    npt.assert_allclose( expected, actual )
 
 ########################################################################
 
