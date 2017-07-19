@@ -652,3 +652,51 @@ class TestDataKeyParser( unittest.TestCase ):
 
     for data_key in [ 'Vx', 'Vy', 'Vz', 'Vr', ]:
       assert self.key_parser.is_velocity_key( data_key )
+
+########################################################################
+
+class TestCalcData( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.g_data = generic_data.GenericData( **default_kwargs )
+
+    self.g_data.centered = True
+    self.g_data.r_scale = 1.
+
+    self.g_data.data = {
+
+      # Have two particles inside and one outside the region.
+      'P' :  np.array( [
+        [  0.,   2.,   0.5, 0.,  ],
+        [  0.5,   0.,   0.,  0., ],
+        [  0.,   0.5,   0.5, 0.,  ],
+        ] )
+
+    }
+
+  ########################################################################
+
+  def test_calc_radial_distance( self ):
+
+    self.g_data.calc_radial_distance()
+
+    actual = self.g_data.data['R']
+
+    # By hand
+    expected = np.array( [ 0.5, 2.0615528128088303, 0.70710678118654757, 0., ] )
+
+    npt.assert_allclose( expected, actual )
+
+
+
+
+
+
+
+
+
+
+
+
+

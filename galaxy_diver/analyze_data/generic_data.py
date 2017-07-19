@@ -395,16 +395,20 @@ class GenericData( object ):
   ########################################################################
 
   @property
-  def com_velocity( self ):
+  def v_com( self ):
     '''Property for the velocity of the center of mass.'''
 
     if not hasattr( self, '_com_velocity' ):
       
-      self.center_coords()
 
+      radial_mask = self.data_masker.mask_data( 'Rf', 0., self.averaging_frac, 'return' )
       
+      m_ma = self.data_masker.get_masked_data( 'M', radial_mask )
+      v_ma = self.data_masker.get_masked_data( 'V', radial_mask )
 
-    return self._com_velocity
+      self._v_com = ( v_ma*m_ma ).sum( 0 )/m_ma.sum()
+
+    return self._v_com
 
   ########################################################################
 
@@ -486,16 +490,11 @@ class GenericData( object ):
     return dN_halo
 
   ########################################################################
-  # Complicated results of data
+  # Full calculations of the data
   ########################################################################
 
   def calc_radial_distance(self):
     '''Calculate the distance from the origin for a given particle.'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Make sure we're centered
-    self.change_coords_center()
 
     self.data['R'] = np.sqrt(self.get_data('Rx')**2. + self.get_data('Ry')**2. + self.get_data('Rz')**2.)
 
