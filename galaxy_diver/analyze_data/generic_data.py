@@ -469,7 +469,8 @@ class GenericData( object ):
     # Calculate the virial radius, if necessary
     if R_vir is not None:
       if R_vir=='BN':
-        self.R_vir = cosmo.virialRadius(M, z)*10.**3. # Calculate R_vir off of the cosmocode def, and convert to proper kpc.
+        # Calculate R_vir off of the cosmocode def, and convert to proper kpc.
+        self.R_vir = cosmo.virialRadius(M, z)*10.**3. 
 
     # Make h easier to use (don't have to write the whole thing out...)
     h = self.data_attrs['hubble']
@@ -1031,6 +1032,10 @@ class DataMasker( object ):
     Args:
       data_key (str) : Data key to get the data for.
       mask (str or np.array of bools) : Mask to apply. If none, use the total mask.
+
+    Returns:
+      data_ma (np.array) : Compressed masked data. Because it's compressed it may not have the same shape as the
+        original data.
     '''
 
     # Get the appropriate mask
