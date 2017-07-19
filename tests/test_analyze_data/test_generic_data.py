@@ -220,11 +220,12 @@ class TestProperties( unittest.TestCase ):
       'redshift' : 0.16946,
     }
 
-    self.g_data.retrieve_halo_data()
 
   ########################################################################
 
   def test_calc_com_velocity( self ):
+
+    self.g_data.retrieve_halo_data()
 
     self.g_data.data = {
 
@@ -248,7 +249,7 @@ class TestProperties( unittest.TestCase ):
 
     }
 
-    actual = self.g_data.calc_com_velocity()
+    actual = self.g_data.com_velocity
 
     expected = np.array( [ 10./4., ]*3 )
 
@@ -265,6 +266,24 @@ class TestProperties( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual, rtol=1e-4 )
 
+    try:
+      self.g_data.hubble_z = 2.
+      assert False
+
+    # We're actually looking for an error here, to test for read only
+    except AttributeError:
+      pass
+
+  ########################################################################
+
+  def test_redshift( self ):
+
+    expected = 0.16946
+
+    actual = self.g_data.redshift
+
+    npt.assert_allclose( expected, actual )
+
 ########################################################################
 
 class TestHubbleFlow( unittest.TestCase ):
@@ -276,12 +295,26 @@ class TestHubbleFlow( unittest.TestCase ):
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
       'redshift' : 0.16946,
+      'omega_matter' : 0.272,
+      'omega_lambda' : 0.728,
     }
 
     # Setup some necessary data
     self.g_data.data = {
       'V' : np.random.rand( 3, 4 ),
+      'P' : np.random.rand( 3, 4 ),
     }
 
-########################################################################
+  ########################################################################
+
+  def test_add_hubble_flow( self ):
+
+    self.g_data.center_method = np.random.rand( 3 )
+    self.g_data.vel_center_method = np.random.rand( 3 )
+
+    self.g_data.add_hubble_flow()
+    
+    assert self.g_data.hubble_corrected
+    assert self.g_data.centered
+    assert self.g_data.vel_centered
 

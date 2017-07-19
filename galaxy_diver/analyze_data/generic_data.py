@@ -257,33 +257,57 @@ class GenericData( object ):
 
   ########################################################################
 
-  def correct_hubble_flow(self):
+  def add_hubble_flow(self):
     '''Correct for hubble flow movement.'''
 
-    raise Exception( "TODO: Test this" )
+    if self.hubble_corrected:
+      return
 
-    self.center_coords()
+    self.center_vel_coords()
 
-    # Hubble constant
-    H0 = self.data_attrs['hubble']*100.
-    Hz = H0*np.sqrt(self.data_attrs['omega_matter'] * (1.0 + self.data_attrs['redshift'])**3. + self.data_attrs['omega_lambda'])
-    Hz /= 1000. # Convert from km/s / Mpc to km/s / kpc
-
-    self.data['V'] += self.get_data('P')*Hz
+    self.data['V'] += self.get_data('P')*self.hubble_z
 
     self.hubble_corrected = True
 
   ########################################################################
-  # Calculate simple net values of the simulation
+  # Properties
   ########################################################################
 
-  def calc_com_velocity( self ):
+  @property
+  def redshift( self ):
+    '''Simulation redshift.'''
 
+    if not hasattr( self, '_redshift' ):
+
+      if 'redshift' in self.data_attrs:
+        self._redshift = self.data_attrs['redshift']
+
+    return self._redshift
+
+  ########################################################################
+
+  @property
+  def hubble_z( self ):
+    '''Hubble function at specified redshift.'''
+
+    if not hasattr( self, '_hubble_z' ):
+      self._hubble_z = astro.hubble_parameter( self.redshift, h=self.data_attrs['hubble'],
+        omega_matter=self.data_attrs['omega_matter'], omega_lambda=self.data_attrs['omega_lambda'], units='km/s/kpc' )
+
+    return self._hubble_z
+
+  ########################################################################
+
+  @property
+  def com_velocity( self ):
+
+    # TODO
     pass
 
   ########################################################################
 
-  def calc_total_ang_momentum(self):
+  @property
+  def total_ang_momentum(self):
     '''Calculate the total angular momentum vector.'''
 
     raise Exception( "TODO: Test and memoize this, and other attributes" )
@@ -315,12 +339,13 @@ class GenericData( object ):
       # Get the total angular momentum
       self.total_ang_momentum = np.zeros(3)
       for i in range(3):
-        self.total_ang_momentum[i] = l_ma[i].sum()
+        self._total_ang_momentum[i] = l_ma[i].sum()
 
-      return self.total_ang_momentum
+      return self._total_ang_momentum
 
   ########################################################################
 
+  @property
   def dN_halo(self, R_vir=None, time_units='abs_length'):
     '''Calculate dN_halo/dX/dlog10Mh or dN_halo/dz/dlog10Mh. X is absorption path length (see for example Ribaudo+11)
 
@@ -533,8 +558,9 @@ class GenericData( object ):
   ########################################################################
 
   def get_data(self, data_key):
-    '''Get the data from within the class. Only for getting the data. No post-processing or changing the data (putting it in particular units, etc.)
-    The idea is to calculate necessary quantities as the need arises, hence a whole function for getting the data.
+    '''Get the data from within the class. Only for getting the data. No post-processing or changing the data
+    (putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
+    hence a whole function for getting the data.
 
     Args:
       data_key (str) : Key in the data dictionary for the key we want to get
@@ -543,19 +569,19 @@ class GenericData( object ):
       data (np.ndarray) : Requested data.
     '''
 
-    raise Exception( "TODO: Test this" )
-
     # Loop through, handling issues
     n_tries = 10
     for i in range( n_tries ):
       try:
 
-        if data_key[0] == 'R':
-          self.get_position_data( data_key )
+        if (data_key[0] == 'R') or (data_key == 'P'):
+          data = self.get_position_data( data_key )
 
         # Velocities
         elif data_key[0] == 'V':
-          self.get_velocity_data( data_key )
+
+          raise Exception( "TODO: Test this" )
+          data = self.get_velocity_data( data_key )
 
         # Arbitrary functions of the data
         elif data_key == 'Function':
@@ -563,7 +589,8 @@ class GenericData( object ):
           raise Exception( "TODO: Test this" )
 
           # Use the keys to get the data
-          input_data = [ self.get_data(function_data_key) for function_data_key in self.kwargs['function_args']['function_data_keys'] ]
+          function_data_keys = self.kwargs['function_args']['function_data_keys']
+          input_data = [ self.get_data(function_data_key) for function_data_key in function_data_keys ]
           
           # Apply the function
           data = self.kwargs['function_args']['function']( input_data )
@@ -578,6 +605,9 @@ class GenericData( object ):
         continue
 
       break
+
+    if i > n_tries:
+      raise Exception( "After {} tries, unable to find or create data_key, {}".format( i, data_key ) )
   
     return data
 
@@ -791,24 +821,3 @@ class GenericData( object ):
 
     return data_ma.compressed()
 
-  ########################################################################
-  # Properties
-  ########################################################################
-
-  @property
-  def hubble_z( self ):
-    '''Hubble function at specified redshift.'''
-
-    if not hasattr( self, '_hubble_z' ):
-      self._hubble_z = astro.hubble_parameter( self.redshift, h=self.data_attrs['hubble'],
-        omega_matter=self.data_attrs['omega_matter'], omega_lambda=self.data_attrs['omega_lambda'], units='km/s/kpc' )
-
-    return self._hubble_z
-
-  ########################################################################
-
-  @property
-  def TODOcom_velocity( self ):
-
-    # TODO
-    pass
