@@ -3,6 +3,7 @@
 
 import copy
 from mock import patch
+from mock import sentinel
 import numpy as np
 import numpy.testing as npt
 import pdb
@@ -93,6 +94,32 @@ class TestGetData( unittest.TestCase ):
     expected = vx_before - self.g_data.halo_velocity[0]
 
     npt.assert_allclose( expected, actual )
+
+########################################################################
+
+class TestHandleDataKeyError( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.g_data = generic_data.GenericData( **default_kwargs )
+
+  ########################################################################
+
+  @patch.multiple( 'galaxy_diver.analyze_data.generic_data.GenericData',
+    calc_radial_distance=sentinel.DEFAULT, calc_radial_velocity=sentinel.DEFAULT,
+    calc_inds=sentinel.DEFAULT, calc_ang_momentum=sentinel.DEFAULT,
+    calc_phi=sentinel.DEFAULT, calc_abs_phi=sentinel.DEFAULT,
+    calc_num_den=sentinel.DEFAULT, calc_H_den=sentinel.DEFAULT,
+    calc_HI_den=sentinel.DEFAULT )
+  def test_handle_data_key_error( self, **mocks ):
+    '''Make sure that passing a data_key successfully calls the right function.'''
+
+    keys_to_check = [ 'R', 'Vr', 'ind', 'L', 'Phi', 'AbsPhi', 'NumDen', 'HDen', 'HIDen', ]
+    for key in keys_to_check:
+      self.g_data.handle_data_key_error( key )
+
+    for key in mocks.keys():
+      mocks[key].assert_called_once()
 
 ########################################################################
 

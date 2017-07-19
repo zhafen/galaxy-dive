@@ -112,48 +112,6 @@ class GenericData( object ):
     self.halo_data_retrieved = False
 
   ########################################################################
-
-  def handle_data_key_error(self, data_key):
-    '''
-    data_key : key that produced the data key error
-    '''
-
-    raise Exception( "TODO: Test this" )
-
-    print 'Data key not found in data. Attempting to calculate.'
-
-    if data_key ==  'Rx' or data_key ==  'Ry' or data_key ==  'Rz' or data_key == 'P':
-      self.calc_positions()
-    elif data_key[:-3] ==  'Rx_face' or data_key[:-3] ==  'Ry_face' or data_key[:-3] ==  'Rz_face':
-      self.calc_face_positions( data_key )
-    elif data_key == 'R':
-      self.calc_radial_distance()
-    elif data_key == 'Vr':
-      self.calc_radial_velocity()
-    elif data_key == 'T':
-      self.calc_temp()
-    elif data_key == 'ind':
-      self.calc_inds()
-    elif data_key == 'L':
-      self.calc_ang_momentum()
-    elif data_key == 'Phi':
-      self.calc_phi()
-    elif data_key == 'AbsPhi':
-      self.calc_abs_phi()
-    elif data_key == 'M':
-      self.calc_mass()
-    elif data_key == 'NumDen':
-      self.calc_num_den()
-    elif data_key == 'HDen':
-      self.calc_H_den()
-    elif data_key == 'HIDen':
-      self.calc_HI_den()
-    elif data_key == 'Cl':
-      self.calc_classifications()
-    else:
-      raise Exception('NULL data_key, data_key = {}'.format(data_key))
-
-  ########################################################################
   # Get Additional Data
   ########################################################################
 
@@ -687,6 +645,48 @@ class GenericData( object ):
       data = self.data[data_key]
 
     return data
+
+  ########################################################################
+
+  def handle_data_key_error(self, data_key):
+    '''
+    data_key : key that produced the data key error
+    '''
+
+    print( 'Data key not found in data. Attempting to calculate.' )
+
+    # GenericData methods
+    if data_key == 'R':
+      self.calc_radial_distance()
+    elif data_key == 'Vr':
+      self.calc_radial_velocity()
+    elif data_key == 'ind':
+      self.calc_inds()
+    elif data_key == 'L':
+      self.calc_ang_momentum()
+    elif data_key == 'Phi':
+      self.calc_phi()
+    elif data_key == 'AbsPhi':
+      self.calc_abs_phi()
+    elif data_key == 'NumDen':
+      self.calc_num_den()
+    elif data_key == 'HDen':
+      self.calc_H_den()
+    elif data_key == 'HIDen':
+      self.calc_HI_den()
+
+    # Subclass methods
+    elif data_key ==  'Rx' or data_key ==  'Ry' or data_key ==  'Rz' or data_key == 'P':
+      self.calc_positions()
+    elif data_key[:-3] ==  'Rx_face' or data_key[:-3] ==  'Ry_face' or data_key[:-3] ==  'Rz_face':
+      self.calc_face_positions( data_key )
+    elif data_key == 'T':
+      self.calc_temp()
+    elif data_key == 'M':
+      self.calc_mass()
+
+    else:
+      raise Exception('NULL data_key, data_key = {}'.format(data_key))
 
   ########################################################################
 
