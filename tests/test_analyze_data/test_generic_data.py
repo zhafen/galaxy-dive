@@ -69,6 +69,7 @@ class TestGetData( unittest.TestCase ):
       'P' : np.random.rand( 3, 4 ),
       'V' : np.random.rand( 3, 4 ),
       'Den' : np.random.rand( 4 ),
+      'Z' : np.random.uniform( 0., 1. ),
     }
 
   ########################################################################
@@ -122,6 +123,10 @@ class TestGetData( unittest.TestCase ):
     actual = self.g_data.get_processed_data( 'Den' )
     npt.assert_allclose( expected, actual )
 
+    expected = self.g_data.get_data( 'Z' )
+    actual = self.g_data.get_processed_data( 'Z' )
+    npt.assert_allclose( expected, actual )
+
   ########################################################################
 
   def test_get_processed_data_log( self ):
@@ -136,6 +141,10 @@ class TestGetData( unittest.TestCase ):
 
     expected = self.g_data.get_data( 'Rx' )/self.g_data.length_scale
     actual = self.g_data.get_processed_data( 'Rxf' )
+    npt.assert_allclose( expected, actual )
+
+    expected = self.g_data.get_data( 'Z' )/self.g_data.metallicity_scale
+    actual = self.g_data.get_processed_data( 'Zf' )
     npt.assert_allclose( expected, actual )
 
 ########################################################################
