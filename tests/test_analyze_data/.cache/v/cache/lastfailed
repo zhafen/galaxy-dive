@@ -1,1 +1,4 @@
-{}
+{
+  "test_generic_data.py::TestProperties::test_calc_com_velocity": true, 
+  "test_generic_data.py::TestProperties::test_hubble_z": true
+}

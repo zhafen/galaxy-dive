@@ -197,6 +197,83 @@ class GenericData( object ):
     self.hubble = header['hubble']
 
   ########################################################################
+  # Overall changes to the data
+  ########################################################################
+
+  def center_coords( self ):
+    '''Change the location of the origin, if the data isn't already centered.
+
+    Modifies:
+      self.data['P'] : Shifts the coordinates to the center.
+    '''
+
+    if self.centered:
+      return
+
+    if isinstance( self.center_method, np.ndarray ):
+      self.origin = copy.copy( self.center_method )
+
+    elif self.center_method == 'halo':
+      self.retrieve_halo_data()
+      self.origin = copy.copy( self.halo_coords )
+
+    else:
+      raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
+
+    # Do it like this because we don't know the shape of self.data['P'][0]
+    for i in range( 3 ):
+      self.data['P'][i] -= self.origin[i]
+
+    # Note that we're now centered
+    self.centered = True
+
+  ########################################################################
+
+  def center_vel_coords( self ):
+    '''Get velocity coordinates to center on the main halo.
+
+    Modifies:
+      self.data['P'] : Shifts the coordinates to the center.
+    '''
+
+    if self.vel_centered:
+      return
+
+    if isinstance( self.vel_center_method, np.ndarray ):
+      self.origin = copy.copy( self.vel_center_method )
+
+    elif self.vel_center_method == 'halo':
+      self.retrieve_halo_data()
+      self.origin = copy.copy( self.halo_velocity )
+
+    else:
+      raise KeyError( "Unrecognized vel_center_method, {}".format( self.vel_center_method ) )
+
+    # Do it like this because we don't know the shape of self.data['V'][0]
+    for i in range( 3 ):
+      self.data['V'][i] -= self.origin[i]
+
+    self.vel_centered = True
+
+  ########################################################################
+
+  def correct_hubble_flow(self):
+    '''Correct for hubble flow movement.'''
+
+    raise Exception( "TODO: Test this" )
+
+    self.center_coords()
+
+    # Hubble constant
+    H0 = self.data_attrs['hubble']*100.
+    Hz = H0*np.sqrt(self.data_attrs['omega_matter'] * (1.0 + self.data_attrs['redshift'])**3. + self.data_attrs['omega_lambda'])
+    Hz /= 1000. # Convert from km/s / Mpc to km/s / kpc
+
+    self.data['V'] += self.get_data('P')*Hz
+
+    self.hubble_corrected = True
+
+  ########################################################################
   # Calculate simple net values of the simulation
   ########################################################################
 
@@ -280,84 +357,6 @@ class GenericData( object ):
       pass
 
     return dN_halo
-
-  ########################################################################
-  # Decorators for returning the data
-  ########################################################################
-
-  def correct_hubble_flow(self):
-    '''Correct for hubble flow movement.'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Make sure we're centered
-    self.center_coords()
-
-    # Hubble constant
-    H0 = self.data_attrs['hubble']*100.
-    Hz = H0*np.sqrt(self.data_attrs['omega_matter'] * (1.0 + self.data_attrs['redshift'])**3. + self.data_attrs['omega_lambda'])
-    Hz /= 1000. # Convert from km/s / Mpc to km/s / kpc
-
-    self.data['V'] += self.get_data('P')*Hz
-
-    self.hubble_corrected = True
-
-  ########################################################################
-
-  def center_coords( self ):
-    '''Change the location of the origin, if the data isn't already centered.
-
-    Modifies:
-      self.data['P'] : Shifts the coordinates to the center.
-    '''
-
-    if self.centered:
-      return
-
-    if isinstance( self.center_method, np.ndarray ):
-      self.origin = copy.copy( self.center_method )
-
-    elif self.center_method == 'halo':
-      self.retrieve_halo_data()
-      self.origin = copy.copy( self.halo_coords )
-
-    else:
-      raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
-
-    # Do it like this because we don't know the shape of self.data['P'][0]
-    for i in range( 3 ):
-      self.data['P'][i] -= self.origin[i]
-
-    # Note that we're now centered
-    self.centered = True
-
-  ########################################################################
-
-  def center_vel_coords( self ):
-    '''Get velocity coordinates to center on the main halo.
-
-    Modifies:
-      self.data['P'] : Shifts the coordinates to the center.
-    '''
-
-    if self.vel_centered:
-      return
-
-    if isinstance( self.vel_center_method, np.ndarray ):
-      self.origin = copy.copy( self.vel_center_method )
-
-    elif self.vel_center_method == 'halo':
-      self.retrieve_halo_data()
-      self.origin = copy.copy( self.halo_velocity )
-
-    else:
-      raise KeyError( "Unrecognized vel_center_method, {}".format( self.vel_center_method ) )
-
-    # Do it like this because we don't know the shape of self.data['V'][0]
-    for i in range( 3 ):
-      self.data['V'][i] -= self.origin[i]
-
-    self.vel_centered = True
 
   ########################################################################
   # Complicated results of data
@@ -792,3 +791,23 @@ class GenericData( object ):
 
     return data_ma.compressed()
 
+  ########################################################################
+  # Properties
+  ########################################################################
+
+  @property
+  def hubble_z( self ):
+    '''Hubble function at specified redshift.'''
+
+    if not hasattr( self, '_hubble_z' ):
+      self._hubble_z = astro.hubble_z( self.redshift, self.data_attrs['hubble'], self.data_attrs['omega_matter'], self.data_attrs['omega_lambda'] )
+
+    return self._hubble_z
+
+  ########################################################################
+
+  @property
+  def TODOcom_velocity( self ):
+
+    # TODO
+    pass

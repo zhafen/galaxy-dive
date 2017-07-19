@@ -201,13 +201,13 @@ class TestCenterVelCoords( unittest.TestCase ):
     self.g_data.center_vel_coords()
     actual = self.g_data.data['V']
 
-    expected = vel_before - self.g_data.halo_coords[:,np.newaxis]
+    expected = vel_before - self.g_data.halo_velocity[:,np.newaxis]
 
     npt.assert_allclose( expected, actual )
 
 ########################################################################
 
-class TestTotalCalculations( unittest.TestCase ):
+class TestProperties( unittest.TestCase ):
 
   def setUp( self ):
 
@@ -252,6 +252,17 @@ class TestTotalCalculations( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_hubble_z( self ):
+
+    # Hubble parameter in km/s/kpc
+    expected = 75.71*1e-3
+
+    actual = self.g_data.hubble_z
+
+    npt.assert_allclose( expected, actual )
+
 ########################################################################
 
 class TestHubbleFlow( unittest.TestCase ):
@@ -269,3 +280,6 @@ class TestHubbleFlow( unittest.TestCase ):
     self.g_data.data = {
       'V' : np.random.rand( 3, 4 ),
     }
+
+########################################################################
+

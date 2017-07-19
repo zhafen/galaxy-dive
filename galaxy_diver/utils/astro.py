@@ -12,7 +12,7 @@ import constants
 
 ########################################################################
 
-def hubble_z( redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728 ):
+def hubble_parameter( redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728, units='km/s/Mpc' ):
   '''Return Hubble factor in 1/sec for a given redshift.
 
   Args:
@@ -20,15 +20,27 @@ def hubble_z( redshift, h=0.702, omega_matter=0.272, omega_lambda=0.728 ):
     h (float): The hubble parameter.
     omega_matter (float): Cosmological mass fraction of matter.
     omega_lambda (float): Cosmological mass fraction of dark energy.
+    units (str): The units the hubble parameter should be returned in.
 
   Returns:
-    hubble_a (float): Hubble factor in 1/sec
+    hubble_a (float): Hubble factor in specified units
   '''
 
-  ascale = 1. / ( 1. + redshift )
-  hubble_a = constants.HUBBLE * h * np.sqrt( omega_matter / ascale**3 + (1. - omega_matter - omega_lambda) / ascale**2 + omega_lambda )     # in 1/sec !!
+  zp1 = (1. + redshift)
 
-  return hubble_a
+  e_z = np.sqrt( omega_matter*zp1**3. + omega_lambda )
+
+  hubble_z = h*100.*e_z
+
+  if units == 'km/s/Mpc':
+    pass
+  elif units == '1/s':
+    hubble_z /= constants.KM_PER_KPC*1e3
+  else:
+    raise KeyError( "Unspecified units, {}".format( units ) )
+    
+
+  return hubble_z
 
 ########################################################################
 

@@ -8,6 +8,7 @@ import pdb
 import unittest
 
 import galaxy_diver.utils.astro as astro
+import galaxy_diver.utils.constants as constants
 
 ########################################################################
 
@@ -32,3 +33,22 @@ class TestCircularVelocity( unittest.TestCase ):
     npt.assert_allclose( expected, actual, rtol=0.5 )
 
   ########################################################################
+
+  def test_hubble_parameter( self ):
+
+    expected = 75.71
+
+    actual = astro.hubble_parameter( 0.16946, .702, 0.272, 0.728 )
+
+    npt.assert_allclose( expected, actual, rtol=1e-4 )
+
+  ########################################################################
+
+
+  def test_hubble_parameter_1s( self ):
+
+    expected = 75.71*3.24078e-20
+
+    actual = astro.hubble_parameter( 0.16946, .702, 0.272, 0.728, units='1/s' )
+
+    npt.assert_allclose( expected, actual, rtol=1e-4 )
