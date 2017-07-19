@@ -409,7 +409,7 @@ class TestProperties( unittest.TestCase ):
     # By hand
     expected = 134.93489906417346
 
-    actual = self.v_c
+    actual = self.g_data.v_c
 
     npt.assert_allclose( expected, actual )
 
@@ -419,6 +419,19 @@ class TestProperties( unittest.TestCase ):
     '''Default options.'''
 
     expected = self.g_data.r_scale
+
+    actual = self.g_data.length_scale
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_length_scale_r_vir( self ):
+    '''Default options.'''
+
+    self.g_data.length_scale_used = 'R_vir'
+
+    expected = self.g_data.r_vir
 
     actual = self.g_data.length_scale
 

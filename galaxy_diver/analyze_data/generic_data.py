@@ -44,6 +44,7 @@ class GenericData( object ):
                 main_halo_id = 0,
                 center_method = 'halo',
                 vel_center_method = 'halo',
+                length_scale_used = 'r_scale',
 
                 **kwargs ):
     '''Initialize.
@@ -76,7 +77,10 @@ class GenericData( object ):
                                                                 velocity is relative to. Options are...
         'halo' (default) : Sets velocity relative to the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
-      
+      length_scale_used (str) : What length scale to use for the simulation. Will be used to put lengths in fractions.
+        Options...
+        'r_scale' : Scale radius.
+        'R_vir' : Virial radius.
 
     Keyword Args:
       function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
@@ -290,7 +294,7 @@ class GenericData( object ):
 
   @property
   def r_scale( self ):
-    '''Property for virial radius.'''
+    '''Property for scale radius.'''
 
     if not hasattr( self, '_r_scale' ):
       self.retrieve_halo_data()
@@ -306,6 +310,38 @@ class GenericData( object ):
 
     else:
       self._r_scale = value
+
+  ########################################################################
+
+  @property
+  def v_c( self ):
+    '''Property for circular velocity.'''
+
+    if not hasattr( self, '_v_c' ):
+      self.retrieve_halo_data()
+
+    return self._v_c
+
+  @v_c.setter
+  def v_c( self, value ):
+
+    # If we try to set it, make sure that if it already exists we don't change it.
+    if hasattr( self, '_v_c' ):
+      npt.assert_allclose( value, self._v_c )
+
+    else:
+      self._v_c = value
+
+  ########################################################################
+
+  @property
+  def length_scale( self ):
+    '''Property for fiducial simulation length scale.'''
+
+    if self.length_scale_used == 'R_vir':
+      return self.r_vir
+    else:
+      return self.r_scale
 
   ########################################################################
 
