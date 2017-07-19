@@ -241,6 +241,101 @@ class TestCenterCoords( unittest.TestCase ):
 
 ########################################################################
 
+class TestDataMasker( unittest.TestCase ):
+
+  def setUp( self ):
+
+    g_data = generic_data.GenericData( **default_kwargs )
+
+    # Make it so we don't have to load in the halo data
+    g_data.r_scale = 1.
+    g_data.centered = True
+
+    g_data.length_scale
+
+    # Setup some necessary data
+    g_data.data = {
+      'P' : np.random.rand( 3, 4 ),
+      'Den' : np.array( [ 1e-6, 1e-4, 1e2, 1e-2 ] ),
+      'R' : np.array( [ 0.25, 0.4999, 1.0, 0.5111 ] )*g_data.length_scale,
+    }
+
+    self.data_masker = generic_data.DataMasker( g_data )
+
+  ########################################################################
+
+  def test_mask_data( self ):
+
+    self.data_masker.mask_data( 'logDen', -5., -1., )
+
+    actual = self.data_masker.masks[0]['mask']
+    expected = np.array( [ 1, 0, 1, 0 ] ).astype( bool )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_mask_data_returns( self ):
+
+    actual = self.data_masker.mask_data( 'Rf', 0., 0.5, 'return' )
+    expected = np.array( [ 0, 0, 1, 1 ] ).astype( bool )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_total_mask( self ):
+
+    # Setup some masks first.
+    self.data_masker.mask_data( 'logDen', -5., -1., )
+    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+
+    actual = self.data_masker.get_total_mask()
+    expected = np.array( [ 1, 0, 1, 1 ] ).astype( bool )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_masked_data( self ):
+
+    # Setup some masks first.
+    self.data_masker.mask_data( 'logDen', -5., -1., )
+    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+
+    actual = self.data_masker.get_masked_data( 'Den' )
+
+    expected = np.array( [ 1e-4 ] )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_masked_data_specified_mask( self ):
+
+    mask = np.array( [ 1, 1, 0, 1 ] ).astype( bool )
+
+    actual = self.data_masker.get_masked_data( 'Den', mask=mask )
+
+    expected = np.array( [ 1e2 ] )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_masked_data_multi_dim( self ):
+    '''Test we can get masked data even when we request P.'''
+
+    mask = np.array( [ 1, 1, 0, 1 ] ).astype( bool )
+
+    actual = self.data_masker.get_masked_data( 'P', mask=mask )
+
+    expected = np.array( [ [ self.data['P'][i,2], ] for i in range(3) ] )
+
+    npt.assert_allclose( expected, actual )
+
+########################################################################
+
 class TestCenterVelCoords( unittest.TestCase ):
 
   def setUp( self ):
@@ -315,9 +410,11 @@ class TestProperties( unittest.TestCase ):
 
   ########################################################################
 
-  def test_calc_com_velocity( self ):
+  def test_v_com( self ):
+    '''Get the com velocity'''
 
-    self.g_data.retrieve_halo_data()
+
+    self.g_data.centered = True
 
     self.g_data.data = {
 
@@ -327,7 +424,7 @@ class TestProperties( unittest.TestCase ):
         [  1.,   0.,   0., ],
         [  0.,   0.,   0., ],
         [  0.,   0.,   0., ],
-        ] )*self.g_data.r_vir*self.g_data.averaging_frac,
+        ] )*self.g_data.length_scale*self.g_data.averaging_frac,
 
       # Have the particle outside have an insane velocity so we notice if it's affecting things.
       'V' :  np.array( [
@@ -341,7 +438,7 @@ class TestProperties( unittest.TestCase ):
 
     }
 
-    actual = self.g_data.com_velocity
+    actual = self.g_data.v_com
 
     expected = np.array( [ 10./4., ]*3 )
 

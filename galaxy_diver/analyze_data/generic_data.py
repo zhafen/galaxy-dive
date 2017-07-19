@@ -20,7 +20,6 @@ import warnings
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.utils.astro as astro
 import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.io as io
 
 ########################################################################
 
@@ -106,8 +105,8 @@ class GenericData( object ):
         else:
           raise Exception( '{} not specified'.format( attr ) )
 
-    # For storing masks to look at the data through
-    self.masks = []
+    # For storing and creating masks to pass the data
+    self.data_masker = DataMasker( self )
 
     # By definition, the halo data should not be retrieved when the class is first initiated.
     self.halo_data_retrieved = False
@@ -376,7 +375,10 @@ class GenericData( object ):
     '''Property for the velocity of the center of mass.'''
 
     if not hasattr( self, '_com_velocity' ):
-      pass
+      
+      self.center_coords()
+
+      
 
     return self._com_velocity
 
@@ -403,7 +405,7 @@ class GenericData( object ):
         self.correct_hubble_flow()
 
       # Get mask for only inner components
-      r_mask = self.add_mask('R', 0., self.averaging_frac*self.R_vir, return_or_add='return')
+      r_mask = self.add_mask('R', 0., self.averaging_frac*self.R_vir, return_or_store='return')
 
       # Adapt for application to 'l', which is a multidimensional array
       inner_mask = np.array([r_mask]*3)
@@ -854,71 +856,6 @@ class GenericData( object ):
 
       data -= log_shift
 
-  ########################################################################
-  # For Masking Data
-  ########################################################################
-
-  def add_mask(self, data_key, data_min, data_max, return_or_add='add'):
-    '''Get only the particle data within a certain range. Note that it retrieves the processed data.'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Get the mask
-    data = self.get_processed_data(data_key)
-    data_ma = np.ma.masked_outside(data, data_min, data_max)
-
-    # Handle the case where an entire array is masked or none of it is masked
-    # (Make into an array for easier combination with other masks)
-    if data_ma.mask.size == 1:
-      data_ma.mask = data_ma.mask*np.ones(shape=data.shape, dtype=bool)
-
-    if return_or_add == 'add':
-      self.masks.append({'data_key': data_key, 'data_min': data_min, 'data_max': data_max, 'mask': data_ma.mask})
-    elif return_or_add == 'return':
-      return data_ma.mask
-    else:
-      raise Exception('NULL return_or_add')
-
-  ########################################################################
-
-  def get_total_mask(self):
-
-    raise Exception( "TODO: Test this" )
-
-    # Compile masks
-    all_masks = []
-    for mask_dict in self.masks:
-      all_masks.append(mask_dict['mask'])
-
-    # Combine masks
-    return np.any(all_masks, axis=0, keepdims=True)[0]
-
-  ########################################################################
-
-  def get_masked_data_for_all_masks(self, data_key):
-    '''Wrapper for compliance w/ old scripts.'''
-
-    raise Exception( "TODO: Test this" )
-
-    return self.get_masked_data(data_key, mask='total')
-
-  ########################################################################
-
-  def get_masked_data(self, data_key, mask='total'):
-    '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Get the appropriate mask
-    if mask == 'total':
-      tot_mask = self.get_total_mask()
-    else:
-      tot_mask = mask
-
-    data = self.get_processed_data(data_key)
-    data_ma = np.ma.array(data, mask=tot_mask)
-
-    return data_ma.compressed()
 
 ########################################################################
 ########################################################################
@@ -992,3 +929,96 @@ class DataKeyParser( object ):
       log_flag = True
 
     return data_key, log_flag
+
+########################################################################
+########################################################################
+
+class DataMasker( object ):
+
+  def __init__( self, generic_data ):
+    '''Class for masking data.
+
+    Args:
+      generic_data (GenericData object) : Used for getting data to find mask ranges.
+    '''
+
+    self.generic_data = generic_data
+
+    self.masks = []
+
+  ########################################################################
+
+  def mask_data( self, data_key, data_min, data_max, return_or_store='store' ):
+    '''Get only the particle data within a certain range. Note that it retrieves the processed data.
+
+    Args:
+      data_key (str) : Data key to base the mask off of.
+      data_min (float) : Everything below data_min will be masked.
+      data_max (float) : Everything above data_max will be masked.
+      return_or_store (str) : Whether to store the mask as part of the masks dictionary, or to return it.
+
+    Returns:
+      data_mask (np.array of bools) : If requested, the mask for data in that range.
+
+    Modifies:
+      self.masks (list of dicts) : Appends a dictionary describing the mask.
+    '''
+
+    # Get the mask
+    data = self.generic_data.get_processed_data( data_key )
+    data_ma = np.ma.masked_outside( data, data_min, data_max )
+
+    # Handle the case where an entire array is masked or none of it is masked
+    # (Make into an array for easier combination with other masks)
+    if data_ma.mask.size == 1:
+      data_ma.mask = data_ma.mask*np.ones( shape=data.shape, dtype=bool )
+
+    if return_or_store == 'store':
+      self.masks.append( {'data_key': data_key, 'data_min': data_min, 'data_max': data_max, 'mask': data_ma.mask} )
+
+    elif return_or_store == 'return':
+      return data_ma.mask
+
+    else:
+      raise Exception('NULL return_or_store')
+
+  ########################################################################
+
+  def get_total_mask( self ):
+    '''Get the result of combining all masks in the data.
+
+    Returns:
+      total_mask (np.array of bools) : Result of all masks.
+    '''
+
+    # Compile masks
+    all_masks = []
+    for mask_dict in self.masks:
+      all_masks.append(mask_dict['mask'])
+
+    # Combine masks
+    return np.any(all_masks, axis=0, keepdims=True)[0]
+
+  ########################################################################
+
+  def get_masked_data( self, data_key, mask='total' ):
+    '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.
+
+    Args:
+      data_key (str) : Data key to get the data for.
+      mask (str or np.array of bools) : Mask to apply. If none, use the total mask.
+    '''
+
+    # Get the appropriate mask
+    if mask == 'total':
+      used_mask = self.get_total_mask()
+    else:
+      used_mask = mask
+
+    data = self.generic_data.get_processed_data( data_key )
+
+    # Test for if the data fits the mask, or if it's multi-dimensional
+
+    data_ma = np.ma.array( data, mask=used_mask )
+
+    return data_ma.compressed()
