@@ -398,15 +398,14 @@ class GenericData( object ):
   def v_com( self ):
     '''Property for the velocity of the center of mass.'''
 
-    if not hasattr( self, '_com_velocity' ):
+    if not hasattr( self, '_v_com' ):
       
-
       radial_mask = self.data_masker.mask_data( 'Rf', 0., self.averaging_frac, 'return' )
       
       m_ma = self.data_masker.get_masked_data( 'M', radial_mask )
       v_ma = self.data_masker.get_masked_data( 'V', radial_mask )
 
-      self._v_com = ( v_ma*m_ma ).sum( 0 )/m_ma.sum()
+      self._v_com = ( v_ma*m_ma ).sum( 1 )/m_ma.sum()
 
     return self._v_com
 
@@ -648,7 +647,7 @@ class GenericData( object ):
   def calc_mu(self):
     '''Calculate the mean molecular weight. '''
 
-    raise Exception( "TODO: Test this" )
+    #raise Exception( "TODO: Test this" )
 
     y_helium = self.data['Z_Species'][:,0] # Get the mass fraction of helium
     mu = 1./(1. - 0.75*y_helium + self.data['ne'])

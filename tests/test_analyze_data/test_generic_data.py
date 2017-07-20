@@ -451,7 +451,7 @@ class TestProperties( unittest.TestCase ):
 
       # Have the particle outside have an insane velocity so we notice if it's affecting things.
       'V' : np.array( [
-        [ 10., 0., -10., 0., ],
+        [ 10., 0., -5., 0., ],
         [ 200., 0., 10., -10., ],
         [ 0., 10., 0., 0., ],
         ] ),
@@ -464,7 +464,7 @@ class TestProperties( unittest.TestCase ):
 
     actual = self.g_data.v_com
 
-    expected = np.array( [ 10./3., 0., -10./3. ] )
+    expected = np.array( [ -5./3., 0., 10./3. ] )
 
     npt.assert_allclose( expected, actual )
 

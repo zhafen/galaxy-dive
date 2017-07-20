@@ -8,6 +8,7 @@
 
 import generic_data
 import galaxy_diver.read_data.snapshot as read_snapshot
+import galaxy_diver.utils.constants as constants
 
 ########################################################################
 
@@ -109,9 +110,11 @@ class ParticleData( generic_data.GenericData ):
   def calc_temp(self, gamma=5./3.):
     '''Calculate the temperature from the internal energy. '''
 
+    #raise Exception( TODO: Test this )
+
     mu = self.calc_mu()
     u_cgs = self.data['U']*1.e10
-    self.data['T'] = constants.m_p*mu*(gamma - 1)*u_cgs/constants.k_b
+    self.data['T'] = constants.PROTON_MASS*mu*(gamma - 1)*u_cgs/constants.K_B
 
   ########################################################################
 
