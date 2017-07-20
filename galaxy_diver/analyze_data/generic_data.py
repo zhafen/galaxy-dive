@@ -1038,10 +1038,12 @@ class DataMasker( object ):
     '''
 
     # Get the appropriate mask
-    if mask == 'total':
+    if isinstance( mask, np.ndarray ):
+      used_mask = mask
+    elif mask == 'total':
       used_mask = self.get_total_mask()
     else:
-      used_mask = mask
+      raise KeyError( "Unrecognized type of mask, {}".format( mask ) )
 
     data = self.generic_data.get_processed_data( data_key )
 
