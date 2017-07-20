@@ -12,6 +12,7 @@ import unittest
 import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
+########################################################################
 
 class TestGetCodeVersion( unittest.TestCase ):
 
@@ -48,6 +49,7 @@ class TestGetCodeVersion( unittest.TestCase ):
     assert actual == expected
 
 ########################################################################
+########################################################################
 
 class TestGetInstanceSourceDir( unittest.TestCase ):
 
@@ -68,4 +70,7 @@ class TestGetInstanceSourceDir( unittest.TestCase ):
     expected = os.path.join( os.getcwd(), 'galaxy_diver/utils' )
 
     assert actual == expected
+
+########################################################################
+########################################################################
 

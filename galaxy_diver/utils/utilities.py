@@ -61,6 +61,35 @@ def get_code_version( instance, instance_type='class' ):
 
 ########################################################################
 
+def print_timer( timer_string='Time taken:' ):
+  '''Decorator to time a function.
+
+  Args:
+    timer_string (str, optional) : Printed before printing the time.
+  '''
+  
+  def _print_timer( func ):
+    
+    @wraps( func )
+    def wrapped_func( *args, **kwargs ):
+
+      time_start = time.time()
+
+      result = func( *args, **kwargs )
+
+      time_end = time.time()
+
+      print_string = '{} {:.3g} seconds'.format( timer_string, time_end - time_start )
+      print( print_string )
+
+      return result
+    
+    return wrapped_func
+  
+  return _print_timer
+
+########################################################################
+
 # Make a path to a file
 
 def mkdirP(path):

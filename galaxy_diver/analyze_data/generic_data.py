@@ -271,8 +271,14 @@ class GenericData( object ):
 
     if not hasattr( self, '_base_data_shape' ):
 
-      # Use Density as the default data we assume will usually be there. This breaks for star particles, probably.
-      self._base_data_shape = self.data['Den'].shape
+      # Use Density as the default data we assume will usually be there.
+      if 'Den' in self.data:
+        self._base_data_shape = self.data['Den'].shape
+      # If it doesn't have density, it might have mass
+      elif 'M' in self.data:
+        self._base_data_shape = self.data['M'].shape
+      else:
+        raise Exception( "No data key to base shape off of." )
 
     return self._base_data_shape
 
@@ -312,7 +318,7 @@ class GenericData( object ):
 
     # If we try to set it, make sure that if it already exists we don't change it.
     if hasattr( self, '_redshift' ):
-      npt.assert_allclose( value, self._redshift, atol=1e-10 )
+      npt.assert_allclose( value, self._redshift, atol=1e-5 )
 
     else:
       self._redshift = value
@@ -777,7 +783,7 @@ class GenericData( object ):
       self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so
     '''
 
-    print( 'Data key not found in data. Attempting to calculate.' )
+    print( 'Data key {} not found in data. Attempting to calculate.'.format( data_key ) )
 
     # GenericData methods
     if data_key == 'R':
@@ -1058,3 +1064,14 @@ class DataMasker( object ):
       data_ma = data_ma.compressed()
 
     return data_ma
+
+  ########################################################################
+
+  def clear_masks( self ):
+    '''Reset the masks in total to nothing.
+    
+    Modifies:
+      self.masks (lists) : Sets to empty
+    '''
+
+    self.masks = []
