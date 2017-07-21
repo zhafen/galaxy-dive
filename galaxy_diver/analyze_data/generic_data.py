@@ -45,6 +45,8 @@ class GenericData( object ):
                 center_method = 'halo',
                 vel_center_method = 'halo',
 
+                verbose = False,
+
                 **kwargs ):
     '''Initialize.
 
@@ -80,6 +82,8 @@ class GenericData( object ):
                                                                 velocity is relative to. Options are...
         'halo' (default) : Sets velocity relative to the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
+
+      verbose (bool) : Print out additional information.
 
     Keyword Args:
       function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
@@ -783,7 +787,8 @@ class GenericData( object ):
       self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so
     '''
 
-    print( 'Data key {} not found in data. Attempting to calculate.'.format( data_key ) )
+    if self.verbose:
+      print( 'Data key {} not found in data. Attempting to calculate.'.format( data_key ) )
 
     # GenericData methods
     if data_key == 'R':
