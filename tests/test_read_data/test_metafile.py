@@ -12,8 +12,8 @@ import unittest
 
 import galaxy_diver.read_data.metafile as read_metafile
 
-sdir = './tests/test_data/test_sdir'
-sdir2 = './tests/test_data/test_sdir2'
+sdir = './tests/data/sdir'
+sdir2 = './tests/data/sdir2'
 
 ########################################################################
 

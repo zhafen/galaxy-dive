@@ -34,7 +34,7 @@ class TestGriddedData(unittest.TestCase):
     self.test_class = gridded_data.GriddedData
 
     self.kwargs = {
-      'sdir' : './tests/test_data/test_analysis_dir',
+      'sdir' : './tests/data/analysis_dir',
       'snum' : 600,
       'Nx' : 10,
       'gridsize' : 'vary',

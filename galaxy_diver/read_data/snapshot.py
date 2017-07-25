@@ -220,7 +220,7 @@ def readsnap(sdir,snum,ptype, load_additional_ids=0, snapshot_name='snapshot', e
 ########################################################################
 
 def check_if_filename_exists(sdir,snum,snapshot_name='snapshot',extension='.hdf5',four_char=0):
-    '''Check if a file name exists, and if so return informatoun about it.
+    '''Check if a file name exists, and if so return information about it.
 
     Args:
       sdir (str): Simulation directory to load from.

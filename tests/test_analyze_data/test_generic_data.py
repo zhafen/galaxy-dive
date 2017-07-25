@@ -14,8 +14,8 @@ import galaxy_diver.read_data.snapshot as read_snapshot
 ########################################################################
 
 default_kwargs = {
-  'sdir' : './tests/test_data/test_sdir',
-  'analysis_dir' : './tests/test_data/test_analysis_dir',
+  'sdir' : './tests/data/sdir',
+  'analysis_dir' : './tests/data/analysis_dir',
   'snum' : 500,
   'ahf_index' : 600,
 }

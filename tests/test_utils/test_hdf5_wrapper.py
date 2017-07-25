@@ -56,8 +56,8 @@ class TestHDF5Wrapper(unittest.TestCase):
       os.system( 'rm {}'.format(self.filename) )
     if os.path.isfile(self.copy_filename):
       os.system( 'rm {}'.format(self.copy_filename) )
-    if os.path.isdir( './tests/test_data/output_data' ):
-      os.system( 'rm -r ./tests/test_data/output_data' )
+    if os.path.isdir( './tests/data/output_data' ):
+      os.system( 'rm -r ./tests/data/output_data' )
 
   ########################################################################
 
@@ -474,11 +474,11 @@ class TestHDF5Wrapper(unittest.TestCase):
 
   def test_copy_and_subsample_particle_snapshot( self ):
 
-    filedir = './tests/test_data/test_sdir/output'
+    filedir = './tests/data/sdir/output'
     snum = 600
     subsamples = 2
 
-    copy_filedir = './tests/test_data/output_data/'
+    copy_filedir = './tests/data/output_data/'
 
     # Set the random seed
     np.random.seed(1234)

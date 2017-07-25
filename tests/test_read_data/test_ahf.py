@@ -17,10 +17,10 @@ import unittest
 
 import galaxy_diver.read_data.ahf as read_ahf
 
-sdir = './tests/test_data/test_analysis_dir'
-sdir2 = './tests/test_data/test_analysis_dir2'
-data_sdir = './tests/test_data/test_sdir'
-data_sdir2 = './tests/test_data/test_sdir2'
+sdir = './tests/data/analysis_dir'
+sdir2 = './tests/data/analysis_dir2'
+data_sdir = './tests/data/sdir'
+data_sdir2 = './tests/data/sdir2'
 
 ########################################################################
 
@@ -39,7 +39,7 @@ class TestAHFReader( unittest.TestCase ):
     self.ahf_reader = read_ahf.AHFReader( sdir )
 
     # Remove smooth halo files that are generated
-    halo_filepaths = glob.glob( './tests/test_data/ahf_test_data/halo_*_smooth.dat' )
+    halo_filepaths = glob.glob( './tests/data/ahf_test_data/halo_*_smooth.dat' )
     for halo_filepath in halo_filepaths:
       if os.path.isfile( halo_filepath ):
         os.system( 'rm {}'.format( halo_filepath ) )
@@ -49,7 +49,7 @@ class TestAHFReader( unittest.TestCase ):
   def tearDown( self ):
 
     # Remove extra files that are generated
-    halo_filepaths = glob.glob( './tests/test_data/ahf_test_data/halo_*_test.dat' )
+    halo_filepaths = glob.glob( './tests/data/ahf_test_data/halo_*_test.dat' )
     for halo_filepath in halo_filepaths:
       if os.path.isfile( halo_filepath ):
         os.system( 'rm {}'.format( halo_filepath ) )
@@ -217,8 +217,8 @@ class TestAHFReader( unittest.TestCase ):
     then the loading function breaks.
     '''
 
-    halo_0_filepath = './tests/test_data/ahf_test_data/halo_00000.dat'
-    halo_0_filepath_test = './tests/test_data/ahf_test_data/halo_00000_test.dat'
+    halo_0_filepath = './tests/data/ahf_test_data/halo_00000.dat'
+    halo_0_filepath_test = './tests/data/ahf_test_data/halo_00000_test.dat'
     os.system( 'cp {} {}'.format( halo_0_filepath, halo_0_filepath_test ) )
 
     self.ahf_reader.get_mtree_halos( 'snum' )
@@ -231,7 +231,7 @@ class TestAHFReader( unittest.TestCase ):
 
     self.ahf_reader.get_mtree_halos( 'snum' )
 
-    self.ahf_reader.get_accurate_redshift( './tests/test_data/test_sdir' )
+    self.ahf_reader.get_accurate_redshift( './tests/data/sdir' )
 
     actual = self.ahf_reader.mtree_halos[0]['redshift'][599]
 

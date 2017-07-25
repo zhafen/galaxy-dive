@@ -54,7 +54,7 @@ def get_code_version( instance, instance_type='class' ):
     code_version = subprocess.check_output( [ 'git', 'describe', '--always' ] )
   # If we fail, don't break the code.
   except:
-    return None
+    return 'failed to get version'
 
   # Change back
   os.chdir( cwd )
