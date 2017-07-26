@@ -11,105 +11,14 @@ import glob
 import h5py as h5py
 import os
 
-########################################################################
-########################################################################
-
-def read_snapshot( sdir, snum, ptype, load_additional_ids=False, cosmological=True, ):
-  '''
-  Note: This is created as a function, not a class, because I'm encountering memory issues that may be related to
-  classes persisting in memory. -- Zach Hafen
-  '''
-
-  filepaths = get_snapshot_filepaths( sdir, snum )
-
-  if cosmological:
-    convert_data_to_physical_units()
-
-  return data, data_attrs
-
-########################################################################
-
-def get_snapshot_filepaths( sdir, snum ):
-  '''Get the filepath(s) to a snapshot located in a specified directory.
-
-  Args:
-    sdir (str) : Directory containing the simulation snapshot.
-    snum (int) : Snapshot number.
-
-  Returns:
-    filepaths (list of strs) : Filepath(s) to the snapshot files.
-  '''
-
-  filecase_filepath = os.path.join( sdir, 'snapshot_{:03d}.hdf5'.format( snum ) )
-  is_file = os.path.isfile( filecase_filepath )
-
-  dir_filepath = os.path.join( sdir, 'snapdir_{:03d}'.format( snum ) )
-  is_dir = os.path.isdir( dir_filepath )
-
-  if not ( is_file or is_dir):
-    raise NameError( "Snapshot {:03d} not found in {}".format( snum, sdir ) )
-    
-  if is_file:
-    return [ filecase_filepath, ]
-  elif is_dir:
-    return glob.glob( '{}/*'.format( dir_filepath ) )
-
-########################################################################
-
-def read_snapshot_files( filepaths ):
-
-
-    pos=np.zeros([npartTotal[ptype],3],dtype=float)
-    vel=np.copy(pos)
-    ids=np.zeros([npartTotal[ptype]],dtype=long)
-    if load_additional_ids:
-      child_ids=np.zeros([npartTotal[ptype]],dtype=long)
-      id_gens=np.zeros([npartTotal[ptype]],dtype=long)
-    mass=np.zeros([npartTotal[ptype]],dtype=float)
-    if (ptype==0):
-        ugas=np.copy(mass)
-        rho=np.copy(mass)
-        hsml=np.copy(mass) 
-        if (flag_cooling>0): 
-            nume=np.copy(mass)
-            numh=np.copy(mass)
-        if (flag_sfr>0): 
-            sfr=np.copy(mass)
-    if (ptype==0 or ptype==4) and (flag_metals > 0):
-        metal=np.zeros([npartTotal[ptype],flag_metals],dtype=float)
-    if (ptype==4) and (flag_sfr>0) and (flag_stellarage>0):
-        stellage=np.copy(mass)
-    if (ptype==5) and (skip_bh==0):
-        bhmass=np.copy(mass)
-        bhmdot=np.copy(mass)
-
-  # Setup data storage.
-  data = {
-    'P' : np.zeros( [ n_particles, 3], dtype=np.float64 ),
-    'V' : np.zeros( [ n_particles, 3], dtype=np.float64 ),
-    'ID' : np.zeros( n_particles, dtype=long ),
-    'M' : np.zeros( [ n_particles, 3], dtype=np.float32 ),
-  }
-  if load_additional_ids:
-    data['ChildID'] = np.zeros( n_particles, dtype=long )
-    data['IDGen'] = np.zeros( n_particles, dtype=long )
-
-  data = {}
-  data_attrs = {}
-  for filepath in filepaths:
-    with h5py.File( filepath, 'r' ) as f:
-
-      pass
-
-########################################################################
-########################################################################
-'''Deprecated below this line.'''
-
 import numpy as np
 import os.path
 import scipy.interpolate as interpolate
 import scipy.optimize as optimize
 import math
+
+########################################################################
+########################################################################
 
 def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot', extension='.hdf5', h0=0,cosmological=0, skip_bh=0, four_char=0, header_only=0, loud=0):
     '''Reads in a particle snapshot.
@@ -502,3 +411,94 @@ def gas_temperature(u, num_e, keV=0):
 
     return Temp
 
+########################################################################
+########################################################################
+'''Unfinished below this line. TODO.'''
+
+def read_snapshot( sdir, snum, ptype, load_additional_ids=False, cosmological=True, ):
+  '''
+  Note: This is created as a function, not a class, because I'm encountering memory issues that may be related to
+  classes persisting in memory. -- Zach Hafen
+  '''
+
+  filepaths = get_snapshot_filepaths( sdir, snum )
+
+  if cosmological:
+    convert_data_to_physical_units()
+
+  return data, data_attrs
+
+########################################################################
+
+def get_snapshot_filepaths( sdir, snum ):
+  '''Get the filepath(s) to a snapshot located in a specified directory.
+
+  Args:
+    sdir (str) : Directory containing the simulation snapshot.
+    snum (int) : Snapshot number.
+
+  Returns:
+    filepaths (list of strs) : Filepath(s) to the snapshot files.
+  '''
+
+  filecase_filepath = os.path.join( sdir, 'snapshot_{:03d}.hdf5'.format( snum ) )
+  is_file = os.path.isfile( filecase_filepath )
+
+  dir_filepath = os.path.join( sdir, 'snapdir_{:03d}'.format( snum ) )
+  is_dir = os.path.isdir( dir_filepath )
+
+  if not ( is_file or is_dir):
+    raise NameError( "Snapshot {:03d} not found in {}".format( snum, sdir ) )
+    
+  if is_file:
+    return [ filecase_filepath, ]
+  elif is_dir:
+    return glob.glob( '{}/*'.format( dir_filepath ) )
+
+########################################################################
+
+def read_snapshot_files( filepaths ):
+
+
+  data_attrs = {}
+  for i, filepath in enumerate( filepaths ):
+    with h5py.File( filepath, 'r' ) as f:
+
+      # First time data
+      if i == 0:
+
+        pass
+
+      # Get the attrs/header information
+
+########################################################################
+
+def setup_data_struct( ptype, flag_metals ):
+  '''
+  Args:
+    ptype (int) : Particle type to load.
+    flag_metals (int) : How many metal species there are.
+  '''
+
+  # Setup data storage.
+  data = {
+    'P' : np.zeros( [ n_particles, 3], dtype=np.float64 ),
+    'V' : np.zeros( [ n_particles, 3], dtype=np.float32 ),
+    'ID' : np.zeros( n_particles, dtype=long ),
+    'M' : np.zeros( n_particles, dtype=np.float32 ),
+  }
+  if load_additional_ids:
+    data['ChildID'] = np.zeros( n_particles, dtype=long )
+    data['IDGen'] = np.zeros( n_particles, dtype=long )
+
+  # Information that varies depending on ptype
+  if ptype == 0:
+    data['U'] = np.zeros( n_particles, dtype=np.float32 )
+    data['Den'] = np.zeros( n_particles, dtype=np.float32 )
+    data['XHI'] = np.zeros( n_particles, dtype=np.float32 )
+  if ( ptype == 0 ) or ( ptype == 4 ):
+    data['Z'] = np.zeros( (n_particles, flag_metals), dtype=np.float32 )
+  if ( ptype == 4):
+    data['BirthTime'] = np.zeros( n_particles, dtype=np.float32 )
+
+  return data

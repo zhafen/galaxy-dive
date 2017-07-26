@@ -6,6 +6,7 @@
 @status: Development
 '''
 
+import h5py
 from mock import call, patch
 import numpy as np
 import numpy.testing as npt
@@ -66,27 +67,56 @@ class TestGetSnapshotFilepath( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
-class TestReadSnapshotFiles( unittest.TestCase ):
+# TODO: If I start making my own readsnap routine again, these tests need to be done.
+#class TestReadSnapshotFiles( unittest.TestCase ):
+#
+#  def test_single_file( self ):
+#
+#    actuals = read_snapshot.read_snapshot_files( [ './tests/data/sdir4/output/snapshot_600.hdf5', ] )
+#    actual_keys = [
+#      'P',
+#      'Den',
+#      'U',
+#      'M',
+#      'Z',
+#      'XHI',
+#      'ChildID',
+#      'IDGen',
+#      'ID',
+#      'V',
+#      ]
+#      
+#    expecteds = h5py.File( './tests/data/sdir4/output/snapshot_600.hdf5' )
+#    expected_keys = [
+#      u'Coordinates',
+#      u'Density',
+#      u'InternalEnergy',
+#      u'Masses',
+#      u'Metallicity',
+#      u'NeutralHydrogenAbundance',
+#      u'ParticleChildIDsNumber',
+#      u'ParticleIDGenerationNumber',
+#      u'ParticleIDs',
+#      u'Velocities',
+#      ]
+#
+#    for expected_key, actual_key in zip( expected_keys, actual_keys ):
+#
+#      expected = exepecteds[expected_key]
+#      actual = actuals[actual_keys]
+#
+#      npt.assert_allclose( expected, actual )
+#
+#      assert expected.dtype == actual.dtype
+#
+#  ########################################################################
+#
+#  def test_different_ptypes( self ):
+#
+#    assert False, "Need to do."
+#
+#  ########################################################################
 
-  def test_single_file( self ):
-
-    result = read_snapshot.read_snapshot_files( [ './tests/data/sdir4/output/snapshot_600.hdf5', ] )
-
-    expected = np.array([[ 29953.00646091,  28918.5908384 ,  32798.35341555],
-       [ 28642.72716734,  30820.7929077 ,  32021.86030374],
-       [ 29213.81537756,  30803.76570582,  32571.4128437 ]])
-
-    actual = result['P']
-
-    npt.assert_allclose( expected, actual )
-
-  ########################################################################
-
-  def test_different_ptypes( self ):
-
-    assert False, "Need to do."
-
-  ########################################################################
 
 
 
