@@ -22,12 +22,6 @@ def read_snapshot( sdir, snum, ptype, load_additional_ids=False, cosmological=Tr
 
   filepaths = get_snapshot_filepaths( sdir, snum )
 
-  data = {}
-  data_attrs = {}
-  with h5py.File( filepath, 'r' ) as f:
-
-    pass
-
   if cosmological:
     convert_data_to_physical_units()
 
@@ -35,7 +29,16 @@ def read_snapshot( sdir, snum, ptype, load_additional_ids=False, cosmological=Tr
 
 ########################################################################
 
-def get_snapshot_filepath( sdir, snum ):
+def get_snapshot_filepaths( sdir, snum ):
+  '''Get the filepath(s) to a snapshot located in a specified directory.
+
+  Args:
+    sdir (str) : Directory containing the simulation snapshot.
+    snum (int) : Snapshot number.
+
+  Returns:
+    filepaths (list of strs) : Filepath(s) to the snapshot files.
+  '''
 
   filecase_filepath = os.path.join( sdir, 'snapshot_{:03d}.hdf5'.format( snum ) )
   is_file = os.path.isfile( filecase_filepath )
@@ -47,9 +50,56 @@ def get_snapshot_filepath( sdir, snum ):
     raise NameError( "Snapshot {:03d} not found in {}".format( snum, sdir ) )
     
   if is_file:
-    return filecase_filepath
+    return [ filecase_filepath, ]
   elif is_dir:
     return glob.glob( '{}/*'.format( dir_filepath ) )
+
+########################################################################
+
+def read_snapshot_files( filepaths ):
+
+
+    pos=np.zeros([npartTotal[ptype],3],dtype=float)
+    vel=np.copy(pos)
+    ids=np.zeros([npartTotal[ptype]],dtype=long)
+    if load_additional_ids:
+      child_ids=np.zeros([npartTotal[ptype]],dtype=long)
+      id_gens=np.zeros([npartTotal[ptype]],dtype=long)
+    mass=np.zeros([npartTotal[ptype]],dtype=float)
+    if (ptype==0):
+        ugas=np.copy(mass)
+        rho=np.copy(mass)
+        hsml=np.copy(mass) 
+        if (flag_cooling>0): 
+            nume=np.copy(mass)
+            numh=np.copy(mass)
+        if (flag_sfr>0): 
+            sfr=np.copy(mass)
+    if (ptype==0 or ptype==4) and (flag_metals > 0):
+        metal=np.zeros([npartTotal[ptype],flag_metals],dtype=float)
+    if (ptype==4) and (flag_sfr>0) and (flag_stellarage>0):
+        stellage=np.copy(mass)
+    if (ptype==5) and (skip_bh==0):
+        bhmass=np.copy(mass)
+        bhmdot=np.copy(mass)
+
+  # Setup data storage.
+  data = {
+    'P' : np.zeros( [ n_particles, 3], dtype=np.float64 ),
+    'V' : np.zeros( [ n_particles, 3], dtype=np.float64 ),
+    'ID' : np.zeros( n_particles, dtype=long ),
+    'M' : np.zeros( [ n_particles, 3], dtype=np.float32 ),
+  }
+  if load_additional_ids:
+    data['ChildID'] = np.zeros( n_particles, dtype=long )
+    data['IDGen'] = np.zeros( n_particles, dtype=long )
+
+  data = {}
+  data_attrs = {}
+  for filepath in filepaths:
+    with h5py.File( filepath, 'r' ) as f:
+
+      pass
 
 ########################################################################
 ########################################################################

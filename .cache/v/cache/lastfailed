@@ -1,1 +1,3 @@
-{}
+{
+  "tests/test_read_data/test_snapshot.py::TestReadSnapshotFiles::test_single_file": true
+}
