@@ -1,22 +1,67 @@
 #!/usr/bin/env python
 '''Routines for reading in GADGET/GIZMO snapshots.
 
-@author: Phil Hopkins, Claude-Andre Faucher-Giguere, Zach Hafen, and maybe others (this file's been passed around a lot).
+@author: Zach Hafen, Phil Hopkins, Claude-Andre Faucher-Giguere,
+  and maybe others (this file's been passed around a lot).
 @contact: zachary.h.hafen@gmail.com
 @status: Development
 '''
 
-import numpy as np
+import glob
 import h5py as h5py
+import os
+
+########################################################################
+########################################################################
+
+def read_snapshot( sdir, snum, ptype, load_additional_ids=False, cosmological=True, ):
+  '''
+  Note: This is created as a function, not a class, because I'm encountering memory issues that may be related to
+  classes persisting in memory. -- Zach Hafen
+  '''
+
+  filepaths = get_snapshot_filepaths( sdir, snum )
+
+  data = {}
+  data_attrs = {}
+  with h5py.File( filepath, 'r' ) as f:
+
+    pass
+
+  if cosmological:
+    convert_data_to_physical_units()
+
+  return data, data_attrs
+
+########################################################################
+
+def get_snapshot_filepath( sdir, snum ):
+
+  filecase_filepath = os.path.join( sdir, 'snapshot_{:03d}.hdf5'.format( snum ) )
+  is_file = os.path.isfile( filecase_filepath )
+
+  dir_filepath = os.path.join( sdir, 'snapdir_{:03d}'.format( snum ) )
+  is_dir = os.path.isdir( dir_filepath )
+
+  if not ( is_file or is_dir):
+    raise NameError( "Snapshot {:03d} not found in {}".format( snum, sdir ) )
+    
+  if is_file:
+    return filecase_filepath
+  elif is_dir:
+    return glob.glob( '{}/*'.format( dir_filepath ) )
+
+########################################################################
+########################################################################
+'''Deprecated below this line.'''
+
+import numpy as np
 import os.path
 import scipy.interpolate as interpolate
 import scipy.optimize as optimize
 import math
 
-########################################################################
-########################################################################
-
-def readsnap(sdir,snum,ptype, load_additional_ids=0, snapshot_name='snapshot', extension='.hdf5', h0=0,cosmological=0, skip_bh=0, four_char=0, header_only=0, loud=0):
+def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot', extension='.hdf5', h0=0,cosmological=0, skip_bh=0, four_char=0, header_only=0, loud=0):
     '''Reads in a particle snapshot.
 
     Args:
