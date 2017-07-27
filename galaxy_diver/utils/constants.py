@@ -12,8 +12,8 @@ import numpy as np
 # Physical Constants
 ########################################################################
 
-Z_MASSFRAC_SUN           = 0.0143        # Asplund et al. (2009)
-Z_MASSFRAC_SUN_ALTERNATE = 0.02          # More traditional value
+Z_MASSFRAC_SUN           = 0.02          # Traditional value
+Z_MASSFRAC_SUN_ALTERNATE = 0.0143        # Asplund et al. (2009)
 
 HUBBLE                   = 3.2407789e-18 # in h/sec
 GAMMA                    = 5.0/3.0
