@@ -110,7 +110,7 @@ class AHFReader( object ):
 
       if index == 'range':
         pass
-      elif (index == 'snum') or (type(index) == int):
+      elif (index == 'snum') or isinstance( index, int ):
         if index == 'snum':
           final_snapshot_number = 600
         else:
