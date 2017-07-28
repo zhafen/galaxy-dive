@@ -15,6 +15,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+import galaxy_diver.utils.data_operations as data_ops
+
 ########################################################################
 
 def add_colorbar( fig_or_ax, color_object, method='fig', ax_location=[0.9, 0.1, 0.03, 0.8], **kw_args ):
@@ -173,7 +175,7 @@ def save_fig( out_dir, save_file, fig=None, **save_args ):
     else: raise
 
   default_save_args = {'dpi':300, 'bbox_inches':'tight'}
-  used_save_args = dataio.mergeDict(save_args, default_save_args)
+  used_save_args = data_ops.merge_dict( save_args, default_save_args)
 
   # Save the figure.
   if fig == None:
