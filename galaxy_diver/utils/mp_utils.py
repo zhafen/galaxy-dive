@@ -60,8 +60,11 @@ def fun(f, q_in, q_out):
 
 
 def parmap(f, X, nprocs=multiprocessing.cpu_count()):
-    q_in = multiprocessing.Queue(1)
-    q_out = multiprocessing.Queue()
+
+    m = multiprocessing.Manager()
+
+    q_in = m.Queue(1)
+    q_out = m.Queue()
 
     proc = [multiprocessing.Process(target=fun, args=(f, q_in, q_out))
             for _ in range(nprocs)]

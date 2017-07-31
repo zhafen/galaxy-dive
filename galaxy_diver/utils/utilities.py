@@ -14,6 +14,38 @@ import time
 
 ########################################################################
 
+def chunk_list( l, n ):
+  '''Breaks a list l into n chunks, as equally as possible.
+
+  Args:
+    l (list) : List to break into chunks.
+    n (int) : Number of chunks to break the list into.
+
+  Returns:
+    chunked_l ( list of lists ) : The list broken into chunks.
+  '''
+
+  start_ind = 0
+  end_ind = 0
+  remainder_to_distribute = len( l ) % n
+
+  chunked_l = []
+  for i in range( n ):
+    
+    end_ind += len( l )/n
+    
+    if remainder_to_distribute > 0:
+      end_ind += 1
+      remainder_to_distribute -= 1
+    
+    chunked_l.append( l[ start_ind : end_ind ] )
+    
+    start_ind = end_ind
+
+  return chunked_l
+
+########################################################################
+
 def get_instance_source_dir( instance, instance_type='class' ):
   '''Get the directory containing the source code of an instance (class or module).
 

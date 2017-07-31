@@ -74,3 +74,27 @@ class TestGetInstanceSourceDir( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
+class TestChunkList( unittest.TestCase ):
+
+  def test_default( self ):
+
+    n = 2
+    l = range( 10 )
+    expected = ( [ 0, 1, 2, 3, 4 ], [ 5, 6, 7, 8, 9 ] )
+    actual = utilities.chunk_list( l, n )
+    for expected_, actual_ in zip( expected, actual ):
+      assert expected_ == actual_
+
+    n = 3
+    l = range( 10 )
+    expected = ( [ 0, 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] )
+    actual = utilities.chunk_list( l, n )
+    for expected_, actual_ in zip( expected, actual ):
+      assert expected_ == actual_
+
+    n = 3
+    l = range( 11 )
+    expected = ( [ 0, 1, 2, 3 ], [ 4, 5, 6, 7 ], [ 8, 9, 10 ] )
+    actual = utilities.chunk_list( l, n )
+    for expected_, actual_ in zip( expected, actual ):
+      assert expected_ == actual_
