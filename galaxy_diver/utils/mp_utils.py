@@ -8,6 +8,8 @@
 
 import copy_reg
 import multiprocessing as mp
+import pdb
+import sys
 from types import MethodType
 
 import galaxy_diver.utils.utilities as utilities
@@ -106,3 +108,18 @@ def make_classes_picklable():
   http://stackoverflow.com/questions/1816958/cant-pickle-type-instancemethod-when-using-pythons-multiprocessing-pool-ma/7309686#7309686
   '''
   copy_reg.pickle(MethodType, _pickle_method, _unpickle_method)
+
+########################################################################
+
+class ForkedPdb(pdb.Pdb):
+    """A Pdb subclass that may be used
+    from a forked multiprocessing child
+    From https://stackoverflow.com/a/23654936
+    """
+    def interaction(self, *args, **kwargs):
+        _stdin = sys.stdin
+        try:
+            sys.stdin = open('/dev/stdin')
+            pdb.Pdb.interaction(self, *args, **kwargs)
+        finally:
+            sys.stdin = _stdin
