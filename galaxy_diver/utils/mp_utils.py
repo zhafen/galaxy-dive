@@ -8,6 +8,7 @@
 
 import copy_reg
 import multiprocessing as mp
+import os
 import pdb
 import sys
 from types import MethodType
@@ -43,34 +44,94 @@ def apply_among_processors( f, all_args, n_procs=mp.cpu_count() ):
 https://stackoverflow.com/a/16071616
 '''
 
-def fun(f, q_in, q_out):
-    while True:
-        i, x = q_in.get()
-        if i is None:
-            break
-        q_out.put((i, f(x)))
+def fun( f, q_in, q_out ):
+  while True:
+    i, x = q_in.get()
+    if i is None:
+      print( "PID {} finishing, PPID {}.".format( os.getpid(), os.getppid() ) )
+      break
+    q_out.put( (i, f( x )) )
 
+def set_fun( f, q_in, q_out ):
+  res_proc = set()
+  while True:
+    i, x = q_in.get()
+    if i is None:
+      print( "PID {} finishing, PPID {}.".format( os.getpid(), os.getppid() ) )
+      q_out.put( res_proc )
+      break
+    res_proc = res_proc | f( x )
 
-def parmap(f, X, nprocs=mp.cpu_count()):
+# DEBUG
+@profile
+def parmap( f, X, nprocs=mp.cpu_count(), set_case=False, ):
+    '''Parallel map, viable with classes.
+
+    Args:
+      f (function) : Function to map to.
+    ies = list( q_out )
+      X (list) : List of arguments to provide f
+      nprocs (int) : Number of processors to use.
+      set_case (bool) : If this option is True, it assumes that f returns a set, and that results should be the
+        union of all those sets.
+
+    Returns:
+      results (list or set) : The results.
+    '''
 
     m = mp.Manager()
 
     q_in = m.Queue(1)
     q_out = m.Queue()
 
-    proc = [mp.Process(target=fun, args=(f, q_in, q_out))
-            for _ in range(nprocs)]
+    if set_case:
+      target_fun = set_fun
+    else:
+      target_fun = fun
+
+    #DEBUG
+    #import pdb; pdb.set_trace()
+
+    proc = [ mp.Process( target=target_fun, args=(f, q_in, q_out) )
+            for _ in range( nprocs ) ]
     for p in proc:
         p.daemon = True
         p.start()
 
-    sent = [q_in.put((i, x)) for i, x in enumerate(X)]
-    [q_in.put((None, None)) for _ in range(nprocs)]
-    res = [q_out.get() for _ in range(len(sent))]
+    sent = [ q_in.put( (i, x) ) for i, x in enumerate( X ) ]
+    [ q_in.put( (None, None) ) for _ in range( nprocs ) ]
 
-    [p.join() for p in proc]
+    # Store the results
+    if set_case:
 
-    return [x for i, x in sorted(res)]
+      #DEBUG
+      import pdb; pdb.set_trace()
+
+      res = [ q_out.get() for _ in range( nprocs ) ]
+
+      [ p.join() for p in proc ]
+
+      # DEBUG
+      #return [ x for i, x in sorted( res ) ]
+      return res
+
+    else:
+
+      #DEBUG
+      #import pdb; pdb.set_trace()
+
+      # DEBUG
+      res = [ q_out.get() for _ in range( len( sent ) ) ]
+
+      [ p.join() for p in proc ]
+
+      return [ x for i, x in sorted( res ) ]
+
+    #res = [ q_out.get() for _ in range( len( sent ) ) ]
+
+    #[ p.join() for p in proc ]
+
+    #return [ x for i, x in sorted( res ) ]
 
 
 if __name__ == '__main__':

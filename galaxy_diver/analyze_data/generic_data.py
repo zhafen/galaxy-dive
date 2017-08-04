@@ -734,9 +734,6 @@ class GenericData( object ):
       data (np.ndarray) : Requested data.
     '''
 
-    #DEBUG
-    import pdb; pdb.set_trace()
-
     self.center_coords()
 
     # Transpose in order to account for when the data isn't regularly shaped
