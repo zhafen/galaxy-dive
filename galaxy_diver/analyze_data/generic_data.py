@@ -734,6 +734,9 @@ class GenericData( object ):
       data (np.ndarray) : Requested data.
     '''
 
+    #DEBUG
+    import pdb; pdb.set_trace()
+
     self.center_coords()
 
     # Transpose in order to account for when the data isn't regularly shaped
@@ -836,8 +839,8 @@ class GenericData( object ):
     data_key, log_flag = self.key_parser.is_log_key( data_key )
 
     # Get the data and make a copy to avoid altering
-    data_original = self.get_data(data_key)
-    data = copy.deepcopy(data_original)
+    data_original = self.get_data( data_key )
+    data = copy.deepcopy( data_original )
 
     # Actually calculate the fractional data
     if fraction_flag:
