@@ -17,7 +17,7 @@ import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
 
-def apply_among_processors( f, all_args, n_procs=mp.cpu_count() ):
+def apply_among_processors( f, all_args, n_processors=mp.cpu_count() ):
   '''Takes a list of arguments and breaks it up and splits those chunks among the processors.
   Note: This currently does not return anything, so it doesn't work for functions where you want f to return something.
   However! It does work for shared memory objects, unlike Pool or parmap!
@@ -25,14 +25,14 @@ def apply_among_processors( f, all_args, n_procs=mp.cpu_count() ):
   Args:
     f (function) : The function to apply the args to.
     all_args (list) : Args to apply. Format, [ (args1), (args2), ... ]
-    n_procs (int, optional) : Number of processors to use.
+    n_processors (int, optional) : Number of processors to use.
   '''
 
   def wrapped_f( args_chunk ):
     for args in args_chunk:
       f(*args)
 
-  chunked_args = utilities.chunk_list( all_args, n_procs )
+  chunked_args = utilities.chunk_list( all_args, n_processors )
 
   ps = [ mp.Process( target=wrapped_f, args=(args_chunk,) ) for args_chunk in chunked_args ]
 
@@ -103,7 +103,8 @@ def set_fun( f, q_in, q_out ):
       break
     res_proc = res_proc | f( x )
 
-def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, ):
+@profile
+def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, use_mp_queue_to_list=False ):
     '''Parallel map, viable with classes.
 
     Args:
@@ -113,6 +114,8 @@ def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, ):
       n_processors (int) : Number of processors to use.
       set_case (bool) : If this option is True, it assumes that f returns a set, and that results should be the
         union of all those sets.
+      use_mp_queue_to_list (bool) : Experimental. If True, try to use mp_queue_to_list to convert the list.
+        Only works if set_case, currently.
 
     Returns:
       results (list or set) : The results.
@@ -140,7 +143,10 @@ def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, ):
     # Store the results
     if set_case:
 
-      res = [ q_out.get() for _ in range( n_processors ) ]
+      if use_mp_queue_to_list:
+        res = mp_queue_to_list( q_out, n_processors )
+      else:
+        res = [ q_out.get() for _ in range( n_processors ) ]
 
       [ p.join() for p in proc ]
 

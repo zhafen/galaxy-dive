@@ -58,7 +58,7 @@ class TestMPQueueToList( unittest.TestCase ):
     actual = mp_utils.mp_queue_to_list( q, 2 )
     expected = range( 4 )
 
-    npt.assert_allclose( expected, actual )
+    npt.assert_allclose( sorted( expected ), sorted( actual ) )
 
   ########################################################################
 
@@ -91,7 +91,25 @@ class TestMPQueueToList( unittest.TestCase ):
     q = mp.Queue()
     [ q.put( i ) for i in range( 1 ) ]
     
-    actual = mp_utils.mp_queue_to_list( q, 1 )
+    actual = mp_utils.mp_queue_to_list( q, 2 )
     expected = range( 1 )
 
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_queue_of_sets( self ):
+
+    q = mp.Queue()
+
+    ls = [ range( i, i + 4 ) for i in range( 3 ) ]
+    sets = [ set( l ) for l in ls ]
+    [ q.put( s ) for s in sets ]
+    
+    actual = mp_utils.mp_queue_to_list( q, 2 )
+    expected = sets
+
+    actual_sorted = sorted( [ list( s ) for s in actual ] )
+    expected_sorted = sorted( [ list( s ) for s in expected ] )
+
+    npt.assert_allclose( expected_sorted, actual_sorted )
