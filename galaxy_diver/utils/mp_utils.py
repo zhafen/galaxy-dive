@@ -40,6 +40,47 @@ def apply_among_processors( f, all_args, n_procs=mp.cpu_count() ):
   [ p.join() for p in ps ]
 
 ########################################################################
+
+def mp_queue_to_list( queue, n_processors=mp.cpu_count() ):
+  '''Convert a multiprocessing.Queue object to a list, using multiple processors to parse it.
+  The list is unordered. It may also not work if the queue contains lists.
+
+  Args:
+    queue (mp.Queue) : The queue to turn into a list.
+    n_processors (int) : Number of processors to use.
+  '''
+
+  def process_queue( q, l ):
+
+    while True:
+
+      l.acquire()
+      if q.qsize() > 1:
+        popped1 =  q.get()
+        popped2 =  q.get()
+        l.release()
+      else:
+        l.release()
+        break
+
+      if not isinstance( popped1, list ):
+        popped1 = [ popped1, ]
+      if not isinstance( popped2, list ):
+        popped2 = [ popped2, ]
+      
+      q.put( popped1 + popped2 )
+
+  lock = mp.Lock()
+
+  proc = [ mp.Process( target=process_queue, args=(queue,lock) ) for _ in range( n_processors ) ]
+  for p in proc:
+      p.daemon = True
+      p.start()
+  [ p.join() for p in proc ]
+
+  return queue.get()
+
+########################################################################
 '''The following is a version of Pool, written with classes in mind. It does not handle shared memory objects well.
 https://stackoverflow.com/a/16071616
 '''
@@ -62,16 +103,14 @@ def set_fun( f, q_in, q_out ):
       break
     res_proc = res_proc | f( x )
 
-# DEBUG
-@profile
-def parmap( f, X, nprocs=mp.cpu_count(), set_case=False, ):
+def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, ):
     '''Parallel map, viable with classes.
 
     Args:
       f (function) : Function to map to.
     ies = list( q_out )
       X (list) : List of arguments to provide f
-      nprocs (int) : Number of processors to use.
+      n_processors (int) : Number of processors to use.
       set_case (bool) : If this option is True, it assumes that f returns a set, and that results should be the
         union of all those sets.
 
@@ -89,53 +128,31 @@ def parmap( f, X, nprocs=mp.cpu_count(), set_case=False, ):
     else:
       target_fun = fun
 
-    #DEBUG
-    #import pdb; pdb.set_trace()
-
     proc = [ mp.Process( target=target_fun, args=(f, q_in, q_out) )
-            for _ in range( nprocs ) ]
+            for _ in range( n_processors ) ]
     for p in proc:
         p.daemon = True
         p.start()
 
     sent = [ q_in.put( (i, x) ) for i, x in enumerate( X ) ]
-    [ q_in.put( (None, None) ) for _ in range( nprocs ) ]
+    [ q_in.put( (None, None) ) for _ in range( n_processors ) ]
 
     # Store the results
     if set_case:
 
-      #DEBUG
-      import pdb; pdb.set_trace()
-
-      res = [ q_out.get() for _ in range( nprocs ) ]
+      res = [ q_out.get() for _ in range( n_processors ) ]
 
       [ p.join() for p in proc ]
 
-      # DEBUG
-      #return [ x for i, x in sorted( res ) ]
       return res
 
     else:
 
-      #DEBUG
-      #import pdb; pdb.set_trace()
-
-      # DEBUG
       res = [ q_out.get() for _ in range( len( sent ) ) ]
 
       [ p.join() for p in proc ]
 
       return [ x for i, x in sorted( res ) ]
-
-    #res = [ q_out.get() for _ in range( len( sent ) ) ]
-
-    #[ p.join() for p in proc ]
-
-    #return [ x for i, x in sorted( res ) ]
-
-
-if __name__ == '__main__':
-    print(parmap(lambda i: i * 2, [1, 2, 3, 4, 6, 7, 8]))
 
 ########################################################################
 '''This section contains efforts to make classes pickleable, allowing multiprocessing.Pool to be used.'''
