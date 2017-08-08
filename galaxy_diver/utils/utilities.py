@@ -17,6 +17,17 @@ import time
 ########################################################################
 
 class SmartDict( collections.Mapping ):
+  '''Replacement for dictionary that allows easier access to the attributes and methods of the dictionary components.
+  For example, if one has a smart dictionary of TestClassA objects, each of which has a TestClassB attribute, which
+  in turn have a foo method, then smart_dict.test_class_b.foo(2) would be a dict with foo calculated for each.
+  In other words, it would be equivalent to the following code:
+  results = {}
+  for key in smart_dict.keys():
+    results[key] = smart_dict[key].test_class_b.foo( 2 )
+  return results
+
+  NOTE: In Python 3, the inheritance class probably needs to be switched to collections.abc.Mapping.
+  '''
 
   def __init__( self, *args, **kwargs ):
     self._storage = dict( *args, **kwargs )
@@ -30,6 +41,9 @@ class SmartDict( collections.Mapping ):
   def __getitem__( self, item ):
     return self._storage[item]
 
+  def __repr__( self ):
+    print self._storage
+
   def __getattr__( self, attr ):
 
     results = {}
@@ -40,6 +54,15 @@ class SmartDict( collections.Mapping ):
     smart_results = SmartDict( results )
 
     return smart_results
+
+  def __call__( self, *args, **kwargs ):
+
+    results = {}
+    for key in self.keys():
+        
+      results[key] = self._storage[key]( *args, **kwargs )
+
+    return results
 
 ########################################################################
 

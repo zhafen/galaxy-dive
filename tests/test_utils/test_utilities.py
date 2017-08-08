@@ -50,6 +50,29 @@ class TestSmartDict( unittest.TestCase ):
 
     self.assertEqual( expected, actual )
 
+  ########################################################################
+
+  def test_nested_method( self ):
+
+    class TestClassA( object ):
+      def foo( self, x ):
+        return x**2
+    class TestClassB( object ):
+      def __init__( self ):
+        self.test_class_a = TestClassA()
+
+    d = {}
+    expected = {}
+    for i in range( 3 ):
+      d[i] = TestClassB()
+      expected[i] = 4
+
+    smart_d = utilities.SmartDict( d )
+
+    actual = smart_d.test_class_a.foo( 2 )
+
+    self.assertEqual( expected, actual )
+
 ########################################################################
 ########################################################################
 
