@@ -44,6 +44,8 @@ class SmartDict( collections.Mapping ):
   def __repr__( self ):
     print self._storage
 
+    return 'SmartDict object'
+
   def __getattr__( self, attr ):
 
     results = {}
