@@ -14,6 +14,45 @@ import galaxy_diver.utils.utilities as utilities
 ########################################################################
 ########################################################################
 
+class TestSmartDictStartup( unittest.TestCase ):
+
+  def test_default( self ):
+
+    d = { 'a' : 1, 'b' : 2 }
+
+    smart_dict = utilities.SmartDict( d )
+
+    self.assertEqual( smart_dict['b'], 2 )
+    self.assertEqual( len( smart_dict ), 2 )
+
+########################################################################
+
+class TestSmartDict( unittest.TestCase ):
+
+  def test_nested( self ):
+
+    class TestClassA( object ):
+      def __init__( self ):
+        self.foo = 1234
+    class TestClassB( object ):
+      def __init__( self ):
+        self.test_class_a = TestClassA()
+
+    d = {}
+    expected = {}
+    for i in range( 3 ):
+      d[i] = TestClassB()
+      expected[i] = 1234
+
+    smart_d = utilities.SmartDict( d )
+
+    actual = smart_d.test_class_a.foo
+
+    self.assertEqual( expected, actual )
+
+########################################################################
+########################################################################
+
 class TestGetCodeVersion( unittest.TestCase ):
 
   def test_default( self ):

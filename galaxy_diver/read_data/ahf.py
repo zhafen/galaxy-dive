@@ -212,7 +212,7 @@ class AHFReader( object ):
     ahf_filepath_unexpanded = os.path.join( self.sdir, ahf_filename )
     possible_filepaths = glob.glob( ahf_filepath_unexpanded )
     if len( possible_filepaths ) == 0:
-      raise NameError( 'No files to load in {}'.format( self.sdir ) )
+      raise NameError( 'No files to load for snum {} in {}'.format( snum, self.sdir ) )
     elif len( possible_filepaths ) > 1:
       raise Exception( 'Multiple possible *.{} files to load'.format( ahf_file_type ) )
     ahf_filepath = possible_filepaths[0]

@@ -6,11 +6,56 @@
 @status: Development
 '''
 
+import collections
 from functools import wraps
 import inspect
 import os
 import subprocess
 import time
+
+########################################################################
+########################################################################
+
+class SmartDict( collections.Mapping ):
+
+  def __init__( self, *args, **kwargs ):
+    self._storage = dict( *args, **kwargs )
+
+  def __iter__( self ):
+    return iter( self._storage )
+
+  def __len__( self ):
+    return len( self._storage )
+
+  def __getitem__( self, item ):
+    return self._storage[item]
+
+  def __getattr__( self, attr ):
+
+    results = {}
+    for key in self.keys():
+
+      results[key] = getattr( self._storage[key], attr )
+
+    smart_results = SmartDict( results )
+
+    return smart_results
+
+########################################################################
+
+def deepgetattr( obj, attr ):
+  '''Recurses through an attribute chain to get the ultimate value.
+  Credit to http://pingfive.typepad.com/blog/2010/04/deep-getattr-python-function.html
+
+  Args:
+    obj (object) : Object for which to get the attribute.
+    attr (str) : Attribute to get. Can be nested, e.g. obj.foo.bar.dog
+
+  Returns:
+    result (attr object) : The requested attribute.
+  '''
+
+  return reduce( getattr, attr.split('.'), obj )
 
 ########################################################################
 

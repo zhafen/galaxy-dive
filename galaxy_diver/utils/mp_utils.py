@@ -103,7 +103,6 @@ def set_fun( f, q_in, q_out ):
       break
     res_proc = res_proc | f( x )
 
-@profile
 def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, use_mp_queue_to_list=False ):
     '''Parallel map, viable with classes.
 
@@ -139,6 +138,8 @@ def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, use_mp_queue_to_l
 
     sent = [ q_in.put( (i, x) ) for i, x in enumerate( X ) ]
     [ q_in.put( (None, None) ) for _ in range( n_processors ) ]
+
+    print( "Getting results from queue. This could take a while..." )
 
     # Store the results
     if set_case:
