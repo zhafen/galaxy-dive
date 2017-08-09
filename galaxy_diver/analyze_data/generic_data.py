@@ -26,8 +26,9 @@ import galaxy_diver.utils.constants as constants
 class GenericData( object ):
 
   def __init__( self,
-                sdir = None,
+                data_dir = None,
                 analysis_dir = None,
+                snum = None,
                 ahf_index = None,
 
                 averaging_frac = 0.5,
@@ -50,8 +51,9 @@ class GenericData( object ):
     '''Initialize.
 
     Args:
-      sdir (str) : Directory the simulation is contained in.
-      analysis_dir (str) : Directory simulation analysis is contained in. Defaults to sdir
+      data_dir (str) : Directory the simulation is contained in.
+      analysis_dir (str) : Directory simulation analysis is contained in. Defaults to data_dir
+      snum (int or array of ints) : Snapshot or snapshots to inspect.
       ahf_index (str) : What to index the snapshots by. Should be the last snapshot in the simulation *if*
                                   AHF was run backwards from the last snapshot.
                                   Required to put in manually to avoid easy mistakes.
@@ -98,9 +100,9 @@ class GenericData( object ):
         continue
       if getattr( self, attr ) == None:
 
-        # Set the analysis dir to sdir if not given
+        # Set the analysis dir to data_dir if not given
         if attr == 'analysis_dir':
-          self.analysis_dir = self.sdir
+          self.analysis_dir = self.data_dir
 
         elif attr == 'ahf_index':
           warnings.warn( "AHF index not specified. Will be unable to use halo finding data." )
@@ -116,130 +118,6 @@ class GenericData( object ):
 
     # Setup a data key parser
     self.key_parser = DataKeyParser()
-
-########################################################################
-########################################################################
-
-class SnapshotData( GenericData ):
-  '''Class for analysis of a single snapshot of data.'''
-
-  def __init__( self, snum, *args, **kwargs ):
-    '''
-    Args:
-      snum (int or array of ints) : Snapshot to inspect.
-    '''
-
-    # Store the arguments
-    for arg in locals().keys():
-      if ( arg != 'args' ) and (arg != 'kwargs' ) and ( arg != 'self' ):
-        setattr( self, arg, locals()[arg] )
-
-    super( SnapshotData, self ).__init__( *args, **kwargs )
-
-  ########################################################################
-  # Get Additional Data
-  ########################################################################
-
-  def retrieve_halo_data( self ):
-
-    if self.halo_data_retrieved:
-      return
-
-    # Load the AHF data
-    ahf_reader = read_ahf.AHFReader( self.analysis_dir )
-    ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
-
-    # Select the main halo at the right redshift
-    mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum]
-
-    # Add the halo data to the class.
-    self.redshift = mtree_halo['redshift']
-    halo_coords_comoving = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )
-    self.halo_coords = halo_coords_comoving/(1. + self.redshift)/self.data_attrs['hubble']
-    self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
-    self.r_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
-    self.r_scale = self.r_vir/mtree_halo['cAnalytic']
-    self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
-    self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
-    self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
-
-    # Calculate the circular velocity
-    self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
-
-    self.halo_data_retrieved = True
-
-  ########################################################################
-  # Overall changes to the data
-  ########################################################################
-
-  def center_coords( self ):
-    '''Change the location of the origin, if the data isn't already centered.
-
-    Modifies:
-      self.data['P'] : Shifts the coordinates to the center.
-    '''
-
-    if self.centered:
-      return
-
-    if isinstance( self.center_method, np.ndarray ):
-      self.origin = copy.copy( self.center_method )
-
-    elif self.center_method == 'halo':
-      self.retrieve_halo_data()
-      self.origin = copy.copy( self.halo_coords )
-
-    else:
-      raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
-
-    # Do it like this because we don't know the shape of self.data['P'][0]
-    for i in range( 3 ):
-      self.data['P'][i] -= self.origin[i]
-
-    # Note that we're now centered
-    self.centered = True
-
-  ########################################################################
-
-  def center_vel_coords( self ):
-    '''Get velocity coordinates to center on the main halo.
-
-    Modifies:
-      self.data['V'] : Makes all velocities relative to self.vel_origin
-    '''
-
-    if self.vel_centered:
-      return
-
-    if isinstance( self.vel_center_method, np.ndarray ):
-      self.vel_origin = copy.copy( self.vel_center_method )
-
-    elif self.vel_center_method == 'halo':
-      self.retrieve_halo_data()
-      self.vel_origin = copy.copy( self.halo_velocity )
-
-    else:
-      raise KeyError( "Unrecognized vel_center_method, {}".format( self.vel_center_method ) )
-
-    # Do it like this because we don't know the shape of self.data['V'][0]
-    for i in range( 3 ):
-      self.data['V'][i] -= self.vel_origin[i]
-
-    self.vel_centered = True
-
-  ########################################################################
-
-  def add_hubble_flow(self):
-    '''Correct for hubble flow movement.'''
-
-    if self.hubble_corrected:
-      return
-
-    self.center_vel_coords()
-
-    self.data['V'] += self.get_data('P')*self.hubble_z
-
-    self.hubble_corrected = True
 
   ########################################################################
   # Properties
@@ -406,266 +284,81 @@ class SnapshotData( GenericData ):
     return self._hubble_z
 
   ########################################################################
-
-  @property
-  def v_com( self ):
-    '''Property for the velocity of the center of mass.'''
-
-    if not hasattr( self, '_v_com' ):
-      
-      radial_mask = self.data_masker.mask_data( 'Rf', 0., self.averaging_frac, 'return' )
-      
-      m_ma = self.data_masker.get_masked_data( 'M', radial_mask )
-      v_ma = self.data_masker.get_masked_data( 'V', radial_mask )
-
-      self._v_com = ( v_ma*m_ma ).sum( 1 )/m_ma.sum()
-
-    return self._v_com
-
+  # Overall changes to the data
   ########################################################################
 
-  @property
-  def total_ang_momentum(self):
-    '''Calculate the total angular momentum vector.'''
+  def center_coords( self ):
+    '''Change the location of the origin, if the data isn't already centered.
 
-    raise Exception( "TODO: Test and memoize this, and other attributes" )
-
-    # Exit early if already calculated.
-    try:
-      self.total_ang_momentum
-      return self.total_ang_momentum
-
-    # Calculate the total angular momentum
-    except AttributeError:
-
-      # Make sure necessary ingredients are calculated
-      if not self.halo_data_retrieved:
-        self.retrieve_halo_data()
-      if not self.hubble_corrected:
-        self.correct_hubble_flow()
-
-      # Get mask for only inner components
-      r_mask = self.add_mask('R', 0., self.averaging_frac*self.R_vir, return_or_store='return')
-
-      # Adapt for application to 'l', which is a multidimensional array
-      inner_mask = np.array([r_mask]*3)
-
-      # Apply masks
-      ang_momentum = self.get_data('L')
-      l_ma = np.ma.masked_array(ang_momentum, mask=inner_mask)
-
-      # Get the total angular momentum
-      self.total_ang_momentum = np.zeros(3)
-      for i in range(3):
-        self._total_ang_momentum[i] = l_ma[i].sum()
-
-      return self._total_ang_momentum
-
-  ########################################################################
-
-  @property
-  def dN_halo(self, R_vir=None, time_units='abs_length'):
-    '''Calculate dN_halo/dX/dlog10Mh or dN_halo/dz/dlog10Mh. X is absorption path length (see for example Ribaudo+11)
-
-    time_units: 'abs_length'- dN_halo/dX/dlog10Mh 
-                'redshift' - dN_halo/dz/dlog10Mh
-    R_vir:      None - Default, assumes given.
-                'BN' Calculates R_vir from the mass and redshift
+    Modifies:
+      self.data['P'] : Shifts the coordinates to the center.
     '''
 
-    raise Exception( "TODO: Test this" )
+    if self.centered:
+      return
 
-    # Choose cosmology
-    cosmo = Cosmology.setCosmology('WMAP9')
+    if isinstance( self.center_method, np.ndarray ):
+      self.origin = copy.copy( self.center_method )
 
-    # Calculate the virial radius, if necessary
-    if R_vir is not None:
-      if R_vir=='BN':
-        # Calculate R_vir off of the cosmocode def, and convert to proper kpc.
-        self.R_vir = cosmo.virialRadius(M, z)*10.**3. 
+    elif self.center_method == 'halo':
+      self.retrieve_halo_data()
+      self.origin = copy.copy( self.halo_coords )
 
-    # Make h easier to use (don't have to write the whole thing out...)
-    h = self.data_attrs['hubble']
+    else:
+      raise KeyError( "Unrecognized center_method, {}".format( self.center_method ) )
 
-    Mh = h*self.M_vir # Convert the halo mass to Msun/h, so as to feed it into the HMF.
-    dldz = np.abs(cosmo.line_elt(self.redshift)) # Cosmological line element in Mpc.
-    dldz_kpc = dldz*10.**3.
-    dndlog10M = cosmo.HMF(Mh, self.redshift)*self.M_vir*np.log(10)*h**4. # HMF in 1/Mpc^3
-    dndlog10M_kpc = dndlog10M*10.**-9.
-    dN_halo =  dldz_kpc*dndlog10M_kpc*np.pi*self.R_vir**2.
+    # Do it like this because we don't know the shape of self.data['P'][0]
+    for i in range( 3 ):
+      self.data['P'][i] -= self.origin[i]
 
-    # Convert from per redshift to per absorption path length.
-    if time_units == 'abs_length':
-      dN_halo /= cosmo.dXdz(z)
-    elif time_units == 'redshift':
-      pass
-
-    return dN_halo
-
-  ########################################################################
-  # Full calculations of the data
-  ########################################################################
-
-  def calc_radial_distance(self):
-    '''Calculate the distance from the origin for a given particle.'''
-
-    self.data['R'] = np.sqrt( self.get_data( 'Rx' )**2. + self.get_data( 'Ry' )**2. + self.get_data( 'Rz' )**2. )
+    # Note that we're now centered
+    self.centered = True
 
   ########################################################################
 
-  def calc_radial_velocity(self):
-    '''Calculate the radial velocity.'''
+  def center_vel_coords( self ):
+    '''Get velocity coordinates to center on the main halo.
 
-    raise Exception( "TODO: Test this" )
+    Modifies:
+      self.data['V'] : Makes all velocities relative to self.vel_origin
+    '''
 
-    # Center velocity and radius
-    self.change_coords_center()
-    self.change_vel_coords_center()
+    if self.vel_centered:
+      return
+
+    if isinstance( self.vel_center_method, np.ndarray ):
+      self.vel_origin = copy.copy( self.vel_center_method )
+
+    elif self.vel_center_method == 'halo':
+      self.retrieve_halo_data()
+      self.vel_origin = copy.copy( self.halo_velocity )
+
+    else:
+      raise KeyError( "Unrecognized vel_center_method, {}".format( self.vel_center_method ) )
+
+    # Do it like this because we don't know the shape of self.data['V'][0]
+    for i in range( 3 ):
+      self.data['V'][i] -= self.vel_origin[i]
+
+    self.vel_centered = True
+
+  ########################################################################
+
+  def add_hubble_flow( self ):
+    '''Correct for hubble flow movement.
     
-    # Calculate the radial velocity
-    self.data['Vr'] = (self.data['V']*self.get_data('P')).sum(0)/self.get_data('R')
-
-  ########################################################################
-
-  def calc_ang_momentum(self):
-    '''Calculate the angular momentum.'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Make sure we're centered.
-    self.change_coords_center()
-    self.change_vel_coords_center()
-
-    # Calculate the angular momentum for each particle
-    m_mult = np.array([self.get_data('M'),]*3)
-    self.data['L'] = m_mult*np.cross(self.get_data('P'), self.get_data('V'), 0, 0).transpose()
-
-  ########################################################################
-
-  def calc_inds(self):
-    '''Calculate the indices the data are located at, prior to any masks.'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Flattened index array
-    flat_inds = np.arange(self.get_data('Den').size)
-
-    # Put into a multidimensional array
-    self.data['ind'] = flat_inds.reshape(self.get_data('Den').shape)
-
-  ########################################################################
-
-  def calc_phi(self, vector='total gas ang momentum'):
-    '''Calculate the angle (in degrees) from some vector.'''
-
-    raise Exception( "TODO: Test this" )
-
-    if vector == 'total ang momentum':
-      # Calculate the total angular momentum vector, if it's not calculated yet
-      self.v = self.calc_total_ang_momentum()
-    elif vector == 'total gas ang momentum':
-      p_d = ParticleData(self.kwargs)
-      self.v = p_d.calc_total_ang_momentum()
-    else:
-      self.v = vector
-
-    # Get the dot product
-    P = self.get_data('P')
-    dot_product = np.zeros(P[0,:].shape)
-    for i in range(3):
-      dot_product += self.v[i]*P[i,:]
-
-    # Isolate for the cosine
-    cos_phi = dot_product/self.get_data('R')/np.linalg.norm(self.v)
-
-    # Get the angle (in degrees)
-    self.data['Phi'] = np.arccos(cos_phi)*180./np.pi
-
-  ########################################################################
-
-  def calc_abs_phi(self, vector='total gas ang momentum'):
-    '''Calculate the angle (in degrees) from some vector, but don't mirror it around 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Get the original Phi
-    self.calc_phi(vector)
-
-    self.data['AbsPhi'] = np.where(self.data['Phi'] < 90., self.data['Phi'], np.absolute(self.data['Phi'] - 180.))
-
-  ########################################################################
-
-  def calc_num_den(self):
-    '''Calculate the number density (it's just a simple conversion...).'''
-
-    raise Exception( "TODO: Test this" )
-
-    self.data['NumDen'] = self.data['Den']*constants.gas_den_to_nb
-
-  ########################################################################
-
-  def calc_H_den(self):
-    '''Calculate the H density in cgs (cm^-3). Assume the H fraction is ~0.75'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Assume Hydrogen makes up 75% of the gas
-    X_H = 0.75
-
-    self.data['HDen'] = X_H*self.data['Den']*constants.gas_den_to_nb
-
-  ########################################################################
-
-  def calc_HI_den(self):
-    '''Calculate the HI density in cgs (cm^-3).'''
-
-    raise Exception( "TODO: Test this" )
-
-    # Assume Hydrogen makes up 75% of the gas
-    X_H = 0.75
-
-    # Calculate the hydrogen density
-    HDen = X_H*self.data['Den']*constants.gas_den_to_nb 
-
-    self.data['HIDen'] = self.data['nHI']*HDen
-
-  ########################################################################
-  # Non-Altering Calculations
-  ########################################################################
-
-  def dist_to_point(self, point, units='default'):
-    '''Calculate the distance to a point for all particles.
-
-    point : np array that gives the point
+    Modifies:
+      self.data['V'] : Accounts for hubble flow, relative to origin
     '''
 
-    raise Exception( "TODO: Test this/update to use scipy cdist" )
+    if self.hubble_corrected:
+      return
 
-    # Calculate the distance to the point
-    relative_positions = self.get_data('P').transpose() - np.array(point)
-    d_mag = np.linalg.norm(relative_positions, axis=1)
+    self.center_vel_coords()
 
-    # Put in different units if necessary
-    if units == 'default':
-      pass
-    elif units == 'h':
-      d_mag /= self.get_data('h')
-    else:
-      raise Exception('Null units, units = {}'.format(units))
+    self.data['V'] += self.get_data( 'P' )*self.hubble_z
 
-    return d_mag
-
-  ########################################################################
-
-  def calc_mu(self):
-    '''Calculate the mean molecular weight. '''
-
-    #raise Exception( "TODO: Test this" )
-
-    y_helium = self.data['Z_Species'][:,0] # Get the mass fraction of helium
-    mu = 1./(1. - 0.75*y_helium + self.data['ne'])
-
-    return mu
+    self.hubble_corrected = True
 
   ########################################################################
   # Get Data
@@ -894,6 +587,313 @@ class SnapshotData( GenericData ):
 
       data -= log_shift
 
+  ########################################################################
+  # Full calculations based on the data
+  ########################################################################
+  
+  def calc_radial_distance(self):
+    '''Calculate the distance from the origin for a given particle.'''
+
+    self.data['R'] = np.sqrt( self.get_data( 'Rx' )**2. + self.get_data( 'Ry' )**2. + self.get_data( 'Rz' )**2. )
+
+########################################################################
+########################################################################
+
+class SnapshotData( GenericData ):
+  '''Class for analysis of a single snapshot of data.'''
+
+  def __init__( self, *args, **kwargs ):
+
+    super( SnapshotData, self ).__init__( *args, **kwargs )
+
+  ########################################################################
+  # Get Additional Data
+  ########################################################################
+
+  def retrieve_halo_data( self ):
+
+    if self.halo_data_retrieved:
+      return
+
+    # Load the AHF data
+    ahf_reader = read_ahf.AHFReader( self.analysis_dir )
+    ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
+
+    # Select the main halo at the right redshift
+    mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum]
+
+    # Add the halo data to the class.
+    self.redshift = mtree_halo['redshift']
+    halo_coords_comoving = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )
+    self.halo_coords = halo_coords_comoving/(1. + self.redshift)/self.data_attrs['hubble']
+    self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
+    self.r_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
+    self.r_scale = self.r_vir/mtree_halo['cAnalytic']
+    self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
+    self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
+    self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
+
+    # Calculate the circular velocity
+    self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
+
+    self.halo_data_retrieved = True
+
+  ########################################################################
+  # Properties
+  ########################################################################
+
+  @property
+  def v_com( self ):
+    '''Property for the velocity of the center of mass.'''
+
+    if not hasattr( self, '_v_com' ):
+      
+      radial_mask = self.data_masker.mask_data( 'Rf', 0., self.averaging_frac, 'return' )
+      
+      m_ma = self.data_masker.get_masked_data( 'M', radial_mask )
+      v_ma = self.data_masker.get_masked_data( 'V', radial_mask )
+
+      self._v_com = ( v_ma*m_ma ).sum( 1 )/m_ma.sum()
+
+    return self._v_com
+
+  ########################################################################
+
+  @property
+  def total_ang_momentum(self):
+    '''Calculate the total angular momentum vector.'''
+
+    raise Exception( "TODO: Test and memoize this, and other attributes" )
+
+    # Exit early if already calculated.
+    try:
+      self.total_ang_momentum
+      return self.total_ang_momentum
+
+    # Calculate the total angular momentum
+    except AttributeError:
+
+      # Make sure necessary ingredients are calculated
+      if not self.halo_data_retrieved:
+        self.retrieve_halo_data()
+      if not self.hubble_corrected:
+        self.correct_hubble_flow()
+
+      # Get mask for only inner components
+      r_mask = self.add_mask('R', 0., self.averaging_frac*self.R_vir, return_or_store='return')
+
+      # Adapt for application to 'l', which is a multidimensional array
+      inner_mask = np.array([r_mask]*3)
+
+      # Apply masks
+      ang_momentum = self.get_data('L')
+      l_ma = np.ma.masked_array(ang_momentum, mask=inner_mask)
+
+      # Get the total angular momentum
+      self.total_ang_momentum = np.zeros(3)
+      for i in range(3):
+        self._total_ang_momentum[i] = l_ma[i].sum()
+
+      return self._total_ang_momentum
+
+  ########################################################################
+
+  @property
+  def dN_halo(self, R_vir=None, time_units='abs_length'):
+    '''Calculate dN_halo/dX/dlog10Mh or dN_halo/dz/dlog10Mh. X is absorption path length (see for example Ribaudo+11)
+
+    time_units: 'abs_length'- dN_halo/dX/dlog10Mh 
+                'redshift' - dN_halo/dz/dlog10Mh
+    R_vir:      None - Default, assumes given.
+                'BN' Calculates R_vir from the mass and redshift
+    '''
+
+    raise Exception( "TODO: Test this" )
+
+    # Choose cosmology
+    cosmo = Cosmology.setCosmology('WMAP9')
+
+    # Calculate the virial radius, if necessary
+    if R_vir is not None:
+      if R_vir=='BN':
+        # Calculate R_vir off of the cosmocode def, and convert to proper kpc.
+        self.R_vir = cosmo.virialRadius(M, z)*10.**3. 
+
+    # Make h easier to use (don't have to write the whole thing out...)
+    h = self.data_attrs['hubble']
+
+    Mh = h*self.M_vir # Convert the halo mass to Msun/h, so as to feed it into the HMF.
+    dldz = np.abs(cosmo.line_elt(self.redshift)) # Cosmological line element in Mpc.
+    dldz_kpc = dldz*10.**3.
+    dndlog10M = cosmo.HMF(Mh, self.redshift)*self.M_vir*np.log(10)*h**4. # HMF in 1/Mpc^3
+    dndlog10M_kpc = dndlog10M*10.**-9.
+    dN_halo =  dldz_kpc*dndlog10M_kpc*np.pi*self.R_vir**2.
+
+    # Convert from per redshift to per absorption path length.
+    if time_units == 'abs_length':
+      dN_halo /= cosmo.dXdz(z)
+    elif time_units == 'redshift':
+      pass
+
+    return dN_halo
+
+  ########################################################################
+  # Full calculations of the data
+  ########################################################################
+
+  def calc_radial_velocity(self):
+    '''Calculate the radial velocity.'''
+
+    raise Exception( "TODO: Test this" )
+
+    # Center velocity and radius
+    self.change_coords_center()
+    self.change_vel_coords_center()
+    
+    # Calculate the radial velocity
+    self.data['Vr'] = (self.data['V']*self.get_data('P')).sum(0)/self.get_data('R')
+
+  ########################################################################
+
+  def calc_ang_momentum(self):
+    '''Calculate the angular momentum.'''
+
+    raise Exception( "TODO: Test this" )
+
+    # Make sure we're centered.
+    self.change_coords_center()
+    self.change_vel_coords_center()
+
+    # Calculate the angular momentum for each particle
+    m_mult = np.array([self.get_data('M'),]*3)
+    self.data['L'] = m_mult*np.cross(self.get_data('P'), self.get_data('V'), 0, 0).transpose()
+
+  ########################################################################
+
+  def calc_inds(self):
+    '''Calculate the indices the data are located at, prior to any masks.'''
+
+    raise Exception( "TODO: Test this" )
+
+    # Flattened index array
+    flat_inds = np.arange(self.get_data('Den').size)
+
+    # Put into a multidimensional array
+    self.data['ind'] = flat_inds.reshape(self.get_data('Den').shape)
+
+  ########################################################################
+
+  def calc_phi(self, vector='total gas ang momentum'):
+    '''Calculate the angle (in degrees) from some vector.'''
+
+    raise Exception( "TODO: Test this" )
+
+    if vector == 'total ang momentum':
+      # Calculate the total angular momentum vector, if it's not calculated yet
+      self.v = self.calc_total_ang_momentum()
+    elif vector == 'total gas ang momentum':
+      p_d = ParticleData(self.kwargs)
+      self.v = p_d.calc_total_ang_momentum()
+    else:
+      self.v = vector
+
+    # Get the dot product
+    P = self.get_data('P')
+    dot_product = np.zeros(P[0,:].shape)
+    for i in range(3):
+      dot_product += self.v[i]*P[i,:]
+
+    # Isolate for the cosine
+    cos_phi = dot_product/self.get_data('R')/np.linalg.norm(self.v)
+
+    # Get the angle (in degrees)
+    self.data['Phi'] = np.arccos(cos_phi)*180./np.pi
+
+  ########################################################################
+
+  def calc_abs_phi(self, vector='total gas ang momentum'):
+    '''Calculate the angle (in degrees) from some vector, but don't mirror it around 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).'''
+
+    raise Exception( "TODO: Test this" )
+
+    # Get the original Phi
+    self.calc_phi(vector)
+
+    self.data['AbsPhi'] = np.where(self.data['Phi'] < 90., self.data['Phi'], np.absolute(self.data['Phi'] - 180.))
+
+  ########################################################################
+
+  def calc_num_den(self):
+    '''Calculate the number density (it's just a simple conversion...).'''
+
+    raise Exception( "TODO: Test this" )
+
+    self.data['NumDen'] = self.data['Den']*constants.gas_den_to_nb
+
+  ########################################################################
+
+  def calc_H_den(self):
+    '''Calculate the H density in cgs (cm^-3). Assume the H fraction is ~0.75'''
+
+    raise Exception( "TODO: Test this" )
+
+    # Assume Hydrogen makes up 75% of the gas
+    X_H = 0.75
+
+    self.data['HDen'] = X_H*self.data['Den']*constants.gas_den_to_nb
+
+  ########################################################################
+
+  def calc_HI_den(self):
+    '''Calculate the HI density in cgs (cm^-3).'''
+
+    raise Exception( "TODO: Test this" )
+
+    # Assume Hydrogen makes up 75% of the gas
+    X_H = 0.75
+
+    # Calculate the hydrogen density
+    HDen = X_H*self.data['Den']*constants.gas_den_to_nb 
+
+    self.data['HIDen'] = self.data['nHI']*HDen
+
+  ########################################################################
+  # Non-Altering Calculations
+  ########################################################################
+
+  def dist_to_point(self, point, units='default'):
+    '''Calculate the distance to a point for all particles.
+
+    point : np array that gives the point
+    '''
+
+    raise Exception( "TODO: Test this/update to use scipy cdist" )
+
+    # Calculate the distance to the point
+    relative_positions = self.get_data('P').transpose() - np.array(point)
+    d_mag = np.linalg.norm(relative_positions, axis=1)
+
+    # Put in different units if necessary
+    if units == 'default':
+      pass
+    elif units == 'h':
+      d_mag /= self.get_data('h')
+    else:
+      raise Exception('Null units, units = {}'.format(units))
+
+    return d_mag
+
+  ########################################################################
+
+  def calc_mu(self):
+    '''Calculate the mean molecular weight. '''
+
+    y_helium = self.data['Z_Species'][:,0] # Get the mass fraction of helium
+    mu = 1./(1. - 0.75*y_helium + self.data['ne'])
+
+    return mu
+
+
 ########################################################################
 ########################################################################
 
@@ -901,9 +901,44 @@ class TimeData( GenericData ):
   '''Class for analysis of a time series data, e.g. the worldlines of a number of particles.'''
 
   def __init__( self, *args, **kwargs ):
+    '''
+    Args:
+      snums (array-like of ints) : Snapshots for the time series.
+    '''
 
-    super( GenericData, self ).__init__( *args, **kwargs )
+    super( TimeData, self ).__init__( *args, **kwargs )
 
+  ########################################################################
+
+  def retrieve_halo_data( self ):
+
+    if self.halo_data_retrieved:
+      return
+
+    # Load the AHF data
+    ahf_reader = read_ahf.AHFReader( self.analysis_dir )
+    ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
+
+    # Select the main halo at the right redshift
+    mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum]
+
+    # Add the halo data to the class.
+    self.redshift = mtree_halo['redshift']
+    scale_factor_and_hinv = 1./(1. + self.redshift)/self.data_attrs['hubble']
+
+    halo_coords_comoving = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )
+    self.halo_coords = halo_coords_comoving*scale_factor_and_hinv[np.newaxis,:]
+    self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
+    self.r_vir = mtree_halo['Rvir']*scale_factor_and_hinv
+    self.r_scale = self.r_vir/mtree_halo['cAnalytic']
+    self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
+    self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
+    self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
+
+    # Calculate the circular velocity
+    self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
+
+    self.halo_data_retrieved = True
 
 ########################################################################
 ########################################################################

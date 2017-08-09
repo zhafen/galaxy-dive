@@ -42,7 +42,7 @@ class GriddedData( generic_data.SnapshotData ):
         raise Exception( '{} not specified'.format( attr ) )
 
     # Note that we assume the grid is centered.
-    super( GriddedData, self ).__init__( sdir=sdir, snum=snum, centered=True, **kwargs )
+    super( GriddedData, self ).__init__( data_dir=sdir, snum=snum, centered=True, **kwargs )
 
     self.retrieve_data()
 

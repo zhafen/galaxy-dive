@@ -37,7 +37,7 @@ class ParticleData( generic_data.SnapshotData ):
       if getattr( self, attr ) == None:
         raise Exception( '{} not specified'.format( attr ) )
 
-    super( ParticleData, self ).__init__( sdir=sdir, snum=snum, **kwargs )
+    super( ParticleData, self ).__init__( data_dir=sdir, snum=snum, **kwargs )
 
     self.retrieve_data()
 
