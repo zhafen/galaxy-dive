@@ -32,23 +32,32 @@ class TestSmartDict( unittest.TestCase ):
   def test_nested( self ):
 
     class TestClassA( object ):
-      def __init__( self ):
+      def __init__( self, key ):
         self.foo = 1234
+        self.key = key
     class TestClassB( object ):
-      def __init__( self ):
-        self.test_class_a = TestClassA()
+      def __init__( self, key ):
+        self.test_class_a = TestClassA( key )
+        self.key = key
 
     d = {}
     expected = {}
+    expected2 = {}
     for i in range( 3 ):
-      d[i] = TestClassB()
+      d[i] = TestClassB( i )
       expected[i] = 1234
+      expected2[i] = i
 
     smart_d = utilities.SmartDict( d )
 
     actual = smart_d.test_class_a.foo
-
     self.assertEqual( expected, actual )
+
+    actual = smart_d.key
+    self.assertEqual( expected2, actual )
+
+    actual = smart_d.test_class_a.key
+    self.assertEqual( expected2, actual )
 
   ########################################################################
 
