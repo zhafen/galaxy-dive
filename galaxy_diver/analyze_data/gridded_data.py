@@ -15,7 +15,7 @@ import generic_data
 
 ########################################################################
 
-class GriddedData( generic_data.GenericData ):
+class GriddedData( generic_data.SnapshotData ):
   '''Class for handling data that forms a Cartesian grid.'''
 
   def __init__( self, sdir=None, snum=None, Nx=None, gridsize=None, ionized=None, ion_grid=False, **kwargs ):

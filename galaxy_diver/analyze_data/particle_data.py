@@ -12,7 +12,7 @@ import galaxy_diver.utils.constants as constants
 
 ########################################################################
 
-class ParticleData( generic_data.GenericData ):
+class ParticleData( generic_data.SnapshotData ):
   '''Subclass for particle data.
   '''
 

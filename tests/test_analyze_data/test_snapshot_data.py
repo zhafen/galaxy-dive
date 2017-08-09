@@ -22,11 +22,11 @@ default_kwargs = {
 
 ########################################################################
 
-class TestGenericData( unittest.TestCase ):
+class TestSnapshotData( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
@@ -57,7 +57,7 @@ class TestGetData( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
@@ -109,7 +109,7 @@ class TestGetData( unittest.TestCase ):
 
   ########################################################################
 
-  @patch( 'galaxy_diver.analyze_data.generic_data.GenericData.handle_data_key_error' )
+  @patch( 'galaxy_diver.analyze_data.generic_data.SnapshotData.handle_data_key_error' )
   def test_fails_after_too_many_attempts( self, mock_handle_data_key_error ):
     '''By mocking handle_data_key error, we can emulate it trying to do something'''
 
@@ -159,11 +159,11 @@ class TestHandleDataKeyError( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
   ########################################################################
 
-  @patch.multiple( 'galaxy_diver.analyze_data.generic_data.GenericData',
+  @patch.multiple( 'galaxy_diver.analyze_data.generic_data.SnapshotData',
     calc_radial_distance=sentinel.DEFAULT, calc_radial_velocity=sentinel.DEFAULT,
     calc_inds=sentinel.DEFAULT, calc_ang_momentum=sentinel.DEFAULT,
     calc_phi=sentinel.DEFAULT, calc_abs_phi=sentinel.DEFAULT,
@@ -191,7 +191,7 @@ class TestCenterCoords( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
@@ -250,7 +250,7 @@ class TestDataMasker( unittest.TestCase ):
 
   def setUp( self ):
 
-    g_data = generic_data.GenericData( **default_kwargs )
+    g_data = generic_data.SnapshotData( **default_kwargs )
 
     # Make it so we don't have to load in the halo data
     g_data.r_scale = 1.
@@ -361,7 +361,7 @@ class TestCenterVelCoords( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
@@ -420,7 +420,7 @@ class TestProperties( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
@@ -611,7 +611,7 @@ class TestHubbleFlow( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
     self.g_data.data_attrs = {
       'hubble' : 0.70199999999999996,
@@ -667,7 +667,7 @@ class TestCalcData( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.g_data = generic_data.GenericData( **default_kwargs )
+    self.g_data = generic_data.SnapshotData( **default_kwargs )
 
     self.g_data.centered = True
     self.g_data.r_scale = 1.

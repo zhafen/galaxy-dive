@@ -28,7 +28,6 @@ class GenericData( object ):
   def __init__( self,
                 sdir = None,
                 analysis_dir = None,
-                snum = None,
                 ahf_index = None,
 
                 averaging_frac = 0.5,
@@ -51,34 +50,33 @@ class GenericData( object ):
     '''Initialize.
 
     Args:
-      sdir (str, required) : Directory the simulation is contained in.
-      analysis_dir (str, optional) : Directory simulation analysis is contained in. Defaults to sdir
-      snum (int, required) : Snapshot to inspect.
-      ahf_index (str, required) : What to index the snapshots by. Should be the last snapshot in the simulation *if*
+      sdir (str) : Directory the simulation is contained in.
+      analysis_dir (str) : Directory simulation analysis is contained in. Defaults to sdir
+      ahf_index (str) : What to index the snapshots by. Should be the last snapshot in the simulation *if*
                                   AHF was run backwards from the last snapshot.
                                   Required to put in manually to avoid easy mistakes.
 
-      averaging_frac (float, optional): What fraction of the radius to average over when calculating velocity and
+      averaging_frac (float): What fraction of the radius to average over when calculating velocity and
         similar properties? (centered on the origin)
       length_scale_used (str) : What length scale to use for the simulation. Will be used to put lengths in fractions.
         Options...
         'r_scale' : Scale radius.
         'R_vir' : Virial radius.
-      halo_data_retrieved (bool, optional) : Whether or not we retrieved relevant values from the AHF halo data.
-      centered (bool, optional): Whether or not the coordinates are centered on the galaxy of choice at the start.
-      vel_centered (bool, optional) : Whether or not the velocities are relative to the galaxy of choice at the start.
-      hubble_corrected (bool, optional) : Whether or not the velocities have had the Hubble flow added (velocities
+      halo_data_retrieved (bool) : Whether or not we retrieved relevant values from the AHF halo data.
+      centered (bool): Whether or not the coordinates are centered on the galaxy of choice at the start.
+      vel_centered (bool) : Whether or not the velocities are relative to the galaxy of choice at the start.
+      hubble_corrected (bool) : Whether or not the velocities have had the Hubble flow added (velocities
                                           must be centered).
 
-      z_sun (float, optional) : Used mass fraction for solar metallicity.
+      z_sun (float) : Used mass fraction for solar metallicity.
 
-      ahf_tag (str, optional) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type
+      ahf_tag (str) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type
                                 'halo_00000_{}.dat'.format( tag ).
-      main_halo_id (int, optional) : What is the halo ID of the main galaxy in the simulation?
-      center_method (str or np.array of size 3, optional) : How to center the coordinates. Options...
+      main_halo_id (int) : What is the halo ID of the main galaxy in the simulation?
+      center_method (str or np.array) : How to center the coordinates. Options...
         'halo' (default) : Centers the dataset on the main halo (main_halo_id) using AHF halo data.
-        np.array of size 3 : Centers the dataset on this coordinate.
-      vel_center_method (str or np.array of size 3, optional) : How to center the velocity coordinates, i.e. what the
+        np.array : Array of coordinates on which to center the data
+      vel_center_method (str or np.array of size 3) : How to center the velocity coordinates, i.e. what the
                                                                 velocity is relative to. Options are...
         'halo' (default) : Sets velocity relative to the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
@@ -86,7 +84,8 @@ class GenericData( object ):
       verbose (bool) : Print out additional information.
 
     Keyword Args:
-      function_args (dict, optional): Dictionary of args used to specify an arbitrary function with which to generate data.
+      function_args (dict): Dictionary of args used to specify an arbitrary function with which to
+        generate data.
     '''
 
     # Store the arguments
@@ -118,11 +117,29 @@ class GenericData( object ):
     # Setup a data key parser
     self.key_parser = DataKeyParser()
 
+########################################################################
+########################################################################
+
+class SnapshotData( GenericData ):
+  '''Class for analysis of a single snapshot of data.'''
+
+  def __init__( self, snum, *args, **kwargs ):
+    '''
+    Args:
+      snum (int or array of ints) : Snapshot to inspect.
+    '''
+
+    # Store the arguments
+    for arg in locals().keys():
+      if ( arg != 'args' ) and (arg != 'kwargs' ) and ( arg != 'self' ):
+        setattr( self, arg, locals()[arg] )
+
+    super( SnapshotData, self ).__init__( *args, **kwargs )
+
   ########################################################################
   # Get Additional Data
   ########################################################################
 
-  # Get the halo data out
   def retrieve_halo_data( self ):
 
     if self.halo_data_retrieved:
@@ -150,20 +167,6 @@ class GenericData( object ):
     self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
 
     self.halo_data_retrieved = True
-
-  ########################################################################
-
-  def get_header_values(self):
-    '''Get some overall values for the snapshot.'''
-
-    raise Exception( "TODO: Test this/get rid of it" )
-
-    header = read_snapshot.readsnap( self.sdir, self.snum, 0, cosmological=1, header_only=1 )
-
-    self.k = header['k']
-    self.redshift = header['redshift']
-    self.time = header['time']
-    self.hubble = header['hubble']
 
   ########################################################################
   # Overall changes to the data
@@ -891,6 +894,16 @@ class GenericData( object ):
 
       data -= log_shift
 
+########################################################################
+########################################################################
+
+class TimeData( GenericData ):
+  '''Class for analysis of a time series data, e.g. the worldlines of a number of particles.'''
+
+  def __init__( self, *args, **kwargs ):
+
+    super( GenericData, self ).__init__( *args, **kwargs )
+
 
 ########################################################################
 ########################################################################
@@ -1029,10 +1042,10 @@ class DataMasker( object ):
     # Compile masks
     all_masks = []
     for mask_dict in self.masks:
-      all_masks.append(mask_dict['mask'])
+      all_masks.append( mask_dict['mask'] )
 
     # Combine masks
-    return np.any(all_masks, axis=0, keepdims=True)[0]
+    return np.any( all_masks, axis=0, keepdims=True )[0]
 
   ########################################################################
 
