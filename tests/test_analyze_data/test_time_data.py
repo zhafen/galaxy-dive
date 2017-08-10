@@ -16,7 +16,7 @@ import galaxy_diver.utils.astro as astro
 
 default_kwargs = {
   'data_dir' : './tests/data/sdir',
-  'analysis_dir' : './tests/data/analysis_dir',
+  'ahf_data_dir' : './tests/data/analysis_dir',
   'snum' : [ 600, 550, 500 ],
   'ahf_index' : 600,
 }

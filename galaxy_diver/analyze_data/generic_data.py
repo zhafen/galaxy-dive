@@ -46,6 +46,7 @@ class GenericData( object ):
                 vel_center_method = 'halo',
 
                 verbose = False,
+                store_ahf_reader = False,
 
                 **kwargs ):
     '''Initialize.
@@ -638,6 +639,9 @@ class SnapshotData( GenericData ):
 
     self.halo_data_retrieved = True
 
+    if self.store_ahf_reader:
+      self.ahf_reader = ahf_reader
+
   ########################################################################
   # Properties
   ########################################################################
@@ -939,6 +943,9 @@ class TimeData( GenericData ):
     self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
 
     self.halo_data_retrieved = True
+
+    if self.store_ahf_reader:
+      self.ahf_reader = ahf_reader
 
 ########################################################################
 ########################################################################

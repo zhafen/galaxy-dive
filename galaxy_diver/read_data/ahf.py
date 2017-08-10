@@ -227,9 +227,10 @@ class AHFReader( object ):
     Args:
       quantity (str): mtree_halo key to load in the dataset
       indice (int): Indice of the quantity to load, as indicated by the index.
-      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an index, to avoid easy mistakes.
-                           See get_mtree_halos() for a full description.
-      tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for 'halo_00000_smooth.dat', etc.
+      index (str or int) : What type of index to use. Defaults to None, which raises an exception.
+        You *must* choose an index, to avoid easy mistakes. See get_mtree_halos() for a full description.
+      tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for
+        'halo_00000_smooth.dat', etc.
 
     Returns:
       mtree_halo_quantity (np.array): The ith index is the requested quantity for ith MT halo.
