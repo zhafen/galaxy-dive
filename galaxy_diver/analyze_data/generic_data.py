@@ -27,7 +27,7 @@ class GenericData( object ):
 
   def __init__( self,
                 data_dir = None,
-                analysis_dir = None,
+                ahf_data_dir = None,
                 snum = None,
                 ahf_index = None,
 
@@ -52,7 +52,7 @@ class GenericData( object ):
 
     Args:
       data_dir (str) : Directory the simulation is contained in.
-      analysis_dir (str) : Directory simulation analysis is contained in. Defaults to data_dir
+      ahf_data_dir (str) : Directory simulation analysis is contained in. Defaults to data_dir
       snum (int or array of ints) : Snapshot or snapshots to inspect.
       ahf_index (str) : What to index the snapshots by. Should be the last snapshot in the simulation *if*
                                   AHF was run backwards from the last snapshot.
@@ -98,11 +98,11 @@ class GenericData( object ):
     for attr in vars( self ).keys():
       if attr == 'kwargs':
         continue
-      if getattr( self, attr ) == None:
+      if getattr( self, attr ) is None:
 
         # Set the analysis dir to data_dir if not given
-        if attr == 'analysis_dir':
-          self.analysis_dir = self.data_dir
+        if attr == 'ahf_data_dir':
+          self.ahf_data_dir = self.data_dir
 
         elif attr == 'ahf_index':
           warnings.warn( "AHF index not specified. Will be unable to use halo finding data." )
@@ -616,7 +616,7 @@ class SnapshotData( GenericData ):
       return
 
     # Load the AHF data
-    ahf_reader = read_ahf.AHFReader( self.analysis_dir )
+    ahf_reader = read_ahf.AHFReader( self.ahf_data_dir )
     ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
     # Select the main halo at the right redshift
@@ -916,7 +916,7 @@ class TimeData( GenericData ):
       return
 
     # Load the AHF data
-    ahf_reader = read_ahf.AHFReader( self.analysis_dir )
+    ahf_reader = read_ahf.AHFReader( self.ahf_data_dir )
     ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
     # Select the main halo at the right redshift
