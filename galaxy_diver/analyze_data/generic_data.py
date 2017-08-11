@@ -365,13 +365,14 @@ class GenericData( object ):
   # Get Data
   ########################################################################
 
-  def get_data(self, data_key):
+  def get_data( self, data_key, sl=None ):
     '''Get the data from within the class. Only for getting the data. No post-processing or changing the data
     (putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
     hence a whole function for getting the data.
 
     Args:
       data_key (str) : Key in the data dictionary for the key we want to get
+      sl (slice) : Slice of the data, if requested.
 
     Returns:
       data (np.ndarray) : Requested data.
@@ -416,6 +417,9 @@ class GenericData( object ):
 
     if 'data' not in locals().keys():
       raise KeyError( "After {} tries, unable to find or create data_key, {}".format( i+1, data_key ) )
+
+    if sl is not None:
+      return data[sl]
   
     return data
 
@@ -523,7 +527,7 @@ class GenericData( object ):
 
   ########################################################################
 
-  def get_processed_data(self, data_key):
+  def get_processed_data( self, data_key, sl=None ):
     '''Get post-processed data. (Accounting for fractions, log-space, etc.).'''
 
     # Account for fractional data keys
@@ -533,7 +537,7 @@ class GenericData( object ):
     data_key, log_flag = self.key_parser.is_log_key( data_key )
 
     # Get the data and make a copy to avoid altering
-    data_original = self.get_data( data_key )
+    data_original = self.get_data( data_key, sl=sl )
     data = copy.deepcopy( data_original )
 
     # Actually calculate the fractional data
@@ -562,7 +566,7 @@ class GenericData( object ):
 
   ########################################################################
 
-  def shift(self, data, data_key):
+  def shift( self, data, data_key ):
     '''Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.
 
     data : data to be shifted
@@ -1091,7 +1095,7 @@ class DataMasker( object ):
 
   ########################################################################
 
-  def get_masked_data( self, data_key, mask='total' ):
+  def get_masked_data( self, data_key, mask='total', sl=None, ):
     '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.
 
     Args:
@@ -1111,7 +1115,7 @@ class DataMasker( object ):
     else:
       raise KeyError( "Unrecognized type of mask, {}".format( mask ) )
 
-    data = self.generic_data.get_processed_data( data_key )
+    data = self.generic_data.get_processed_data( data_key, sl=sl )
 
     # Test for if the data fits the mask, or if it's multi-dimensional
     if len( data.shape ) > len( self.generic_data.base_data_shape ):

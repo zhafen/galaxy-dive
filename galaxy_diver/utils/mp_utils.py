@@ -103,14 +103,14 @@ def set_fun( f, q_in, q_out ):
       break
     res_proc = res_proc | f( x )
 
-def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, use_mp_queue_to_list=False ):
+def parmap( f, X, n_processors=mp.cpu_count(), return_values=True, set_case=False, use_mp_queue_to_list=False ):
     '''Parallel map, viable with classes.
 
     Args:
       f (function) : Function to map to.
-    ies = list( q_out )
       X (list) : List of arguments to provide f
       n_processors (int) : Number of processors to use.
+      return_values (bool) : If False, don't bother getting the results from the functions.
       set_case (bool) : If this option is True, it assumes that f returns a set, and that results should be the
         union of all those sets.
       use_mp_queue_to_list (bool) : Experimental. If True, try to use mp_queue_to_list to convert the list.
@@ -142,24 +142,30 @@ def parmap( f, X, n_processors=mp.cpu_count(), set_case=False, use_mp_queue_to_l
     print( "Getting results from queue. This could take a while..." )
 
     # Store the results
-    if set_case:
+    if return_values:
+      if set_case:
 
-      if use_mp_queue_to_list:
-        res = mp_queue_to_list( q_out, n_processors )
+        if use_mp_queue_to_list:
+          res = mp_queue_to_list( q_out, n_processors )
+        else:
+          res = [ q_out.get() for _ in range( n_processors ) ]
+
+        [ p.join() for p in proc ]
+
+        return res
+
       else:
-        res = [ q_out.get() for _ in range( n_processors ) ]
 
-      [ p.join() for p in proc ]
+        res = [ q_out.get() for _ in range( len( sent ) ) ]
 
-      return res
+        [ p.join() for p in proc ]
+
+        return [ x for i, x in sorted( res ) ]
 
     else:
-
-      res = [ q_out.get() for _ in range( len( sent ) ) ]
-
       [ p.join() for p in proc ]
 
-      return [ x for i, x in sorted( res ) ]
+      return
 
 ########################################################################
 '''This section contains efforts to make classes pickleable, allowing multiprocessing.Pool to be used.'''
