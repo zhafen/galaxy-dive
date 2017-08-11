@@ -10,12 +10,27 @@ import copy
 import errno
 import numpy as np
 import os
+import subprocess
 
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import galaxy_diver.utils.data_operations as data_ops
+
+########################################################################
+########################################################################
+
+def make_movie( img_dir, file_pattern, movie_save_file ):
+  '''Make a movie using ffmpeg.
+  '''
+
+  prev_dir = os.getcwd()
+  os.chdir( img_dir )
+
+  subprocess.call( [ "ffmpeg", "-pattern_type", "glob", "-i", file_pattern, "-q:v", "1", movie_save_file, ])
+
+  os.chdir( prev_dir )
 
 ########################################################################
 
@@ -174,7 +189,7 @@ def save_fig( out_dir, save_file, fig=None, **save_args ):
       pass
     else: raise
 
-  default_save_args = {'dpi':300, 'bbox_inches':'tight'}
+  default_save_args = {'dpi':150, 'bbox_inches':'tight'}
   used_save_args = data_ops.merge_dict( save_args, default_save_args)
 
   # Save the figure.
