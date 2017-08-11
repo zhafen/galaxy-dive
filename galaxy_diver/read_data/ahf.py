@@ -249,7 +249,8 @@ class AHFReader( object ):
       try:
         mtree_halo_quantity.append( self.mtree_halos[ halo_id ][ quantity ][ indice ] )
 
-      # When we're past the point of galaxies being identified (i.e. high redshift, galaxies aren't formed yet), set the values by hand.
+      # When we're past the point of galaxies being identified (i.e. high redshift, galaxies aren't formed yet),
+      # set the values by hand.
       except KeyError:
 
         if quantity == 'Mvir':
