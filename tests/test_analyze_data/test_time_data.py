@@ -149,8 +149,21 @@ class TestTimeData( unittest.TestCase ):
     df = pd.DataFrame( data, index=np.array( [ 1, 2, 3 ] ) )
 
     self.t_data._redshift = df['redshift']
-
     self.t_data.redshift = np.array( [1., 2., 3.])
+
+  ########################################################################
+
+  def test_redshift_pd_df_nan_alternate( self ):
+    '''Having nans in either array (due to how things are defined when redshift is too low) can cause problems.
+    '''
+    
+    data = {
+      'redshift' : np.array( [1., 2., 3. ] ),
+    }
+    df = pd.DataFrame( data, index=np.array( [ 1, 2, 3 ] ) )
+
+    self.t_data._redshift = df['redshift']
+    self.t_data.redshift = np.array( [1., 2., np.nan ] )
 
   ########################################################################
 

@@ -210,7 +210,9 @@ class GenericData( object ):
 
       if isinstance( value, np.ndarray ) or isinstance( self._redshift, np.ndarray ):
 
-        not_nan_inds = np.where( np.invert( np.isnan( self._redshift ) ) )[0]
+        is_nan = np.any( [ np.isnan( value ), np.isnan( self._redshift ) ], axis=1 )
+        not_nan_inds = np.where( np.invert( is_nan ) )[0]
+
         test_value = np.array(value)[not_nan_inds] # Cast as np.ndarray because Pandas arrays can cause trouble.
         test_existing_value = np.array(self._redshift)[not_nan_inds]
         npt.assert_allclose( test_value, test_existing_value, atol=1e-5 )
