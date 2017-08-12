@@ -190,6 +190,8 @@ class GenericData( object ):
       # Try to get it from the attributes.
       if 'redshift' in self.data_attrs:
         self._redshift = self.data_attrs['redshift']
+      elif 'redshift' in self.data:
+        self._redshift = self.data['redshift']
 
       # If not, retrieve halo data, which should set it.
       # In fact, if we call self.retrieve_halo_data() somewhere else and we already set redshift by getting it from
@@ -1095,27 +1097,35 @@ class DataMasker( object ):
 
   ########################################################################
 
-  def get_masked_data( self, data_key, mask='total', sl=None, ):
+  def get_masked_data( self, data_key, mask='total', sl=None, apply_slice_to_mask=True ):
     '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.
 
     Args:
       data_key (str) : Data key to get the data for.
       mask (str or np.array of bools) : Mask to apply. If none, use the total mask.
+      sl (slice) : Slice to apply to the data
+      apply_slice_to_mask (bool) : Whether or not to apply the same slice you applied to the data to the mask.
 
     Returns:
       data_ma (np.array) : Compressed masked data. Because it's compressed it may not have the same shape as the
         original data.
     '''
+    data = self.generic_data.get_processed_data( data_key, sl=sl )
 
     # Get the appropriate mask
     if isinstance( mask, np.ndarray ):
       used_mask = mask
+    elif isinstance( mask, bool ) or isinstance( mask, np.bool_ ):
+      if not mask:
+        return data
+      raise Exception( "All data is masked." )
     elif mask == 'total':
       used_mask = self.get_total_mask()
     else:
       raise KeyError( "Unrecognized type of mask, {}".format( mask ) )
 
-    data = self.generic_data.get_processed_data( data_key, sl=sl )
+    if ( sl is not None ) and apply_slice_to_mask:
+      used_mask = used_mask[sl]
 
     # Test for if the data fits the mask, or if it's multi-dimensional
     if len( data.shape ) > len( self.generic_data.base_data_shape ):
