@@ -190,13 +190,14 @@ class GenericData( object ):
       # Try to get it from the attributes.
       if 'redshift' in self.data_attrs:
         self._redshift = self.data_attrs['redshift']
-      elif 'redshift' in self.data:
-        self._redshift = self.data['redshift']
-
+      elif hasattr( self, 'data' ):
+        if 'redshift' in self.data:
+          self._redshift = self.data['redshift']
       # If not, retrieve halo data, which should set it.
       # In fact, if we call self.retrieve_halo_data() somewhere else and we already set redshift by getting it from
       # the attributes, it will check that it matches.
-      self.retrieve_halo_data()
+      else:
+        self.retrieve_halo_data()
 
     return self._redshift
 
@@ -206,7 +207,18 @@ class GenericData( object ):
 
     # If we try to set it, make sure that if it already exists we don't change it.
     if hasattr( self, '_redshift' ):
-      npt.assert_allclose( value, self._redshift, atol=1e-5 )
+
+      if isinstance( value, np.ndarray ) or isinstance( self._redshift, np.ndarray ):
+
+        not_nan_inds = np.where( np.invert( np.isnan( self._redshift ) ) )[0]
+        test_value = np.array(value)[not_nan_inds] # Cast as np.ndarray because Pandas arrays can cause trouble.
+        test_existing_value = np.array(self._redshift)[not_nan_inds]
+        npt.assert_allclose( test_value, test_existing_value, atol=1e-5 )
+
+        self._redshift = value
+
+      else:
+        npt.assert_allclose( value, self._redshift, atol=1e-5 )
 
     else:
       self._redshift = value

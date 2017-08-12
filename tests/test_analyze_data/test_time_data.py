@@ -5,6 +5,7 @@ import copy
 import mock
 import numpy as np
 import numpy.testing as npt
+import pandas as pd
 import pdb
 import unittest
 
@@ -130,9 +131,26 @@ class TestTimeData( unittest.TestCase ):
 
   def test_hubble_z( self ):
 
+    self.t_data.redshift = np.array([ 0.       ,  0.0698467,  0.16946  ])
+
     expected = np.array( [ astro.hubble_parameter( redshift, units='km/s/kpc' ) for redshift in self.t_data.redshift ] )
     actual = self.t_data.hubble_z
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_redshift_pd_df( self ):
+    '''Sometimes we have a pandas DataFrame with NaNs in it as the redshift, and that causes trouble.
+    '''
+    
+    data = {
+      'redshift' : np.array( [1., 2., np.nan ] ),
+    }
+    df = pd.DataFrame( data, index=np.array( [ 1, 2, 3 ] ) )
+
+    self.t_data._redshift = df['redshift']
+
+    self.t_data.redshift = np.array( [1., 2., 3.])
 
   ########################################################################
 
@@ -147,6 +165,7 @@ class TestTimeData( unittest.TestCase ):
     expected = np.array( [ [1., 2., 3., 4., 5.], ]*4 )*np.sqrt( 3 )
     actual = self.t_data.get_data( 'R' )
     npt.assert_allclose( expected, actual )
+
 
 ########################################################################
 ########################################################################
