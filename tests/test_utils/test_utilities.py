@@ -83,6 +83,36 @@ class TestSmartDict( unittest.TestCase ):
     self.assertEqual( expected, actual )
 
 ########################################################################
+
+class TestDictFromDefaultsAndVariations( unittest.TestCase ):
+
+  def test_default( self ):
+
+    defaults = { 'best cat' : 'Melvulu', }
+    variations = {
+      'person a' : { 'other best cat' : 'Chellbrat', },
+      'person b' : {
+        'best cat' : 'A Normal Melville Cat', 
+        'other best cat' : 'Chellcat',
+      },
+    }
+
+    actual = utilities.dict_from_defaults_and_variations( defaults, variations )
+    expected = {
+      'person a' : {
+        'best cat' : 'Melvulu', 
+        'other best cat' : 'Chellbrat',
+      },
+      'person b' : {
+        'best cat' : 'A Normal Melville Cat', 
+        'other best cat' : 'Chellcat',
+      },
+    }
+
+    for key in expected.keys():
+      assert expected[key] == actual[key]
+
+########################################################################
 ########################################################################
 
 class TestGetCodeVersion( unittest.TestCase ):

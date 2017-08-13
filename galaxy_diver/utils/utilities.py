@@ -68,6 +68,31 @@ class SmartDict( collections.Mapping ):
 
 ########################################################################
 
+def dict_from_defaults_and_variations( defaults, variations ):
+  '''Create a dictionary of dictionaries from a default dictionary and variations on it.
+
+  Args:
+    defaults (dict) : Default dictionary. What each individual dictionary should default to.
+    variations (dict of dicts) : Each dictionary contains what should be different. The key for each dictionary should
+      be a label for it.
+
+  Returns:
+    result (dict of dicts) : The results is basically variations, where each child dict is merged with defaults.
+  '''
+
+  result = {}
+  for key in variations.keys():
+
+    defaults_copy = defaults.copy()
+
+    defaults_copy.update( variations[key] )
+
+    result[key] = defaults_copy
+
+  return result
+
+########################################################################
+
 def deepgetattr( obj, attr ):
   '''Recurses through an attribute chain to get the ultimate value.
   Credit to http://pingfive.typepad.com/blog/2010/04/deep-getattr-python-function.html
