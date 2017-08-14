@@ -23,6 +23,11 @@ import galaxy_diver.utils.data_operations as data_ops
 
 def make_movie( img_dir, file_pattern, movie_save_file ):
   '''Make a movie using ffmpeg.
+
+  Args:
+    img_dir (str) : Directory containing images to stitch together.
+    file_pattern (str) : Pattern for the images.
+    movie_save_file (str) : What to save the movie as. Typically .mp4 or .avi
   '''
 
   prev_dir = os.getcwd()
