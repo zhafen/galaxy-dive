@@ -11,11 +11,11 @@ import numpy as np
 import string
 
 import galaxy_diver.utils.io as io
-import generic_data
+import simulation_data
 
 ########################################################################
 
-class GriddedData( generic_data.SnapshotData ):
+class GriddedData( simulation_data.SnapshotData ):
   '''Class for handling data that forms a Cartesian grid.'''
 
   def __init__( self, sdir=None, snum=None, Nx=None, gridsize=None, ionized=None, ion_grid=False, **kwargs ):

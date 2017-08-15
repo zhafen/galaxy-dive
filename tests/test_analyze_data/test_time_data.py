@@ -9,7 +9,7 @@ import pandas as pd
 import pdb
 import unittest
 
-import galaxy_diver.analyze_data.generic_data as generic_data
+import galaxy_diver.analyze_data.simulation_data as simulation_data
 import galaxy_diver.read_data.snapshot as read_snapshot
 import galaxy_diver.utils.astro as astro
 
@@ -28,7 +28,7 @@ class TestTimeData( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.t_data = generic_data.TimeData( **default_kwargs )
+    self.t_data = simulation_data.TimeData( **default_kwargs )
 
     self.t_data.data = {
       'P' : np.zeros( ( 3, 4, 5 ) ),
@@ -93,8 +93,8 @@ class TestTimeData( unittest.TestCase ):
 
   ########################################################################
 
-  @mock.patch( 'galaxy_diver.analyze_data.generic_data.GenericData.get_data' )
-  @mock.patch( 'galaxy_diver.analyze_data.generic_data.GenericData.hubble_z', new_callable=mock.PropertyMock )
+  @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SimulationData.get_data' )
+  @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SimulationData.hubble_z', new_callable=mock.PropertyMock )
   def test_add_hubble_flow( self, mock_hubble_z, mock_get_data ):
 
     # Change the mock data we're using

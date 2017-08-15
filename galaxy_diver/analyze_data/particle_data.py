@@ -6,13 +6,13 @@
 @status: Development
 '''
 
-import generic_data
+import simulation_data
 import galaxy_diver.read_data.snapshot as read_snapshot
 import galaxy_diver.utils.constants as constants
 
 ########################################################################
 
-class ParticleData( generic_data.SnapshotData ):
+class ParticleData( simulation_data.SnapshotData ):
   '''Subclass for particle data.
   '''
 
