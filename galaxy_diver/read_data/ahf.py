@@ -32,6 +32,8 @@ class AHFReader( object ):
     self.sdir = sdir
 
   ########################################################################
+  # Load Data
+  ########################################################################
 
   def get_mtree_halos( self, index=None, tag=None ):
     '''Get halo files (e.g. halo_00000.dat) in a dictionary of pandas DataFrames.
@@ -195,6 +197,8 @@ class AHFReader( object ):
     self.ahf_mtree_idx = pd.read_csv( ahf_mtree_idx_path, delim_whitespace=True, names=['HaloID(1)', 'HaloID(2)'], skiprows=1  )
 
   ########################################################################
+  # Utilities
+  ########################################################################
 
   def get_filepath( self, snum, ahf_file_type ):
     '''Get the filepath for a specified type of AHF file.
@@ -219,6 +223,45 @@ class AHFReader( object ):
 
     return ahf_filepath
 
+  ########################################################################
+
+  def check_files_exist( self, snum_start, snum_end, snum_step ):
+    '''Check that AHF was successfully run for all files in the given range.
+
+    Args:
+      snum_start (int) : Starting snapshot.
+      snum_end (int) : Ending snapshot.
+      snum_step (int) : Step between snapshots.
+
+    Returns:
+      files_exist (bool) : If True, all files in the given range exist.
+    '''
+
+    snums = range( snum_start, snum_end + 1, snum_step )
+
+    missing_snums = []
+    for snum in snums:
+      
+      file_to_check = 'snap{:03d}Rpep*'.format( snum )
+      filepath_to_check = os.path.join( self.sdir, file_to_check )
+      files = glob.glob( filepath_to_check )
+
+      missing_ahf_files_at_this_snapshot = len( files ) == 0
+      if missing_ahf_files_at_this_snapshot:
+        missing_snums.append( snum )
+
+    if len( missing_snums ) > 0:
+
+      print 'Missing snums:'
+      for missing_snum in missing_snums:
+        print '{},'.format( missing_snum ),
+
+      return False
+
+    return True
+
+  ########################################################################
+  # Get Specific Data Arrays
   ########################################################################
 
   def get_mtree_halo_quantity( self, quantity, indice, index=None, tag=None ):
@@ -285,40 +328,6 @@ class AHFReader( object ):
       # Read and replace the new redshift
       new_redshift = metafile_reader.snapshot_times['redshift'][ mtree_halo.index ]
       mtree_halo['redshift'] = new_redshift
-
-  ########################################################################
-
-  def smooth_mtree_halos( self, metafile_dir ):
-    '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the AHF-calculated merger tree.
-    NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.
-
-    Args:
-      metafile_dir (str): The directory the snapshot_times are stored in.
-
-    Modifies:
-      self.mtree_halos (dict of pd.DataFrames) : Changes self.mtree_halos[halo_id]['Rvir'] and self.mtree_halos[halo_id]['Mvir']
-                                                 to be monotonically increasing.
-    '''
-
-    # We need to get an accurate redshift in order to smooth properly
-    self.get_accurate_redshift( metafile_dir )
-
-    for halo_id in self.mtree_halos.keys():
-
-      # Load the data
-      mtree_halo = self.mtree_halos[ halo_id ]
-
-      # Convert into physical coords for smoothing (we'll still leave the 1/h in place)
-      r_vir_phys = mtree_halo['Rvir']/( 1. + mtree_halo['redshift'] )
-
-      # Smooth r_vir
-      r_vir_phys_smooth = np.maximum.accumulate( r_vir_phys[::-1] )[::-1]
-
-      # Convert back into comoving and save
-      mtree_halo['Rvir'] = r_vir_phys_smooth*( 1. + mtree_halo['redshift'] )
-
-      # Smooth Mvir
-      mtree_halo['Mvir'] = np.maximum.accumulate( mtree_halo['Mvir'][::-1] )[::-1]
 
   ########################################################################
 
@@ -441,6 +450,44 @@ class AHFReader( object ):
 
     return p_or_v
 
+  ########################################################################
+  # Alter Data
+  ########################################################################
+
+  def smooth_mtree_halos( self, metafile_dir ):
+    '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the AHF-calculated merger tree.
+    NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.
+
+    Args:
+      metafile_dir (str): The directory the snapshot_times are stored in.
+
+    Modifies:
+      self.mtree_halos (dict of pd.DataFrames) : Changes self.mtree_halos[halo_id]['Rvir'] and self.mtree_halos[halo_id]['Mvir']
+                                                 to be monotonically increasing.
+    '''
+
+    # We need to get an accurate redshift in order to smooth properly
+    self.get_accurate_redshift( metafile_dir )
+
+    for halo_id in self.mtree_halos.keys():
+
+      # Load the data
+      mtree_halo = self.mtree_halos[ halo_id ]
+
+      # Convert into physical coords for smoothing (we'll still leave the 1/h in place)
+      r_vir_phys = mtree_halo['Rvir']/( 1. + mtree_halo['redshift'] )
+
+      # Smooth r_vir
+      r_vir_phys_smooth = np.maximum.accumulate( r_vir_phys[::-1] )[::-1]
+
+      # Convert back into comoving and save
+      mtree_halo['Rvir'] = r_vir_phys_smooth*( 1. + mtree_halo['redshift'] )
+
+      # Smooth Mvir
+      mtree_halo['Mvir'] = np.maximum.accumulate( mtree_halo['Mvir'][::-1] )[::-1]
+
+  ########################################################################
+  # Save Data
   ########################################################################
 
   def save_mtree_halos( self, tag ):
