@@ -24,6 +24,8 @@ class GenericData( object ):
   '''Very generic data class, with getting and masking functionality.'''
 
   def __init__( self,
+    key_parser = None,
+    data_masker = None,
     verbose = False,
     z_sun = constants.Z_MASSFRAC_SUN,
     **kwargs ):
@@ -34,16 +36,18 @@ class GenericData( object ):
       z_sun (float) : Used mass fraction for solar metallicity.
     '''
 
+    # For storing and creating masks to pass the data
+    if data_masker is None:
+      data_masker = DataMasker( self )
+
+    # Setup a data key parser
+    if key_parser is None:
+      key_parser = DataKeyParser()
+
     # Store the arguments
     for arg in locals().keys():
       setattr( self, arg, locals()[arg] )
     self.kwargs = kwargs
-
-    # For storing and creating masks to pass the data
-    self.data_masker = DataMasker( self )
-
-    # Setup a data key parser
-    self.key_parser = DataKeyParser()
 
   ########################################################################
   # Properties
@@ -278,14 +282,14 @@ class DataKeyParser( object ):
 
 class DataMasker( object ):
 
-  def __init__( self, generic_data ):
+  def __init__( self, data_object ):
     '''Class for masking data.
 
     Args:
-      generic_data (GenericData object) : Used for getting data to find mask ranges.
+      data_object (GenericData object) : Used for getting data to find mask ranges.
     '''
 
-    self.generic_data = generic_data
+    self.data_object = data_object
 
     self.masks = []
 
@@ -308,7 +312,7 @@ class DataMasker( object ):
     '''
 
     # Get the mask
-    data = self.generic_data.get_processed_data( data_key )
+    data = self.data_object.get_processed_data( data_key )
     data_ma = np.ma.masked_outside( data, data_min, data_max )
 
     # Handle the case where an entire array is masked or none of it is masked
@@ -357,7 +361,7 @@ class DataMasker( object ):
       data_ma (np.array) : Compressed masked data. Because it's compressed it may not have the same shape as the
         original data.
     '''
-    data = self.generic_data.get_processed_data( data_key, sl=sl )
+    data = self.data_object.get_processed_data( data_key, sl=sl )
 
     # Get the appropriate mask
     if isinstance( mask, np.ndarray ):
@@ -375,7 +379,7 @@ class DataMasker( object ):
       used_mask = used_mask[sl]
 
     # Test for if the data fits the mask, or if it's multi-dimensional
-    if len( data.shape ) > len( self.generic_data.base_data_shape ):
+    if len( data.shape ) > len( self.data_object.base_data_shape ):
       data_ma = [ np.ma.array( data_part, mask=used_mask ) for data_part in data ]
       data_ma = [ data_ma_part.compressed() for data_ma_part in data_ma ]
       data_ma = np.array( data_ma )

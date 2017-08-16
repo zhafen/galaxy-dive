@@ -72,7 +72,6 @@ class SimulationData( generic_data.GenericData ):
       hubble_corrected (bool) : Whether or not the velocities have had the Hubble flow added (velocities
                                           must be centered).
 
-
       ahf_tag (str) : Identifying tag for the ahf merger tree halo files, looks for ahf files of type
                                 'halo_00000_{}.dat'.format( tag ).
       main_halo_id (int) : What is the halo ID of the main galaxy in the simulation?
@@ -84,10 +83,8 @@ class SimulationData( generic_data.GenericData ):
         'halo' (default) : Sets velocity relative to the main halo (main_halo_id) using AHF halo data.
         np.array of size 3 : Centers the dataset on this coordinate.
 
-
     Keyword Args:
-      function_args (dict): Dictionary of args used to specify an arbitrary function with which to
-        generate data.
+      function_args (dict): Dictionary of args used to specify an arbitrary function with which to generate data.
     '''
 
     # Store the arguments

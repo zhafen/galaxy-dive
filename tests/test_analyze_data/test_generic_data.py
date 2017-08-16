@@ -111,7 +111,7 @@ class TestDataMasker( unittest.TestCase ):
 
     actual = self.data_masker.get_masked_data( 'P', mask=mask )
 
-    expected = np.array( [ [ self.data_masker.generic_data.data['P'][i,2], ] for i in range(3) ] )
+    expected = np.array( [ [ self.data_masker.data_object.data['P'][i,2], ] for i in range(3) ] )
 
     npt.assert_allclose( expected, actual )
 
@@ -123,7 +123,7 @@ class TestDataMasker( unittest.TestCase ):
     mask = np.array( [ [ 1, 0, ], [ 1, 0 ] ] ).astype( bool )
 
     pos = np.random.rand( 3, 2, 2, )
-    self.data_masker.generic_data.data['P'] = pos
+    self.data_masker.data_object.data['P'] = pos
 
     actual = self.data_masker.get_masked_data( 'P', mask=mask )
 
