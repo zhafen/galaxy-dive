@@ -124,12 +124,14 @@ class AHFPlotter( object ):
 
   def plot_halo_time( self,
     data_key,
+    ax = default,
     halo_id = 0,
     plot_change_in_halo_id = False,
     ):
 
-    fig = plt.figure( figsize=(10, 6), facecolor='white' )
-    ax = plt.gca()
+    if ax is default:
+      fig = plt.figure( figsize=(10, 6), facecolor='white' )
+      ax = plt.gca()
 
     plotted_mtree_halo = self.ahf_reader.mtree_halos[halo_id]
 

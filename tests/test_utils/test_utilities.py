@@ -105,6 +105,21 @@ class TestSmartDict( unittest.TestCase ):
 
     self.assertEqual( expected, actual )
 
+  ########################################################################
+
+  def test_call_custom_kwargs( self ):
+
+    class TestClassA( object ):
+      def foo( self, x ):
+        return x**2
+
+    d = utilities.SmartDict( { 1 : TestClassA(), 2 : TestClassA(), } )
+
+    kwargs = { 1 : { 'x' : 10}, 2 : { 'x' : 100}, } 
+    actual = d.foo.call_custom_kwargs( kwargs )
+    expected = { 1 : 100, 2 : 10000, }
+    self.assertEqual( expected, actual )
+
 ########################################################################
 
 class TestDictFromDefaultsAndVariations( unittest.TestCase ):

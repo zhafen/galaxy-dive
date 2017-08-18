@@ -71,27 +71,51 @@ class SmartDict( collections.Mapping ):
 
   ########################################################################
 
+  def call_custom_kwargs( self, kwargs, default_kwargs={} ):
+    '''Perform call, but using custom keyword arguments per dictionary tag.
+
+    Args:
+      kwargs (dict) : Custom keyword arguments to pass.
+      default_kwargs (dict) : Defaults shared between keyword arguments.
+
+    Returns:
+      results (dict) : Dictionary of results.
+    '''
+
+    used_kwargs = dict_from_defaults_and_variations( default_kwargs, kwargs )
+
+    results = {}
+    for key in self.keys():
+        
+      results[key] = self._storage[key]( **used_kwargs[key] )
+
+    return results
+
+  ########################################################################
+
   @classmethod
-  def from_class_and_args( cls, contained_cls, variations, defaults={}, ):
+  def from_class_and_args( cls, contained_cls, args, default_args={}, ):
     '''Alternate constructor. Creates a SmartDict of contained_cls objects, with arguments passed to it from
     the dictionary created by defaults and variations.
 
     Args:
       contained_cls (type of object/constructor) : What class should the smart dict consist of?
-      variations (dict of dicts) : Each dictionary contains what should be different. The key for each dictionary
-        should be a label for it. Passed to dict_from_defaults_and_variations()
-      defaults (dict) : Default dictionary. What each individual dictionary should default to. Passed to
-        dict_from_defaults_and_variations().
+      args (dict/other) : Arguments that should be passed to contained_cls. If not a dict, assumed to be the first
+        and only argument for the constructor.
+      default_args : Default arguments to fill in args
 
     Returns:
       result (SmartDict instance) : The constructed instance.
     '''
 
-    kwargs = dict_from_defaults_and_variations( defaults, variations )
+    kwargs = dict_from_defaults_and_variations( default_args, args )
 
     storage = {}
     for key in kwargs.keys():
-      storage[key] = contained_cls( **kwargs[key] )
+      if isinstance( kwargs[key], dict ):
+        storage[key] = contained_cls( **kwargs[key] )
+      else:
+        storage[key] = contained_cls( kwargs[key] )
 
     return cls( storage )
 
@@ -108,6 +132,9 @@ def dict_from_defaults_and_variations( defaults, variations ):
   Returns:
     result (dict of dicts) : The results is basically variations, where each child dict is merged with defaults.
   '''
+
+  if len( defaults ) == 0:
+    return variations
 
   result = {}
   for key in variations.keys():
