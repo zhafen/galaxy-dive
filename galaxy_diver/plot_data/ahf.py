@@ -126,6 +126,8 @@ class AHFPlotter( object ):
     data_key,
     ax = default,
     halo_id = 0,
+    color = 'k',
+    label = None,
     plot_change_in_halo_id = False,
     ):
 
@@ -146,7 +148,7 @@ class AHFPlotter( object ):
                         transform=trans, color='k', linewidth=1, linestyle='--')
 
     # Plot position data
-    ax.plot( plotted_mtree_halo.index, plotted_mtree_halo[data_key], color='#e41a1c', linewidth=3 )
+    ax.plot( plotted_mtree_halo.index, plotted_mtree_halo[data_key], color=color, linewidth=3, label=label )
 
     ax.set_xlabel( 'Snapshot Number', fontsize=22, )
     ax.set_ylabel( r'$X_{\rm{COM}}$', fontsize=22, )
