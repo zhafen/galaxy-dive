@@ -40,7 +40,7 @@ class TestSmartDictStartup( unittest.TestCase ):
       2 : { 'b' : 2 },
     }
 
-    result = utilities.SmartDict.from_defaults_and_variations( TestClassA, defaults, variations )
+    result = utilities.SmartDict.from_class_and_args( TestClassA, variations, defaults, )
 
     assert isinstance( result, utilities.SmartDict )
 

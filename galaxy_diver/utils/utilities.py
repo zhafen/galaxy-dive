@@ -72,16 +72,16 @@ class SmartDict( collections.Mapping ):
   ########################################################################
 
   @classmethod
-  def from_defaults_and_variations( cls, contained_cls, defaults, variations ):
+  def from_class_and_args( cls, contained_cls, variations, defaults={}, ):
     '''Alternate constructor. Creates a SmartDict of contained_cls objects, with arguments passed to it from
     the dictionary created by defaults and variations.
 
     Args:
       contained_cls (type of object/constructor) : What class should the smart dict consist of?
-      defaults (dict) : Default dictionary. What each individual dictionary should default to. Passed to
-        dict_from_defaults_and_variations().
       variations (dict of dicts) : Each dictionary contains what should be different. The key for each dictionary
         should be a label for it. Passed to dict_from_defaults_and_variations()
+      defaults (dict) : Default dictionary. What each individual dictionary should default to. Passed to
+        dict_from_defaults_and_variations().
 
     Returns:
       result (SmartDict instance) : The constructed instance.
