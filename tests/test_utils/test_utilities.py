@@ -120,6 +120,34 @@ class TestSmartDict( unittest.TestCase ):
     expected = { 1 : 100, 2 : 10000, }
     self.assertEqual( expected, actual )
 
+  ########################################################################
+
+  def test_multiply( self ):
+
+    d = utilities.SmartDict( { 1 : 1, 2 : 2 } )
+
+    expected = { 1 : 2, 2 : 4, }
+
+    actual = d*2
+    self.assertEqual( expected, actual )
+
+    actual = 2*d
+    self.assertEqual( expected, actual )
+
+  ########################################################################
+
+  def test_divide( self ):
+
+    d = utilities.SmartDict( { 1 : 2, 2 : 4 } )
+    expected = { 1 : 1, 2 : 2, }
+    actual = d/2
+    self.assertEqual( expected, actual )
+
+    d = utilities.SmartDict( { 1 : 2, 2 : 4 } )
+    expected = { 1 : 2, 2 : 1, }
+    actual = 4/d
+    self.assertEqual( expected, actual )
+
 ########################################################################
 
 class TestDictFromDefaultsAndVariations( unittest.TestCase ):

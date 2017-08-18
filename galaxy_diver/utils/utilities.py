@@ -103,6 +103,24 @@ class SmartDict( collections.Mapping ):
 
   __rmul__ = __mul__
 
+  def __div__( self, other ):
+    results = {}
+
+    for key in self.keys():
+
+      results[key] = self._storage[key]/other
+
+    return SmartDict( results )
+
+  def __rdiv__( self, other ):
+    results = {}
+
+    for key in self.keys():
+
+      results[key] = other/self._storage[key]
+
+    return SmartDict( results )
+
   ########################################################################
   # Construction Methods
   ########################################################################
