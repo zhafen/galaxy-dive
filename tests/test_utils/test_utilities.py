@@ -25,6 +25,29 @@ class TestSmartDictStartup( unittest.TestCase ):
     self.assertEqual( smart_dict['b'], 2 )
     self.assertEqual( len( smart_dict ), 2 )
 
+  def test_from_defaults_and_variations( self ):
+
+    class TestClassA( object ):
+      def __init__( self, a, b ):
+        self.a = a
+        self.b = b
+      def return_contents( self ):
+        return self.a, self.b
+
+    defaults = { 'a' : 1, 'b' : 1 }
+    variations = {
+      1 : {},
+      2 : { 'b' : 2 },
+    }
+
+    result = utilities.SmartDict.from_defaults_and_variations( TestClassA, defaults, variations )
+
+    assert isinstance( result, utilities.SmartDict )
+
+    expected = { 1 : ( 1, 1, ), 2 : ( 1, 2, ), }
+    actual = result.return_contents()
+    assert expected == actual
+
 ########################################################################
 
 class TestSmartDict( unittest.TestCase ):

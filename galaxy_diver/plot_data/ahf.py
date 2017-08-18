@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.patheffects as path_effects
 import matplotlib.patches as mpatches
+import matplotlib.transforms as transforms
 
 import plotting as gen_plot
 import pu_colormaps as pu_cm
@@ -119,6 +120,34 @@ class AHFPlotter( object ):
         cir.set_path_effects([ path_effects.Stroke(linewidth=5, foreground='black'),
                                path_effects.Normal() ])
 
+  ########################################################################
+
+  def plot_halo_time( self,
+    data_key,
+    halo_id = 0,
+    plot_change_in_halo_id = False,
+    ):
+
+    fig = plt.figure( figsize=(10, 6), facecolor='white' )
+    ax = plt.gca()
+
+    plotted_mtree_halo = self.ahf_reader.mtree_halos[halo_id]
+
+    # Make a blended transformation
+    trans = transforms.blended_transform_factory( ax.transData, ax.transAxes )
+
+    # Plot vertical lines when there's a change
+    if plot_change_in_halo_id:
+      for i, change_in_halo_id in enumerate( change_in_halo_ids ):
+        if change_in_halo_id != 0:
+            ax.plot( [plotted_mtree_halo.index[i], plotted_mtree_halo.index[i] ], [0., 1.],
+                        transform=trans, color='k', linewidth=1, linestyle='--')
+
+    # Plot position data
+    ax.plot( plotted_mtree_halo.index, plotted_mtree_halo[data_key], color='#e41a1c', linewidth=3 )
+
+    ax.set_xlabel( 'Snapshot Number', fontsize=22, )
+    ax.set_ylabel( r'$X_{\rm{COM}}$', fontsize=22, )
 
 
 

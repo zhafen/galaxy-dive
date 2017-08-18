@@ -242,7 +242,7 @@ class AHFReader( object ):
     missing_snums = []
     for snum in snums:
       
-      file_to_check = 'snap{:03d}Rpep*'.format( snum )
+      file_to_check = 'snap{:03d}Rpep*AHF_halos'.format( snum )
       filepath_to_check = os.path.join( self.sdir, file_to_check )
       files = glob.glob( filepath_to_check )
 

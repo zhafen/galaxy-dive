@@ -23,12 +23,12 @@ dirs_to_use = os.listdir( movie_dir )
 
 for dir_to_use in dirs_to_use:
 
-  img_dir = os.path.join( movie_dir, dir_to_use )
+  if os.path.isdir( dir_to_use ):
 
-  file_pattern = '{}_*.png'.format( dir_to_use )
+    img_dir = os.path.join( movie_dir, dir_to_use )
 
-  movie_save_file = os.path.join( movie_dir, '{}.mp4'.format( dir_to_use ) )
+    file_pattern = '{}_*.png'.format( dir_to_use )
 
-  gen_plot.make_movie( img_dir, file_pattern, movie_save_file )
+    movie_save_file = os.path.join( movie_dir, '{}.mp4'.format( dir_to_use ) )
 
-  #shutil.move( os.path.join( img_dir, movie_save_file ), os.path.join( img_dir, movie_dir ) )
+    gen_plot.make_movie( img_dir, file_pattern, movie_save_file )
