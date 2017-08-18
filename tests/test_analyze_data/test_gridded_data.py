@@ -1,7 +1,7 @@
 '''Testing for gridded_data.py
 '''
 
-from mock import patch
+import mock
 import numpy as np
 import numpy.testing as npt
 import pdb
@@ -125,3 +125,20 @@ class TestGriddedData(unittest.TestCase):
     expected = np.array( [ dist + 78.974358452690979, dist + 78.974358452690979*2., ] )
     npt.assert_allclose(actual, expected)
 
+  ########################################################################
+
+  @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SimulationData.get_data' )
+  def test_calc_impact_parameter( self, mock_get_data ):
+
+    instance = self.test_class( **self.kwargs )
+
+    mock_get_data.side_effect = [
+      np.array( [ [ -1., -1.], [ 1., 1.] ] ),
+      np.array( [ [ -1., 1.], [ 1., -1.] ] ),
+    ]
+
+    instance.calc_impact_parameter( 'R_face_xy' )
+
+    actual = instance.data[ 'R_face_xy' ]
+    expected = np.ones( (2, 2) )*np.sqrt( 2. )
+    npt.assert_allclose(actual, expected)

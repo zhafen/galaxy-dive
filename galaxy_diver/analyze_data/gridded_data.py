@@ -121,6 +121,32 @@ class GriddedData( simulation_data.SnapshotData ):
     f.close()
 
   ########################################################################
+  ########################################################################
+
+  def handle_data_key_error( self, data_key ):
+    '''When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.
+
+    Args:
+      data_key (str) : Key to try and generate data for
+
+    Modifies:
+      self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so
+    '''
+
+    if data_key ==  'Rx' or data_key ==  'Ry' or data_key ==  'Rz' or data_key == 'P':
+      self.calc_positions()
+    elif data_key[:-3] ==  'Rx_face' or data_key[:-3] ==  'Ry_face' or data_key[:-3] ==  'Rz_face':
+      self.calc_face_positions( data_key )
+    elif data_key[:-3] ==  'R_face':
+      self.calc_impact_parameter( data_key )
+    elif data_key == 'M':
+      self.calc_mass()
+
+    else:
+      super( GriddedData, self ).handle_data_key_error( data_key )
+
+  ########################################################################
+  ########################################################################
 
   def calc_positions( self ):
     '''Calculate the positions of gridcells.'''
@@ -146,13 +172,26 @@ class GriddedData( simulation_data.SnapshotData ):
     if target_face == 'xy':
       self.data['Rx_face_xy'] = self.get_data( 'Rx' )[:, :, 0]
       self.data['Ry_face_xy'] = self.get_data( 'Ry' )[:, :, 0]
-    if target_face == 'xz':
+    elif target_face == 'xz':
       self.data['Rx_face_xz'] = self.get_data( 'Rx' )[:, 0, :]
       self.data['Rz_face_xz'] = self.get_data( 'Rz' )[:, 0, :]
-    if target_face == 'yz':
+    elif target_face == 'yz':
       self.data['Ry_face_yz'] = self.get_data( 'Ry' )[0, :, :]
       self.data['Rz_face_yz'] = self.get_data( 'Rz' )[0, :, :]
 
+  ########################################################################
+
+  def calc_impact_parameter( self, data_key ):
+
+    # Figure out which face to calculate for
+    target_face = string.split( data_key, '_' )[-1]
+    
+    if target_face == 'xy':
+      self.data[data_key] = np.sqrt( self.get_data( 'Rx_face_xy' )**2. + self.get_data( 'Ry_face_xy' )**2. ) 
+    elif target_face == 'xz':
+      self.data[data_key] = np.sqrt( self.get_data( 'Rx_face_xz' )**2. + self.get_data( 'Ry_face_xz' )**2. ) 
+    elif target_face == 'yz':
+      self.data[data_key] = np.sqrt( self.get_data( 'Rx_face_yz' )**2. + self.get_data( 'Ry_face_yz' )**2. ) 
 
   ########################################################################
 

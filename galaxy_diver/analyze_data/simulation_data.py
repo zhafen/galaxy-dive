@@ -513,14 +513,8 @@ class SimulationData( generic_data.GenericData ):
 
     # TODO: Move these to the subclasses somehow.
     # Subclass methods
-    elif data_key ==  'Rx' or data_key ==  'Ry' or data_key ==  'Rz' or data_key == 'P':
-      self.calc_positions()
-    elif data_key[:-3] ==  'Rx_face' or data_key[:-3] ==  'Ry_face' or data_key[:-3] ==  'Rz_face':
-      self.calc_face_positions( data_key )
     elif data_key == 'T':
       self.calc_temp()
-    elif data_key == 'M':
-      self.calc_mass()
 
     else:
       raise KeyError( 'NULL data_key, data_key = {}'.format( data_key ) )
