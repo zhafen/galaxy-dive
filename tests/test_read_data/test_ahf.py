@@ -16,6 +16,7 @@ import pytest
 import unittest
 
 import galaxy_diver.read_data.ahf as read_ahf
+import galaxy_diver.utils.utilities as utilities
 
 sdir = './tests/data/analysis_dir'
 sdir2 = './tests/data/analysis_dir2'
@@ -378,5 +379,30 @@ class TestAHFReader( unittest.TestCase ):
       ]
     mock_save_ahf_halos_add.assert_has_calls( calls, any_order=True )
 
-    
+########################################################################
+########################################################################
+
+class TestUtilities( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.ahf_reader = read_ahf.AHFReader( sdir )
+
+  ########################################################################
+
+  def test_check_files_exist( self ):
+
+    assert self.ahf_reader.check_files_exist( 500, 600, 50 )
+
+  ########################################################################
+
+  def test_check_files_exist_missing_files( self ):
+
+    with utilities.captured_output() as ( out, err ):
+      assert not self.ahf_reader.check_files_exist( 400, 600, 50 )
+
+    # Make sure we print information about missing snapshots
+    output = out.getvalue().strip()
+    self.assertEqual( output, 'Missing snums:\n400, 450,' )
+
 
