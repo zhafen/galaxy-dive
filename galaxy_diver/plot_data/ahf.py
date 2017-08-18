@@ -123,11 +123,13 @@ class AHFPlotter( object ):
   ########################################################################
 
   def plot_halo_time( self,
-    data_key,
+    y_key,
     ax = default,
     halo_id = 0,
     color = 'k',
+    y_label = default,
     label = None,
+    remove_hubble_param = False,
     plot_change_in_halo_id = False,
     ):
 
@@ -137,21 +139,23 @@ class AHFPlotter( object ):
 
     plotted_mtree_halo = self.ahf_reader.mtree_halos[halo_id]
 
-    # Make a blended transformation
-    trans = transforms.blended_transform_factory( ax.transData, ax.transAxes )
-
     # Plot vertical lines when there's a change
     if plot_change_in_halo_id:
+      # Make a blended transformation
+      trans = transforms.blended_transform_factory( ax.transData, ax.transAxes )
+
       for i, change_in_halo_id in enumerate( change_in_halo_ids ):
         if change_in_halo_id != 0:
             ax.plot( [plotted_mtree_halo.index[i], plotted_mtree_halo.index[i] ], [0., 1.],
                         transform=trans, color='k', linewidth=1, linestyle='--')
 
-    # Plot position data
-    ax.plot( plotted_mtree_halo.index, plotted_mtree_halo[data_key], color=color, linewidth=3, label=label )
+    x_data = np.log10( 1. + plotted_mtree_halo['redshift'] )
+    ax.plot( x_data, plotted_mtree_halo[y_key], color=color, linewidth=3, label=label )
 
-    ax.set_xlabel( 'Snapshot Number', fontsize=22, )
-    ax.set_ylabel( r'$X_{\rm{COM}}$', fontsize=22, )
+    if y_label is default:
+      y_label = y_key
+    ax.set_xlabel( r'$\log(1 + z)$', fontsize=22, )
+    ax.set_ylabel( y_label, fontsize=22, )
 
 
 

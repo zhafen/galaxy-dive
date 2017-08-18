@@ -56,9 +56,7 @@ class SmartDict( collections.Mapping ):
 
       results[key] = getattr( self._storage[key], attr )
 
-    smart_results = SmartDict( results )
-
-    return smart_results
+    return SmartDict( results )
 
   def __call__( self, *args, **kwargs ):
 
@@ -67,9 +65,7 @@ class SmartDict( collections.Mapping ):
         
       results[key] = self._storage[key]( *args, **kwargs )
 
-    return results
-
-  ########################################################################
+    return SmartDict( results )
 
   def call_custom_kwargs( self, kwargs, default_kwargs={} ):
     '''Perform call, but using custom keyword arguments per dictionary tag.
@@ -89,8 +85,26 @@ class SmartDict( collections.Mapping ):
         
       results[key] = self._storage[key]( **used_kwargs[key] )
 
-    return results
+    return SmartDict( results )
 
+  ########################################################################
+  # Operation Methods
+  ########################################################################
+
+  def __mul__( self, other ):
+
+    results = {}
+
+    for key in self.keys():
+
+      results[key] = self._storage[key]*other
+
+    return SmartDict( results )
+
+  __rmul__ = __mul__
+
+  ########################################################################
+  # Construction Methods
   ########################################################################
 
   @classmethod
