@@ -95,29 +95,41 @@ class SmartDict( collections.Mapping ):
 
     results = {}
 
-    for key in self.keys():
+    if isinstance( other, SmartDict ):
+      for key in self.keys():
+        results[key] = self._storage[key]*other[key]
 
-      results[key] = self._storage[key]*other
+    else:
+      for key in self.keys():
+        results[key] = self._storage[key]*other
 
     return SmartDict( results )
 
   __rmul__ = __mul__
 
   def __div__( self, other ):
+
     results = {}
 
-    for key in self.keys():
-
-      results[key] = self._storage[key]/other
+    if isinstance( other, SmartDict ):
+      for key in self.keys():
+        results[key] = self._storage[key]/other[key]
+    else:
+      for key in self.keys():
+        results[key] = self._storage[key]/other
 
     return SmartDict( results )
 
   def __rdiv__( self, other ):
+
     results = {}
 
-    for key in self.keys():
-
-      results[key] = other/self._storage[key]
+    if isinstance( other, SmartDict ):
+      for key in self.keys():
+        results[key] = other[key]/self._storage[key]
+    else:
+      for key in self.keys():
+        results[key] = other/self._storage[key]
 
     return SmartDict( results )
 

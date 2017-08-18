@@ -136,6 +136,21 @@ class TestSmartDict( unittest.TestCase ):
 
   ########################################################################
 
+  def test_multiply_smart_dict( self ):
+
+    d1 = utilities.SmartDict( { 1 : 1, 2 : 2 } )
+    d2 = utilities.SmartDict( { 1 : 2, 2 : 3 } )
+
+    expected = { 1 : 2, 2 : 6, }
+
+    actual = d1*d2
+    self.assertEqual( expected, actual )
+
+    actual = d2*d1
+    self.assertEqual( expected, actual )
+
+  ########################################################################
+
   def test_divide( self ):
 
     d = utilities.SmartDict( { 1 : 2, 2 : 4 } )
@@ -146,6 +161,18 @@ class TestSmartDict( unittest.TestCase ):
     d = utilities.SmartDict( { 1 : 2, 2 : 4 } )
     expected = { 1 : 2, 2 : 1, }
     actual = 4/d
+    self.assertEqual( expected, actual )
+
+  ########################################################################
+
+  def test_divide_smart_dict( self ):
+
+    d1 = utilities.SmartDict( { 1 : 9, 2 : 4 } )
+    d2 = utilities.SmartDict( { 1 : 3, 2 : 2 } )
+
+    expected = { 1 : 3, 2 : 2, }
+
+    actual = d1/d2
     self.assertEqual( expected, actual )
 
 ########################################################################
