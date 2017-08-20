@@ -142,3 +142,4 @@ class TestGriddedData(unittest.TestCase):
     actual = instance.data[ 'R_face_xy' ]
     expected = np.ones( (2, 2) )*np.sqrt( 2. )
     npt.assert_allclose(actual, expected)
+
