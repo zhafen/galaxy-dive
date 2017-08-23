@@ -21,19 +21,20 @@ import galaxy_diver.utils.data_operations as data_ops
 ########################################################################
 ########################################################################
 
-def make_movie( img_dir, file_pattern, movie_save_file ):
+def make_movie( img_dir, file_pattern, movie_save_file, quality=1 ):
   '''Make a movie using ffmpeg.
 
   Args:
     img_dir (str) : Directory containing images to stitch together.
     file_pattern (str) : Pattern for the images.
     movie_save_file (str) : What to save the movie as. Typically .mp4 or .avi
+    quality (int) : What quality to use for making the movie (1-31). Default is 1, which is highest quality.
   '''
 
   prev_dir = os.getcwd()
   os.chdir( img_dir )
 
-  subprocess.call( [ "ffmpeg", "-pattern_type", "glob", "-i", file_pattern, "-q:v", "1", movie_save_file, ])
+  subprocess.call( [ "ffmpeg", "-pattern_type", "glob", "-i", file_pattern, "-q:v", str( quality ), movie_save_file, ])
 
   os.chdir( prev_dir )
 

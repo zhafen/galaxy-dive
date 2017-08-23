@@ -17,6 +17,11 @@ import plotting as gen_plot
 
 movie_dir_rel_path = sys.argv[1]
 
+if len( sys.argv ) > 2:
+  movie_quality = int( sys.argv[2] )
+else:
+  movie_quality = 1
+
 movie_dir = os.path.abspath( movie_dir_rel_path )
 
 dirs_to_use = os.listdir( movie_dir )
@@ -31,4 +36,4 @@ for dir_to_use in dirs_to_use:
 
     movie_save_file = os.path.join( movie_dir, '{}.mp4'.format( dir_to_use ) )
 
-    gen_plot.make_movie( img_dir, file_pattern, movie_save_file )
+    gen_plot.make_movie( img_dir, file_pattern, movie_save_file, movie_quality )
