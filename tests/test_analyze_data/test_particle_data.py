@@ -40,28 +40,35 @@ class TestParticleData(unittest.TestCase):
       'ahf_index' : 600,
       }
 
+    self.p_data = self.test_class( **self.kwargs )
+
   ########################################################################
 
   def test_init(self):
 
-    instance = self.test_class( **self.kwargs )
-
-    assert instance.data['P'] is not None
+    assert self.p_data.data['P'] is not None
 
   ########################################################################
 
   def test_gets_new_ids( self ):
 
     self.kwargs['load_additional_ids'] = True
-
-    instance = self.test_class( **self.kwargs )
+    self.p_data = self.test_class( **self.kwargs )
 
     P = read_snapshot.readsnap( self.kwargs['sdir'], self.kwargs['snum'], self.kwargs['ptype'], True )
 
-    npt.assert_allclose( P['id'], instance.data['ID'] )
-    npt.assert_allclose( P['child_id'], instance.data['ChildID'] )
-    npt.assert_allclose( P['id_gen'], instance.data['IDGen'] )
+    npt.assert_allclose( P['id'], self.p_data.data['ID'] )
+    npt.assert_allclose( P['child_id'], self.p_data.data['ChildID'] )
+    npt.assert_allclose( P['id_gen'], self.p_data.data['IDGen'] )
 
+  ########################################################################
 
+  def test_find_duplicate_ids( self ):
+
+    actual = self.p_data.find_duplicate_ids()
+
+    expected = np.array( [ 36091289, ] )
+
+    npt.assert_allclose( actual, expected )
     
 

@@ -6,6 +6,8 @@
 @status: Development
 '''
 
+import numpy as np
+
 import simulation_data
 import galaxy_diver.read_data.snapshot as read_snapshot
 import galaxy_diver.utils.constants as constants
@@ -107,7 +109,7 @@ class ParticleData( simulation_data.SnapshotData ):
 
   ########################################################################
 
-  def calc_temp(self, gamma=5./3.):
+  def calc_temp( self, gamma=5./3. ):
     '''Calculate the temperature from the internal energy. '''
 
     #raise Exception( TODO: Test this )
@@ -118,7 +120,7 @@ class ParticleData( simulation_data.SnapshotData ):
 
   ########################################################################
 
-  def calc_classifications(self):
+  def calc_classifications( self ):
     '''Get the classification for each particle, using data from the Angles-Alcazar+16 pipeline.
     Uses classes from the tracked_particle_data_handling.py module.
 
@@ -136,3 +138,48 @@ class ParticleData( simulation_data.SnapshotData ):
 
     # Get the classifications
     self.data['Cl'] = tracked_p_data.classify_dataset(self.data['ID'], self.data_attrs['redshift'])
+
+  ########################################################################
+
+  def find_duplicate_ids( self ):
+    '''Find all the IDs in the particle data set that have duplicates.
+
+    Returns:
+      duplicate_ids ( np.ndarray ) : Array of IDs that have duplicates.
+    '''
+
+    unique_ids, id_counts = np.unique( self.get_data( 'ID' ), return_counts=True )
+
+    duplicate_inds = np.where( id_counts > 1 )[0]
+
+    return unique_ids[duplicate_inds]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
