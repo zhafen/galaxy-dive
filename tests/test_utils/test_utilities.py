@@ -292,3 +292,46 @@ class TestChunkList( unittest.TestCase ):
     actual = utilities.chunk_list( l, n )
     for expected_, actual_ in zip( expected, actual ):
       assert expected_ == actual_
+
+########################################################################
+########################################################################
+
+class TestArraySetConversion( unittest.TestCase ):
+
+  def test_arrays_to_set( self ):
+
+    expected = set( [ ( 1, 1 ), ( 2, 2 ), ( 0, 0 ) ] )
+
+    actual = utilities.arrays_to_set( np.arange( 3 ), np.arange( 3 ) )
+
+    self.assertEqual( expected, actual ) 
+
+  ########################################################################
+
+  def test_arrays_to_set_long( self ):
+
+    expected = set( [ ( 1, 1, 1 ), ( 2, 2, 2 ), ( 0, 0, 0 ) ] )
+
+    actual = utilities.arrays_to_set( np.arange( 3 ), np.arange( 3 ), np.arange(3) )
+
+    self.assertEqual( expected, actual ) 
+
+  ########################################################################
+
+  def test_set_to_arrays( self ):
+
+    expected = np.array([
+      [ 1, 4, 7, ],
+      [ 2, 5, 8, ],
+      [ 3, 6, 9, ],
+    ])
+
+    actual = utilities.set_to_arrays( set( [ ( 1, 2, 3, ), ( 4, 5, 6 ), ( 7, 8, 9 ), ] ) )
+
+    npt.assert_allclose( expected[:,0], actual[:,-1] )
+
+    # To allow for full comparison. We don't really care what order they're in, as long as they're matched.
+    actual.sort()
+
+    npt.assert_allclose( expected, actual )
+

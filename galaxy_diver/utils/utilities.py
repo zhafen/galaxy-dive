@@ -10,6 +10,7 @@ import collections
 from contextlib import contextmanager
 from functools import wraps
 import inspect
+import numpy as np
 import os
 from StringIO import StringIO
 import subprocess
@@ -206,6 +207,32 @@ def deepgetattr( obj, attr ):
   '''
 
   return reduce( getattr, attr.split('.'), obj )
+
+########################################################################
+
+def arrays_to_set( *args ):
+  '''Convert arr1, arr2, arr3, ... to a set, where a single enrty in the set is ( arr1[j], arr2[j], ... )
+
+  Args:
+    n arrays ( multiple np.ndarrays ) : The arrays to convert.
+
+  Returns:
+    result ( set ) : The converted set.
+  '''
+
+  return set( zip( *args ) ) 
+
+def set_to_arrays( set_to_convert ):
+  '''Convert a set into multiple arrays.
+
+  Args:
+    result ( set ) : The set to convert
+
+  Returns:
+    n arrays ( multiple np.ndarrays ) : The converted arrays
+  '''
+
+  return np.array( list( set_to_convert ) ).transpose()
 
 ########################################################################
 
