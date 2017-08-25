@@ -90,7 +90,9 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
 
     # CAFG: changed order of the following two lines, so that header
     # info is returned even if no particles.
-    if (header_only==1): file.close(); return {'k':0,'time':time,'hubble':hubble,'redshift':redshift};
+    if (header_only==1):
+      file.close()
+      return {'k':0,'time':time,'hubble':hubble,'redshift':redshift, 'npart':npartTotal[ptype]}
     if (npartTotal[ptype]<=0): file.close(); return {'k':-1};
 
 
