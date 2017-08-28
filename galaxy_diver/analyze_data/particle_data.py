@@ -22,7 +22,7 @@ class ParticleData( simulation_data.SnapshotData ):
     '''Initialize.
 
     Args:
-      sdir (str) : Directory the snaphost is stored in
+      sdir (str) : Directory the snapshot is stored in
       snum (int) : Snapshot number to open
       ptype (int) : Particle type to load.
       load_additional_ids (bool, optional) : Whether or not to load child_ids, etc, if they exist.

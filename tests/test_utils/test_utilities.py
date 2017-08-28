@@ -335,3 +335,58 @@ class TestArraySetConversion( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+########################################################################
+########################################################################
+
+class TestStoreParameters( unittest.TestCase ):
+
+  def test_basic( self ):
+
+    class Object( object ):
+
+      @utilities.store_parameters
+      def __init__( self, a, b, c=3 ):
+        pass
+
+    o = Object( 1, 2, )
+
+    self.assertEqual( 1, o.a )
+    self.assertEqual( 2, o.b )
+    self.assertEqual( 3, o.c )
+    self.assertEqual( [ 'a', 'b', 'c' ], o.stored_parameters )
+
+  ########################################################################
+
+  def test_kwargs_input( self ):
+
+    class Object( object ):
+
+      @utilities.store_parameters
+      def __init__( self, a, b, c=3, **kwargs ):
+        pass
+
+    o = Object( **{ 'a' : 1, 'b' : 2, 'c' : 4, 'd' : 5 } )
+
+    self.assertEqual( 1, o.a )
+    self.assertEqual( 2, o.b )
+    self.assertEqual( 4, o.c )
+    self.assertEqual( {'d' : 5}, o.kwargs )
+    self.assertEqual( [ 'a', 'b', 'c', 'kwargs', ], o.stored_parameters )
+
+  ########################################################################
+
+  def test_args_and_kwargs_input( self ):
+
+    class Object( object ):
+
+      @utilities.store_parameters
+      def __init__( self, *args, **kwargs ):
+        pass
+
+    args = ( 'dog', )
+    kwargs = { 'a' : 1, 'b' : 2, 'c' : 4, 'd' : 5 }
+    o = Object( *args, **kwargs )
+
+    self.assertEqual( ('dog',), o.args )
+    self.assertEqual( { 'a' : 1, 'b' : 2, 'c' : 4, 'd' : 5 }, o.kwargs )
+    self.assertEqual( [ 'args', 'kwargs', ], o.stored_parameters )

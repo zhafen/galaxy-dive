@@ -10,6 +10,7 @@ import collections
 from contextlib import contextmanager
 from functools import wraps
 import inspect
+import itertools
 import numpy as np
 import os
 from StringIO import StringIO
@@ -358,9 +359,37 @@ def print_timer( timer_string='Time taken:' ):
 
 ########################################################################
 
+def store_parameters( constructor ):
+  '''Decorator for automatically storing arguments passed to a constructor.
+  I.e. any args passed to constructor via test_object = TestObject( *args, **kwargs )
+  will be stored in test_object, e.g. test_object.args
+
+  Args:
+    constructor (function) : Constructor to wrap.
+  '''
+
+  @wraps( constructor )
+  def wrapped_constructor( self, *args, **kwargs ):
+
+    parameters_to_store = inspect.getcallargs( constructor, self, *args, **kwargs )
+
+    # Make sure we don't accidentally try to save the self argument
+    del parameters_to_store['self']
+
+    for parameter in parameters_to_store.keys():
+      setattr( self, parameter, parameters_to_store[parameter] )
+
+    self.stored_parameters = parameters_to_store.keys()
+
+    result = constructor( self, *args, **kwargs )
+
+  return wrapped_constructor
+
+########################################################################
+
 # Make a path to a file
 
-def mkdirP(path):
+def mkdirP( path ):
 
   try:
     os.makedirs(path)
@@ -376,17 +405,17 @@ def mkdirP(path):
 # Class modelled after unix tee, mainly for the purpose of writing to a log while also printing.
 
 class Tee:
-  def write(self, *args, **kwargs):
-    self.out1.write(*args, **kwargs)
-    self.out2.write(*args, **kwargs)
-  def __init__(self, out1, out2):
+  def write( self, *args, **kwargs ):
+    self.out1.write( *args, **kwargs )
+    self.out2.write( *args, **kwargs )
+  def __init__( self, out1, out2 ):
     self.out1 = out1
     self.out2 = out2
 
 ########################################################################
 
 # Function for saving to a file.
-def saveToLog(log_save_file):
+def saveToLog( log_save_file ):
 
   sys.stdout = Tee(open(log_save_file, 'w'), sys.stdout)
 
