@@ -47,9 +47,23 @@ class SmartDict( collections.Mapping ):
     return self._storage[item]
 
   def __repr__( self ):
-    print self._storage
 
-    return 'SmartDict object'
+    out_str = "SmartDict, {\n"
+
+    for key in self.keys():
+
+      def get_print_obj( obj ):
+        try:
+          print_obj = obj.__repr__()
+        except:
+          print_obj = obj
+        return print_obj
+
+      out_str += "{} : {},\n".format( get_print_obj( key ), get_print_obj( self._storage[key] ), )
+
+    out_str += "}\n"
+
+    return out_str
 
   def __getattr__( self, attr ):
 
@@ -86,6 +100,31 @@ class SmartDict( collections.Mapping ):
     for key in self.keys():
         
       results[key] = self._storage[key]( **used_kwargs[key] )
+
+    return SmartDict( results )
+
+  ########################################################################
+  # For handling when the Smart Dict contains dictionaries
+  ########################################################################
+
+  def inner_item( self, item ):
+    '''When SmartDict is a dictionary of dicts themselves, this can be used to get an item from those dictionaries.'''
+
+    results = {}
+
+    for key in self.keys():
+        
+      results[key] = self._storage[key][item]
+
+    return SmartDict( results )
+
+  def inner_keys( self ):
+
+    results = {}
+
+    for key in self.keys():
+        
+      results[key] = self._storage[key].keys()
 
     return SmartDict( results )
 

@@ -154,6 +154,17 @@ class ParticleData( simulation_data.SnapshotData ):
 
     return unique_ids[duplicate_inds]
 
+  ########################################################################
+
+  def save_data( self, out_dir, n_files = 4 ):
+    '''Save the data as a snapshot.
+    
+    Args:
+      out_dir (str) : Directory to store the snapshot in.
+      n_files (int) : Number of files to save the snapshot as.
+    '''
+
+    pass
 
 
 
