@@ -359,25 +359,25 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
       file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
       filename = os.path.join( snapdir, file_basename )
 
-      f = h5py.File( filename, 'r' )
+      with h5py.File( filename, 'r' ) as f:
 
-      ptypes = copy.copy( f.keys() )
-      del ptypes[0]
+        ptypes = copy.copy( f.keys() )
+        del ptypes[0]
 
-      assert not ( 'Header' in ptypes ), "Deleted wrong key..."
+        assert not ( 'Header' in ptypes ), "Deleted wrong key..."
 
-      for ptype in ptypes:
-
-        if i == 0:
-          data[ptype] = {}
-
-        pdata = f[ptype]
-        for key in pdata.keys():
+        for ptype in ptypes:
 
           if i == 0:
-            data[ptype][key] = []
+            data[ptype] = {}
 
-          data[ptype][key].append( pdata[key][...] )
+          pdata = f[ptype]
+          for key in pdata.keys():
+
+            if i == 0:
+              data[ptype][key] = []
+
+            data[ptype][key].append( pdata[key][...] )
 
     print( 'Concatenating and splitting data...' )
     for ptype in data.keys():
