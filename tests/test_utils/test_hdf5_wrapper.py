@@ -646,7 +646,7 @@ class TestCopySnapshot( unittest.TestCase ):
     for key in expected_positions.keys():
       expected_positions[key] *= 0.70199999999999996
   
-    for i in range( 8 ):
+    for i in range( self.kwargs['n_files'] ):
       orig_filename = 'snapdir_600/snapshot_600.0.hdf5'
       orig_filepath = os.path.join( self.kwargs['sdir'], orig_filename )
       filename = 'snapdir_600/snapshot_600.{}.hdf5'.format( i )
@@ -659,6 +659,8 @@ class TestCopySnapshot( unittest.TestCase ):
       for key in expected['Header'].attrs.keys():
         if key == 'NumPart_ThisFile':
           expected_ = np.array( [ 5, 5, 5, 0, 5, 0, ] )
+        elif key == 'NumFilesPerSnapshot':
+          expected_ = self.kwargs['n_files']
         else:
           expected_ = expected['Header'].attrs[key]
         actual_ = actual['Header'].attrs[key]

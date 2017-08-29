@@ -415,6 +415,9 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
           del f['Header'].attrs['NumPart_ThisFile']
           f['Header'].attrs['NumPart_ThisFile'] = n_particles_file
 
+        del f['Header'].attrs['NumFilesPerSnapshot']
+        f['Header'].attrs['NumFilesPerSnapshot'] = n_files
+
   else:
     for i in range( n_files ):
 
