@@ -8,6 +8,7 @@
 
 import collections
 from contextlib import contextmanager
+import errno
 from functools import wraps
 import inspect
 import itertools
@@ -428,7 +429,7 @@ def store_parameters( constructor ):
 
 # Make a path to a file
 
-def mkdirP( path ):
+def make_dir( path ):
 
   try:
     os.makedirs(path)

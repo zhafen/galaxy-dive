@@ -7,6 +7,7 @@ import numpy as np
 import numpy.testing as npt
 import os
 import pdb
+import shutil
 import unittest
 
 import galaxy_diver.utils.hdf5_wrapper as hdf5_wrapper
@@ -574,3 +575,107 @@ class TestHDF5Wrapper(unittest.TestCase):
       assert g[group].attrs['attrs_exist'] == True
 
     os.system( 'rm {}'.format(self.copy_filename) )
+
+########################################################################
+
+class TestCopySnapshot( unittest.TestCase ):
+
+  def setUp(self):
+
+    self.kwargs = {
+      'sdir' : './tests/data/sdir/output',
+      'snum' : 600,
+      'n_files' : 8,
+      'copy_dir' : './tests/data/temp_sdir/output',
+      'redistribute' : True,
+      }
+
+  ########################################################################
+
+  def tearDown( self ):
+
+    if os.path.isdir( './tests/data/temp_sdir' ):
+      shutil.rmtree( './tests/data/temp_sdir' )
+
+  ########################################################################
+
+  def test_copy_snapshot_and_redistribute( self ):
+
+    # Set the random seed
+    np.random.seed(1234)
+
+    hdf5_wrapper.copy_snapshot( **self.kwargs )
+
+    f = h5py.File( os.path.join( self.kwargs['copy_dir'], 'snapdir_600/snapshot_600.0.hdf5'), 'r' )
+
+    expected_ids = {
+      'PartType0'  : np.array([56577266,  2447814,  5836451, 48854626, 38697472, 26844748, 12518198, 13929795]),
+      'PartType1' : np.array([ 96490067, 111969149,  82963761, 105912179, 130202505,  99168777, 81451547,  86626678]),
+      'PartType2' : np.array([143876937, 142690251, 141208178, 142867765, 146105043, 144348523, 143790176, 144671722]),
+      'PartType4' : np.array([ 8240338, 33395336, 50845628, 53558278,  8091731, 33163814, 33193203, 37236498]),
+    }
+
+    expected_positions = {
+      'PartType0' : np.array([[ 43147.37910547,  40849.73566323,  42018.36946875,  41953.76112891,
+        42250.75959483,  42921.24354077,  41515.60304779,  41709.71414106],
+      [ 43788.15997097,  43738.97513012,  44166.32677499,  46120.83087771,
+        44294.84369966,  46882.80661966,  44056.62971023,  40841.09006986],
+      [ 45874.27118392,  45494.31487345,  46320.23228283,  46816.0623442 ,
+        46870.14027289,  47536.57624099,  46369.82810828,  45640.13294909]]),
+      'PartType1' : np.array([[ 41875.66483633,  41871.32568498,  40495.20591946,  41840.55990359,
+        42598.06746686,  42654.54906594,  41768.28244483,  41861.53839883],
+      [ 44118.35014121,  44072.60902362,  43457.33636481,  45991.11822595,
+        44444.10578658,  46092.61460387,  44187.48020816,  44126.8824762 ],
+      [ 46261.71664927,  46307.86194507,  45084.47439923,  46928.75842962,
+        46494.5582603 ,  46606.12689646,  46387.78823959,  46145.42036851]]),
+      'PartType2' : np.array([[ 42718.6585258 ,  42702.82772914,  41160.28685959,  42389.72019772,
+        69109.89212334,  40110.83523464,  41484.2452451 ,  14234.55600016],
+      [ 46788.61036456,  46854.27699445,  43801.19749786,  41226.63322432,
+        31753.93759704,  40179.45607042,  42103.70372868,  15006.74252232],
+      [ 47164.62123673,  47055.86509581,  47683.73835005,  46284.58074773,
+        19872.44520005,  43478.28376903,  44507.59821399,  70046.93697334]]),
+      'PartType4' : np.array([[ 41882.74558912,  41884.14086056,  41867.59334168,  41875.93178495,
+        41875.21304509,  41876.46763611,  41874.55928862,  41875.64058087],
+      [ 44120.2944586 ,  44123.60968022,  44116.0175617 ,  44122.7025734 ,
+        44123.03437806,  44121.16050547,  44124.66589757,  44121.83243625],
+      [ 46253.94805193,  46252.28734946,  46256.24757957,  46257.53836431,
+        46257.84478371,  46257.60302959,  46258.12604825,  46257.58911288]]),
+    }
+
+    # Correct for hubble...
+    for key in expected_positions.keys():
+      expected_positions[key] *= 0.70199999999999996
+  
+    for i in range( 8 ):
+      orig_filename = 'snapdir_600/snapshot_600.0.hdf5'
+      orig_filepath = os.path.join( self.kwargs['sdir'], orig_filename )
+      filename = 'snapdir_600/snapshot_600.{}.hdf5'.format( i )
+      out_filepath = os.path.join( self.kwargs['copy_dir'], filename )
+
+      actual = h5py.File( out_filepath, 'r' )
+      expected = h5py.File( orig_filepath, 'r' )
+
+      # Compare headers
+      for key in expected['Header'].attrs.keys():
+        if key == 'NumPart_ThisFile':
+          expected_ = np.array( [ 5, 5, 5, 0, 5, 0, ] )
+        else:
+          expected_ = expected['Header'].attrs[key]
+        actual_ = actual['Header'].attrs[key]
+        if isinstance( expected_, np.ndarray ):
+          npt.assert_allclose( expected_, actual_ )
+        else:
+          self.assertEqual( expected_, actual_ )
+
+      # Compare values
+      for ptype in expected_ids.keys():
+                
+        expected_id = expected_ids[ptype][i]
+        actual_id = actual[ptype]['ParticleIDs'][...][0]
+        npt.assert_allclose( expected_id, actual_id )
+
+        expected_pos = expected_positions[ptype][:,i]
+        actual_pos = actual[ptype]['Coordinates'][...][0]
+        npt.assert_allclose( expected_pos, actual_pos )
+
+    

@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 '''Wrapper for hdf5 objects opened with h5py. Serves various needs not inherent in h5py.'''
 
+import copy
 import h5py
 import numpy as np
 import os
+import shutil
+
+import utilities
 
 ########################################################################
 __author__ = 'Zachary Hafen'
@@ -11,6 +15,10 @@ __author__ = 'Zachary Hafen'
 __maintainer__ = 'Zachary Hafen'
 __email__ = 'zachary.h.hafen@gmail.com'
 __status__ = 'Beta'
+
+########################################################################
+
+default = object()
 
 ########################################################################
 
@@ -308,58 +316,117 @@ class HDF5Wrapper(object):
 
 ########################################################################
 
-def copy_snapshot( sdir, snum, copy_dir, subsamples=False, n_files='default' ):
+def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n_files=default ):
   '''Copy a gadget/gizmo snapshot, and subsample it if you choose to.
 
   Args:
-    sdir (str): Snapshot directory to copy from.
-    snum (int): Which snapshot to copy over.
-    copy_dir (str): Where you want to save the copied snapshot.
-    subsamples (bool or int): If not False, the number of particles you will have in your subsampled snapshot, per file part.
-    n_files (str or int): If not 'default', the number of pieces you want your copied snapshot broken into (must be less than the number of pieces in the original snapshot).
-      In general, should really only be used when subsampling.
+    sdir (str) : Snapshot directory to copy from.
+    snum (int) : Which snapshot to copy over.
+    copy_dir (str) : Where you want to save the copied snapshot.
+    subsamples (bool or int) : If not False, the number of particles you will have in your subsampled snapshot,
+      per file part.
+    redistribute (bool) : If True, redistribute the particles evenly among the snapshots.
+    n_files (str or int) : If not default, the number of pieces you want your copied snapshot broken into
+      (must be less than the number of pieces in the original snapshot). In general, should really only be used when
+      subsampling.
   '''
 
   snapdir = os.path.join( sdir, 'snapdir_{:03}'.format( snum ) )
   copy_snapdir = os.path.join( copy_dir, 'snapdir_{:03}'.format( snum ) )
 
   # Make sure the path exists
-  make_dir( copy_snapdir )
+  utilities.make_dir( copy_snapdir )
 
-  if n_files == 'default':
-    n_files = len( os.listdir( snapdir ) )
+  assert not (subsamples and redistribute), "Cannot both subsample and redistribute"
 
-  print 'Starting copying...'
+  n_files_orig = len( os.listdir( snapdir ) )
+  if n_files is default:
+    n_files = n_files_orig
 
-  for i in range( n_files ):
+  print( 'Starting copying...' )
 
-    print 'Copying {} of {}'.format( i+1, n_files )
+  if redistribute:
+
+    orig_file_basename = 'snapshot_{:03}.0.hdf5'.format( snum, 0 )
+    orig_filename = os.path.join( snapdir, orig_file_basename )
     
-    file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
-    filename = os.path.join( snapdir, file_basename )
-    copy_filename = os.path.join( copy_snapdir, file_basename )
+    print( 'Loading all data...' )
+    data = {}
+    for i in range( n_files_orig ):
+      
+      print '  Loading file {}...'.format( i )
 
-    # Actually make the copy
-    h5_wrapper = HDF5Wrapper( filename )
-    h5_wrapper.copy_hdf5_file( copy_filename, subsamples=subsamples, particle_data=n_files, )
+      file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
+      filename = os.path.join( snapdir, file_basename )
+
+      f = h5py.File( filename, 'r' )
+
+      ptypes = copy.copy( f.keys() )
+      del ptypes[0]
+
+      assert not ( 'Header' in ptypes ), "Deleted wrong key..."
+
+      for ptype in ptypes:
+
+        if i == 0:
+          data[ptype] = {}
+
+        pdata = f[ptype]
+        for key in pdata.keys():
+
+          if i == 0:
+            data[ptype][key] = []
+
+          data[ptype][key].append( pdata[key][...] )
+
+    print( 'Concatenating and splitting data...' )
+    for ptype in data.keys():
+      print( '  Concatenating {} data'.format( ptype ) )
+      for key in data[ptype].keys():
+
+        data[ptype][key] = np.concatenate( data[ptype][key], axis=0 )
+        data[ptype][key] = np.array_split( data[ptype][key], n_files, axis=0 )
+
+    print( 'Storing data...' )
+    for i in range( n_files ):
+
+      print '  Copying {} of {}'.format( i+1, n_files )
+
+      file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
+      copy_filename = os.path.join( copy_snapdir, file_basename )
+
+      shutil.copyfile( filename, copy_filename )
+
+      print( '  Storing {} of {}'.format( i+1, n_files ) )
+
+      with h5py.File( copy_filename, 'a' ) as f:
+
+        n_particles_file = [0,]*len( f['Header'].attrs['NumPart_ThisFile'] )
+
+        for ptype in ptypes:
+
+          n_particles_file[int(ptype[-1])] = data[ptype]['Masses'][i].size
+          for key in data[ptype].keys():
+            
+            del f[ptype][key]
+
+            f[ptype][key] = data[ptype][key][i]
+
+          del f['Header'].attrs['NumPart_ThisFile']
+          f['Header'].attrs['NumPart_ThisFile'] = n_particles_file
+
+  else:
+    for i in range( n_files ):
+
+      print '  Copying {} of {}'.format( i+1, n_files )
+      
+      file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
+      filename = os.path.join( snapdir, file_basename )
+      copy_filename = os.path.join( copy_snapdir, file_basename )
+
+      # Actually make the copy
+      h5_wrapper = HDF5Wrapper( filename )
+      h5_wrapper.copy_hdf5_file( copy_filename, subsamples=subsamples, particle_data=n_files, )
 
   print 'Done!'
-
-########################################################################
-# Misc Functions
-########################################################################
-
-def make_dir( path ):
-  '''Make a path to a file.
-  Args:
-    path (str): Path to the file.'''
-
-  try:
-    os.makedirs( path )
-  except OSError as exc: # Python >2.5
-    if exc.errno == errno.EEXIST and os.path.isdir( path ):
-      pass
-    else: raise
-
-  return 0
 
