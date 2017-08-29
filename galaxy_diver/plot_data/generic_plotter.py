@@ -44,6 +44,7 @@ class GenericPlotter( object ):
 
   def plot_hist_2d( self,
     x_key, y_key,
+    weight_key = default,
     slices = None,
     ax = default,
     x_range = default, y_range = default,
@@ -96,6 +97,11 @@ class GenericPlotter( object ):
     x_data = self.data.get_masked_data( x_key, sl=sl, *args, **kwargs )
     y_data = self.data.get_masked_data( y_key, sl=sl, *args, **kwargs )
 
+    if weight_key is default:
+      weights = None
+    else:
+      weights = self.data.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+
     if x_range is default:
       x_range = [ x_data.min(), x_data.max() ]
     elif isinstance( x_range, float ):
@@ -109,7 +115,7 @@ class GenericPlotter( object ):
     y_edges = np.linspace( y_range[0], y_range[1], n_bins )
 
     # Make the histogram
-    hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges] )
+    hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges], weights=weights )
 
     # Plot
     if ax is default:

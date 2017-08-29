@@ -384,6 +384,7 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
       print( '  Concatenating {} data'.format( ptype ) )
       for key in data[ptype].keys():
 
+        # Pull into a single snapshot
         data[ptype][key] = np.concatenate( data[ptype][key], axis=0 )
         data[ptype][key] = np.array_split( data[ptype][key], n_files, axis=0 )
 
@@ -409,14 +410,13 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
           for key in data[ptype].keys():
             
             del f[ptype][key]
-
             f[ptype][key] = data[ptype][key][i]
 
           del f['Header'].attrs['NumPart_ThisFile']
-          f['Header'].attrs['NumPart_ThisFile'] = n_particles_file
+          f['Header'].attrs['NumPart_ThisFile'] = np.array( n_particles_file ).astype( np.int32 )
 
         del f['Header'].attrs['NumFilesPerSnapshot']
-        f['Header'].attrs['NumFilesPerSnapshot'] = n_files
+        f['Header'].attrs['NumFilesPerSnapshot'] = np.int32( n_files )
 
   else:
     for i in range( n_files ):
