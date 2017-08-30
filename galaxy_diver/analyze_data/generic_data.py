@@ -348,7 +348,13 @@ class DataMasker( object ):
 
   ########################################################################
 
-  def get_masked_data( self, data_key, mask='total', sl=None, apply_slice_to_mask=True ):
+  def get_masked_data( self,
+    data_key,
+    mask = 'total',
+    sl = None,
+    apply_slice_to_mask = True,
+    fix_invalid = False,
+    ):
     '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.
 
     Args:
@@ -368,7 +374,11 @@ class DataMasker( object ):
       used_mask = mask
     elif isinstance( mask, bool ) or isinstance( mask, np.bool_ ):
       if not mask:
-        return data
+        if fix_invalid:
+          return np.ma.fix_invalid( data ).compressed()
+        else:
+          return data
+
       raise Exception( "All data is masked." )
     elif mask == 'total':
       used_mask = self.get_total_mask()
@@ -378,14 +388,19 @@ class DataMasker( object ):
     if ( sl is not None ) and apply_slice_to_mask:
       used_mask = used_mask[sl]
 
+    if fix_invalid:
+      array_to_ma_array_fn = np.ma.fix_invalid
+    else:
+      array_to_ma_array_fn = np.ma.array
+
     # Test for if the data fits the mask, or if it's multi-dimensional
     if len( data.shape ) > len( self.data_object.base_data_shape ):
-      data_ma = [ np.ma.array( data_part, mask=used_mask ) for data_part in data ]
+      data_ma = [ array_to_ma_array_fn( data_part, mask=used_mask ) for data_part in data ]
       data_ma = [ data_ma_part.compressed() for data_ma_part in data_ma ]
       data_ma = np.array( data_ma )
 
     else:
-      data_ma = np.ma.array( data, mask=used_mask )
+      data_ma = array_to_ma_array_fn( data, mask=used_mask )
       data_ma = data_ma.compressed()
 
     return data_ma

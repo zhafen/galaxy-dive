@@ -41,6 +41,76 @@ class GenericPlotter( object ):
     pass
     
   ########################################################################
+  # Specific Generic Plots
+  ########################################################################
+
+  def plot_hist( self,
+    data_key,
+    weight_key = default,
+    slices = None,
+    x_label = default,
+    y_label = default,
+    add_x_label = True, add_y_label = True,
+    plot_label = default,
+    label_fontsize = 24,
+    y_scale = 'linear',
+    *args, **kwargs ):
+    '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
+    Args:
+      data_key (str) : Data key to plot.
+      weight_key (str) : Data key for data to use as a weight. By default, no weight.
+      slices (int or tuple of slices) : How to slices the data.
+      x_label, ylabel (str) : Axes labels.
+      add_x_label, add_y_label (bool) : Include axes labels?
+      plot_label (str or dict) : What to label the plot with. By default, uses self.label.
+      label_fontsize (int) : Fontsize for the labels.
+      y_scale (str) : What scale to use for the y axis.
+    '''
+
+    if isinstance( slices, int ):
+      sl = ( slice(None), slices )
+    else:
+      sl = slices
+
+    data = self.data.get_masked_data( data_key, sl=sl, *args, **kwargs )
+
+    if weight_key is default:
+      weights = None
+    else:
+      weights = self.data.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+
+    fig = plt.figure( figsize=(11,5), facecolor='white', )
+    ax = plt.gca()
+
+    # Make the histogram itself
+    hist, edges = np.histogram( data, bins=32, normed=True, weights=weights )
+
+    # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
+    ax.step(edges, np.insert(hist, 0, 0.), color='black', linewidth=3.5)
+
+    # Plot label
+    if plot_label is default:
+      plt_label = ax.annotate( s=self.label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
+    elif isinstance( plot_label, str ):
+      plt_label = ax.annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
+    elif isinstance( plot_label, dict ):
+      plt_label = ax.annotate( **plot_label )
+    else:
+      raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
+
+    # Add axis labels
+    if add_x_label:
+      if x_label is default:
+        x_label = data_key
+      ax.set_xlabel( x_label, fontsize=label_fontsize )
+    if add_y_label:
+      if y_label is default:
+        y_label = r'$N_{\rm bin}$'
+      ax.set_ylabel( y_label, fontsize=label_fontsize )
+
+    ax.set_yscale( y_scale )
+
+  ########################################################################
 
   def plot_hist_2d( self,
     x_key, y_key,
@@ -66,6 +136,7 @@ class GenericPlotter( object ):
     '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
     Args:
       x_key, y_key (str) : Data keys to plot.
+      weight_key (str) : Data key for data to use as a weight. By default, no weight.
       slices (int or tuple of slices) : How to slices the data.
       ax (axis) : What axis to use. By default creates a figure and places the axis on it.
       x_range, y_range ( (float, float) ) : Histogram edges. If default, all data is enclosed. If list, set manually.
