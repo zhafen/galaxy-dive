@@ -68,6 +68,17 @@ class TestDataMasker( unittest.TestCase ):
 
   ########################################################################
 
+  def test_mask_custom( self ):
+
+    self.data_masker.mask_data( 'arbitrary', custom_mask=np.array( [ True, False, False, True, ] ), )
+
+    actual = self.data_masker.masks[0]['mask']
+    expected = np.array( [ 1, 0, 0, 1 ] ).astype( bool )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_mask_data_returns( self ):
 
     actual = self.data_masker.mask_data( 'Rf', 0., 0.5, return_or_store='return' )

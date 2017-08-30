@@ -305,6 +305,7 @@ class DataMasker( object ):
     data_min = default,
     data_max = default,
     data_value = default,
+    custom_mask = default,
     return_or_store = 'store' ):
     '''Get only the particle data within a certain range. Note that it retrieves the processed data.
 
@@ -313,6 +314,7 @@ class DataMasker( object ):
       data_min (float) : Everything below data_min will be masked.
       data_max (float) : Everything above data_max will be masked.
       data_value (float) : Everything except for data_value will be masked.
+      custom (bool) : If provided, take in a custom mask instead, using data_key as the label for the mask.
       return_or_store (str) : Whether to store the mask as part of the masks dictionary, or to return it.
 
     Returns:
@@ -322,12 +324,14 @@ class DataMasker( object ):
       self.masks (list of dicts) : Appends a dictionary describing the mask.
     '''
 
-    data = self.data_object.get_processed_data( data_key )
-
     # Process what type of mask to get
     mask_outside = ( data_min is not default ) and ( data_max is not default )
     mask_discrete = data_value is not default
-    assert not ( mask_outside and mask_discrete ), "Bad combination of masks!"
+    mask_custom = custom_mask is not default
+    assert ( mask_outside + mask_discrete + mask_custom )==1, "Bad combination of masks!"
+
+    if not mask_custom:
+      data = self.data_object.get_processed_data( data_key )
 
     # Get the mask
     if mask_outside:
@@ -335,6 +339,8 @@ class DataMasker( object ):
       mask = data_ma.mask
     elif mask_discrete:
       mask = np.invert( data == data_value )
+    elif mask_custom:
+      mask = custom_mask
     else:
       raise NameError( "Unspecified combination of data masking." )
 
@@ -344,7 +350,13 @@ class DataMasker( object ):
       mask = mask*np.ones( shape=data.shape, dtype=bool )
 
     if return_or_store == 'store':
-      self.masks.append( {'data_key': data_key, 'data_min': data_min, 'data_max': data_max, 'mask': mask} )
+      if mask_outside:
+        mask_dict = {'data_key': data_key, 'data_min': data_min, 'data_max': data_max, 'mask': mask}
+      elif mask_discrete:
+        mask_dict = {'data_key': data_key, 'data_value' : data_value, 'mask': mask}
+      elif mask_custom:
+        mask_dict = {'data_key': data_key, 'custom_mask' : True, 'mask': mask}
+      self.masks.append( mask_dict )
 
     elif return_or_store == 'return':
       return mask
