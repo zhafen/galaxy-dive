@@ -128,7 +128,36 @@ class GenericData( object ):
       data (np.ndarray) : Requested data.
     '''
 
-    data = self.data[data_key]
+    # Loop through, handling issues
+    n_tries = 10
+    for i in range( n_tries ):
+      try:
+
+        # Arbitrary functions of the data
+        if data_key == 'Function':
+
+          raise Exception( "TODO: Test this" )
+
+          # Use the keys to get the data
+          function_data_keys = self.kwargs['function_args']['function_data_keys']
+          input_data = [ self.get_data(function_data_key) for function_data_key in function_data_keys ]
+          
+          # Apply the function
+          data = self.kwargs['function_args']['function']( input_data )
+
+        # Other
+        else:
+          data = self.data[data_key]
+
+      # Calculate missing data
+      except KeyError, e:
+        self.handle_data_key_error( data_key )
+        continue
+
+      break
+
+    if 'data' not in locals().keys():
+      raise KeyError( "After {} tries, unable to find or create data_key, {}".format( i+1, data_key ) )
 
     if sl is not None:
       return data[sl]
@@ -208,6 +237,17 @@ class GenericData( object ):
       log_shift = 0.93*(np.exp(-0.43*self.redshift) - 1.) - 0.45
 
       data -= log_shift
+
+  ########################################################################
+
+  def handle_data_key_error( self, data_key ):
+    '''Method for attempting to generate data on the fly.
+
+    Args:
+      data_key (str) : Type of data to attempt to generate data for.
+    '''
+
+    raise Exception( "This method should be replaced in the subclass!" )
 
 ########################################################################
 ########################################################################
