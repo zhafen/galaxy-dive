@@ -39,6 +39,7 @@ class TestDataMasker( unittest.TestCase ):
       'P' : np.random.rand( 3, 4 ),
       'Den' : np.array( [ 1e-6, 1e-4, 1e2, 1e-2 ] ),
       'R' : np.array( [ 0.25, 0.4999, 1.0, 0.5111 ] )*g_data.length_scale,
+      'PType' : np.array( [ 0, 4, 4, 0, ] ),
     }
 
     self.data_masker = generic_data.DataMasker( g_data )
@@ -56,9 +57,20 @@ class TestDataMasker( unittest.TestCase ):
 
   ########################################################################
 
+  def test_mask_data_int( self ):
+      
+    self.data_masker.mask_data( 'PType', data_value=4 )
+
+    actual = self.data_masker.masks[0]['mask']
+    expected = np.array( [ 1, 0, 0, 1 ] ).astype( bool )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_mask_data_returns( self ):
 
-    actual = self.data_masker.mask_data( 'Rf', 0., 0.5, 'return' )
+    actual = self.data_masker.mask_data( 'Rf', 0., 0.5, return_or_store='return' )
     expected = np.array( [ 0, 0, 1, 1 ] ).astype( bool )
 
     npt.assert_allclose( expected, actual )

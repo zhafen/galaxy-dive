@@ -583,7 +583,7 @@ class SnapshotData( SimulationData ):
 
     if not hasattr( self, '_v_com' ):
       
-      radial_mask = self.data_masker.mask_data( 'Rf', 0., self.averaging_frac, 'return' )
+      radial_mask = self.data_masker.mask_data( 'Rf', 0., self.averaging_frac, return_or_store='return' )
       
       m_ma = self.get_masked_data( 'M', radial_mask )
       v_ma = self.get_masked_data( 'V', radial_mask )

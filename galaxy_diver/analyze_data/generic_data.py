@@ -18,6 +18,11 @@ import warnings
 import galaxy_diver.utils.constants as constants
 
 ########################################################################
+
+# For default values
+default = object()
+
+########################################################################
 ########################################################################
 
 class GenericData( object ):
@@ -295,13 +300,19 @@ class DataMasker( object ):
 
   ########################################################################
 
-  def mask_data( self, data_key, data_min, data_max, return_or_store='store' ):
+  def mask_data( self,
+    data_key,
+    data_min = default,
+    data_max = default,
+    data_value = default,
+    return_or_store = 'store' ):
     '''Get only the particle data within a certain range. Note that it retrieves the processed data.
 
     Args:
       data_key (str) : Data key to base the mask off of.
       data_min (float) : Everything below data_min will be masked.
       data_max (float) : Everything above data_max will be masked.
+      data_value (float) : Everything except for data_value will be masked.
       return_or_store (str) : Whether to store the mask as part of the masks dictionary, or to return it.
 
     Returns:
@@ -311,20 +322,32 @@ class DataMasker( object ):
       self.masks (list of dicts) : Appends a dictionary describing the mask.
     '''
 
-    # Get the mask
     data = self.data_object.get_processed_data( data_key )
-    data_ma = np.ma.masked_outside( data, data_min, data_max )
+
+    # Process what type of mask to get
+    mask_outside = ( data_min is not default ) and ( data_max is not default )
+    mask_discrete = data_value is not default
+    assert not ( mask_outside and mask_discrete ), "Bad combination of masks!"
+
+    # Get the mask
+    if mask_outside:
+      data_ma = np.ma.masked_outside( data, data_min, data_max )
+      mask = data_ma.mask
+    elif mask_discrete:
+      mask = np.invert( data == data_value )
+    else:
+      raise NameError( "Unspecified combination of data masking." )
 
     # Handle the case where an entire array is masked or none of it is masked
     # (Make into an array for easier combination with other masks)
-    if data_ma.mask.size == 1:
-      data_ma.mask = data_ma.mask*np.ones( shape=data.shape, dtype=bool )
+    if mask.size == 1:
+      mask = mask*np.ones( shape=data.shape, dtype=bool )
 
     if return_or_store == 'store':
-      self.masks.append( {'data_key': data_key, 'data_min': data_min, 'data_max': data_max, 'mask': data_ma.mask} )
+      self.masks.append( {'data_key': data_key, 'data_min': data_min, 'data_max': data_max, 'mask': mask} )
 
     elif return_or_store == 'return':
-      return data_ma.mask
+      return mask
 
     else:
       raise Exception('NULL return_or_store')
