@@ -32,10 +32,10 @@ default = object()
 class GenericPlotter( object ):
 
   @utilities.store_parameters
-  def __init__( self, data, label=None, ):
+  def __init__( self, data_object, label=None, ):
     '''
     Args:
-      data ( generic_data.data object or subclass of such ) : The data container to use.
+      data_object ( generic_data.GenericData object or subclass of such ) : The data container to use.
     '''
 
     pass
@@ -72,12 +72,12 @@ class GenericPlotter( object ):
     else:
       sl = slices
 
-    data = self.data.get_masked_data( data_key, sl=sl, *args, **kwargs )
+    data = self.data_object.get_masked_data( data_key, sl=sl, *args, **kwargs )
 
     if weight_key is default:
       weights = None
     else:
-      weights = self.data.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+      weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
 
     fig = plt.figure( figsize=(11,5), facecolor='white', )
     ax = plt.gca()
@@ -165,13 +165,13 @@ class GenericPlotter( object ):
       sl = slices
 
     # Get data
-    x_data = self.data.get_masked_data( x_key, sl=sl, *args, **kwargs )
-    y_data = self.data.get_masked_data( y_key, sl=sl, *args, **kwargs )
+    x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **kwargs )
+    y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **kwargs )
 
     if weight_key is default:
       weights = None
     else:
-      weights = self.data.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+      weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
 
     if x_range is default:
       x_range = [ x_data.min(), x_data.max() ]
