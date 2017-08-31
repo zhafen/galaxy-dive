@@ -133,6 +133,49 @@ class SmartDict( collections.Mapping ):
   # Operation Methods
   ########################################################################
 
+  def __add__( self, other ):
+
+    results = {}
+
+    if isinstance( other, SmartDict ):
+      for key in self.keys():
+        results[key] = self._storage[key] + other[key]
+
+    else:
+      for key in self.keys():
+        results[key] = self._storage[key] + other
+
+    return SmartDict( results )
+    
+  __radd__ = __add__
+
+  def __sub__( self, other ):
+
+    results = {}
+
+    if isinstance( other, SmartDict ):
+      for key in self.keys():
+        results[key] = self._storage[key] - other[key]
+
+    else:
+      for key in self.keys():
+        results[key] = self._storage[key] - other
+
+    return SmartDict( results )
+
+  def __rsub__( self, other ):
+    results = {}
+
+    if isinstance( other, SmartDict ):
+      for key in self.keys():
+        results[key] = other[key] - self._storage[key]
+
+    else:
+      for key in self.keys():
+        results[key] = other - self._storage[key]
+
+    return SmartDict( results )
+
   def __mul__( self, other ):
 
     results = {}

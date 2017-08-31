@@ -175,6 +175,59 @@ class TestSmartDict( unittest.TestCase ):
     actual = d1/d2
     self.assertEqual( expected, actual )
 
+  ########################################################################
+
+  def test_add( self ):
+
+    d = utilities.SmartDict( { 1 : 1, 2 : 2 } )
+    expected = { 1 : 2, 2 : 3, }
+    actual = d + 1
+    self.assertEqual( expected, actual )
+
+    d = utilities.SmartDict( { 1 : 1, 2 : 2 } )
+    expected = { 1 : 2, 2 : 3, }
+    actual = 1 + d
+    self.assertEqual( expected, actual )
+
+  ########################################################################
+
+  def test_add_smart_dict( self ):
+
+    d1 = utilities.SmartDict( { 1 : 9, 2 : 4 } )
+    d2 = utilities.SmartDict( { 1 : 3, 2 : 2 } )
+
+    expected = { 1 : 12, 2 : 6, }
+
+    actual = d1 + d2
+    self.assertEqual( expected, actual )
+
+  ######################################################################## 
+
+  def test_subtract( self ):
+
+    d = utilities.SmartDict( { 1 : 1, 2 : 2 } )
+    expected = { 1 : 0, 2 : 1, }
+    actual = d - 1
+    self.assertEqual( expected, actual )
+
+    d = utilities.SmartDict( { 1 : 1, 2 : 2 } )
+    expected = { 1 : 0, 2 : -1, }
+    actual = 1 - d
+    self.assertEqual( expected, actual )
+
+  ########################################################################
+
+  def test_subtract_smart_dict( self ):
+
+    d1 = utilities.SmartDict( { 1 : 9, 2 : 4 } )
+    d2 = utilities.SmartDict( { 1 : 3, 2 : 2 } )
+
+    expected = { 1 : 6, 2 : 2, }
+
+    actual = d1 - d2
+    self.assertEqual( expected, actual )
+
+########################################################################
 ########################################################################
 
 class TestDictFromDefaultsAndVariations( unittest.TestCase ):
