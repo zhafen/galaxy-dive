@@ -227,6 +227,14 @@ class TestSmartDict( unittest.TestCase ):
     actual = d1 - d2
     self.assertEqual( expected, actual )
 
+  ########################################################################
+
+  def test_sum_contents( self ):
+
+    d1 = utilities.SmartDict( { 1 : 1, 2 : 2, 3 : 3, } )
+    
+    self.assertEqual( 6, d1.sum_contents() )
+
 ########################################################################
 ########################################################################
 

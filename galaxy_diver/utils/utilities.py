@@ -219,6 +219,24 @@ class SmartDict( collections.Mapping ):
     return SmartDict( results )
 
   ########################################################################
+  # Other operations
+  ########################################################################
+
+  def sum_contents( self ):
+    '''Get the sum of all the contents inside the Dict.'''
+
+    for i, key in enumerate( self.keys() ):
+
+      # To handle non-standard items (e.g. things that aren't ints or floats )
+      if i == 0:
+        result = self._storage[key]
+
+      else:
+        result += self._storage[key]
+
+    return result
+
+  ########################################################################
   # Construction Methods
   ########################################################################
 
