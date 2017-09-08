@@ -33,7 +33,7 @@ class TestStartup( unittest.TestCase ):
     snapshot_data = simulation_data.SnapshotData()
     data_plotter = generic_plotter.GenericPlotter( snapshot_data )
 
-    data_plotter.data.retrieve_halo_data()
+    data_plotter.data_object.retrieve_halo_data()
     mock_retrieve_halo_data.assert_called_once()
 
     data_plotter.plot_something()

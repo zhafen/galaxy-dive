@@ -52,6 +52,7 @@ class GenericPlotter( object ):
     fix_invalid = False,
     bins = 32,
     x_range = default,
+    y_range = default,
     x_label = default,
     y_label = default,
     add_x_label = True, add_y_label = True,
@@ -60,6 +61,7 @@ class GenericPlotter( object ):
     label_fontsize = 24,
     color = 'black',
     y_scale = 'linear',
+    cdf = False,
     *args, **kwargs ):
     '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
 
@@ -75,6 +77,7 @@ class GenericPlotter( object ):
       line_label (str) : What label to give the line.
       label_fontsize (int) : Fontsize for the labels.
       y_scale (str) : What scale to use for the y axis.
+      cdf (bool) : Plot a CDF instead.
     '''
 
     if isinstance( slices, int ):
@@ -104,6 +107,9 @@ class GenericPlotter( object ):
 
     hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
 
+    if cdf:
+      hist = np.cumsum( hist )*(edges[1] - edges[0])
+
     # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
     ax.step( edges, np.insert(hist, 0, 0.), color=color, linewidth=3.5, label=line_label )
 
@@ -124,11 +130,16 @@ class GenericPlotter( object ):
       ax.set_xlabel( x_label, fontsize=label_fontsize )
     if add_y_label:
       if y_label is default:
-        y_label = r'Normalized Histogram'
+        if not cdf:
+          y_label = r'Normalized Histogram'
+        else:
+          y_label = r'CDF'
       ax.set_ylabel( y_label, fontsize=label_fontsize )
 
     if x_range is not default:
       ax.set_xlim( x_range )
+    if y_range is not default:
+      ax.set_ylim( y_range )
 
     ax.set_yscale( y_scale )
 

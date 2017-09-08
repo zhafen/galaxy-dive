@@ -254,6 +254,24 @@ class GenericData( object ):
   ########################################################################
 
   def iterate_over_method( self, method_str, iter_arg, iter_values, method_args ):
+    '''Iterate over a specified method, and get the results out.
+
+    Args:
+      method_str (str) :
+        Which method to use.
+
+      iter_arg (str) :
+        Which argument of the method to iterate over.
+
+      iter_values (list of values) :
+        Which values to change.
+
+      method_args (dict) :
+        Default args to pass to the method
+
+    Returns:
+      results (list) : [ method( **used_args ) for used_args in all_variations_of_used_args ]
+    '''
 
     method = getattr( self, method_str )
 
@@ -262,7 +280,9 @@ class GenericData( object ):
 
       method_args[iter_arg] = iter_value
 
-      method( **method_args )
+      result = method( **method_args )
+
+      results.append( result )
 
     return results
 
