@@ -51,6 +51,7 @@ class GenericPlotter( object ):
     ax = default,
     fix_invalid = False,
     bins = 32,
+    x_range = default,
     x_label = default,
     y_label = default,
     add_x_label = True, add_y_label = True,
@@ -96,7 +97,12 @@ class GenericPlotter( object ):
       ax = plt.gca()
 
     # Make the histogram itself
-    hist, edges = np.histogram( data, bins=bins, normed=True, weights=weights )
+    hist, edges = np.histogram( data, bins=bins, weights=weights )
+
+    # Make sure we have all the data in the histogram
+    assert data.size == hist.sum()
+
+    hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
 
     # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
     ax.step( edges, np.insert(hist, 0, 0.), color=color, linewidth=3.5, label=line_label )
@@ -120,6 +126,9 @@ class GenericPlotter( object ):
       if y_label is default:
         y_label = r'Normalized Histogram'
       ax.set_ylabel( y_label, fontsize=label_fontsize )
+
+    if x_range is not default:
+      ax.set_xlim( x_range )
 
     ax.set_yscale( y_scale )
 

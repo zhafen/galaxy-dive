@@ -249,6 +249,23 @@ class GenericData( object ):
 
     raise Exception( "This method should be replaced in the subclass!" )
 
+  ########################################################################
+  # Meta Methods (for doing generic things with class methods)
+  ########################################################################
+
+  def iterate_over_method( self, method_str, iter_arg, iter_values, method_args ):
+
+    method = getattr( self, method_str )
+
+    results = []
+    for iter_value in iter_values:
+
+      method_args[iter_arg] = iter_value
+
+      method( **method_args )
+
+    return results
+
 ########################################################################
 ########################################################################
 

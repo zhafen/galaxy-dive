@@ -2,7 +2,7 @@
 '''
 
 import copy
-from mock import patch, sentinel
+import mock
 import numpy as np
 import numpy.testing as npt
 import pdb
@@ -155,6 +155,7 @@ class TestDataMasker( unittest.TestCase ):
     npt.assert_allclose( expected, actual )
 
 ########################################################################
+########################################################################
 
 class TestDataKeyParser( unittest.TestCase ):
 
@@ -176,7 +177,27 @@ class TestDataKeyParser( unittest.TestCase ):
     for data_key in [ 'Vx', 'Vy', 'Vz', 'Vr', ]:
       assert self.key_parser.is_velocity_key( data_key )
 
+########################################################################
+########################################################################
 
+class TestMetaMethods( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.g_data = generic_data.GenericData( **default_kwargs )
+
+    self.data_masker = generic_data.DataMasker( self.g_data )
+
+  ########################################################################
+
+  @mock.patch( 'galaxy_diver.analyze_data.generic_data.GenericData.test_method', create=True )
+  def test_iterate_over_method( self, mock_test_method ):
+
+    method_args = { 'b' : 2, }
+    self.g_data.iterate_over_method( 'test_method', 'a', [ 1, 2, ], method_args )
+
+    calls = [ mock.call( a=1, b=2 ), mock.call( a=2, b=2 ), ]
+    mock_test_method.assert_has_calls( calls )
 
 
 
