@@ -48,21 +48,30 @@ class GenericPlotter( object ):
     data_key,
     weight_key = default,
     slices = None,
+    ax = default,
+    fix_invalid = False,
+    bins = 32,
     x_label = default,
     y_label = default,
     add_x_label = True, add_y_label = True,
     plot_label = default,
+    line_label = None,
     label_fontsize = 24,
+    color = 'black',
     y_scale = 'linear',
     *args, **kwargs ):
     '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
+
     Args:
       data_key (str) : Data key to plot.
       weight_key (str) : Data key for data to use as a weight. By default, no weight.
       slices (int or tuple of slices) : How to slices the data.
+      ax (axis) : What axis to use. By default creates a figure and places the axis on it.
+      fix_invalid (bool) : Throw away invalid values?
       x_label, ylabel (str) : Axes labels.
       add_x_label, add_y_label (bool) : Include axes labels?
       plot_label (str or dict) : What to label the plot with. By default, uses self.label.
+      line_label (str) : What label to give the line.
       label_fontsize (int) : Fontsize for the labels.
       y_scale (str) : What scale to use for the y axis.
     '''
@@ -79,14 +88,18 @@ class GenericPlotter( object ):
     else:
       weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
 
-    fig = plt.figure( figsize=(11,5), facecolor='white', )
-    ax = plt.gca()
+    if fix_invalid:
+      data = np.ma.fix_invalid( data ).compressed()
+
+    if ax is default:
+      fig = plt.figure( figsize=(11,5), facecolor='white', )
+      ax = plt.gca()
 
     # Make the histogram itself
-    hist, edges = np.histogram( data, bins=32, normed=True, weights=weights )
+    hist, edges = np.histogram( data, bins=bins, normed=True, weights=weights )
 
     # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
-    ax.step(edges, np.insert(hist, 0, 0.), color='black', linewidth=3.5)
+    ax.step( edges, np.insert(hist, 0, 0.), color=color, linewidth=3.5, label=line_label )
 
     # Plot label
     if plot_label is default:
@@ -105,7 +118,7 @@ class GenericPlotter( object ):
       ax.set_xlabel( x_label, fontsize=label_fontsize )
     if add_y_label:
       if y_label is default:
-        y_label = r'$N_{\rm bin}$'
+        y_label = r'Normalized Histogram'
       ax.set_ylabel( y_label, fontsize=label_fontsize )
 
     ax.set_yscale( y_scale )
@@ -264,6 +277,30 @@ class GenericPlotter( object ):
 
   ########################################################################
   # Generic Plotting Methods
+  ########################################################################
+
+  def same_axis_plot( self,
+    axis_plotting_method_str,
+    defaults,
+    variations,
+    *args, **kwargs ):
+
+    fig = plt.figure( figsize=(11,5), facecolor='white', )
+    ax = plt.gca()
+
+    all_plotting_kwargs = utilities.dict_from_defaults_and_variations( defaults, variations )
+
+    axis_plotting_method = getattr( self, axis_plotting_method_str )
+    for key, plotting_kwargs in all_plotting_kwargs.items():
+      
+      plotting_kwargs['ax'] = ax
+
+      plotting_kwargs['line_label'] = key
+
+      axis_plotting_method( **plotting_kwargs )
+
+    ax.legend(prop={'size':16.5}, loc='upper right', fontsize=20)
+
   ########################################################################
 
   def panel_plot( self,
