@@ -176,7 +176,14 @@ class AHFReader( object ):
 
     # Load the data
     self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos_add' )
-    self.ahf_halos_add = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
+    ahf_halos_add = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
+
+    if not hasattr( self, 'ahf_halos' ) :
+      self.get_halos( snum )
+    if self.ahf_halos_snum != snum:
+      self.get_halos( snum )
+
+    self.ahf_halos = pd.concat( [ self.ahf_halos, ahf_halos_add ], axis=1 )
 
   ########################################################################
 
@@ -540,13 +547,14 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_custom_mtree_halos( self, halo_ids, snums, metafile_dir, ):
+  def save_custom_mtree_halos( self, halo_ids, snums, metafile_dir, include_add_halos=True ):
 
     # Concatenate the data
     ahf_frames = []
     for snum, halo_id in zip( snums, halo_ids, ):
 
       self.get_halos( snum )
+      self.get_halos_add( snum )
 
       ahf_frames.append( self.ahf_halos.loc[halo_id:halo_id] )
 

@@ -349,11 +349,16 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
-  def test_save_custom_mtree_halos( self ):
+  @patch( 'galaxy_diver.read_data.ahf.AHFReader.get_halos_add', )
+  def test_save_custom_mtree_halos( self, mock_get_halos_add ):
 
     # Run the test
     halo_ids = np.array( [ 0, 3, 5, ] )
-    self.ahf_reader.save_custom_mtree_halos( snums=[600,550,500], halo_ids=halo_ids, metafile_dir=data_sdir, )
+    self.ahf_reader.save_custom_mtree_halos(
+      snums=[600,550,500],
+      halo_ids=halo_ids,
+      metafile_dir=data_sdir,
+    )
 
     # Load in new file
     self.ahf_reader.get_mtree_halos( tag='custom' )
@@ -381,7 +386,17 @@ class TestAHFReader( unittest.TestCase ):
 
   def test_save_custom_mtree_halos_including_ahf_halos_add( self ):
 
-    assert False, "Need to do this."
+    # Run the test
+    halo_ids = np.array( [ 3, ] )
+    self.ahf_reader.save_custom_mtree_halos( snums=[600,], halo_ids=halo_ids, metafile_dir=data_sdir, )
+
+    # Load in new file
+    self.ahf_reader.get_mtree_halos( tag='custom' )
+    mtree_halo = self.ahf_reader.mtree_halos[0]
+    
+    expected = np.array([ 13.753927, ])
+    actual = mtree_halo['cAnalytic']
+    npt.assert_allclose( expected, actual )
 
   ########################################################################
 
