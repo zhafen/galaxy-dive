@@ -334,17 +334,17 @@ class AHFReader( object ):
   ########################################################################
 
   def get_analytic_concentration( self, metafile_dir, type_of_halo_id='merger_tree' ):
-    '''Get analytic values for the halo concentration, using colossus, Benedikt Diemer's cosmology code.
-    ( https://bitbucket.org/bdiemer/colossus ; http://www.benediktdiemer.com/code/colossus/ )
+    '''Get analytic values for the halo concentration, using colossus, Benedikt Diemer's cosmology code
+    ( https://bitbucket.org/bdiemer/colossus ; http://www.benediktdiemer.com/code/colossus/ ).
+
+    Assumptions:
+      - We're using the default formula of Diemer&Kravtstov15
+      - We're using the Bryan&Norman1998 version of the virial radius.
 
     Args:
       metafile_dir (str): The directory the snapshot_times are stored in.
       type_of_halo_id (str): 'merger_tree' if the halo id is a merger tree halo id.
                              'ahf_halos' if the halo id is a *.AHF_halos halo id.
-
-    Assumptions:
-      - We're using the default formula of Diemer&Kravtstov15
-      - We're using the Bryan&Norman1998 version of the virial radius.
 
     Returns
       c_vir (np.array of floats): The concentration, defined as R_vir/r_scale.
@@ -540,7 +540,7 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_custom_mtree_halos( self, halo_ids, snums, index=None, ):
+  def save_custom_mtree_halos( self, halo_ids, snums, metafile_dir, ):
 
     # Concatenate the data
     ahf_frames = []
@@ -558,6 +558,11 @@ class AHFReader( object ):
     # Add in the snapshots, and use them as the index
     custom_mtree_halo['snum'] = snums
     custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
+
+    # Get and save the redshift
+    metafile_reader = read_metafile.MetafileReader( metafile_dir )
+    metafile_reader.get_snapshot_times()
+    custom_mtree_halo['redshift'] = metafile_reader.snapshot_times['redshift'][snums]
 
     # Save the data
     save_filepath = os.path.join( self.sdir, 'halo_00000_custom.dat' )

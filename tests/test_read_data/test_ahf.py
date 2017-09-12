@@ -353,10 +353,10 @@ class TestAHFReader( unittest.TestCase ):
 
     # Run the test
     halo_ids = np.array( [ 0, 3, 5, ] )
-    self.ahf_reader.save_custom_mtree_halos( snums=[600,550,500], halo_ids=halo_ids, index=600 )
+    self.ahf_reader.save_custom_mtree_halos( snums=[600,550,500], halo_ids=halo_ids, metafile_dir=data_sdir, )
 
     # Load in new file
-    self.ahf_reader.get_mtree_halos( index=600, tag='custom' )
+    self.ahf_reader.get_mtree_halos( tag='custom' )
     mtree_halo = self.ahf_reader.mtree_halos[0]
 
     # Compare IDs
@@ -374,8 +374,8 @@ class TestAHFReader( unittest.TestCase ):
 
     # Compare the redshift
     expected = np.array([ 0., 0.069847, 0.169460, ])
-    actual = mtree_halo.index
-    npt.assert_allclose( expected, actual )
+    actual = mtree_halo['redshift']
+    npt.assert_allclose( expected, actual, atol=1e-3 )
 
   ########################################################################
 
