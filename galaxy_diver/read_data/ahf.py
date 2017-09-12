@@ -525,10 +525,15 @@ class AHFReader( object ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
     Args:
-      metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.
-      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose an
+      metafile_dir (str) :
+        The directory the metafiles (snapshot_times and used_parameters) are stored in.
+
+      index (str or int) :
+        What type of index to use. Defaults to None, which raises an exception. You *must* choose an
         index, to avoid easy mistakes. See get_mtree_halos() for a full description.
-      include_concentration (bool): Whether or not to add an additional column that gives an analytic value for the
+
+      include_concentration (bool):
+        Whether or not to add an additional column that gives an analytic value for the
         halo concentration.
     '''
     
@@ -547,7 +552,27 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_custom_mtree_halos( self, halo_ids, snums, metafile_dir, include_add_halos=True ):
+  def save_custom_mtree_halos( self, snums, halo_ids, metafile_dir, ):
+    '''Save a custom merger tree.
+
+    Args:
+      snums (array-like or int) :
+        What snapshots to generate the custom merger tree for.
+        If a single integer, then snums will start at that integer and count backwards by single snapshots for the
+        length of halo_ids
+
+      halo_ids (array-like) :
+        halo_ids[i] is the AHF_halos halo ID for the merger tree halo at snums[i].
+
+      metafile_dir (str) :
+        Directory for the metafile (used to get simulation redshift).
+
+    Modifies:
+      self.sdir/halo_00000_custom.dat (text file) : Saves the custom merger tree at this location.
+    '''
+
+    if isinstance( snums, int ):
+      snums = np.arange( snums, snums - len( halo_ids ), -1 )
 
     # Concatenate the data
     ahf_frames = []

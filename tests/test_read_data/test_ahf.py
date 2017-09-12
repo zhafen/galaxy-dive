@@ -402,7 +402,17 @@ class TestAHFReader( unittest.TestCase ):
 
   def test_save_custom_mtree_halos_default_snums( self ):
   
-    assert False, "Need to do this."
+    # Run the test
+    halo_ids = np.array( [ 3, ] )
+    self.ahf_reader.save_custom_mtree_halos( snums=600, halo_ids=halo_ids, metafile_dir=data_sdir, )
+
+    # Load in new file
+    self.ahf_reader.get_mtree_halos( tag='custom' )
+    mtree_halo = self.ahf_reader.mtree_halos[0]
+    
+    expected = np.array([ 600 ])
+    actual = mtree_halo.index
+    npt.assert_allclose( expected, actual )
 
   ########################################################################
 
