@@ -121,6 +121,8 @@ class AHFReader( object ):
         n_rows = mtree_halo.shape[0]
         mtree_halo['snum'] = range( final_snapshot_number, final_snapshot_number - n_rows, -1)
         mtree_halo = mtree_halo.set_index( 'snum', )
+      elif 'snum' in mtree_halo.columns:
+        mtree_halo = mtree_halo.set_index( 'snum', )
       else:
         raise Exception( "index type not selected" )
 
@@ -512,7 +514,7 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def save_smooth_mtree_halos( self,  metafile_dir, index=None, include_concentration=True ):
+  def save_smooth_mtree_halos( self, metafile_dir, index=None, include_concentration=True ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
     Args:
@@ -535,6 +537,31 @@ class AHFReader( object ):
 
     # Save the halos
     self.save_mtree_halos( 'smooth' )
+
+  ########################################################################
+
+  def save_custom_mtree_halos( self, halo_ids, snums, index=None, ):
+
+    # Concatenate the data
+    ahf_frames = []
+    for snum, halo_id in zip( snums, halo_ids, ):
+
+      self.get_halos( snum )
+
+      ahf_frames.append( self.ahf_halos.loc[halo_id:halo_id] )
+
+    custom_mtree_halo = pd.concat( ahf_frames )
+
+    # Make sure to store the IDs too
+    custom_mtree_halo['ID'] = halo_ids
+
+    # Add in the snapshots, and use them as the index
+    custom_mtree_halo['snum'] = snums
+    custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
+
+    # Save the data
+    save_filepath = os.path.join( self.sdir, 'halo_00000_custom.dat' )
+    custom_mtree_halo.to_csv( save_filepath, sep='\t' )
 
   ########################################################################
 

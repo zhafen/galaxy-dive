@@ -391,7 +391,7 @@ class DataMasker( object ):
       data_min (float) : Everything below data_min will be masked.
       data_max (float) : Everything above data_max will be masked.
       data_value (float) : Everything except for data_value will be masked.
-      custom (bool) : If provided, take in a custom mask instead, using data_key as the label for the mask.
+      custom_mask (bool) : If provided, take in a custom mask instead, using data_key as the label for the mask.
       return_or_store (str) : Whether to store the mask as part of the masks dictionary, or to return it.
 
     Returns:

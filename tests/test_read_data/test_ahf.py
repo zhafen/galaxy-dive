@@ -226,6 +226,17 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  def test_get_mtree_halo_files_default_index( self ):
+    '''Test that, if the data contains a 'snum' column, the default is to use it as an index.'''
+
+    self.ahf_reader.get_mtree_halos( tag='smooth' )
+
+    expected = np.arange( 600, 6, -1 )
+    actual = self.ahf_reader.mtree_halos[0].index
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_get_accurate_redshift( self ):
 
     expected = 0.00015930
@@ -308,6 +319,7 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
+  @slow
   def test_save_smooth_mtree_halos_different_snum( self ):
   
     # Pass it the right directory
@@ -334,6 +346,48 @@ class TestAHFReader( unittest.TestCase ):
 
     # Make sure there aren't NaN's
     assert self.ahf_reader.mtree_halos[0]['Rvir'][440] > 0
+
+  ########################################################################
+
+  def test_save_custom_mtree_halos( self ):
+
+    # Run the test
+    halo_ids = np.array( [ 0, 3, 5, ] )
+    self.ahf_reader.save_custom_mtree_halos( snums=[600,550,500], halo_ids=halo_ids, index=600 )
+
+    # Load in new file
+    self.ahf_reader.get_mtree_halos( index=600, tag='custom' )
+    mtree_halo = self.ahf_reader.mtree_halos[0]
+
+    # Compare IDs
+    npt.assert_allclose( halo_ids, mtree_halo['ID'] )
+
+    # Compare number of substructures (nice easy integers to compare)
+    expected = np.array([ 792, 48, 55 ])
+    actual = mtree_halo['numSubStruct']
+    npt.assert_allclose( expected, actual )
+
+    # Compare the snapshot number
+    expected = np.array([ 600, 550, 500, ])
+    actual = mtree_halo.index
+    npt.assert_allclose( expected, actual )
+
+    # Compare the redshift
+    expected = np.array([ 0., 0.069847, 0.169460, ])
+    actual = mtree_halo.index
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_save_custom_mtree_halos_including_ahf_halos_add( self ):
+
+    assert False, "Need to do this."
+
+  ########################################################################
+
+  def test_save_custom_mtree_halos_default_snums( self ):
+  
+    assert False, "Need to do this."
 
   ########################################################################
 
