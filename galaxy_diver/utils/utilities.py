@@ -488,6 +488,39 @@ def store_parameters( constructor ):
 
 ########################################################################
 
+def save_parameters( instance, f ):
+  '''Save parameters to a hdf5 file.
+
+  Args:
+    instance (object) :
+      Instance that has the attributes that are parameters. Typically stored in instance.stored_parameters.
+
+    f (open h5py file object) :
+      File to save the parameters to.
+
+  Returns:
+    param_grp (h5py group) :
+      Group containing the parameters as attributes.
+  '''
+
+  param_grp = f.create_group( 'parameters' )
+  for parameter_str in instance.stored_parameters:
+
+    parameter = getattr( instance, parameter_str )
+
+    try:
+      if parameter is None:
+        param_grp.attrs[parameter_str] = 'None'
+      else:
+        param_grp.attrs[parameter_str] = parameter
+
+    except TypeError:
+      raise TypeError( "Parameter {} = {} failed to save.".format( parameter_str, parameter ) )
+
+  return param_grp
+
+########################################################################
+
 # Make a path to a file
 
 def make_dir( path ):
