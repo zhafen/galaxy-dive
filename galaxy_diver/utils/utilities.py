@@ -105,6 +105,22 @@ class SmartDict( collections.Mapping ):
     return SmartDict( results )
 
   ########################################################################
+
+  def call_iteratively( self, args_list ):
+
+    results = {}
+    for key in self.keys():
+
+      inner_results = []
+      for args in args_list:
+        inner_result = self._storage[key]( args )
+        inner_results.append( inner_result )
+
+      results[key] = inner_results
+
+    return results
+
+  ########################################################################
   # For handling when the Smart Dict contains dictionaries
   ########################################################################
 

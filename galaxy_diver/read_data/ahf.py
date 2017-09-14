@@ -578,6 +578,8 @@ class AHFReader( object ):
     ahf_frames = []
     for snum, halo_id in zip( snums, halo_ids, ):
 
+      print( "Getting data for snapshot {}".format( snum ) )
+
       self.get_halos( snum )
       self.get_halos_add( snum )
 

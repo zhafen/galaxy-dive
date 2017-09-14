@@ -122,6 +122,20 @@ class TestSmartDict( unittest.TestCase ):
 
   ########################################################################
 
+  def test_call_iteratively( self ):
+
+    class TestClassA( object ):
+      def foo( self, x ):
+        return x**2
+
+    d = utilities.SmartDict( { 1 : TestClassA(), 2 : TestClassA(), } )
+
+    actual = d.foo.call_iteratively( [ 1, 2, ] )
+    expected = { 1 : [1, 4,], 2 : [1, 4, ] }
+    self.assertEqual( expected, actual )
+
+  ########################################################################
+
   def test_multiply( self ):
 
     d = utilities.SmartDict( { 1 : 1, 2 : 2 } )

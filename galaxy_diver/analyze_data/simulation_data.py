@@ -12,6 +12,7 @@ from functools import wraps
 import h5py
 import numpy as np
 import numpy.testing as npt
+import scipy
 import string
 import warnings
 
@@ -518,6 +519,36 @@ class SimulationData( generic_data.GenericData ):
 
     else:
       raise KeyError( 'NULL data_key, data_key = {}'.format( data_key ) )
+
+  ########################################################################
+
+  def get_distance_to_point( self, point ):
+    '''This is *not* unit tested.
+
+    Args:
+      point (array-like of shape (3,)) : The point you want to find the distance to for each particle.
+    '''
+
+    d_to_point = scipy.spatial.distance.cdist( self.get_data( 'P' ).transpose(), point[np.newaxis,:] )
+    
+    return d_to_point.flatten()
+
+  ########################################################################
+
+  def get_potential( self, point ):
+    '''This is *not* unit tested.
+
+    Args:
+      point (array-like of shape (3,)) : The point you want to find the potential at
+    '''
+
+    d_to_point = self.get_distance_to_point( point )
+
+    potential_per_particle = -1.*constants.UNITG_UNIV*self.get_data( 'M' )/d_to_point
+
+    total_potential = potential_per_particle.sum()
+
+    return total_potential
 
   ########################################################################
   # Full calculations based on the data

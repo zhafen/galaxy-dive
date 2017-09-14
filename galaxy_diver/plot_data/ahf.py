@@ -6,6 +6,7 @@
 @status: Development
 '''
 
+import copy
 import numpy as np
 
 import matplotlib
@@ -124,12 +125,16 @@ class AHFPlotter( object ):
 
   def plot_halo_time( self,
     y_key,
+    y_data = default,
+    hubble_param = default,
+    conversion_factor = default,
+    convert_to_physical = False,
+    convert_to_comoving = False,
     ax = default,
     halo_id = 0,
     color = 'k',
     y_label = default,
     label = None,
-    remove_hubble_param = False,
     plot_change_in_halo_id = False,
     ):
 
@@ -138,6 +143,26 @@ class AHFPlotter( object ):
       ax = plt.gca()
 
     plotted_mtree_halo = self.ahf_reader.mtree_halos[halo_id]
+
+    x_data = np.log10( 1. + plotted_mtree_halo['redshift'] )
+
+    if y_data is default:
+      if y_key == 'r_scale':
+        y_data = copy.copy( plotted_mtree_halo['Rvir']/plotted_mtree_halo['cAnalytic'] )
+      else:
+        y_data = copy.copy( plotted_mtree_halo[y_key] )
+
+    if conversion_factor is not default:
+      y_data *= conversion_factor
+
+    if hubble_param is not default:
+      y_data /= hubble_param
+
+    if convert_to_physical:
+      y_data /= ( 1. + plotted_mtree_halo['redshift'] )
+
+    if convert_to_comoving:
+      y_data *= ( 1. + plotted_mtree_halo['redshift'] )
 
     # Plot vertical lines when there's a change
     if plot_change_in_halo_id:
@@ -149,8 +174,7 @@ class AHFPlotter( object ):
             ax.plot( [plotted_mtree_halo.index[i], plotted_mtree_halo.index[i] ], [0., 1.],
                         transform=trans, color='k', linewidth=1, linestyle='--')
 
-    x_data = np.log10( 1. + plotted_mtree_halo['redshift'] )
-    ax.plot( x_data, plotted_mtree_halo[y_key], color=color, linewidth=3, label=label )
+    ax.plot( x_data, y_data, color=color, linewidth=3, label=label )
 
     if y_label is default:
       y_label = y_key
