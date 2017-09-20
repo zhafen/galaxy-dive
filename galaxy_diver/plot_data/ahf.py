@@ -48,6 +48,7 @@ class AHFPlotter( object ):
                            type_of_halo_id = 'ahf_halos',
                            color = 'w',
                            linestyle = 'solid',
+                           linewidth = 2,
                            outline = True,
                            center = True,
                            hubble_param = default,
@@ -61,6 +62,7 @@ class AHFPlotter( object ):
       ax (axis object) : Axis to use. If default, one is created.
       color (str) : What color should the circle be?
       linestyle (str) : What linestyle to use.
+      linewidth (int) : What linewidth to use.
       outline (bool) : Should the circles be outlined for increased visibility?
       center (bool) : Should the plot be centered at the most massive halo at z=0?
       hubble_param (float) : If given, the positions will be converted to physical kpc.
@@ -79,7 +81,7 @@ class AHFPlotter( object ):
       r_vir = self.ahf_reader.ahf_halos['Rvir'][:50]
 
       self.ahf_reader.get_halos_add( snum )
-      c_analytic = self.ahf_reader.ahf_halos_add['cAnalytic'][:50]
+      c_analytic = self.ahf_reader.ahf_halos['cAnalytic'][:50]
 
     elif type_of_halo_id == 'merger_tree':
       x_pos = self.ahf_reader.get_mtree_halo_quantity( 'Xc', snum, self.ahf_reader.index, self.ahf_reader.tag )
@@ -113,7 +115,7 @@ class AHFPlotter( object ):
 
     for i, radius in enumerate( radii ):
 
-      cir = mpatches.Circle( (x_pos[i], y_pos[i]), radius=radius, linewidth=2, \
+      cir = mpatches.Circle( (x_pos[i], y_pos[i]), radius=radius, linewidth=linewidth, \
                             color=color, linestyle=linestyle, fill=False, facecolor='w' )
       ax.add_patch( cir )
 

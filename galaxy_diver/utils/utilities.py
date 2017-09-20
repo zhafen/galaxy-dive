@@ -113,6 +113,7 @@ class SmartDict( collections.Mapping ):
 
       inner_results = []
       for args in args_list:
+
         inner_result = self._storage[key]( args )
         inner_results.append( inner_result )
 

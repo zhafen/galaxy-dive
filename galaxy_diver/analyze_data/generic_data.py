@@ -466,6 +466,7 @@ class DataMasker( object ):
     sl = None,
     apply_slice_to_mask = True,
     fix_invalid = False,
+    compress = True,
     ):
     '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.
 
@@ -474,6 +475,8 @@ class DataMasker( object ):
       mask (str or np.array of bools) : Mask to apply. If none, use the total mask.
       sl (slice) : Slice to apply to the data
       apply_slice_to_mask (bool) : Whether or not to apply the same slice you applied to the data to the mask.
+      fix_invalid (bool) : Whether or not to also mask invalid data.
+      compress (bool) : Whether or not to return compressed data.
 
     Returns:
       data_ma (np.array) : Compressed masked data. Because it's compressed it may not have the same shape as the
@@ -513,7 +516,9 @@ class DataMasker( object ):
 
     else:
       data_ma = array_to_ma_array_fn( data, mask=used_mask )
-      data_ma = data_ma.compressed()
+
+      if compress:
+        data_ma = data_ma.compressed()
 
     return data_ma
 
