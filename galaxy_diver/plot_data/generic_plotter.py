@@ -304,6 +304,69 @@ class GenericPlotter( object ):
       plt.close()
 
   ########################################################################
+
+  def plot_time_dependent_data( self,
+    ax = default,
+    x_range = [ 0., np.log10(8.) ], y_range = default,
+    y_scale = 'log',
+    x_label = default, y_label = default,
+    ):
+    '''Make a plot like the top panel of Fig. 3 in Angles-Alcazar+17
+
+    Args:
+      ax (axis object) :
+        What axis to put the plot on. By default, create a new one on a separate figure.
+
+      x_range, y_range (list-like) :
+        [ x_min, x_max ] or [ y_min, y_max ] for the displayed range.
+
+      x_label, y_label (str) :
+        Labels for axis. By default, redshift and f(M_star), respectively.
+
+      plot_dividing_line (bool) :
+        Whether or not to plot a line at the edge between stacked regions.
+    '''
+
+    if ax is default:
+      fig = plt.figure( figsize=(11,5), facecolor='white' )
+      ax = plt.gca()
+
+    x_data = np.log10( 1. + self.data_object.get_data( 'redshift' ) )
+
+    y_data = self.data_object.get_categories_galaxy_mass()
+
+    for key in p_constants.CLASSIFICATION_LIST_A[::-1]:
+
+      y_data = y_datas[key]
+
+      ax.plot(
+        x_data,
+        y_data,
+        linewidth = 3,
+        color = p_constants.CLASSIFICATION_COLORS[key],
+        label = p_constants.CLASSIFICATION_LABELS[key],
+      )
+
+    if x_range is not default:
+      ax.set_xlim( x_range )
+
+    if y_range is not default:
+      ax.set_ylim( y_range )
+
+    ax.set_yscale( y_scale )
+
+    tick_redshifts = np.array( [ 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, ] )
+    x_tick_values = np.log10( 1. + tick_redshifts )
+    plt.xticks( x_tick_values, tick_redshifts )
+
+    ax.set_xlabel( r'z', fontsize=22, )
+    ax.set_ylabel( r'$M_{\star} (M_{\odot})$', fontsize=22, )
+
+    ax.annotate( s=self.label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=22,  )
+
+    ax.legend( prop={'size':14.5}, ncol=5, loc=(0.,-0.28), fontsize=20 )
+
+  ########################################################################
   # Generic Plotting Methods
   ########################################################################
 
