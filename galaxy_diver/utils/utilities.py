@@ -285,6 +285,24 @@ class SmartDict( collections.Mapping ):
 
 ########################################################################
 
+def merge_two_dicts( dict_a, dict_b ):
+  '''Merges two dictionaries into a shallow copy.
+
+  Args:
+    dict_a (dict) : First dictionary to merge.
+    dict_b (dict) : Second dictionary to merge.
+
+  Returns:
+    merged_dict (dict) : Dictionary including elements from both. dict_a's entries take priority over dict_b.
+  '''
+
+  merged_dict = dict_b.copy()
+  merged_dict.update( dict_a )
+
+  return merged_dict
+
+########################################################################
+
 def dict_from_defaults_and_variations( defaults, variations ):
   '''Create a dictionary of dictionaries from a default dictionary and variations on it.
 

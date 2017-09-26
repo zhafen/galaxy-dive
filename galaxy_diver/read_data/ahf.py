@@ -146,6 +146,10 @@ class AHFReader( object ):
       self.ahf_halos (pd.DataFrame): Dataframe containing the requested data.
     '''
 
+    if hasattr( self, 'ahf_halos' ):
+      if self.ahf_halos_snum == snum:
+        return
+
     # Load the data
     self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos' )
     self.ahf_halos = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
