@@ -8,7 +8,7 @@
 
 import copy
 import h5py
-from mock import patch
+import mock
 import numpy as np
 import numpy.testing as npt
 import os
@@ -848,7 +848,7 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
-class TestFindEffectiveRadii( unittest.TestCase ):
+class TestFindMassRadii( unittest.TestCase ):
 
   def setUp( self ):
 
@@ -885,25 +885,50 @@ class TestFindEffectiveRadii( unittest.TestCase ):
 
   ########################################################################
 
-  def test_get_cumlulative_mass_valid_halos( self ):
+  def test_cumlulative_mass_valid_halos( self ):
 
     # Test Data
     self.galaxy_finder._dist_to_all_valid_halos = np.array([
       [ 0., 500., ],
-      [ 480., 20., ],
-      [ 50., 450., ],
+      [ 480., 450., ],
+      [ 50., 20., ],
       [ 490., 10., ],
     ])
 
     expected = np.array([
-      [ 1., 4., ],
-      [ 4., 6., ],
+      [ 1., 10., ],
       [ 6., 9., ],
-      [ 10., 10., ],
+      [ 4., 7., ],
+      [ 10., 4., ],
     ])
-    actual = self.galaxy_finder.get_cumulative_mass_valid_halos()
+    actual = self.galaxy_finder.cumulative_mass_valid_halos
 
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_mass_radius( self ):
+
+    # Test Data
+    self.galaxy_finder._mass_inside_galaxy_cut = np.array([ 10., 19, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([
+      [ 0., 500., ],
+      [ 480., 450., ],
+      [ 50., 20., ],
+      [ 490., 10., ],
+    ])
+    self.galaxy_finder._cumulative_mass_valid_halos = np.array([
+      [ 1., 10., ],
+      [ 6., 9., ],
+      [ 4., 7., ],
+      [ 10., 4., ],
+    ]),
+
+    expected = np.array( [ 50., 450., ] )
+    actual = self.galaxy_finder.get_mass_radius( 0.5 )
+
+    npt.assert_allclose( expected, actual )
+    
 
 
 

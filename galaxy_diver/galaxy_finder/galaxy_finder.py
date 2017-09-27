@@ -111,7 +111,7 @@ class GalaxyFinder( object ):
     self.n_particles = self.particle_positions.shape[0]
 
   ########################################################################
-  # Properties
+  # General Properties Unique to an Instance
   ########################################################################
 
   @property
@@ -186,29 +186,6 @@ class GalaxyFinder( object ):
       self._ahf_halos_length_scale_pkpc = length_scale/( 1. + self.redshift )/self.hubble
 
     return self._ahf_halos_length_scale_pkpc
-
-  ########################################################################
-
-  @property
-  def mass_inside_galaxy_cut( self ):
-    '''
-    Returns:
-      mass_inside_galaxy_cut (np.ndarray) :
-        Mass inside the galaxy_cut*length_scale for *.AHF_halos halos that containing a galaxy.
-    '''
-
-    if not hasattr( self, '_mass_inside_galaxy_cut' ):
-
-      valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
-      outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc
-
-      mass_tiled = np.tile( self.particle_masses, ( self.valid_halo_inds.size, 1 ) ).transpose()
-
-      mass_ma = np.ma.masked_array( mass_tiled, mask=outside_radial_cut )
-
-      self._mass_inside_galaxy_cut = mass_ma.sum( axis=0 )
-
-    return self._mass_inside_galaxy_cut
 
   ########################################################################
   # ID Finding Routines
@@ -557,7 +534,31 @@ class GalaxyFinder( object ):
   # Radius Finding Routines
   ########################################################################
 
-  def get_cumulative_mass_valid_halos( self ):
+  @property
+  def mass_inside_galaxy_cut( self ):
+    '''
+    Returns:
+      mass_inside_galaxy_cut (np.ndarray) :
+        Mass inside the galaxy_cut*length_scale for *.AHF_halos halos that containing a galaxy.
+    '''
+
+    if not hasattr( self, '_mass_inside_galaxy_cut' ):
+
+      valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
+      outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc
+
+      mass_tiled = np.tile( self.particle_masses, ( self.valid_halo_inds.size, 1 ) ).transpose()
+
+      mass_ma = np.ma.masked_array( mass_tiled, mask=outside_radial_cut )
+
+      self._mass_inside_galaxy_cut = mass_ma.sum( axis=0 )
+
+    return self._mass_inside_galaxy_cut
+
+  ########################################################################
+
+  @property
+  def cumulative_mass_valid_halos( self ):
     '''Get the cumulative mass, going outwards from the center of each valid *AHF_halos halo.
 
     Returns:
@@ -565,13 +566,44 @@ class GalaxyFinder( object ):
         Index (i,j) is the cumulative mass in halo j at the location of particle i.
     '''
 
-    sorted_inds = np.argsort( self.dist_to_all_valid_halos, axis=0 )
+    if not hasattr( self, '_cumulative_mass_valid_halos' ):
+      # Sort the mass according to distance
+      sorted_inds = np.argsort( self.dist_to_all_valid_halos, axis=0 )
+      sorted_mass = self.particle_masses[sorted_inds]
 
-    sorted_mass = self.particle_masses[sorted_inds]
+      sorted_cumulative_mass = np.cumsum( sorted_mass, axis=0 )
 
-    cumulative_mass = np.cumsum( sorted_mass, axis=0 )
+      # Undo the sorting, now that we have the cumulative mass
+      undo_inds = np.argsort( sorted_inds, axis=0 )
+      cumulative_mass = sorted_cumulative_mass[undo_inds, np.arange(undo_inds.shape[1])]
 
-    return cumulative_mass
+      self._cumulative_mass_valid_halos = cumulative_mass
+
+    return self._cumulative_mass_valid_halos
+
+  ########################################################################
+
+  def get_mass_radius( self, mass_fraction ):
+    '''Get the radius at which mass_fraction*mass_inside_galaxy_cut is exceeded.
+
+    Args:
+      mass_fraction (float) : Mass fraction to consider.
+
+    Returns:
+      mass_radius (np.ndarray) :
+        The ith index is the distance from the center of halo i to the center of the last particle before 
+        mass_fraction*mass_inside_galaxy_cut is exceeded.
+    '''
+
+    greater_than_mass_fraction = self.cumulative_mass_valid_halos > mass_fraction*self.mass_inside_galaxy_cut
+
+    dist_ma = np.ma.masked_array( self.dist_to_all_valid_halos, mask=greater_than_mass_fraction )
+
+    return dist_ma.max( axis=0 )
+
+
+
+    
 
 
 
