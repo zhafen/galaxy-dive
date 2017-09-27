@@ -844,3 +844,41 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
     expected[ 0, 0 ] = True # Should only be in the galaxy with sufficient stellar gas.
 
     npt.assert_allclose( expected, actual )
+
+########################################################################
+########################################################################
+
+class TestFindEffectiveRadii( unittest.TestCase ):
+
+  def setUp( self ):
+
+    # Test Data
+    self.kwargs = dict( gal_finder_kwargs )
+    self.kwargs['particle_masses'] = np.array([ 1., 2., 3., 4., ])
+    particle_positions = np.array([
+      [ 0., 0., 0., ],
+      [ 0., 0., 0., ],
+      [ 0., 0., 0., ],
+      [ 0., 0., 0., ],
+    ]) # These shouldn't ever be used directly, since we're relying on the results of previous functions.
+
+    self.galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, **self.kwargs ) 
+
+  ########################################################################
+
+  def test_mass_inside_galaxy_cut( self ):
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 0., 10., 500., ],
+      [ 15., 5., 485., ],
+      [ 10., 0., 490., ],
+      [ 500., 490., 0., ],
+    ])
+
+    expected = np.array([ 6., 3., 4., ])
+    actual = self.galaxy_finder.mass_inside_galaxy_cut
+    
+    npt.assert_allclose( expected, actual )

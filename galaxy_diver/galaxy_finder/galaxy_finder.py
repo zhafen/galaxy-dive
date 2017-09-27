@@ -19,10 +19,6 @@ import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
-
-default = object()
-
-########################################################################
 ########################################################################
 
 class GalaxyFinder( object ):
@@ -34,16 +30,17 @@ class GalaxyFinder( object ):
     redshift,
     snum,
     hubble,
-    ahf_data_dir,
-    halo_file_tag,
-    mtree_halos_index,
-    main_mt_halo_id,
     galaxy_cut,
     length_scale,
-    ids_to_return,
     minimum_criteria,
     minimum_value,
+    particle_masses = None,
+    ids_to_return = None,
     ahf_reader = None,
+    ahf_data_dir = None,
+    halo_file_tag = None,
+    mtree_halos_index = None,
+    main_mt_halo_id = None,
     ):
     '''Initialize.
 
@@ -60,28 +57,12 @@ class GalaxyFinder( object ):
       hubble (float) :
         Cosmological hubble parameter (little h)
 
-      ahf_data_dir (str) :
-        Directory the AHF data is in.
-
-      halo_file_tag (int) :
-        What identifying tag to use for the merger tree files?
-
-      mtree_halos_index (str or int)  :
-        The index argument to pass to AHFReader.get_mtree_halos().
-        For most cases this should be the final snapshot number, but see AHFReader.get_mtree_halos's documentation.
-
-      main_mt_halo_id (int) :
-        Index of the main merger tree halo.
-
       galaxy_cut (float) :
         The fraction of the length scale a particle must be inside to be counted as part
         of a galaxy.
 
       length_scale (str) :
         Anything within galaxy_cut*length_scale is counted as being inside the galaxy.
-
-      ids_to_return (list of strs) :
-        The types of id you want to get out.
 
       minimum_criteria (str) :
         Options...
@@ -92,9 +73,28 @@ class GalaxyFinder( object ):
         The minimum amount of something (specified in minimum criteria)
         in order for a galaxy to count as hosting a halo.
 
+      particle_masses (np.ndarray, optional) :
+        Masses of particles.
+
+      ids_to_return (list of strs, optional) :
+        The types of id you want to get out.
+
       ahf_reader (AHFReader object, optional) :
         An instance of an object that reads in the AHF data.
         If not given initiate one using the ahf_data_dir in kwargs
+
+      ahf_data_dir (str, optional) :
+        Directory the AHF data is in. Necessary if ahf_reader is not provided.
+
+      halo_file_tag (int, optional) :
+        What identifying tag to use for the merger tree files? Necessary if using merger tree information.
+
+      mtree_halos_index (str or int, optional)  :
+        The index argument to pass to AHFReader.get_mtree_halos().
+        For most cases this should be the final snapshot number, but see AHFReader.get_mtree_halos's documentation.
+
+      main_mt_halo_id (int, optional) :
+        Index of the main merger tree halo.
     '''
 
     # Setup the default ahf_reader
@@ -115,25 +115,25 @@ class GalaxyFinder( object ):
   ########################################################################
 
   @property
-  def ahf_halos_length_scale_pkpc( self ):
+  def valid_halo_inds( self ):
+    '''
+    Returns:
+      valid_halo_inds (np.ndarray) :
+        Indices of *AHF_halos halos that satisfy our minimum criteria for containing a galaxy.
+    '''
 
-    if not hasattr( self, '_ahf_halos_length_scale_pkpc' ):
+    if not hasattr( self, '_valid_halo_inds' ):
 
-      # Get the relevant length scale
-      if self.length_scale == 'R_vir':
-        length_scale = self.ahf_reader.ahf_halos['Rvir']
-      elif self.length_scale == 'r_scale':
-        # Get the files containing the concentration (counts on it being already calculated beforehand)
-        self.ahf_reader.get_halos_add( self.ahf_reader.ahf_halos_snum )
+      self.ahf_reader.get_halos( self.snum )
 
-        # Get the scale radius
-        r_vir = self.ahf_reader.ahf_halos['Rvir']
-        length_scale = r_vir/self.ahf_reader.ahf_halos['cAnalytic']
-      else:
-        raise KeyError( "Unspecified length scale" )
-      self._ahf_halos_length_scale_pkpc = length_scale/( 1. + self.redshift )/self.hubble
+      # Apply a cut on containing a minimum amount of stars
+      min_criteria = self.ahf_reader.ahf_halos[ self.minimum_criteria ]
+      has_minimum_value = min_criteria/self.min_conversion_factor >= self.minimum_value
 
-    return self._ahf_halos_length_scale_pkpc
+      # Figure out which indices satisfy the criteria and choose only those halos
+      self._valid_halo_inds = np.where( has_minimum_value )[0]
+
+    return self._valid_halo_inds
 
   ########################################################################
 
@@ -167,25 +167,48 @@ class GalaxyFinder( object ):
   ########################################################################
 
   @property
-  def valid_halo_inds( self ):
+  def ahf_halos_length_scale_pkpc( self ):
+
+    if not hasattr( self, '_ahf_halos_length_scale_pkpc' ):
+
+      # Get the relevant length scale
+      if self.length_scale == 'R_vir':
+        length_scale = self.ahf_reader.ahf_halos['Rvir']
+      elif self.length_scale == 'r_scale':
+        # Get the files containing the concentration (counts on it being already calculated beforehand)
+        self.ahf_reader.get_halos_add( self.ahf_reader.ahf_halos_snum )
+
+        # Get the scale radius
+        r_vir = self.ahf_reader.ahf_halos['Rvir']
+        length_scale = r_vir/self.ahf_reader.ahf_halos['cAnalytic']
+      else:
+        raise KeyError( "Unspecified length scale" )
+      self._ahf_halos_length_scale_pkpc = length_scale/( 1. + self.redshift )/self.hubble
+
+    return self._ahf_halos_length_scale_pkpc
+
+  ########################################################################
+
+  @property
+  def mass_inside_galaxy_cut( self ):
     '''
     Returns:
-      valid_halo_inds (np.ndarray) :
-        Indices of *AHF_halos halos that satisfy our minimum criteria for containing a galaxy.
+      mass_inside_galaxy_cut (np.ndarray) :
+        Mass inside the galaxy_cut*length_scale for *.AHF_halos halos that containing a galaxy.
     '''
 
-    if not hasattr( self, '_valid_halo_inds' ):
+    if not hasattr( self, '_mass_inside_galaxy_cut' ):
 
-      self.ahf_reader.get_halos( self.snum )
+      valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
+      outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc
 
-      # Apply a cut on containing a minimum amount of stars
-      min_criteria = self.ahf_reader.ahf_halos[ self.minimum_criteria ]
-      has_minimum_value = min_criteria/self.min_conversion_factor >= self.minimum_value
+      mass_tiled = np.tile( self.particle_masses, ( self.valid_halo_inds.size, 1 ) ).transpose()
 
-      # Figure out which indices satisfy the criteria and choose only those halos
-      self._valid_halo_inds = np.where( has_minimum_value )[0]
+      mass_ma = np.ma.masked_array( mass_tiled, mask=outside_radial_cut )
 
-    return self._valid_halo_inds
+      self._mass_inside_galaxy_cut = mass_ma.sum( axis=0 )
+
+    return self._mass_inside_galaxy_cut
 
   ########################################################################
   # ID Finding Routines
