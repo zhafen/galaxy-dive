@@ -142,7 +142,7 @@ class GalaxyFinder( object ):
     '''
     Returns:
       dist_to_all_valid_halos (np.ndarray) :
-        Distance between the particle positions and all *.AHF_halos halos containing a galaxy.
+        Distance between the particle positions and all *.AHF_halos halos containing a galaxy (in pkpc).
     '''
 
     if not hasattr( self, '_dist_to_all_valid_halos' ):
@@ -552,3 +552,43 @@ class GalaxyFinder( object ):
     part_of_halo = np.array( part_of_halo ).transpose()[0]
 
     return part_of_halo
+
+  ########################################################################
+  # Radius Finding Routines
+  ########################################################################
+
+  def get_cumulative_mass_valid_halos( self ):
+    '''Get the cumulative mass, going outwards from the center of each valid *AHF_halos halo.
+
+    Returns:
+      cumulative_mass (np.ndarray) : Shape (n_particles, n_halos)
+        Index (i,j) is the cumulative mass in halo j at the location of particle i.
+    '''
+
+    sorted_inds = np.argsort( self.dist_to_all_valid_halos, axis=0 )
+
+    sorted_mass = self.particle_masses[sorted_inds]
+
+    cumulative_mass = np.cumsum( sorted_mass, axis=0 )
+
+    return cumulative_mass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

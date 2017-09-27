@@ -882,3 +882,33 @@ class TestFindEffectiveRadii( unittest.TestCase ):
     actual = self.galaxy_finder.mass_inside_galaxy_cut
     
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_cumlulative_mass_valid_halos( self ):
+
+    # Test Data
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([
+      [ 0., 500., ],
+      [ 480., 20., ],
+      [ 50., 450., ],
+      [ 490., 10., ],
+    ])
+
+    expected = np.array([
+      [ 1., 4., ],
+      [ 4., 6., ],
+      [ 6., 9., ],
+      [ 10., 10., ],
+    ])
+    actual = self.galaxy_finder.get_cumulative_mass_valid_halos()
+
+    npt.assert_allclose( expected, actual )
+
+
+
+
+
+
+
+
