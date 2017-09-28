@@ -158,9 +158,15 @@ class AHFUpdater( read_ahf.AHFReader ):
       4,
     )
 
+    try:
+      particle_positions = s_data.data['P'].transpose()
+    # Case where there are no star particles at this redshift.
+    except KeyError:
+      return [ np.array( [ np.nan, ]*self.ahf_halos.index.size ), ]*len( mass_fractions )
+
     # Find the mass radii
     galaxy_finder_kwargs = {
-      'particle_positions' : s_data.data['P'].transpose(),
+      'particle_positions' : particle_positions,
       'particle_masses' : s_data.data['M'],
       'snum' : self.ahf_halos_snum,
       'redshift' : s_data.redshift,

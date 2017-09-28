@@ -7,7 +7,7 @@
 '''
 
 import glob
-from mock import call, patch
+from mock import call, patch, PropertyMock
 import numpy as np
 import numpy.testing as npt
 import os
@@ -16,6 +16,7 @@ import pytest
 import unittest
 
 import galaxy_diver.analyze_data.ahf as analyze_ahf
+import galaxy_diver.analyze_data.particle_data as particle_data
 import galaxy_diver.utils.utilities as utilities
 
 sdir = './tests/data/analysis_dir'
@@ -328,6 +329,26 @@ class TestMassRadii( unittest.TestCase ):
     actual = self.ahf_updater.get_mass_radii( mass_fractions, data_dir, 0.15, 'R_vir', )
 
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
+  def test_get_mass_radii_no_stars( self, mock_init, ):
+    '''Test that, when there are no stars in the snapshot, we return nan values.'''
+
+    mock_init.side_effect = [ None, ]
+
+    # I mock data here. Note that I had to mock __init__ too, to prevent overwriting.
+    with patch.object( particle_data.ParticleData, 'data', new_callable=PropertyMock, create=True ) as mock_data:
+      mock_data.return_value = {}
+
+      mass_fractions = [ 0.5, 0.99, ]
+
+      expected = [ np.array( [np.nan, ]*9 ), ]*2
+      data_dir = os.path.join( data_sdir, 'output' )
+      actual = self.ahf_updater.get_mass_radii( mass_fractions, data_dir, 0.15, 'R_vir', )
+
+      npt.assert_allclose( expected, actual )
 
   ########################################################################
   
