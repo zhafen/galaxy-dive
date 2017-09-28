@@ -325,9 +325,46 @@ class TestMassRadii( unittest.TestCase ):
 
     expected = [ np.arange(10)*10., np.linspace( 50., 200., 10 ), ]
     data_dir = os.path.join( data_sdir, 'output' )
-    actual = self.ahf_updater.get_mass_radii( mass_fractions, 600, data_dir, 0.15, 'R_vir', )
+    actual = self.ahf_updater.get_mass_radii( mass_fractions, data_dir, 0.15, 'R_vir', )
 
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+  
+  def test_get_mass_radii_from_subsampled_data( self,):
+    '''Now test, using actual simulation data (even if it's subsampled).'''
+
+    mass_fractions = [ 0.5,  ]
+    data_dir = os.path.join( data_sdir, 'output' )
+
+    actual = self.ahf_updater.get_mass_radii( mass_fractions, data_dir, 0.15, 'R_vir', )
+    expected = np.array( [ np.nan, ]*9 )
+
+    npt.assert_allclose( expected, actual[0] )
+
+  ########################################################################
+
+  @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
+  def test_save_ahf_halos_add_including_masses( self, mock_get_analytic_concentration ):
+
+    mock_get_analytic_concentration.side_effect = [ np.zeros( 9 ), ]
+
+    # Save halos_add
+    sim_data_dir = os.path.join( data_sdir, 'output' )
+
+    self.ahf_updater.save_ahf_halos_add( 600, data_sdir, [ 0.5, 0.99 ], sim_data_dir, 0.15, 'R_vir', )
+
+    # Load halos_add
+    self.ahf_updater.get_halos_add( 600 )
+
+    # Make sure the columns exist
+    assert 'Rmass0.5' in self.ahf_updater.ahf_halos.columns
+    assert 'Rmass0.99' in self.ahf_updater.ahf_halos.columns
+
+
+
+
+    
 
 
 

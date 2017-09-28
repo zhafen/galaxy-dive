@@ -885,6 +885,26 @@ class TestFindMassRadii( unittest.TestCase ):
 
   ########################################################################
 
+  def test_mass_inside_galaxy_cut_no_inside_cut( self ):
+    '''Make sure we give the right results when no particles are inside the cut.'''
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 0.1, 0.1, 0.1, 0.1, ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 100., 10., 500., ],
+      [ 15., 5., 485., ],
+      [ 10., 100., 490., ],
+      [ 500., 490., 100., ],
+    ])
+
+    expected = np.array([ 0., 0., 0., ])
+    actual = self.galaxy_finder.mass_inside_galaxy_cut
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_cumlulative_mass_valid_halos( self ):
 
     # Test Data

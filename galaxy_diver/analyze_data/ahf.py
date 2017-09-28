@@ -151,7 +151,6 @@ class AHFUpdater( read_ahf.AHFReader ):
         contains a fraction mass_fractions[i] of M_sum_j.
     '''
         
-
     # Load the simulation data
     s_data = particle_data.ParticleData(
       simulation_data_dir,
@@ -163,6 +162,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     galaxy_finder_kwargs = {
       'particle_positions' : s_data.data['P'].transpose(),
       'particle_masses' : s_data.data['M'],
+      'snum' : self.ahf_halos_snum,
       'redshift' : s_data.redshift,
       'hubble' : s_data.data_attrs['hubble'],
       'galaxy_cut' : galaxy_cut,
@@ -171,7 +171,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     }
     gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
     
-    mass_radii = [ gal_finder.get_mass_radius( mass_fraction) for mass_fraction in mass_fractions ]
+    mass_radii = [ gal_finder.get_mass_radius( mass_fraction ) for mass_fraction in mass_fractions ]
       
     return mass_radii
 
@@ -321,13 +321,37 @@ class AHFUpdater( read_ahf.AHFReader ):
 
   ########################################################################
 
-  def save_ahf_halos_add( self, snum, metafile_dir, radii_mass_fractions=None ):
+  def save_ahf_halos_add( self,
+    snum,
+    metafile_dir,
+    radii_mass_fractions = None,
+    simulation_data_dir = None,
+    galaxy_cut = None,
+    length_scale = None,
+    ):
     '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
 
     Args:
-      snum (int) : Snapshot number to load.
-      metafile_dir (str) : The directory the metafiles (snapshot_times and used_parameters) are stored in.
-      radii_mass_fractions (list of floats) : The mass fractions for the characteristic stellar radii to obtain.
+      snum (int) :
+        Snapshot number to load.
+
+      metafile_dir (str) :
+        The directory the metafiles (snapshot_times and used_parameters) are stored in.
+
+      radii_mass_fractions (list of floats, optional) :
+        The mass fractions for the characteristic stellar radii to obtain.
+
+      simulation_data_dir (str, optional) :
+        Directory containing the simulation data (used for getting the position and masses of the star particles).
+        Only necessary if finding mass-based radii.
+
+      galaxy_cut (float):
+        galaxy_cut*length_scale is the radius within which the radii will be estimated.
+        Only necessary if finding mass-based radii.
+
+      length_scale (str):
+        galaxy_cut*length_scale is the radius within which the radii will be estimated.
+        Only necessary if finding mass-based radii.
     '''
 
     print 'Saving *.AHF_halos_add for snum {}'.format( snum )
@@ -345,6 +369,15 @@ class AHFUpdater( read_ahf.AHFReader ):
     # Get characteristic radii
     if radii_mass_fractions is not None:
       mass_radii = self.get_mass_radii(
+        mass_fractions = radii_mass_fractions,
+        simulation_data_dir = simulation_data_dir,
+        galaxy_cut = galaxy_cut,
+        length_scale = length_scale,
+      )
+
+      for i, mass_fraction in enumerate( radii_mass_fractions ):
+        label = 'Rmass{}'.format( mass_fraction )
+        self.ahf_halos_add[label] = mass_radii[i]
 
     # Save AHF_halos add
     save_filepath = '{}_add'.format( self.ahf_halos_path )

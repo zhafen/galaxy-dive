@@ -545,13 +545,17 @@ class GalaxyFinder( object ):
     if not hasattr( self, '_mass_inside_galaxy_cut' ):
 
       valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
-      outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc
+      outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc[np.newaxis,:]
 
       mass_tiled = np.tile( self.particle_masses, ( self.valid_halo_inds.size, 1 ) ).transpose()
 
       mass_ma = np.ma.masked_array( mass_tiled, mask=outside_radial_cut )
 
       self._mass_inside_galaxy_cut = mass_ma.sum( axis=0 )
+
+      self._mass_inside_galaxy_cut.fill_value = 0.
+
+      self._mass_inside_galaxy_cut = self._mass_inside_galaxy_cut.filled()
 
     return self._mass_inside_galaxy_cut
 
@@ -595,11 +599,16 @@ class GalaxyFinder( object ):
         mass_fraction*mass_inside_galaxy_cut is exceeded.
     '''
 
-    greater_than_mass_fraction = self.cumulative_mass_valid_halos > mass_fraction*self.mass_inside_galaxy_cut
+    mass_allowed_in_halo = mass_fraction*self.mass_inside_galaxy_cut[np.newaxis,:]
+    greater_than_mass_fraction = self.cumulative_mass_valid_halos > mass_allowed_in_halo
 
     dist_ma = np.ma.masked_array( self.dist_to_all_valid_halos, mask=greater_than_mass_fraction )
 
+    # Fill values in where there's insufficient stellar mass inside that halo, or where we can't resolve the radii.
+    # This should be unnecessary if requiring a minimum amount of stellar mass, but it doesn't hurt.
     mass_radius_valid_inds = dist_ma.max( axis=0 )
+    mass_radius_valid_inds.fill_value = np.nan
+    mass_radius_valid_inds = mass_radius_valid_inds.filled()
 
     # Now get the mass radius for the full thing.
     mass_radius = np.empty( self.ahf_halos_length_scale_pkpc.shape )

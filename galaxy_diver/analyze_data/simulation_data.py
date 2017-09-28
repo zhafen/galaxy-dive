@@ -103,7 +103,7 @@ class SimulationData( generic_data.GenericData ):
           self.ahf_data_dir = self.data_dir
 
         elif attr == 'ahf_index':
-          warnings.warn( "AHF index not specified. Will be unable to use halo finding data." )
+          continue
 
         else:
           raise Exception( '{} not specified'.format( attr ) )
