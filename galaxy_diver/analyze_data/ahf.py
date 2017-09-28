@@ -126,25 +126,43 @@ class AHFUpdater( read_ahf.AHFReader ):
 
   def get_mass_radii( self,
     mass_fractions,
-    index,
     simulation_data_dir,
     galaxy_cut,
     length_scale,
     ):
+    '''Get radii that enclose a fraction (mass_fractions[i]) of a halo's stellar mass.
+
+    Args:
+      mass_fractions (list of floats) :
+        Relevant mass fractions.
+
+      simulation_data_dir (str) :
+        Directory containing the raw particle data.
+
+      galaxy_cut (float) :
+        galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.
+
+      length_scale (str) :
+        galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.
+
+    Returns:
+      mass_radii (list of np.ndarrays) :
+        If M_sum_j = all mass inside galaxy_cut*length_scale for halo j, then mass_radii[i][j] is the radius that
+        contains a fraction mass_fractions[i] of M_sum_j.
+    '''
+        
 
     # Load the simulation data
     s_data = particle_data.ParticleData(
       simulation_data_dir,
       self.ahf_halos_snum,
       4,
-      ahf_data_dir = self.sdir,
-      ahf_index = index,
     )
 
     # Find the mass radii
     galaxy_finder_kwargs = {
-      'particle_positions' : s_data.get_data( 'P' ).transpose(),
-      'particle_masses' : s_data.get_data( 'M' ),
+      'particle_positions' : s_data.data['P'].transpose(),
+      'particle_masses' : s_data.data['M'],
       'redshift' : s_data.redshift,
       'hubble' : s_data.data_attrs['hubble'],
       'galaxy_cut' : galaxy_cut,
@@ -303,12 +321,13 @@ class AHFUpdater( read_ahf.AHFReader ):
 
   ########################################################################
 
-  def save_ahf_halos_add( self, snum, metafile_dir ):
+  def save_ahf_halos_add( self, snum, metafile_dir, radii_mass_fractions=None ):
     '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
 
     Args:
-      snum (int): Snapshot number to load.
-      metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.
+      snum (int) : Snapshot number to load.
+      metafile_dir (str) : The directory the metafiles (snapshot_times and used_parameters) are stored in.
+      radii_mass_fractions (list of floats) : The mass fractions for the characteristic stellar radii to obtain.
     '''
 
     print 'Saving *.AHF_halos_add for snum {}'.format( snum )
@@ -322,6 +341,10 @@ class AHFUpdater( read_ahf.AHFReader ):
 
     # Get the analytic concentration
     self.ahf_halos_add['cAnalytic'] = self.get_analytic_concentration( metafile_dir, type_of_halo_id='ahf_halos' )
+
+    # Get characteristic radii
+    if radii_mass_fractions is not None:
+      mass_radii = self.get_mass_radii(
 
     # Save AHF_halos add
     save_filepath = '{}_add'.format( self.ahf_halos_path )

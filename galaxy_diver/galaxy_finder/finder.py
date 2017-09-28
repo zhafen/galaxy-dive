@@ -599,7 +599,14 @@ class GalaxyFinder( object ):
 
     dist_ma = np.ma.masked_array( self.dist_to_all_valid_halos, mask=greater_than_mass_fraction )
 
-    return dist_ma.max( axis=0 )
+    mass_radius_valid_inds = dist_ma.max( axis=0 )
+
+    # Now get the mass radius for the full thing.
+    mass_radius = np.empty( self.ahf_halos_length_scale_pkpc.shape )
+    mass_radius.fill( np.nan )
+    mass_radius[self.valid_halo_inds] = mass_radius_valid_inds
+
+    return mass_radius
 
 
 

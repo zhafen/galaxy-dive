@@ -910,6 +910,8 @@ class TestFindMassRadii( unittest.TestCase ):
   def test_get_mass_radius( self ):
 
     # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 0., 0., 0. ]) # Values shouldn't matter here
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, ])
     self.galaxy_finder._mass_inside_galaxy_cut = np.array([ 10., 19, ])
     self.galaxy_finder._dist_to_all_valid_halos = np.array([
       [ 0., 500., ],
@@ -924,7 +926,7 @@ class TestFindMassRadii( unittest.TestCase ):
       [ 10., 4., ],
     ]),
 
-    expected = np.array( [ 50., 450., ] )
+    expected = np.array( [ 50., 450., np.nan ] )
     actual = self.galaxy_finder.get_mass_radius( 0.5 )
 
     npt.assert_allclose( expected, actual )
