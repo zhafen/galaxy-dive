@@ -17,7 +17,7 @@ import pytest
 import unittest
 
 import galaxy_diver.read_data.ahf as read_ahf
-import galaxy_diver.galaxy_finder.galaxy_finder as general_galaxy_finder
+import galaxy_diver.galaxy_finder.finder as general_galaxy_finder
 
 ########################################################################
 # Useful global test variables

@@ -32,9 +32,9 @@ class GalaxyFinder( object ):
     hubble,
     galaxy_cut,
     length_scale,
-    minimum_criteria,
-    minimum_value,
     particle_masses = None,
+    minimum_criteria = 'n_star',
+    minimum_value = 10,
     ids_to_return = None,
     ahf_reader = None,
     ahf_data_dir = None,
@@ -64,6 +64,9 @@ class GalaxyFinder( object ):
       length_scale (str) :
         Anything within galaxy_cut*length_scale is counted as being inside the galaxy.
 
+      particle_masses (np.ndarray, optional) :
+        Masses of particles.
+
       minimum_criteria (str) :
         Options...
         'n_star' -- halos must contain a minimum number of stars to count as containing a galaxy.
@@ -72,9 +75,6 @@ class GalaxyFinder( object ):
       minimum_value (int or float) :
         The minimum amount of something (specified in minimum criteria)
         in order for a galaxy to count as hosting a halo.
-
-      particle_masses (np.ndarray, optional) :
-        Masses of particles.
 
       ids_to_return (list of strs, optional) :
         The types of id you want to get out.
