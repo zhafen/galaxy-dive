@@ -237,7 +237,10 @@ class TestAHFUpdater( unittest.TestCase ):
     self.ahf_updater.get_mtree_halos( tag='custom' )
     mtree_halo = self.ahf_updater.mtree_halos[0]
     
-    expected = self.ahf_updater.ahf_halos['cAnalytic'][0]
+    del self.ahf_updater.ahf_halos
+    self.ahf_updater.get_halos( 600 )
+    self.ahf_updater.get_halos_add( 600 )
+    expected = np.array( [ self.ahf_updater.ahf_halos['cAnalytic'][0], ] )
     actual = mtree_halo['cAnalytic']
     npt.assert_allclose( expected, actual )
 
@@ -381,8 +384,6 @@ class TestMassRadii( unittest.TestCase ):
     # Make sure the columns exist
     assert 'Rmass0.5' in self.ahf_updater.ahf_halos.columns
     assert 'Rmass0.99' in self.ahf_updater.ahf_halos.columns
-
-    npt.assert_allclose( self.ahf_updater.ahf_halos['cAnalytic'][0], 13.753927 )
 
 
 
