@@ -15,6 +15,10 @@ import string
 import galaxy_diver.read_data.metafile as read_metafile
 
 ########################################################################
+
+default = object()
+
+########################################################################
 ########################################################################
 
 class AHFReader( object ):
@@ -35,11 +39,12 @@ class AHFReader( object ):
   # Load Data
   ########################################################################
 
-  def get_mtree_halos( self, index=None, tag=None ):
+  def get_mtree_halos( self, index=None, tag=None, adjust_default_labels=default, ):
     '''Get halo files (e.g. halo_00000.dat) in a dictionary of pandas DataFrames.
 
     Args:
-      index (str or int) : What type of index to use. Defaults to None, which raises an exception. You *must* choose
+      index (str or int) :
+        What type of index to use. Defaults to None, which raises an exception. You *must* choose
         an index, to avoid easy mistakes. Options are...
         'snum' : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!
                  Identical to passing the integer 600. (See below.)
@@ -47,14 +52,34 @@ class AHFReader( object ):
         int : If an integer, then this integer should be the final snapshot number for the simulation.
               In this case, indexes by snapshot number, starting at the final snapshot number and counting down.
               Only viable with snapshot steps of 1!!
-      tag (str) : Additional identifying tag for the files, e.g. 'smooth', means this function will look for
+
+      tag (str) :
+        Additional identifying tag for the files, e.g. 'smooth', means this function will look for
         'halo_00000_smooth.dat', etc.
 
+      adjust_default_label (bool) :
+        Whether or not to adjust the column headings, etc. Defaults to True if tag is None.
+
     Modifies:
-      self.mtree_halos (dict of pd.DataFrames): DataFrames containing the requested data. The key for a given dataframe
+      self.mtree_halos (dict of pd.DataFrames) :
+        DataFrames containing the requested data. The key for a given dataframe
         is that dataframe's Merger Tree Halo ID
-      self.index (str): The users value for the index.
+
+      self.mtree_halo_filepaths (dict of strs) :
+        What files the data was loaded from.
+
+      self.index (str) :
+        The users value for the index.
+
+      self.tag (str) :
+        What tag was used for the files.
     '''
+
+    if adjust_default_labels is default:
+      if tag is None:
+        adjust_default_labels = True
+      else:
+        adjust_default_labels = False
 
     def get_halo_filepaths( unexpanded_filename ):
       '''Function for getting a list of filepaths'''
@@ -93,7 +118,7 @@ class AHFReader( object ):
       mtree_halo = pd.read_csv( halo_filepath, sep='\t', )
 
       # Extra tweaking to read the default AHF file format
-      if tag is None:
+      if adjust_default_labels:
         # Delete a column that shows up as a result of formatting
         del mtree_halo[ 'Unnamed: 93' ]
 

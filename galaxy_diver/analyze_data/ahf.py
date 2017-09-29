@@ -218,6 +218,44 @@ class AHFUpdater( read_ahf.AHFReader ):
       mtree_halo['Mvir'] = np.maximum.accumulate( mtree_halo['Mvir'][::-1] )[::-1]
 
   ########################################################################
+
+  def include_ahf_halos_to_mtree_halos( self ):
+
+    for mtree_id, mtree_halo in self.mtree_halos.items():
+
+      halo_ids = mtree_halo['ID'].values
+      snums = mtree_halo.index
+
+      ahf_frames = []
+      for snum, halo_id in zip( snums, halo_ids, ):
+
+        print( "Getting data for snapshot {}".format( snum ) )
+
+        self.get_halos( snum )
+        self.get_halos_add( snum )
+
+        # Get the columns we want to add on.
+        halofile_columns = set( self.ahf_halos.columns )
+        mtree_columns = set( mtree_halo.columns )
+        columns_to_add = list( halofile_columns - mtree_columns )
+        columns_to_add.sort()
+
+        # Now get the values to add
+        full_ahf_row = self.ahf_halos.loc[halo_id:halo_id] 
+        ahf_row = full_ahf_row[columns_to_add]
+
+        ahf_frames.append( ahf_row )
+
+      custom_mtree_halo = pd.concat( ahf_frames )
+
+      # Add in the snapshots, and use them as the index
+      custom_mtree_halo['snum'] = snums
+      custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
+
+      # Now merge onto the mtree_halo DataFram
+      self.mtree_halos[mtree_id] = pd.concat( [ mtree_halo, custom_mtree_halo, ], axis=1 )
+
+  ########################################################################
   # Save Data
   ########################################################################
 

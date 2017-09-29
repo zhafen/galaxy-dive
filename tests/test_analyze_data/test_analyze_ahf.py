@@ -80,6 +80,28 @@ class TestAHFUpdater( unittest.TestCase ):
 
   ########################################################################
 
+  def test_include_ahf_halos_to_mtree_halos( self ):
+
+    # Load the mtree halos data
+    self.ahf_updater.get_mtree_halos( 'snum', 'sparse', True )
+
+    # Function itself.
+    self.ahf_updater.include_ahf_halos_to_mtree_halos()
+
+    # Test for snapshot 600
+    snum = 600
+    del self.ahf_updater.ahf_halos
+    self.ahf_updater.get_halos( snum )
+    self.ahf_updater.get_halos_add( snum )
+    for halo_id in self.ahf_updater.mtree_halos.keys():
+      test_keys = [ 'Rvir', 'cAnalytic', 'Rmass0.5', ]
+      for test_key in test_keys:
+        expected = self.ahf_updater.ahf_halos[test_key][halo_id]
+        actual = self.ahf_updater.mtree_halos[halo_id][test_key][snum]
+        npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_get_accurate_redshift( self ):
 
     expected = 0.00015930
@@ -371,7 +393,7 @@ class TestMassRadii( unittest.TestCase ):
   @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
   def test_save_ahf_halos_add_including_masses( self, mock_get_analytic_concentration ):
 
-    mock_get_analytic_concentration.side_effect = [ np.zeros( 9 ), ]
+    mock_get_analytic_concentration.side_effect = [ np.arange( 9 ), ]
 
     # Save halos_add
     sim_data_dir = os.path.join( data_sdir, 'output' )
