@@ -16,7 +16,45 @@ import galaxy_diver.galaxy_finder.finder as galaxy_finder
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.read_data.metafile as read_metafile
 
+import generic_data
 import particle_data
+
+########################################################################
+########################################################################
+
+class AHFData( generic_data.GenericData ):
+
+  def __init__( self, ahf_data_dir ):
+    
+    self.ahf_reader = read_ahf.AHFReader( ahf_data_dir )
+
+    key_parser = AHFKeyParser()
+
+    super( AHFData, self ).__init__( key_parser=key_parser )
+
+  ########################################################################
+  # Data Retrieval
+  ########################################################################
+
+  def get_data( self, data_key, snum, sl=None ):
+
+    self.ahf_reader.get_halos( snum )
+    self.ahf_reader.get_halos_add( snum )
+  
+    return self.ahf_reader.ahf_halos[data_key]
+
+  ########################################################################
+
+  def get_masked_data( self, *args, **kwargs ):
+
+    return super( AHFData, self ).get_masked_data( mask_multidim_data=False, *args, **kwargs )
+
+########################################################################
+########################################################################
+
+class AHFKeyParser( generic_data.DataKeyParser ):
+
+  pass
 
 ########################################################################
 ########################################################################
@@ -220,8 +258,19 @@ class AHFUpdater( read_ahf.AHFReader ):
   ########################################################################
 
   def include_ahf_halos_to_mtree_halos( self ):
+    '''While most of the halofile data are contained in *.AHF_halos files, some quantities are stored in
+    *.AHF_halos files. These are usually computed manually, external to what's inherent in AHF. This routine adds
+    on the the information from these files to the loaded merger tree data (which don't usually include them, because
+    they're not inherent to AHF.
+
+    Modifies:
+      self.mtree_halos (dict of pd.DataFrames) :
+        Adds additional columns contained in *.AHF_halos_add files.
+    '''
 
     for mtree_id, mtree_halo in self.mtree_halos.items():
+
+      print( "Looking at merger tree ID {}".format( mtree_id ) )
 
       halo_ids = mtree_halo['ID'].values
       snums = mtree_halo.index
@@ -248,9 +297,14 @@ class AHFUpdater( read_ahf.AHFReader ):
 
       custom_mtree_halo = pd.concat( ahf_frames )
 
-      # Add in the snapshots, and use them as the index
-      custom_mtree_halo['snum'] = snums
-      custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
+      # DEBUG
+      try:
+        # Add in the snapshots, and use them as the index
+        custom_mtree_halo['snum'] = snums
+        custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
+      except ValueError:
+        #DEBUG
+        import pdb; pdb.set_trace()
 
       # Now merge onto the mtree_halo DataFram
       self.mtree_halos[mtree_id] = pd.concat( [ mtree_halo, custom_mtree_halo, ], axis=1 )
@@ -281,7 +335,12 @@ class AHFUpdater( read_ahf.AHFReader ):
 
   ########################################################################
 
-  def save_smooth_mtree_halos( self, metafile_dir, index=None, include_concentration=True ):
+  def save_smooth_mtree_halos( self,
+    metafile_dir,
+    index = None,
+    include_ahf_halos_add = True,
+    include_concentration = False,
+    ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
     Args:
@@ -299,6 +358,10 @@ class AHFUpdater( read_ahf.AHFReader ):
     
     # Load the data
     self.get_mtree_halos( index=index )
+
+    # Include data stored in *AHF_halos_add files.
+    if include_ahf_halos_add:
+      self.include_ahf_halos_to_mtree_halos()
 
     # Smooth the halos
     self.smooth_mtree_halos( metafile_dir )

@@ -37,6 +37,8 @@ class GenericData( object ):
     '''Initialize.
 
     Args:
+      key_parser (object) : KeyParser instance to use to interpret data keys.
+      data_masker (object) : DataMasker instance to use to filter and mask data.
       verbose (bool) : Print out additional information.
       z_sun (float) : Used mass fraction for solar metallicity.
     '''
@@ -166,8 +168,16 @@ class GenericData( object ):
 
   ########################################################################
 
-  def get_processed_data( self, data_key, sl=None ):
-    '''Get post-processed data. (Accounting for fractions, log-space, etc.).'''
+  def get_processed_data( self, data_key, *args, **kwargs ):
+    '''Get post-processed data. (Accounting for fractions, log-space, etc.).
+
+    Args:
+      data_key (str) : What data to get.
+      *args, **kwargs : Passed to get_data()
+
+    Returns:
+      processed_data (np.ndarray) : Requested data, including formatting.
+    '''
 
     # Account for fractional data keys
     data_key, fraction_flag = self.key_parser.is_fraction_key( data_key )
@@ -176,7 +186,7 @@ class GenericData( object ):
     data_key, log_flag = self.key_parser.is_log_key( data_key )
 
     # Get the data and make a copy to avoid altering
-    data_original = self.get_data( data_key, sl=sl )
+    data_original = self.get_data( data_key, *args, **kwargs )
     data = copy.deepcopy( data_original )
 
     # Actually calculate the fractional data
@@ -467,7 +477,8 @@ class DataMasker( object ):
     apply_slice_to_mask = True,
     fix_invalid = False,
     compress = True,
-    ):
+    mask_multidim_data = True,
+    *args, **kwargs ):
     '''Get all the data that doesn't have some sort of mask applied to it. Use the processed data.
 
     Args:
@@ -477,12 +488,14 @@ class DataMasker( object ):
       apply_slice_to_mask (bool) : Whether or not to apply the same slice you applied to the data to the mask.
       fix_invalid (bool) : Whether or not to also mask invalid data.
       compress (bool) : Whether or not to return compressed data.
+      mask_multidim_data (bool) : Whether or not to change the mask to fit multidimensional data.
+      *args, **kwargs : Passed to get_proceesed_data.
 
     Returns:
       data_ma (np.array) : Compressed masked data. Because it's compressed it may not have the same shape as the
         original data.
     '''
-    data = self.data_object.get_processed_data( data_key, sl=sl )
+    data = self.data_object.get_processed_data( data_key, sl=sl, *args, **kwargs )
 
     # Get the appropriate mask
     if isinstance( mask, np.ndarray ):
@@ -509,10 +522,11 @@ class DataMasker( object ):
       array_to_ma_array_fn = np.ma.array
 
     # Test for if the data fits the mask, or if it's multi-dimensional
-    if len( data.shape ) > len( self.data_object.base_data_shape ):
-      data_ma = [ array_to_ma_array_fn( data_part, mask=used_mask ) for data_part in data ]
-      data_ma = [ data_ma_part.compressed() for data_ma_part in data_ma ]
-      data_ma = np.array( data_ma )
+    if mask_multidim_data:
+      if len( data.shape ) > len( self.data_object.base_data_shape ):
+        data_ma = [ array_to_ma_array_fn( data_part, mask=used_mask ) for data_part in data ]
+        data_ma = [ data_ma_part.compressed() for data_ma_part in data_ma ]
+        data_ma = np.array( data_ma )
 
     else:
       data_ma = array_to_ma_array_fn( data, mask=used_mask )

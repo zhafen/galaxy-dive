@@ -21,6 +21,7 @@ import plotting as gen_plot
 import pu_colormaps as pu_cm
 
 import galaxy_diver.read_data.ahf as read_ahf
+import galaxy_diver.plot_data.generic_plotter as generic_plotter
 
 ########################################################################
 
@@ -30,15 +31,7 @@ default = object()
 ########################################################################
 ########################################################################
 
-class AHFPlotter( object ):
-  
-  def __init__( self, ahf_reader ):
-    '''
-    Args:
-      ahf_reader (read_ahf.AHFReader) : Data reader.
-    '''
-
-    self.ahf_reader = ahf_reader
+class AHFPlotter( generic_plotter.GenericPlotter ):
 
   ########################################################################
 

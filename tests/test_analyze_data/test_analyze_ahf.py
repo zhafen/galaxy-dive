@@ -262,7 +262,7 @@ class TestAHFUpdater( unittest.TestCase ):
     del self.ahf_updater.ahf_halos
     self.ahf_updater.get_halos( 600 )
     self.ahf_updater.get_halos_add( 600 )
-    expected = np.array( [ self.ahf_updater.ahf_halos['cAnalytic'][0], ] )
+    expected = np.array( [ self.ahf_updater.ahf_halos['cAnalytic'][3], ] )
     actual = mtree_halo['cAnalytic']
     npt.assert_allclose( expected, actual )
 

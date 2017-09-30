@@ -191,6 +191,9 @@ class AHFReader( object ):
     # Save the snapshot number of the ahf halos file.
     self.ahf_halos_snum = snum
 
+    # Note that we haven't added the additional halos data yet.
+    self.ahf_halos_added = False
+
   ########################################################################
 
   def get_halos_add( self, snum ):
@@ -203,6 +206,9 @@ class AHFReader( object ):
       self.ahf_halos_add (pd.DataFrame): Dataframe containing the requested data.
     '''
 
+    if self.ahf_halos_added:
+      return
+
     # Load the data
     self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos_add' )
     ahf_halos_add = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
@@ -213,6 +219,8 @@ class AHFReader( object ):
       self.get_halos( snum )
 
     self.ahf_halos = pd.concat( [ self.ahf_halos, ahf_halos_add ], axis=1 )
+
+    self.ahf_halos_added = True
 
   ########################################################################
 

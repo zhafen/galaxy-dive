@@ -17,7 +17,6 @@ import matplotlib.cm as cm
 import matplotlib.gridspec as gridspec
 import matplotlib.patheffects as path_effects
 
-import galaxy_diver.plot_data.ahf as plot_ahf
 import galaxy_diver.utils.mp_utils as mp_utils
 import galaxy_diver.utils.utilities as utilities
 
@@ -53,6 +52,7 @@ class GenericPlotter( object ):
     ax = default,
     fix_invalid = False,
     bins = 32,
+    normed = True,
     x_range = default,
     y_range = default,
     x_label = default,
@@ -107,7 +107,8 @@ class GenericPlotter( object ):
     # Make sure we have all the data in the histogram
     assert data.size == hist.sum()
 
-    hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
+    if normed:
+      hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
 
     if cdf:
       hist = np.cumsum( hist )*(edges[1] - edges[0])
@@ -167,6 +168,8 @@ class GenericPlotter( object ):
     label_fontsize = 24,
     tick_param_args = default,
     out_dir = None,
+    fix_invalid = True,
+    line_slope = default,
     *args, **kwargs ):
     '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
     Args:
@@ -192,6 +195,8 @@ class GenericPlotter( object ):
       label_fontsize (int) : Fontsize for the labels.
       tick_param_args (args) : Arguments to pass to ax.tick_params. By default, don't change inherent defaults.
       out_dir (str) : If given, where to save the file.
+      fix_invalid (bool) : Fix invalid values.
+      line_slope (float) : If given, draw a line with the given slope.
     '''
 
     if isinstance( slices, int ):
@@ -202,6 +207,15 @@ class GenericPlotter( object ):
     # Get data
     x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **kwargs )
     y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **kwargs )
+
+    # Fix NaNs
+    if fix_invalid:
+      x_mask = np.ma.fix_invalid( x_data ).mask
+      y_mask = np.ma.fix_invalid( y_data ).mask
+      mask = x_mask or y_mask
+
+      x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
+      y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
 
     if weight_key is default:
       weights = None
@@ -243,18 +257,23 @@ class GenericPlotter( object ):
       cbar.ax.tick_params( labelsize=20 )
 
     # Halo Plot
-    if plot_halos:
-      ahf_plotter = plot_ahf.AHFPlotter( self.data_object.ptracks.ahf_reader )
-      snum = self.data_object.ptracks.ahf_reader.mtree_halos[0].index[slices]
-      ahf_plotter.plot_halos_snapshot(
-        snum,
-        ax,
-        color = '#4daf4a',
-        linewidth = 3,
-        hubble_param = self.data_object.ptracks.data_attrs['hubble'],
-        radius_fraction = self.data_object.galids.parameters['galaxy_cut']
-      )
-      assert self.data_object.galids.parameters['length_scale'] == 'r_scale'
+    if line_slope is not default:
+      line_x = np.array( [ x_data.min(), x_data.max() ] )
+      line_y = line_slope*line_x
+      ax.plot( line_x, line_y, linewidth=3, linestyle='dashed', )
+
+    #if plot_halos:
+    #  ahf_plotter = plot_ahf.AHFPlotter( self.data_object.ptracks.ahf_reader )
+    #  snum = self.data_object.ptracks.ahf_reader.mtree_halos[0].index[slices]
+    #  ahf_plotter.plot_halos_snapshot(
+    #    snum,
+    #    ax,
+    #    color = '#4daf4a',
+    #    linewidth = 3,
+    #    hubble_param = self.data_object.ptracks.data_attrs['hubble'],
+    #    radius_fraction = self.data_object.galids.parameters['galaxy_cut']
+    #  )
+    #  assert self.data_object.galids.parameters['length_scale'] == 'r_scale'
 
     # Plot label
     if plot_label is default:
