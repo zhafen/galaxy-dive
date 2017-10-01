@@ -483,7 +483,7 @@ class AHFUpdater( read_ahf.AHFReader ):
       )
 
       for i, mass_fraction in enumerate( radii_mass_fractions ):
-        label = 'Rmass{}'.format( mass_fraction )
+        label = 'Rstar{}'.format( mass_fraction )
         self.ahf_halos_add[label] = mass_radii[i]
 
     # Save AHF_halos add

@@ -94,7 +94,7 @@ class TestAHFUpdater( unittest.TestCase ):
     self.ahf_updater.get_halos( snum )
     self.ahf_updater.get_halos_add( snum )
     for halo_id in self.ahf_updater.mtree_halos.keys():
-      test_keys = [ 'Rvir', 'cAnalytic', 'Rmass0.5', ]
+      test_keys = [ 'Rvir', 'cAnalytic', 'Rstar0.5', ]
       for test_key in test_keys:
         expected = self.ahf_updater.ahf_halos[test_key][halo_id]
         actual = self.ahf_updater.mtree_halos[halo_id][test_key][snum]
@@ -164,7 +164,8 @@ class TestAHFUpdater( unittest.TestCase ):
   def test_save_smooth_mtree_halos( self ):
 
     # Get the results
-    self.ahf_updater.save_smooth_mtree_halos( data_sdir, 'snum', )
+    self.ahf_updater.save_smooth_mtree_halos( data_sdir, 'snum', include_ahf_halos_add=False,
+      include_concentration=True )
 
     # Load the saved files
     self.ahf_updater.get_mtree_halos( 'snum', 'smooth' )
@@ -404,8 +405,8 @@ class TestMassRadii( unittest.TestCase ):
     self.ahf_updater.get_halos_add( 600 )
 
     # Make sure the columns exist
-    assert 'Rmass0.5' in self.ahf_updater.ahf_halos.columns
-    assert 'Rmass0.99' in self.ahf_updater.ahf_halos.columns
+    assert 'Rstar0.5' in self.ahf_updater.ahf_halos.columns
+    assert 'Rstar0.99' in self.ahf_updater.ahf_halos.columns
 
 
 
