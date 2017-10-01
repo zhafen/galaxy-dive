@@ -6,6 +6,7 @@
 @status: Development
 '''
 
+import copy
 import glob
 import numpy as np
 import os
@@ -293,18 +294,25 @@ class AHFUpdater( read_ahf.AHFReader ):
         full_ahf_row = self.ahf_halos.loc[halo_id:halo_id] 
         ahf_row = full_ahf_row[columns_to_add]
 
+        # Check for edge case, where there isn't an AHF row with specified halo number
+        if ahf_row.size == 0:
+          
+          # Borrow a previous row for formatting
+          ahf_row = copy.copy( ahf_frames[-1] )
+
+          # Drop the previous row
+          ahf_row = ahf_row.drop( ahf_row.index[0] )
+
+          # Turn all the values to np.nan, so we know that they're invalid, but the format still works.
+          [ ahf_row.set_value( halo_id, column_name, np.nan ) for column_name in columns_to_add ]
+
         ahf_frames.append( ahf_row )
 
       custom_mtree_halo = pd.concat( ahf_frames )
 
-      # DEBUG
-      try:
-        # Add in the snapshots, and use them as the index
-        custom_mtree_halo['snum'] = snums
-        custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
-      except ValueError:
-        #DEBUG
-        import pdb; pdb.set_trace()
+      # Add in the snapshots, and use them as the index
+      custom_mtree_halo['snum'] = snums
+      custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
 
       # Now merge onto the mtree_halo DataFram
       self.mtree_halos[mtree_id] = pd.concat( [ mtree_halo, custom_mtree_halo, ], axis=1 )

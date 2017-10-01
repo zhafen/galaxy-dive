@@ -100,6 +100,15 @@ class TestAHFUpdater( unittest.TestCase ):
         actual = self.ahf_updater.mtree_halos[halo_id][test_key][snum]
         npt.assert_allclose( expected, actual )
 
+    # Test for snapshot 599
+    snum = 599
+    for halo_id in self.ahf_updater.mtree_halos.keys():
+      test_keys = [ 'Rstar0.99', 'cAnalytic', 'Rstar0.5', ]
+      for test_key in test_keys:
+        expected = np.nan
+        actual = self.ahf_updater.mtree_halos[halo_id][test_key][snum]
+        npt.assert_allclose( expected, actual )
+
   ########################################################################
 
   def test_get_accurate_redshift( self ):
