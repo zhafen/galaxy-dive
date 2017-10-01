@@ -946,7 +946,8 @@ class TestFindMassRadii( unittest.TestCase ):
       [ 10., 4., ],
     ]),
 
-    expected = np.array( [ 50., 450., np.nan ] )
+    # Expected result, in comoving coords.
+    expected = np.array( [ 50., 450., np.nan ] )*( 1. + 0.16946003 )*0.702
     actual = self.galaxy_finder.get_mass_radius( 0.5 )
 
     npt.assert_allclose( expected, actual )

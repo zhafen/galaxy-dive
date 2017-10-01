@@ -615,6 +615,9 @@ class GalaxyFinder( object ):
     mass_radius.fill( np.nan )
     mass_radius[self.valid_halo_inds] = mass_radius_valid_inds
 
+    # Convert back to comoving kpc/h
+    mass_radius *= ( 1. + self.redshift )*self.hubble
+
     return mass_radius
 
 
