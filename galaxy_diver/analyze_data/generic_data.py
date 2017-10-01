@@ -528,6 +528,12 @@ class DataMasker( object ):
         data_ma = [ data_ma_part.compressed() for data_ma_part in data_ma ]
         data_ma = np.array( data_ma )
 
+      else:
+        data_ma = array_to_ma_array_fn( data, mask=used_mask )
+
+        if compress:
+          data_ma = data_ma.compressed()
+
     else:
       data_ma = array_to_ma_array_fn( data, mask=used_mask )
 
