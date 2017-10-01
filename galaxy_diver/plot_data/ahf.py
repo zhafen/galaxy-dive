@@ -137,7 +137,7 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
       fig = plt.figure( figsize=(10, 6), facecolor='white' )
       ax = plt.gca()
 
-    plotted_mtree_halo = self.ahf_reader.mtree_halos[halo_id]
+    plotted_mtree_halo = self.data_object.ahf_reader.mtree_halos[halo_id]
 
     x_data = np.log10( 1. + plotted_mtree_halo['redshift'] )
 
@@ -171,9 +171,14 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
 
     ax.plot( x_data, y_data, color=color, linewidth=3, label=label )
 
+    tick_redshifts = np.array( [ 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, ] )
+    x_tick_values = np.log10( 1. + tick_redshifts )
+    plt.xticks( x_tick_values, tick_redshifts )
+
     if y_label is default:
       y_label = y_key
-    ax.set_xlabel( r'$\log(1 + z)$', fontsize=22, )
+
+    ax.set_xlabel( r'z', fontsize=22, )
     ax.set_ylabel( y_label, fontsize=22, )
 
 
