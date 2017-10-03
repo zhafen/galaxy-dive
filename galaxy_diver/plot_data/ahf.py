@@ -125,11 +125,13 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
     conversion_factor = default,
     convert_to_physical = False,
     convert_to_comoving = False,
+    y_data_div_key = default,
     ax = default,
     halo_id = 0,
     color = 'k',
+    linestyle = '-',
     y_label = default,
-    label = None,
+    label = default,
     plot_change_in_halo_id = False,
     ):
 
@@ -143,9 +145,12 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
 
     if y_data is default:
       if y_key == 'r_scale':
-        y_data = copy.copy( plotted_mtree_halo['Rvir']/plotted_mtree_halo['cAnalytic'] )
+        y_data = plotted_mtree_halo['Rvir']/plotted_mtree_halo['cAnalytic']
       else:
-        y_data = copy.copy( plotted_mtree_halo[y_key] )
+        y_data = plotted_mtree_halo[y_key]
+
+    # Make a copy of the y-data so we don't alter it.
+    y_data = copy.copy( y_data )
 
     if conversion_factor is not default:
       y_data *= conversion_factor
@@ -159,6 +164,9 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
     if convert_to_comoving:
       y_data *= ( 1. + plotted_mtree_halo['redshift'] )
 
+    if y_data_div_key is not default:
+      y_data /= plotted_mtree_halo[y_data_div_key]
+
     # Plot vertical lines when there's a change
     if plot_change_in_halo_id:
       # Make a blended transformation
@@ -169,7 +177,10 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
             ax.plot( [plotted_mtree_halo.index[i], plotted_mtree_halo.index[i] ], [0., 1.],
                         transform=trans, color='k', linewidth=1, linestyle='--')
 
-    ax.plot( x_data, y_data, color=color, linewidth=3, label=label )
+    if label is default:
+      label = self.label
+
+    ax.plot( x_data, y_data, color=color, linewidth=3, label=label, linestyle=linestyle )
 
     tick_redshifts = np.array( [ 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, ] )
     x_tick_values = np.log10( 1. + tick_redshifts )
