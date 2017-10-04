@@ -125,6 +125,7 @@ class GalaxyFinder( object ):
     if not hasattr( self, '_valid_halo_inds' ):
 
       self.ahf_reader.get_halos( self.snum )
+      self.ahf_reader.get_halos_add( self.snum )
 
       # Apply a cut on containing a minimum amount of stars
       min_criteria = self.ahf_reader.ahf_halos[ self.minimum_criteria ]
@@ -148,6 +149,7 @@ class GalaxyFinder( object ):
     if not hasattr( self, '_dist_to_all_valid_halos' ):
 
       self.ahf_reader.get_halos( self.snum )
+      self.ahf_reader.get_halos_add( self.snum )
         
       # Get the halo positions
       halo_pos_comov = np.array([
@@ -173,9 +175,6 @@ class GalaxyFinder( object ):
 
       # Get the relevant length scale
       if self.length_scale == 'r_scale':
-        # Get the files containing the concentration (counts on it being already calculated beforehand)
-        self.ahf_reader.get_halos_add( self.ahf_reader.ahf_halos_snum )
-
         # Get the scale radius
         r_vir = self.ahf_reader.ahf_halos['Rvir']
         length_scale = r_vir/self.ahf_reader.ahf_halos['cAnalytic']
@@ -209,6 +208,7 @@ class GalaxyFinder( object ):
     try:
       # Load the ahf data
       self.ahf_reader.get_halos( self.snum )
+      self.ahf_reader.get_halos_add( self.snum )
 
     # Typically halo files aren't created for the first snapshot.
     # Account for this.
