@@ -173,6 +173,9 @@ class GalaxyFinder( object ):
 
     if not hasattr( self, '_ahf_halos_length_scale_pkpc' ):
 
+      self.ahf_reader.get_halos( self.snum )
+      self.ahf_reader.get_halos_add( self.snum )
+
       # Get the relevant length scale
       if self.length_scale == 'r_scale':
         # Get the scale radius

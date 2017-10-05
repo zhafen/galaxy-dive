@@ -16,6 +16,7 @@ import string
 import galaxy_diver.galaxy_finder.finder as galaxy_finder
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.read_data.metafile as read_metafile
+import galaxy_diver.utils.data_constants as data_constants
 
 import generic_data
 import particle_data
@@ -194,7 +195,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     s_data = particle_data.ParticleData(
       simulation_data_dir,
       self.ahf_halos_snum,
-      4,
+      data_constants.PTYPES['star'],
     )
 
     try:
@@ -219,6 +220,17 @@ class AHFUpdater( read_ahf.AHFReader ):
     mass_radii = [ gal_finder.get_mass_radius( mass_fraction ) for mass_fraction in mass_fractions ]
       
     return mass_radii
+
+  ########################################################################
+
+  def get_mass_in_gal( self,
+    simulation_data_dir,
+    ptype,
+    galaxy_cut,
+    length_scale,
+    ):
+
+    pass
 
   ########################################################################
   # Alter Data

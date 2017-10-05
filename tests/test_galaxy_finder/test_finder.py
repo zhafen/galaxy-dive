@@ -24,7 +24,7 @@ import galaxy_diver.galaxy_finder.finder as general_galaxy_finder
 ########################################################################
 
 gal_finder_kwargs = {
-  'length_scale' : 'R_vir',
+  'length_scale' : 'Rvir',
 
   'redshift' : 0.16946003,
   'snum' : 500,
@@ -75,7 +75,11 @@ class TestGalaxyFinder( unittest.TestCase ):
 
   ########################################################################
 
-  def test_valid_halo_inds( self ):
+  @mock.patch( 'galaxy_diver.read_data.ahf.AHFReader.get_halos_add' )
+  def test_valid_halo_inds( self, mock_get_halos_add ):
+
+    # We don't actually want get_halos_add to do anything.
+    mock_get_halos_add.side_effects = [ None, ]
 
     # Make sure we actually have a minimum
     self.galaxy_finder.minimum_value = 10
@@ -193,7 +197,7 @@ class TestGalaxyFinder( unittest.TestCase ):
     self.galaxy_finder.particle_positions = np.array([
       [ 29414.96458784,  30856.75007114,  32325.90901812], # Right in the middle of mt halo 0 at snap 500
       [ 29467.07226789,  30788.6179313 ,  32371.38749237], # Right in the middle of mt halo 9 at snap 500.
-                                                           # mt halo 9 is 0.5 R_vir_mt_0 (2 R_vir_mt_9) away from the center of mt halo 0
+                                                           # mt halo 9 is 0.5 Rvir_mt_0 (2 Rvir_mt_9) away from the center of mt halo 0
       [ 29073.22333685,  31847.72434505,  32283.53620817], # Right in the middle of mt halo 19 at snap 500.
       ])
     self.galaxy_finder.particle_positions *= 1./(1. + self.redshift)/self.hubble
@@ -333,7 +337,7 @@ class TestGalaxyFinder( unittest.TestCase ):
     self.galaxy_finder.particle_positions = np.array([
       [ 29414.96458784,  30856.75007114,  32325.90901812], # Right in the middle of mt halo 0 at snap 500
       [ 29467.07226789,  30788.6179313 ,  32371.38749237], # Right in the middle of mt halo 9 at snap 500.
-                                                           # mt halo 9 is 0.5 R_vir_mt_0 (2 R_vir_mt_9) away from the center of mt halo 0
+                                                           # mt halo 9 is 0.5 Rvir_mt_0 (2 Rvir_mt_9) away from the center of mt halo 0
       [ 29073.22333685,  31847.72434505,  32283.53620817], # Right in the middle of mt halo 19 at snap 500.
       [             0.,              0.,              0.], # The middle of nowhere.
       ])
@@ -359,7 +363,7 @@ class TestGalaxyFinder( unittest.TestCase ):
     self.galaxy_finder.particle_positions = np.array([
       [ 29414.96458784,  30856.75007114,  32325.90901812], # Right in the middle of mt halo 0 at snap 500
       [ 29467.07226789,  30788.6179313 ,  32371.38749237], # Right in the middle of mt halo 9 at snap 500.
-                                                           # mt halo 9 is 0.5 R_vir_mt_0 (2 R_vir_mt_9) away from the center of mt halo 0
+                                                           # mt halo 9 is 0.5 Rvir_mt_0 (2 Rvir_mt_9) away from the center of mt halo 0
       [ 29073.22333685,  31847.72434505,  32283.53620817], # Right in the middle of mt halo 19 at snap 500.
       [             0.,              0.,              0.], # The middle of nowhere.
       ])
@@ -653,7 +657,8 @@ class TestGalaxyFinder( unittest.TestCase ):
 
   ########################################################################
 
-  def test_find_d_other_gal_scaled_no_halos_with_sufficient_mass( self ):
+  @mock.patch( 'galaxy_diver.read_data.ahf.AHFReader.get_halos_add' )
+  def test_find_d_other_gal_scaled_no_halos_with_sufficient_mass( self, mock_get_halos_add ):
     '''This tests we can find the shortest distance to the nearest galaxy.
     '''
 
@@ -717,7 +722,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
       'halo_file_tag' : 'smooth',
       'main_mt_halo_id' : 0,
       'galaxy_cut' : 0.1,
-      'length_scale' : 'R_vir',
+      'length_scale' : 'Rvir',
 
       'ids_to_return' : [ 'halo_id', 'host_halo_id', 'gal_id', 'host_gal_id', 'mt_halo_id', 'mt_gal_id', 'd_gal', 'd_other_gal_scaled', ],
     }
@@ -772,6 +777,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
     npt.assert_allclose( expected, actual )
 
 ########################################################################
+########################################################################
 
 class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
   '''Test that we're properly applying a minimum number of stars for a halo to be counted as containing a galaxy.'''
@@ -791,7 +797,7 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
       'halo_file_tag' : 'smooth',
       'main_mt_halo_id' : 0,
       'galaxy_cut' : 0.1,
-      'length_scale' : 'R_vir',
+      'length_scale' : 'Rvir',
 
       'ids_to_return' : [ 'halo_id', 'host_halo_id', 'gal_id', 'host_gal_id', 'mt_halo_id', 'mt_gal_id', 'd_gal', 'd_other_gal_scaled', ],
     }
