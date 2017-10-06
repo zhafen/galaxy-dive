@@ -17,6 +17,7 @@ import unittest
 
 import galaxy_diver.analyze_data.ahf as analyze_ahf
 import galaxy_diver.analyze_data.particle_data as particle_data
+import galaxy_diver.galaxy_finder.finder as gal_finder
 import galaxy_diver.utils.utilities as utilities
 
 sdir = './tests/data/analysis_dir'
@@ -94,7 +95,7 @@ class TestAHFUpdater( unittest.TestCase ):
     self.ahf_updater.get_halos( snum )
     self.ahf_updater.get_halos_add( snum )
     for halo_id in self.ahf_updater.mtree_halos.keys():
-      test_keys = [ 'Rvir', 'cAnalytic', 'Rstar0.5', ]
+      test_keys = [ 'Rvir', 'cAnalytic', ]
       for test_key in test_keys:
         expected = self.ahf_updater.ahf_halos[test_key][halo_id]
         actual = self.ahf_updater.mtree_halos[halo_id][test_key][snum]
@@ -408,10 +409,11 @@ class TestMassRadii( unittest.TestCase ):
     # Save halos_add
     sim_data_dir = os.path.join( data_sdir, 'output' )
 
-    self.ahf_updater.save_ahf_halos_add( 600, data_sdir, [ 0.5, 0.99 ], sim_data_dir, 0.15, 'Rvir', )
+    self.ahf_updater.save_ahf_halos_add( 600, data_sdir, sim_data_dir, [ 0.5, 0.99 ], 0.15, 'Rvir', )
 
     # Load halos_add
-    self.ahf_updater.get_halos_add( 600 )
+    self.ahf_updater.get_halos( 600, True )
+    self.ahf_updater.get_halos_add( 600, True )
 
     # Make sure the columns exist
     assert 'Rstar0.5' in self.ahf_updater.ahf_halos.columns
@@ -420,7 +422,7 @@ class TestMassRadii( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
-class TestMassinGal( unittest.TestCase ):
+class TestMassInHalo( unittest.TestCase ):
 
   def setUp( self ):
 
@@ -431,10 +433,52 @@ class TestMassinGal( unittest.TestCase ):
 
   ########################################################################
 
+  @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
+  @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.redshift', )
+  @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
+  def test_get_mass_in_halo( self, mock_init, mock_redshift, mock_init_finder, ):
+    '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
+    Only two of the halos contain galaxies.
+    '''
+
+    mock_init.side_effect = [ None, ]
+    mock_init_finder.side_effect = [ None, ]
+
+
+    # Mock what redshift it is
+    mock_redshift.side_effect = [ 0., ]
+
+    # I mock data here. Note that I had to mock __init__ too, to prevent overwriting.
+    with patch.object( particle_data.ParticleData, 'data', new_callable=PropertyMock, create=True ) as mock_data, \
+      patch.object( particle_data.ParticleData, 'data_attrs', new_callable=PropertyMock, \
+                    create=True ) as mock_d_attrs, \
+      patch.object( gal_finder.GalaxyFinder, 'mass_inside_all_halos', new_callable=PropertyMock, \
+                    create=True ) as mock_mass_inside_all_halos:
+
+
+      # Mock simulation data.
+      mock_data.return_value = {
+        'M' : np.array( [ 1., 2., 3., 4., ] ),
+        'P' : np.random.rand( 3, 4 ),
+      }
+      mock_d_attrs.return_value = {
+        'hubble' : .702,
+      }
+    # Mock what particles are in the halos.
+      mock_mass_inside_all_halos.return_value = np.array( [ 6., 3., np.nan, ] )
+
+      expected = np.array([ 6., 3., np.nan, ])*.702
+      data_dir = os.path.join( data_sdir, 'output' )
+      actual = self.ahf_updater.get_mass_in_halo( data_dir, 'star', 1., 'Rstar0.5', )
+
+      npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
   @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
   @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
-  def test_get_mass_in_gal( self, mock_init, mock_init_finder, mock_find_containing_halos ):
+  def test_get_mass_in_halo_no_particles_ptype( self, mock_init, mock_init_finder, mock_find_containing_halos ):
     '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
     '''
 
@@ -447,7 +491,7 @@ class TestMassinGal( unittest.TestCase ):
         [ 1, 1, 0, ],
         [ 1, 1, 0, ],
         [ 1, 0, 0, ],
-        [ 0, 0, 1, ],
+        [ 0, 0, 0, ],
       ]).astype( bool ),
     ]
 
@@ -455,14 +499,11 @@ class TestMassinGal( unittest.TestCase ):
     with patch.object( particle_data.ParticleData, 'data', new_callable=PropertyMock, create=True ) as mock_data:
 
       # Mock simulation data.
-      mock_data.return_value = {
-        'M' : np.array( [ 1., 2., 3., 4., ] ),
-        'P' : np.random.rand( 3, 4 ),
-      }
+      mock_data.return_value = {}
 
-      expected = [ np.array( [np.nan, ]*9 ), ]*2
+      expected = np.array( [0., ]*9 )
       data_dir = os.path.join( data_sdir, 'output' )
-      actual = self.ahf_updater.get_mass_in_gal( data_sdir, 'star', 1., 'Rstar0.5', )
+      actual = self.ahf_updater.get_mass_in_halo( data_dir, 'star', 1., 'Rstar0.5', )
 
       npt.assert_allclose( expected, actual )
 
@@ -470,6 +511,9 @@ class TestMassinGal( unittest.TestCase ):
 
   @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
   def test_save_ahf_halos_add_including_masses( self, mock_get_analytic_concentration ):
+    '''Test that we can write-out files that contain additional information, with that information
+    including the mass inside some radius from the center of the halo.
+    '''
 
     mock_get_analytic_concentration.side_effect = [ np.arange( 9 ), ]
 
@@ -480,14 +524,24 @@ class TestMassinGal( unittest.TestCase ):
       600,
       data_sdir,
       simulation_data_dir = sim_data_dir,
-      masses_in_gal_ptypes = [ 'star', 'DM', ],
+      ptypes_for_halo_masses = [ 'star', 'DM', ],
+      galaxy_cut_for_halo_masses = 1.0,
+      length_scale_for_halo_masses = 'Rvir',
     )
 
     # Load halos_add
-    self.ahf_updater.get_halos_add( 600 )
+    self.ahf_updater.get_halos( 600, True )
+    self.ahf_updater.get_halos_add( 600, True )
 
     # Make sure the columns exist
-    assert 'Mstar(Rstar0.5)' in self.ahf_updater.ahf_halos.columns
+    assert 'Mstar(1.0Rvir)' in self.ahf_updater.ahf_halos.columns
+
+########################################################################
+########################################################################
+
+class TestCircularVelocity( unittest.TestCase):
+
+  pass
 
 
     

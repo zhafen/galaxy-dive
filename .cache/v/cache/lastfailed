@@ -1,4 +1,1 @@
-{
-  "tests/test_analyze_data/test_analyze_ahf.py::TestMassinGal::test_get_mass_in_gal": true, 
-  "tests/test_analyze_data/test_analyze_ahf.py::TestMassinGal::test_save_ahf_halos_add_including_masses": true
-}
+{}

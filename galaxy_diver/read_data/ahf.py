@@ -161,18 +161,20 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def get_halos( self, snum ):
+  def get_halos( self, snum, force_reload=False ):
     '''Get *.AHF_halos file for a particular snapshot.
 
     Args:
       snum (int): Snapshot number to load.
+      
+      force_reload (bool): Force reloading, even if there's already an ahf_halos file loaded.
 
     Modifies:
       self.ahf_halos (pd.DataFrame): Dataframe containing the requested data.
     '''
 
     if hasattr( self, 'ahf_halos' ):
-      if self.ahf_halos_snum == snum:
+      if (self.ahf_halos_snum == snum) and not force_reload:
         return
 
     # Load the data
@@ -196,22 +198,25 @@ class AHFReader( object ):
 
   ########################################################################
 
-  def get_halos_add( self, snum ):
+  def get_halos_add( self, snum, force_reload=False ):
     '''Get *.AHF_halos_add file for a particular snapshot.
 
     Args:
       snum (int): Snapshot number to load.
+
+      force_reload (bool): Force reloading, even if there's already an ahf_halos file loaded.
 
     Modifies:
       self.ahf_halos_add (pd.DataFrame): Dataframe containing the requested data.
     '''
 
     if self.ahf_halos_added:
-      return
+      if (self.ahf_halos_snum == snum) and not force_reload:
+        return
 
     # Load the data
-    self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos_add' )
-    ahf_halos_add = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
+    self.ahf_halos_add_path = self.get_filepath( snum, 'AHF_halos_add' )
+    ahf_halos_add = pd.read_csv( self.ahf_halos_add_path, sep='\t', index_col=0 )
 
     if not hasattr( self, 'ahf_halos' ) :
       self.get_halos( snum )

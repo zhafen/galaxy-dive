@@ -553,10 +553,31 @@ class GalaxyFinder( object ):
       self._mass_inside_galaxy_cut = mass_ma.sum( axis=0 )
 
       self._mass_inside_galaxy_cut.fill_value = 0.
-
       self._mass_inside_galaxy_cut = self._mass_inside_galaxy_cut.filled()
 
+      # Make sure that we don't count halos with NaN length scales as containing all particles.
+      has_bad_value = np.ma.fix_invalid( valid_radial_cut_pkpc ).mask
+      self._mass_inside_galaxy_cut = np.where( has_bad_value, np.nan, self._mass_inside_galaxy_cut, )
+
     return self._mass_inside_galaxy_cut
+
+  ########################################################################
+
+  @property
+  def mass_inside_all_halos( self ):
+    '''
+    Returns:
+      mass_inside_galaxy_cut (np.ndarray) :
+        Mass inside the galaxy_cut*length_scale for all *.AHF_halos halos.
+    '''
+  
+    if not hasattr( self, '_mass_inside_all_halos' ):
+      self._mass_inside_all_halos = np.empty( self.ahf_halos_length_scale_pkpc.shape )
+      self._mass_inside_all_halos.fill( np.nan )
+
+      self._mass_inside_all_halos[self.valid_halo_inds] = self.mass_inside_galaxy_cut
+
+    return self._mass_inside_all_halos
 
   ########################################################################
 

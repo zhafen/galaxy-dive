@@ -911,6 +911,25 @@ class TestFindMassRadii( unittest.TestCase ):
 
   ########################################################################
 
+  def test_mass_inside_all_halos( self ):
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., np.nan, ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, 4, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 0., 10., 500., np.nan, ],
+      [ 15., 5., 485., np.nan, ],
+      [ 10., 0., 490., np.nan, ],
+      [ 500., 490., 0., np.nan, ],
+    ])
+
+    expected = np.array([ 6., 3., 4., np.nan, np.nan ])
+    actual = self.galaxy_finder.mass_inside_all_halos
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_cumlulative_mass_valid_halos( self ):
 
     # Test Data

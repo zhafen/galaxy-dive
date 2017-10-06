@@ -16,6 +16,7 @@ import string
 import galaxy_diver.galaxy_finder.finder as galaxy_finder
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.read_data.metafile as read_metafile
+import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_constants as data_constants
 
 import generic_data
@@ -195,7 +196,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     s_data = particle_data.ParticleData(
       simulation_data_dir,
       self.ahf_halos_snum,
-      data_constants.PTYPES['star'],
+      ptype = data_constants.PTYPES['star'],
     )
 
     try:
@@ -223,14 +224,67 @@ class AHFUpdater( read_ahf.AHFReader ):
 
   ########################################################################
 
-  def get_mass_in_gal( self,
+  def get_mass_in_halo( self,
     simulation_data_dir,
     ptype,
     galaxy_cut,
     length_scale,
     ):
+    '''Get the mass inside galaxy_cut*length_scale for each AHF halo.
 
-    pass
+    Args:
+      simulation_data_dir (str) :
+        Directory containing the raw particle data.
+
+      ptype (str) :
+        What particle type to get the mass for.
+
+      galaxy_cut (float) :
+        galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.
+
+      length_scale (str) :
+        galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.
+
+    Returns:
+      mass_inside_all_halos (np.ndarray) :
+        mass_inside_all_halos[i] is the mass of particle type ptype inside galaxy_cut*length scale around a galaxy.
+    '''
+
+    # Load the simulation data
+    s_data = particle_data.ParticleData(
+      simulation_data_dir,
+      self.ahf_halos_snum,
+      data_constants.PTYPES[ptype],
+    )
+
+    try:
+      particle_positions = s_data.data['P'].transpose()
+    # Case where there are no star particles at this redshift.
+    except KeyError:
+      return np.array( [ 0., ]*self.ahf_halos.index.size )
+
+    # Find the mass radii
+    galaxy_finder_kwargs = {
+      'particle_positions' : particle_positions,
+      'particle_masses' : s_data.data['M']*constants.UNITMASS_IN_MSUN,
+      'snum' : self.ahf_halos_snum,
+      'redshift' : s_data.redshift,
+      'hubble' : s_data.data_attrs['hubble'],
+      'galaxy_cut' : galaxy_cut,
+      'length_scale' : length_scale,
+      'ahf_reader' : self,
+      
+      # Note that here we don't want to apply a minimum threshold, because we want the particle mass inside, regardless
+      'minimum_value' : 0,
+    }
+    gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
+
+    mass_inside_all_halos = gal_finder.mass_inside_all_halos
+    
+    # Make sure to put hubble constant back in so we have consistent units.
+    mass_inside_all_halos *= s_data.data_attrs['hubble']
+
+    return mass_inside_all_halos
 
   ########################################################################
   # Alter Data
@@ -241,11 +295,12 @@ class AHFUpdater( read_ahf.AHFReader ):
     NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.
 
     Args:
-      metafile_dir (str): The directory the snapshot_times are stored in.
+      metafile_dir (str) :
+        The directory the snapshot_times are stored in.
 
     Modifies:
-      self.mtree_halos (dict of pd.DataFrames) : Changes self.mtree_halos[halo_id]['Rvir'] and self.mtree_halos[halo_id]['Mvir']
-                                                 to be monotonically increasing.
+      self.mtree_halos (dict of pd.DataFrames) :
+        Changes self.mtree_halos[halo_id]['Rvir'] and self.mtree_halos[halo_id]['Mvir'] to be monotonically increasing.
     '''
 
     # We need to get an accurate redshift in order to smooth properly
@@ -451,10 +506,13 @@ class AHFUpdater( read_ahf.AHFReader ):
   def save_ahf_halos_add( self,
     snum,
     metafile_dir,
-    radii_mass_fractions = None,
     simulation_data_dir = None,
+    radii_mass_fractions = None,
     galaxy_cut = None,
     length_scale = None,
+    ptypes_for_halo_masses = None,
+    galaxy_cut_for_halo_masses = None,
+    length_scale_for_halo_masses = None,
     ):
     '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
 
@@ -505,6 +563,20 @@ class AHFUpdater( read_ahf.AHFReader ):
       for i, mass_fraction in enumerate( radii_mass_fractions ):
         label = 'Rstar{}'.format( mass_fraction )
         self.ahf_halos_add[label] = mass_radii[i]
+
+    if ptypes_for_halo_masses is not None:
+
+      for i, ptype in enumerate( ptypes_for_halo_masses ):
+
+        halo_masses = self.get_mass_in_halo( 
+          simulation_data_dir,
+          ptype,
+          galaxy_cut = galaxy_cut_for_halo_masses,
+          length_scale = length_scale_for_halo_masses,
+        )
+
+        label = 'M{}({}{})'.format( ptype, galaxy_cut_for_halo_masses, length_scale_for_halo_masses )
+        self.ahf_halos_add[label] = halo_masses
 
     # Save AHF_halos add
     save_filepath = '{}_add'.format( self.ahf_halos_path )
