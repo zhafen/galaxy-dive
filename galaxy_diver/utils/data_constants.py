@@ -21,3 +21,5 @@ PTYPES = {
   'lowresDM' : 2,
   'star' : 4,
 }
+
+STANDARD_PTYPES = [ 'gas', 'DM', 'lowresDM', 'star', ]

@@ -16,6 +16,7 @@ import string
 import galaxy_diver.galaxy_finder.finder as galaxy_finder
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.read_data.metafile as read_metafile
+import galaxy_diver.utils.astro as astro_utils
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_constants as data_constants
 
@@ -57,13 +58,58 @@ class AHFData( generic_data.GenericData ):
 
 class AHFKeyParser( generic_data.DataKeyParser ):
 
-  pass
+  def get_radius_key( self, multiplier, length_scale ):
+    '''Get a key for AHF data, based on a length scale and a multiple of it.
+
+      multiplier (float) :
+        multiplier*length_scale defines the radius around the center of the halo(s).
+
+      length_scale (str) :
+        multiplier*length_scale defines the radius around the center of the halo(s).
+
+    Returns:
+      radius_key (str) :
+        Combination of length_scale and multiplier.
+    '''
+
+    if np.isclose( multiplier, 1.0 ):
+      radius_key = length_scale
+    else:
+      radius_key = '{}{}'.format( multiplier, length_scale )
+
+    return radius_key
+
+  ########################################################################
+
+  def get_enclosed_mass_key( self, ptype, multiplier, length_scale ):
+    '''Get a key for AHF data, corresponding to a data column that records an enclosed mass.
+
+      ptype (str) :
+        The particle type for the enclosed mass.
+
+      multiplier (float) :
+        multiplier*length_scale defines the radius around the center of the halo within which to get the mass.
+
+      length_scale (str) :
+        multiplier*length_scale defines the radius around the center of the halo within which to get the mass.
+
+    Returns:
+      enclosed_mass_key (str)
+    '''
+
+    return 'M{}({})'.format( ptype, self.get_radius_key( multiplier, length_scale ) )
 
 ########################################################################
 ########################################################################
 
 class AHFUpdater( read_ahf.AHFReader ):
   '''Class for updating AHF data (smoothing, adding in additional columns, etc)'''
+
+  def __init__( self, *args, **kwargs ):
+
+    self.key_parser = AHFKeyParser()
+
+    super( AHFUpdater, self ).__init__( *args, **kwargs )
 
   ########################################################################
   # Get Data Values
@@ -224,7 +270,7 @@ class AHFUpdater( read_ahf.AHFReader ):
 
   ########################################################################
 
-  def get_mass_in_halo( self,
+  def get_enclosed_mass( self,
     simulation_data_dir,
     ptype,
     galaxy_cut,
@@ -240,10 +286,10 @@ class AHFUpdater( read_ahf.AHFReader ):
         What particle type to get the mass for.
 
       galaxy_cut (float) :
-        galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.
+        galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.
 
       length_scale (str) :
-        galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.
+        galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.
 
     Returns:
       mass_inside_all_halos (np.ndarray) :
@@ -285,6 +331,59 @@ class AHFUpdater( read_ahf.AHFReader ):
     mass_inside_all_halos *= s_data.data_attrs['hubble']
 
     return mass_inside_all_halos
+
+  ########################################################################
+  
+  def get_circular_velocity( self,
+    galaxy_cut,
+    length_scale,
+    metafile_dir,
+    ptypes = data_constants.STANDARD_PTYPES,
+    ):
+    '''Get the circular velocity at galaxy_cut*length_scale.
+
+      galaxy_cut (float) :
+        galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.
+
+      length_scale (str) :
+        galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.
+
+      metafile_dir (str) :
+        Directory containing metafile data, for getting out the redshift given a snapshot.
+
+      ptypes (list of strs) :
+        Particle types to count the mass inside the halo of.
+
+    Returns:
+      v_circ (np.ndarray) 
+        Circular velocity at galaxy_cut*length_scale using mass from the given ptypes.
+    '''
+
+    # Get the redshift, for converting the radius to pkpc/h.
+    metafile_reader = read_metafile.MetafileReader( metafile_dir )
+    metafile_reader.get_snapshot_times()
+    redshift = metafile_reader.snapshot_times['redshift'][self.ahf_halos_snum]
+
+    # Get the radius in pkpc/h
+    radius = galaxy_cut*self.ahf_halos[length_scale]
+    radius /= ( 1. + redshift )
+
+    # Get the mass in Msun/h
+    masses = []
+    for ptype in ptypes:
+      mass_key = self.key_parser.get_enclosed_mass_key( ptype, galaxy_cut, length_scale )
+      try:
+        ptype_mass = self.ahf_halos_add[mass_key]
+      except:
+        ptype_mass = self.ahf_halos[mass_key]
+      masses.append( ptype_mass )
+    mass = np.array( masses ).sum( axis=0 )
+
+    # Now get the circular velocity out
+    # (note that we don't need to bother with converting out the 1/h's, because in this particular case they'll cancel)
+    v_circ = astro_utils.circular_velocity( radius, mass )
+
+    return v_circ
 
   ########################################################################
   # Alter Data
@@ -505,14 +604,26 @@ class AHFUpdater( read_ahf.AHFReader ):
 
   def save_ahf_halos_add( self,
     snum,
-    metafile_dir,
+    include_analytic_concentration = True,
+    include_mass_radii = True,
+    include_enclosed_mass = True,
+    include_v_circ = True,
+    metafile_dir = None,
     simulation_data_dir = None,
-    radii_mass_fractions = None,
-    galaxy_cut = None,
-    length_scale = None,
-    ptypes_for_halo_masses = None,
-    galaxy_cut_for_halo_masses = None,
-    length_scale_for_halo_masses = None,
+    mass_radii_kwargs = {
+      'mass_fractions' : [ 0.5, 0.75, 0.9, ],
+      'galaxy_cut' : 0.15,
+      'length_scale' : 'Rvir',
+    },
+    enclosed_mass_ptypes = data_constants.STANDARD_PTYPES,
+    enclosed_mass_kwargs = {
+      'galaxy_cut' : 3.0,
+      'length_scale' : 'Rstar0.5',
+    },
+    v_circ_kwargs = {
+      'galaxy_cut' : 3.0,
+      'length_scale' : 'Rstar0.5',
+    },
     ):
     '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
 
@@ -520,23 +631,35 @@ class AHFUpdater( read_ahf.AHFReader ):
       snum (int) :
         Snapshot number to load.
 
+      include_analytic_concentration (bool) :
+        Include analytic concentration as one of the columns?
+
+      include_mass_radii (bool) :
+        Include radius that include some fraction of a particle's mass as one of the columns?
+
+      include_enclosed_mass (bool) :
+        Include the mass enclosed in some specified radii as one of the columns?
+
+      include_v_circ (bool) :
+        Include the circular mass at some specified radii as one of the columns?
+
       metafile_dir (str) :
         The directory the metafiles (snapshot_times and used_parameters) are stored in.
 
-      radii_mass_fractions (list of floats, optional) :
-        The mass fractions for the characteristic stellar radii to obtain.
-
-      simulation_data_dir (str, optional) :
+      simulation_data_dir (str) :
         Directory containing the simulation data (used for getting the position and masses of the star particles).
-        Only necessary if finding mass-based radii.
 
-      galaxy_cut (float):
-        galaxy_cut*length_scale is the radius within which the radii will be estimated.
-        Only necessary if finding mass-based radii.
+      mass_radii_kwargs (dict) :
+        Keyword args for self.get_mass_radii()
 
-      length_scale (str):
-        galaxy_cut*length_scale is the radius within which the radii will be estimated.
-        Only necessary if finding mass-based radii.
+      enclosed_mass_ptypes (list of strs) :
+        Particle types to get the mass inside a radii of.
+
+      enclosed_mass_kwargs (dict) :
+        Keyword args for self.get_enclosed_mass()
+
+      v_circ_kwargs (dict) :
+        Keyword args for self.get_circular_velocity()
     '''
 
     print 'Saving *.AHF_halos_add for snum {}'.format( snum )
@@ -549,34 +672,35 @@ class AHFUpdater( read_ahf.AHFReader ):
     self.ahf_halos_add.index.names = ['ID']
 
     # Get the analytic concentration
-    self.ahf_halos_add['cAnalytic'] = self.get_analytic_concentration( metafile_dir, type_of_halo_id='ahf_halos' )
+    if include_analytic_concentration:
+      self.ahf_halos_add['cAnalytic'] = self.get_analytic_concentration( metafile_dir, type_of_halo_id='ahf_halos' )
 
     # Get characteristic radii
-    if radii_mass_fractions is not None:
-      mass_radii = self.get_mass_radii(
-        mass_fractions = radii_mass_fractions,
-        simulation_data_dir = simulation_data_dir,
-        galaxy_cut = galaxy_cut,
-        length_scale = length_scale,
-      )
+    if include_mass_radii:
+      mass_radii = self.get_mass_radii( simulation_data_dir = simulation_data_dir, **mass_radii_kwargs )
 
-      for i, mass_fraction in enumerate( radii_mass_fractions ):
+      for i, mass_fraction in enumerate( mass_radii_kwargs['mass_fractions'] ):
         label = 'Rstar{}'.format( mass_fraction )
         self.ahf_halos_add[label] = mass_radii[i]
 
-    if ptypes_for_halo_masses is not None:
+    # Get mass enclosed in a particular radius
+    if include_enclosed_mass:
+      for i, ptype in enumerate( enclosed_mass_ptypes ):
 
-      for i, ptype in enumerate( ptypes_for_halo_masses ):
+        halo_masses = self.get_enclosed_mass( simulation_data_dir, ptype, **enclosed_mass_kwargs )
 
-        halo_masses = self.get_mass_in_halo( 
-          simulation_data_dir,
-          ptype,
-          galaxy_cut = galaxy_cut_for_halo_masses,
-          length_scale = length_scale_for_halo_masses,
-        )
-
-        label = 'M{}({}{})'.format( ptype, galaxy_cut_for_halo_masses, length_scale_for_halo_masses )
+        label = self.key_parser.get_enclosed_mass_key( ptype, enclosed_mass_kwargs['galaxy_cut'], \
+                                                       enclosed_mass_kwargs['length_scale'], )
         self.ahf_halos_add[label] = halo_masses
+
+    # Get circular velocity at a particular radius
+    if include_v_circ:
+      v_circ = self.get_circular_velocity( metafile_dir=metafile_dir, **v_circ_kwargs )
+
+      radius_key =  self.key_parser.get_radius_key( v_circ_kwargs['galaxy_cut'], v_circ_kwargs['length_scale'] ) 
+      label = 'Vc({})'.format( radius_key )
+
+      self.ahf_halos_add[label] = v_circ
 
     # Save AHF_halos add
     save_filepath = '{}_add'.format( self.ahf_halos_path )
