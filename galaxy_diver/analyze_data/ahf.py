@@ -319,9 +319,6 @@ class AHFUpdater( read_ahf.AHFReader ):
       'galaxy_cut' : galaxy_cut,
       'length_scale' : length_scale,
       'ahf_reader' : self,
-      
-      # Note that here we don't want to apply a minimum threshold, because we want the particle mass inside, regardless
-      'minimum_value' : 0,
     }
     gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
 
@@ -624,6 +621,7 @@ class AHFUpdater( read_ahf.AHFReader ):
       'galaxy_cut' : 3.0,
       'length_scale' : 'Rstar0.5',
     },
+    verbose = False,
     ):
     '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
 
@@ -673,10 +671,14 @@ class AHFUpdater( read_ahf.AHFReader ):
 
     # Get the analytic concentration
     if include_analytic_concentration:
+      if verbose:
+        print( "Including Analytic Concentration..." )
       self.ahf_halos_add['cAnalytic'] = self.get_analytic_concentration( metafile_dir, type_of_halo_id='ahf_halos' )
 
     # Get characteristic radii
     if include_mass_radii:
+      if verbose:
+        print( "Including Mass Radii..." )
       mass_radii = self.get_mass_radii( simulation_data_dir = simulation_data_dir, **mass_radii_kwargs )
 
       for i, mass_fraction in enumerate( mass_radii_kwargs['mass_fractions'] ):
@@ -685,6 +687,8 @@ class AHFUpdater( read_ahf.AHFReader ):
 
     # Get mass enclosed in a particular radius
     if include_enclosed_mass:
+      if verbose:
+        print( "Including Enclosed Mass..." )
       for i, ptype in enumerate( enclosed_mass_ptypes ):
 
         halo_masses = self.get_enclosed_mass( simulation_data_dir, ptype, **enclosed_mass_kwargs )
@@ -695,6 +699,8 @@ class AHFUpdater( read_ahf.AHFReader ):
 
     # Get circular velocity at a particular radius
     if include_v_circ:
+      if verbose:
+        print( "Including Circular Velocity..." )
       v_circ = self.get_circular_velocity( metafile_dir=metafile_dir, **v_circ_kwargs )
 
       radius_key =  self.key_parser.get_radius_key( v_circ_kwargs['galaxy_cut'], v_circ_kwargs['length_scale'] ) 
