@@ -658,6 +658,9 @@ class AHFUpdater( read_ahf.AHFReader ):
 
       v_circ_kwargs (dict) :
         Keyword args for self.get_circular_velocity()
+
+      verbose (bool) :
+        If True, print out additional information about how the steps are progressing.
     '''
 
     print 'Saving *.AHF_halos_add for snum {}'.format( snum )

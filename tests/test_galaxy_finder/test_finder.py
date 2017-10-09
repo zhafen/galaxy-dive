@@ -891,6 +891,40 @@ class TestFindMassRadii( unittest.TestCase ):
 
   ########################################################################
 
+  def test_mass_inside_galaxy_cut_no_valid_inds( self ):
+    '''Test we still get a reasonable result out, even when there's not a single valid halo.'''
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
+    self.galaxy_finder._valid_halo_inds = np.array([])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 0., 10., 500., ],
+      [ 15., 5., 485., ],
+      [ 10., 0., 490., ],
+      [ 500., 490., 0., ],
+    ])
+
+    actual = self.galaxy_finder.mass_inside_galaxy_cut
+    expected = np.array([])
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_mass_inside_galaxy_cut_no_halos( self ):
+    '''Test we still get a reasonable result out, even when there aren't any halos formed yet.'''
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([])
+    self.galaxy_finder._valid_halo_inds = np.array([])
+
+    actual = self.galaxy_finder.mass_inside_galaxy_cut
+    expected = np.array([])
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_mass_inside_galaxy_cut_no_inside_cut( self ):
     '''Make sure we give the right results when no particles are inside the cut.'''
 
@@ -924,6 +958,19 @@ class TestFindMassRadii( unittest.TestCase ):
     ])
 
     expected = np.array([ 6., 3., 4., np.nan, np.nan ])
+    actual = self.galaxy_finder.mass_inside_all_halos
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_mass_inside_all_halos_no_valid_gals( self ):
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., np.nan, ])
+    self.galaxy_finder._valid_halo_inds = np.array([])
+
+    expected = np.array([ np.nan, np.nan, np.nan, np.nan, np.nan ])
     actual = self.galaxy_finder.mass_inside_all_halos
     
     npt.assert_allclose( expected, actual )

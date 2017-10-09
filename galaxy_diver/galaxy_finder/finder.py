@@ -543,6 +543,14 @@ class GalaxyFinder( object ):
 
     if not hasattr( self, '_mass_inside_galaxy_cut' ):
 
+      # Case where there are no halos formed yet.
+      if self.ahf_halos_length_scale_pkpc.size == 0:
+        return np.array( [] )
+
+      # Case where no halos meet the minimum criteria yet.
+      if self.valid_halo_inds.size == 0:
+        return np.array( [] )
+
       valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
       outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc[np.newaxis,:]
 
@@ -574,6 +582,10 @@ class GalaxyFinder( object ):
     if not hasattr( self, '_mass_inside_all_halos' ):
       self._mass_inside_all_halos = np.empty( self.ahf_halos_length_scale_pkpc.shape )
       self._mass_inside_all_halos.fill( np.nan )
+
+      # Case where no halos meet the minimum criteria yet.
+      if self.valid_halo_inds.size == 0:
+        return self._mass_inside_all_halos
 
       self._mass_inside_all_halos[self.valid_halo_inds] = self.mass_inside_galaxy_cut
 

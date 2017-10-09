@@ -441,7 +441,7 @@ class TestMassRadii( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
-class TestMassInHalo( unittest.TestCase ):
+class TestEnclosedMass( unittest.TestCase ):
 
   def setUp( self ):
 
