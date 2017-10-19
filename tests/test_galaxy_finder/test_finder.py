@@ -1027,7 +1027,7 @@ class TestFindMassRadii( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
-class TestAttributeInsideGalaxyCut( unittest.TestCase ):
+class TestSummedQuantityInsideGalaxy( unittest.TestCase ):
   '''Test that we can calculate a more general attribute inside a galaxy.'''
 
   def setUp( self ):
@@ -1046,7 +1046,7 @@ class TestAttributeInsideGalaxyCut( unittest.TestCase ):
 
   ########################################################################
 
-  def test_summed_quantity_inside_galaxy( self ):
+  def test_summed_quantity_inside_galaxy_valid_halos( self ):
 
     # Test Data
     self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
@@ -1059,14 +1059,14 @@ class TestAttributeInsideGalaxyCut( unittest.TestCase ):
     ])
     particle_quantities = np.array([ 1., 2., 3., 4., ])
 
-    actual = self.galaxy_finder.summed_quantity_inside_galaxy( particle_quantities, np.nan )
+    actual = self.galaxy_finder.summed_quantity_inside_galaxy_valid_halos( particle_quantities, np.nan )
     expected = np.array([ 6., 3., 4., ])
     
     npt.assert_allclose( expected, actual )
 
   ########################################################################
 
-  def test_summed_quantity_no_inside_cut( self ):
+  def test_summed_quantity_valid_halos_no_inside_cut( self ):
     '''Make sure we give the right results when no particles are inside the cut.'''
 
     # Test Data
@@ -1081,7 +1081,30 @@ class TestAttributeInsideGalaxyCut( unittest.TestCase ):
     particle_quantities = np.array([ 1., 2., 3., 4., ])
 
     expected = np.array([ np.nan, np.nan, np.nan, ])
-    actual = self.galaxy_finder.summed_quantity_inside_galaxy( particle_quantities, np.nan )
+    actual = self.galaxy_finder.summed_quantity_inside_galaxy_valid_halos( particle_quantities, np.nan )
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_summed_quantity_inside_galaxy( self ):
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., np.nan, ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, 4, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 0., 10., 500., np.nan, ],
+      [ 15., 5., 485., np.nan, ],
+      [ 10., 0., 490., np.nan, ],
+      [ 500., 490., 0., np.nan, ],
+    ])
+    particle_quantities = np.array([ 1., 2., 3., 4., ])
+
+    expected = np.array([ 6., 3., 4., np.nan, np.nan ])
+    actual = self.galaxy_finder.summed_quantity_inside_galaxy( 
+      particle_quantities,
+      np.nan,
+    )
     
     npt.assert_allclose( expected, actual )
 
@@ -1090,19 +1113,19 @@ class TestAttributeInsideGalaxyCut( unittest.TestCase ):
   def test_weighted_summed_quantity_inside_galaxy( self ):
 
     # Test Data
-    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
-    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., np.nan, ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, 4, ])
     self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
-      [ 0., 10., 500., ],
-      [ 15., 5., 485., ],
-      [ 10., 0., 490., ],
-      [ 500., 490., 0., ],
+      [ 0., 10., 500., np.nan, ],
+      [ 15., 5., 485., np.nan, ],
+      [ 10., 0., 490., np.nan, ],
+      [ 500., 490., 0., np.nan, ],
     ])
     particle_quantities = np.array([ 1., 2., 3., 4., ])
     particle_weights = np.array([ 4., 3., 2., 1., ])
 
     actual = self.galaxy_finder.weighted_summed_quantity_inside_galaxy( particle_quantities, particle_weights, np.nan )
-    expected = np.array([ 16./9., 3., 4., ])
+    expected = np.array([ 16./9., 3., 4., np.nan, np.nan, ])
     
     npt.assert_allclose( expected, actual )
 
