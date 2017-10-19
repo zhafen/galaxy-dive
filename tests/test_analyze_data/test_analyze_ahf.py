@@ -34,6 +34,19 @@ slow = pytest.mark.skipif(
     reason="need --runslow option to run"
 )
 
+class SaneEqualityArray(np.ndarray):
+  '''Numpy array subclass that allows you to test if two arrays are equal.'''
+
+  def __eq__(self, other):
+      return (isinstance(other, np.ndarray) and self.shape == other.shape and np.allclose(self, other))
+
+def sane_eq_array(list_in):
+  '''Wrapper for SaneEqualityArray, that takes in a list.'''
+
+  arr = np.array(list_in)
+
+  return arr.view(SaneEqualityArray)
+
 ########################################################################
 ########################################################################
 
@@ -560,6 +573,137 @@ class TestEnclosedMass( unittest.TestCase ):
 
     # Make sure the columns exist
     assert 'Mstar(Rvir)' in self.ahf_updater.ahf_halos.columns
+
+########################################################################
+########################################################################
+
+class TestAverageInsideGalaxy( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.ahf_updater = analyze_ahf.AHFUpdater( sdir )
+
+    snum = 600
+    self.ahf_updater.get_halos( snum )
+
+  ########################################################################
+
+  @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.weighted_summed_quantity_inside_galaxy', )
+  @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
+  def test_get_average_x_velocity( self, mock_init_finder, mock_weighted_summed ):
+    '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
+    Only two of the halos contain galaxies.
+    '''
+
+    mock_init_finder.side_effect = [ None, ]
+
+    # Mock what particles are in the halos.
+    mock_weighted_summed.side_effect = [ np.array( [ 16./9., 3., np.nan, ] ), ]
+    data_dir = os.path.join( data_sdir, 'output' )
+    
+    actual = self.ahf_updater.get_average_quantity_inside_galaxy( 'Vx', data_dir, 'star', 1., 'Rstar0.5', )
+    expected = np.array([ 16./9., 3., np.nan, ])
+
+    v_x = sane_eq_array([
+      -143.67724609, -347.99859619,   21.3268013 ,  -55.31821823,
+      -143.2099762 , -115.62627411,  -63.72027588,  -53.12395096,
+      -108.77227783,   62.66027451,  -34.19268036, -150.98040771,
+      -217.43572998,  -65.45542145,   99.38283539, -126.13137817,
+      -30.76893997,   93.85800171,  177.28361511,  109.82576752,
+      128.3290863 ,   94.03945923,  116.39562225,  264.83105469,
+      -99.63202667, -201.7532196 ,   89.95071411, -144.08346558,
+      225.93339539, -113.14592743,  125.1570816 ,   41.58389664,
+      -154.07600403,  -56.06444931,   15.92539692, -251.2993927 ,
+      220.0350647 , -140.63465881,  -11.98395061, -173.34442139
+    ])
+    m = sane_eq_array([
+      5.21625374e-07,   1.00258722e-06,   4.62027236e-07,
+      5.93719874e-07,   6.26516786e-07,   5.39901424e-07,
+      8.95511302e-07,   5.75699458e-07,   6.39436234e-07,
+      5.04677290e-07,   1.26963946e-06,   5.28015400e-07,
+      5.60212541e-07,   5.11218372e-07,   5.61493907e-07,
+      7.03654884e-07,   5.62677780e-07,   6.92173080e-07,
+      6.03309812e-07,   5.24588317e-07,   5.99036394e-07,
+      6.69138338e-07,   5.52032433e-07,   6.70654891e-07,
+      5.54359693e-07,   4.65115283e-07,   5.84278441e-07,
+      7.92890469e-07,   5.68287222e-07,   5.06611262e-07,
+      5.90570652e-07,   5.35295811e-07,   7.25091169e-07,
+      1.21602794e-06,   4.94437377e-07,   6.32833491e-07,
+      5.09029334e-07,   4.88467037e-07,   5.06468749e-07,
+      5.65739066e-07,
+    ])
+    mock_weighted_summed.assert_called_once_with( v_x, m, np.nan, )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
+  @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
+  @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
+  def test_get_average_x_velocity_no_particles_ptype( self, mock_init, mock_init_finder, mock_find_containing_halos ):
+    '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
+    '''
+
+    mock_init.side_effect = [ None, ]
+    mock_init_finder.side_effect = [ None, ]
+
+    # Mock what particles are in the halos.
+    mock_find_containing_halos.side_effect = [
+      np.array([
+        [ 1, 1, 0, ],
+        [ 1, 1, 0, ],
+        [ 1, 0, 0, ],
+        [ 0, 0, 0, ],
+      ]).astype( bool ),
+    ]
+
+    # I mock data here. Note that I had to mock __init__ too, to prevent overwriting.
+    with patch.object( particle_data.ParticleData, 'data', new_callable=PropertyMock, create=True ) as mock_data:
+
+      # Mock simulation data.
+      mock_data.return_value = {}
+
+      expected = np.array( [np.nan, ]*9 )
+      data_dir = os.path.join( data_sdir, 'output' )
+      actual = self.ahf_updater.get_average_quantity_inside_galaxy( 'Vx', data_dir, 'star', 1., 'Rstar0.5', )
+
+      npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
+  def test_save_ahf_halos_add_including_masses( self, mock_get_analytic_concentration ):
+    '''Test that we can write-out files that contain additional information, with that information
+    including the mass inside some radius from the center of the halo.
+    '''
+
+    mock_get_analytic_concentration.side_effect = [ np.arange( 9 ), ]
+
+    # Save halos_add
+    sim_data_dir = os.path.join( data_sdir, 'output' )
+
+    enclosed_mass_kwargs = {
+      'galaxy_cut' : 1.0,
+      'length_scale' : 'Rvir',
+    }
+    self.ahf_updater.save_ahf_halos_add(
+      600,
+      include_analytic_concentration = True,
+      include_enclosed_mass = True,
+      include_v_circ = False,
+      metafile_dir = data_sdir,
+      simulation_data_dir = sim_data_dir,
+      enclosed_mass_ptypes = [ 'star', 'DM', ],
+      enclosed_mass_kwargs = enclosed_mass_kwargs,
+    )
+
+    # Load halos_add
+    self.ahf_updater.get_halos( 600, True )
+    self.ahf_updater.get_halos_add( 600, True )
+
+    # Make sure the columns exist
+    assert 'Vxstar(Rvir)' in self.ahf_updater.ahf_halos.columns
 
 ########################################################################
 ########################################################################

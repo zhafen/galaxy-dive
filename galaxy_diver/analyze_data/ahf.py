@@ -350,6 +350,86 @@ class AHFUpdater( read_ahf.AHFReader ):
     return mass_inside_all_halos
 
   ########################################################################
+
+  def get_average_quantity_inside_galaxy( self,
+    data_key,
+    simulation_data_dir,
+    ptype,
+    galaxy_cut,
+    length_scale,
+    weight_data_key = 'M',
+    fill_value = np.nan,
+    ):
+    '''Get the mass inside galaxy_cut*length_scale for each AHF halo.
+
+    Args:
+      data_key (str) :
+        Data key for the quantity to get the average of.
+
+      simulation_data_dir (str) :
+        Directory containing the raw particle data.
+
+      ptype (str) :
+        What particle type to get the mass for.
+
+      galaxy_cut (float) :
+        galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.
+
+      length_scale (str) :
+        galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.
+
+      weight_data_key (str) :
+        Data key for the weight to use when averaging.
+
+      fill_value (float) :
+        What value to use when the average quantity inside the galaxy is not resolved.
+
+    Returns:
+      average_quantity_inside_galaxy (np.ndarray) :
+        average_quantity_inside_galaxy[i] is the average value of the requested quantity for particle type ptype
+        inside galaxy_cut*length scale around a galaxy.
+    '''
+
+    # Load the simulation data
+    s_data = particle_data.ParticleData(
+      simulation_data_dir,
+      self.ahf_halos_snum,
+      data_constants.PTYPES[ptype],
+
+      # The following values need to be set, because they come into play when a galaxy is centered on halo finder
+      # data. That's obviously not the case here...
+      centered = True,
+      vel_centered = True,
+      hubble_corrected = True,
+    )
+
+    try:
+      particle_positions = s_data.data['P'].transpose()
+    # Case where there are no particles of the given ptype at this redshift.
+    except KeyError:
+      return np.array( [ fill_value, ]*self.ahf_halos.index.size )
+
+    # Find the mass radii
+    galaxy_finder_kwargs = {
+      'particle_positions' : particle_positions,
+      'snum' : self.ahf_halos_snum,
+      'redshift' : s_data.redshift,
+      'hubble' : s_data.data_attrs['hubble'],
+      'galaxy_cut' : galaxy_cut,
+      'length_scale' : length_scale,
+      'ahf_reader' : self,
+    }
+    gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
+
+    average_quantity_inside_galaxy = gal_finder.weighted_summed_quantity_inside_galaxy(
+      s_data.get_data( data_key ),
+      s_data.get_data( weight_data_key ),
+      fill_value,
+    )
+
+    return average_quantity_inside_galaxy
+
+  ########################################################################
   
   def get_circular_velocity( self,
     galaxy_cut,
@@ -359,6 +439,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     ):
     '''Get the circular velocity at galaxy_cut*length_scale.
 
+    Args:
       galaxy_cut (float) :
         galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.
 
