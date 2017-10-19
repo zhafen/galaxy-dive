@@ -1085,6 +1085,26 @@ class TestAttributeInsideGalaxyCut( unittest.TestCase ):
     
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_weighted_summed_quantity_inside_galaxy( self ):
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 0., 10., 500., ],
+      [ 15., 5., 485., ],
+      [ 10., 0., 490., ],
+      [ 500., 490., 0., ],
+    ])
+    particle_quantities = np.array([ 1., 2., 3., 4., ])
+    particle_weights = np.array([ 4., 3., 2., 1., ])
+
+    actual = self.galaxy_finder.weighted_summed_quantity_inside_galaxy( particle_quantities, particle_weights, np.nan )
+    expected = np.array([ 16./9., 3., 4., ])
+    
+    npt.assert_allclose( expected, actual )
 
 
 

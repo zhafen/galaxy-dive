@@ -637,7 +637,7 @@ class GalaxyFinder( object ):
 
     Args:
       particle_quantities (np.ndarray) :
-        Quantities to tile.
+        Quantities to sum.
 
       fill_value (float) :
         When there are are no particles in a galaxy, what value should be used?
@@ -675,6 +675,31 @@ class GalaxyFinder( object ):
     summed_quantity_inside_galaxy = np.where( has_bad_value, np.nan, summed_quantity_inside_galaxy, )
 
     return summed_quantity_inside_galaxy
+
+  ########################################################################
+
+  def weighted_summed_quantity_inside_galaxy( self, particle_quantities, particle_weights, fill_value ):
+    '''Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),
+    weighted by particle_weights.
+
+    Args:
+      particle_quantities (np.ndarray) :
+        Quantities to tile.
+
+      particle_weights (np.ndarray) :
+        Weights to apply.
+
+      fill_value (float) :
+        When there are are no particles in a galaxy, what value should be used?
+
+    Returns:
+      summed_quantity_inside_galaxy (np.ndarray)
+    '''
+
+    weighted_and_summed = self.summed_quantity_inside_galaxy( particle_quantities*particle_weights, fill_value )
+    sum_of_weights = self.summed_quantity_inside_galaxy( particle_weights, fill_value )
+
+    return weighted_and_summed/sum_of_weights
 
     
 
