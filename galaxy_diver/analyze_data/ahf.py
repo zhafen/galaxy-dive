@@ -99,6 +99,26 @@ class AHFKeyParser( generic_data.DataKeyParser ):
 
     return 'M{}({})'.format( ptype, self.get_radius_key( multiplier, length_scale ) )
 
+  ########################################################################
+
+  def get_velocity_at_radius_key( self, velocity_key, multiplier, length_scale ):
+    '''Get a key for AHF data, corresponding to a data column that records the velocity at at a specified radius
+
+      velocity_key (str) :
+        What velocity to get.
+
+      multiplier (float) :
+        multiplier*length_scale defines the radius around the center of the halo within which to get the mass.
+
+      length_scale (str) :
+        multiplier*length_scale defines the radius around the center of the halo within which to get the mass.
+
+    Returns:
+      velocity_at_radius_key (str)
+    '''
+
+    return '{}({})'.format( velocity_key, self.get_radius_key( multiplier, length_scale ) )
+
 ########################################################################
 ########################################################################
 
@@ -706,8 +726,11 @@ class AHFUpdater( read_ahf.AHFReader ):
         print( "Including Circular Velocity..." )
       v_circ = self.get_circular_velocity( metafile_dir=metafile_dir, **v_circ_kwargs )
 
-      radius_key =  self.key_parser.get_radius_key( v_circ_kwargs['galaxy_cut'], v_circ_kwargs['length_scale'] ) 
-      label = 'Vc({})'.format( radius_key )
+      label = self.key_parser.get_velocity_at_radius_key(
+        'Vc',
+        v_circ_kwargs['galaxy_cut'],
+        v_circ_kwargs['length_scale']
+      ) 
 
       self.ahf_halos_add[label] = v_circ
 

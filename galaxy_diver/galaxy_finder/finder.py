@@ -530,7 +530,7 @@ class GalaxyFinder( object ):
     return part_of_halo
 
   ########################################################################
-  # Radius Finding Routines
+  # Routines for Calculating Properties of Galaxies
   ########################################################################
 
   @property
@@ -543,29 +543,7 @@ class GalaxyFinder( object ):
 
     if not hasattr( self, '_mass_inside_galaxy_cut' ):
 
-      # Case where there are no halos formed yet.
-      if self.ahf_halos_length_scale_pkpc.size == 0:
-        return np.array( [] )
-
-      # Case where no halos meet the minimum criteria yet.
-      if self.valid_halo_inds.size == 0:
-        return np.array( [] )
-
-      valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
-      outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc[np.newaxis,:]
-
-      mass_tiled = np.tile( self.particle_masses, ( self.valid_halo_inds.size, 1 ) ).transpose()
-
-      mass_ma = np.ma.masked_array( mass_tiled, mask=outside_radial_cut )
-
-      self._mass_inside_galaxy_cut = mass_ma.sum( axis=0 )
-
-      self._mass_inside_galaxy_cut.fill_value = 0.
-      self._mass_inside_galaxy_cut = self._mass_inside_galaxy_cut.filled()
-
-      # Make sure that we don't count halos with NaN length scales as containing all particles.
-      has_bad_value = np.ma.fix_invalid( valid_radial_cut_pkpc ).mask
-      self._mass_inside_galaxy_cut = np.where( has_bad_value, np.nan, self._mass_inside_galaxy_cut, )
+      self._mass_inside_galaxy_cut = self.summed_quantity_inside_galaxy( self.particle_masses, 0. )
 
     return self._mass_inside_galaxy_cut
 
@@ -652,7 +630,51 @@ class GalaxyFinder( object ):
 
     return mass_radius
 
+  ########################################################################
 
+  def summed_quantity_inside_galaxy( self, particle_quantities, fill_value ):
+    '''Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).
+
+    Args:
+      particle_quantities (np.ndarray) :
+        Quantities to tile.
+
+      fill_value (float) :
+        When there are are no particles in a galaxy, what value should be used?
+
+    Returns:
+      summed_quantity_inside_galaxy (np.ndarray)
+    '''
+
+    # Case where there are no halos formed yet.
+    if self.ahf_halos_length_scale_pkpc.size == 0:
+      return np.array( [] )
+
+    # Case where no halos meet the minimum criteria yet.
+    if self.valid_halo_inds.size == 0:
+      return np.array( [] )
+
+    # Make a radial cut.
+    valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
+    outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc[np.newaxis,:]
+
+    # Tile the quantity for proper masking
+    quantity_tiled = np.tile( particle_quantities, ( self.valid_halo_inds.size, 1 ) ).transpose()
+
+    quantity_ma = np.ma.masked_array( quantity_tiled, mask=outside_radial_cut )
+
+    # Do the actual sum.
+    summed_quantity_inside_galaxy = quantity_ma.sum( axis=0 )
+
+    # Fill in any values where there are no particles in the galaxy.
+    summed_quantity_inside_galaxy.fill_value = fill_value
+    summed_quantity_inside_galaxy = summed_quantity_inside_galaxy.filled()
+
+    # Make sure that we don't count halos with NaN length scales as containing all particles.
+    has_bad_value = np.ma.fix_invalid( valid_radial_cut_pkpc ).mask
+    summed_quantity_inside_galaxy = np.where( has_bad_value, np.nan, summed_quantity_inside_galaxy, )
+
+    return summed_quantity_inside_galaxy
 
     
 

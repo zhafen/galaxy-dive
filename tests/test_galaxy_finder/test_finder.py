@@ -1024,7 +1024,66 @@ class TestFindMassRadii( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
     
+########################################################################
+########################################################################
 
+class TestAttributeInsideGalaxyCut( unittest.TestCase ):
+  '''Test that we can calculate a more general attribute inside a galaxy.'''
+
+  def setUp( self ):
+
+    # Test Data
+    self.kwargs = dict( gal_finder_kwargs )
+    self.kwargs['particle_masses'] = np.array([ 2., 2., 1., 3., ])
+    particle_positions = np.array([
+      [ 0., 0., 0., ],
+      [ 0., 0., 0., ],
+      [ 0., 0., 0., ],
+      [ 0., 0., 0., ],
+    ]) # These shouldn't ever be used directly, since we're relying on the results of previous functions.
+
+    self.galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, **self.kwargs ) 
+
+  ########################################################################
+
+  def test_summed_quantity_inside_galaxy( self ):
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 0., 10., 500., ],
+      [ 15., 5., 485., ],
+      [ 10., 0., 490., ],
+      [ 500., 490., 0., ],
+    ])
+    particle_quantities = np.array([ 1., 2., 3., 4., ])
+
+    actual = self.galaxy_finder.summed_quantity_inside_galaxy( particle_quantities, np.nan )
+    expected = np.array([ 6., 3., 4., ])
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_summed_quantity_no_inside_cut( self ):
+    '''Make sure we give the right results when no particles are inside the cut.'''
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 0.1, 0.1, 0.1, 0.1, ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
+    self.galaxy_finder._dist_to_all_valid_halos = np.array([ 
+      [ 100., 10., 500., ],
+      [ 15., 5., 485., ],
+      [ 10., 100., 490., ],
+      [ 500., 490., 100., ],
+    ])
+    particle_quantities = np.array([ 1., 2., 3., 4., ])
+
+    expected = np.array([ np.nan, np.nan, np.nan, ])
+    actual = self.galaxy_finder.summed_quantity_inside_galaxy( particle_quantities, np.nan )
+    
+    npt.assert_allclose( expected, actual )
 
 
 
