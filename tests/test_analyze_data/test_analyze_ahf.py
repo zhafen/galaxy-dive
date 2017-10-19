@@ -683,19 +683,20 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
     # Save halos_add
     sim_data_dir = os.path.join( data_sdir, 'output' )
 
-    enclosed_mass_kwargs = {
+    average_quantity_inside_galaxy_kwargs = {
+      'ptype' : 'star',
       'galaxy_cut' : 1.0,
       'length_scale' : 'Rvir',
     }
     self.ahf_updater.save_ahf_halos_add(
       600,
       include_analytic_concentration = True,
-      include_enclosed_mass = True,
+      include_enclosed_mass = False,
+      include_average_quantity_inside_galaxy = True,
       include_v_circ = False,
       metafile_dir = data_sdir,
       simulation_data_dir = sim_data_dir,
-      enclosed_mass_ptypes = [ 'star', 'DM', ],
-      enclosed_mass_kwargs = enclosed_mass_kwargs,
+      average_quantity_inside_galaxy_kwargs = average_quantity_inside_galaxy_kwargs,
     )
 
     # Load halos_add

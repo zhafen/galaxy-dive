@@ -61,6 +61,7 @@ class AHFKeyParser( generic_data.DataKeyParser ):
   def get_radius_key( self, multiplier, length_scale ):
     '''Get a key for AHF data, based on a length scale and a multiple of it.
 
+    Args:
       multiplier (float) :
         multiplier*length_scale defines the radius around the center of the halo(s).
 
@@ -84,6 +85,7 @@ class AHFKeyParser( generic_data.DataKeyParser ):
   def get_enclosed_mass_key( self, ptype, multiplier, length_scale ):
     '''Get a key for AHF data, corresponding to a data column that records an enclosed mass.
 
+    Args:
       ptype (str) :
         The particle type for the enclosed mass.
 
@@ -98,6 +100,31 @@ class AHFKeyParser( generic_data.DataKeyParser ):
     '''
 
     return 'M{}({})'.format( ptype, self.get_radius_key( multiplier, length_scale ) )
+
+  ########################################################################
+
+  def get_average_quantity_key( self, data_key, ptype, multiplier, length_scale ):
+    '''Get a key for AHF data, corresponding to a data column that records the average quantity inside a galaxy.
+
+    Args:
+      data_key (str) :
+        What the enclosed quantity is.
+
+      ptype (str) :
+        The particle type for the enclosed mass.
+
+      multiplier (float) :
+        multiplier*length_scale defines the radius around the center of the halo within which to get the mass.
+
+      length_scale (str) :
+        multiplier*length_scale defines the radius around the center of the halo within which to get the mass.
+
+    Returns:
+      average_quantity_key (str)
+    '''
+
+    return '{}{}({})'.format( data_key, ptype, self.get_radius_key( multiplier, length_scale ) )
+
 
   ########################################################################
 
@@ -705,6 +732,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     include_analytic_concentration = True,
     include_mass_radii = True,
     include_enclosed_mass = True,
+    include_average_quantity_inside_galaxy = False,
     include_v_circ = True,
     metafile_dir = None,
     simulation_data_dir = None,
@@ -715,6 +743,12 @@ class AHFUpdater( read_ahf.AHFReader ):
     },
     enclosed_mass_ptypes = data_constants.STANDARD_PTYPES,
     enclosed_mass_kwargs = {
+      'galaxy_cut' : 3.0,
+      'length_scale' : 'Rstar0.5',
+    },
+    average_quantity_data_keys = [ 'Vx', 'Vy', 'Vz', ],
+    average_quantity_inside_galaxy_kwargs = {
+      'ptype' : 'star',
       'galaxy_cut' : 3.0,
       'length_scale' : 'Rstar0.5',
     },
@@ -739,6 +773,9 @@ class AHFUpdater( read_ahf.AHFReader ):
       include_enclosed_mass (bool) :
         Include the mass enclosed in some specified radii as one of the columns?
 
+      include_average_quantity_inside_galaxy (bool) :
+        Include the average value inside each galaxy for the quantities listed in average_quantity_data_keys?
+
       include_v_circ (bool) :
         Include the circular mass at some specified radii as one of the columns?
 
@@ -756,6 +793,12 @@ class AHFUpdater( read_ahf.AHFReader ):
 
       enclosed_mass_kwargs (dict) :
         Keyword args for self.get_enclosed_mass()
+
+      average_quantity_data_keys (list of strs) :
+        What data keys (to be passed to a standard ParticleData.get_data() function) to get the average quantity for?
+
+      average_quantity_kwargs (dict) :
+        Keyword args for self.get_average_quantity_inside_galaxy()
 
       v_circ_kwargs (dict) :
         Keyword args for self.get_circular_velocity()
@@ -800,6 +843,31 @@ class AHFUpdater( read_ahf.AHFReader ):
         label = self.key_parser.get_enclosed_mass_key( ptype, enclosed_mass_kwargs['galaxy_cut'], \
                                                        enclosed_mass_kwargs['length_scale'], )
         self.ahf_halos_add[label] = halo_masses
+
+    # Get average quantity inside each galaxy (for halos that have galaxies)
+    if include_average_quantity_inside_galaxy:
+      if verbose:
+        print( "Including Average Quantities..." )
+
+      for i, data_key in enumerate( average_quantity_data_keys ):
+
+        if verbose:
+          print( "  Finding average {}...".format( data_key ) )
+
+        average_quantity = self.get_average_quantity_inside_galaxy(
+          data_key,
+          simulation_data_dir,
+          **average_quantity_inside_galaxy_kwargs
+        )
+
+        label = self.key_parser.get_average_quantity_key(
+          data_key,
+          average_quantity_inside_galaxy_kwargs['ptype'],
+          average_quantity_inside_galaxy_kwargs['galaxy_cut'],
+          average_quantity_inside_galaxy_kwargs['length_scale'],
+        )
+
+        self.ahf_halos_add[label] = average_quantity
 
     # Get circular velocity at a particular radius
     if include_v_circ:
