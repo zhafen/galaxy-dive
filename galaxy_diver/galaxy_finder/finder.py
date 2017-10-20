@@ -182,7 +182,10 @@ class GalaxyFinder( object ):
         r_vir = self.ahf_reader.ahf_halos['Rvir']
         length_scale = r_vir/self.ahf_reader.ahf_halos['cAnalytic']
       else:
-        length_scale = self.ahf_reader.ahf_halos[self.length_scale]
+        try:
+          length_scale = self.ahf_reader.ahf_halos[self.length_scale]
+        except KeyError:
+          length_scale = self.ahf_reader.ahf_halos_add[self.length_scale]
       self._ahf_halos_length_scale_pkpc = length_scale/( 1. + self.redshift )/self.hubble
 
     return self._ahf_halos_length_scale_pkpc

@@ -490,7 +490,10 @@ class AHFUpdater( read_ahf.AHFReader ):
     redshift = metafile_reader.snapshot_times['redshift'][self.ahf_halos_snum]
 
     # Get the radius in pkpc/h
-    radius = galaxy_cut*self.ahf_halos[length_scale]
+    try:
+      radius = galaxy_cut*self.ahf_halos[length_scale]
+    except KeyError:
+      radius = galaxy_cut*self.ahf_halos_add[length_scale]
     radius /= ( 1. + redshift )
 
     # Get the mass in Msun/h
@@ -812,6 +815,11 @@ class AHFUpdater( read_ahf.AHFReader ):
     # Load the AHF_halos data
     self.get_halos( snum )
 
+    # Figure out if there are any valid halos at this redshift if not, then a *lot* can be skipped.
+    valid_halos = self.ahf_halos['n_star'] >= 10
+    no_valid_halos = valid_halos.sum() == 0
+    blank_array = np.array( [ np.nan, ]*self.ahf_halos.index.size )
+
     # Create AHF_halos add
     self.ahf_halos_add = pd.DataFrame( {}, index=self.ahf_halos.index )
     self.ahf_halos_add.index.names = ['ID']
@@ -826,7 +834,11 @@ class AHFUpdater( read_ahf.AHFReader ):
     if include_mass_radii:
       if verbose:
         print( "Including Mass Radii..." )
-      mass_radii = self.get_mass_radii( simulation_data_dir = simulation_data_dir, **mass_radii_kwargs )
+
+      if no_valid_halos:
+        mass_radii = [ blank_array, ]*len( mass_radii_kwargs['mass_fractions'] )
+      else:
+        mass_radii = self.get_mass_radii( simulation_data_dir = simulation_data_dir, **mass_radii_kwargs )
 
       for i, mass_fraction in enumerate( mass_radii_kwargs['mass_fractions'] ):
         label = 'Rstar{}'.format( mass_fraction )
@@ -838,7 +850,10 @@ class AHFUpdater( read_ahf.AHFReader ):
         print( "Including Enclosed Mass..." )
       for i, ptype in enumerate( enclosed_mass_ptypes ):
 
-        halo_masses = self.get_enclosed_mass( simulation_data_dir, ptype, **enclosed_mass_kwargs )
+        if no_valid_halos:
+          halo_masses = blank_array
+        else:
+          halo_masses = self.get_enclosed_mass( simulation_data_dir, ptype, **enclosed_mass_kwargs )
 
         label = self.key_parser.get_enclosed_mass_key( ptype, enclosed_mass_kwargs['galaxy_cut'], \
                                                        enclosed_mass_kwargs['length_scale'], )
@@ -854,11 +869,14 @@ class AHFUpdater( read_ahf.AHFReader ):
         if verbose:
           print( "  Finding average {}...".format( data_key ) )
 
-        average_quantity = self.get_average_quantity_inside_galaxy(
-          data_key,
-          simulation_data_dir,
-          **average_quantity_inside_galaxy_kwargs
-        )
+        if no_valid_halos:
+          average_quantity = blank_array
+        else:
+          average_quantity = self.get_average_quantity_inside_galaxy(
+            data_key,
+            simulation_data_dir,
+            **average_quantity_inside_galaxy_kwargs
+          )
 
         label = self.key_parser.get_average_quantity_key(
           data_key,
