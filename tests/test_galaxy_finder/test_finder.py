@@ -122,6 +122,14 @@ class TestGalaxyFinder( unittest.TestCase ):
 
   ########################################################################
 
+  def test_dist_to_all_valid_halos_single_particle( self ):
+    '''Test that we can get the distance to all valid halos, formatted correctly, even for a single particle.
+    '''
+
+    assert False
+
+  ########################################################################
+
   def test_find_containing_halos( self ):
 
     result = self.galaxy_finder.find_containing_halos()
@@ -1082,6 +1090,33 @@ class TestSummedQuantityInsideGalaxy( unittest.TestCase ):
 
     expected = np.array([ np.nan, np.nan, np.nan, ])
     actual = self.galaxy_finder.summed_quantity_inside_galaxy_valid_halos( particle_quantities, np.nan )
+    
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  @mock.patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos_fn' )
+  def test_summed_quantity_inside_galaxy_low_memory_mode( self, mock_dist_all_valid ):
+    '''Test that we can get the summed quantity inside the galaxy, but reduce the memory consumption
+    (at the cost of speed) by doing getting the sum for less galaxies at a given time.
+    '''
+
+    # Test Data
+    self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
+    self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
+    mock_dist_all_valid.side_effect = [ 
+      np.array( [ 0., 10., 500., ] ),
+      np.array( [ 15., 5., 485., ] ),
+      np.array( [ 10., 0., 490., ] ),
+      np.array( [ 500., 490., 0., ] ),
+    ]
+    particle_quantities = np.array([ 1., 2., 3., 4., ])
+
+    # Change parameters of galaxy finder to run low memory node.
+    self.galaxy_finder.low_memory_mode = True
+
+    actual = self.galaxy_finder.summed_quantity_inside_galaxy_valid_halos( particle_quantities )
+    expected = np.array([ 6., 3., 4., ])
     
     npt.assert_allclose( expected, actual )
 

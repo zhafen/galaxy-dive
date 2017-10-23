@@ -1,1 +1,3 @@
-{}
+{
+  "tests/test_galaxy_finder/test_finder.py::TestSummedQuantityInsideGalaxy::test_summed_quantity_inside_galaxy_low_memory_mode": true
+}

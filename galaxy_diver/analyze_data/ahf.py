@@ -816,6 +816,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     self.get_halos( snum )
 
     # Figure out if there are any valid halos at this redshift if not, then a *lot* can be skipped.
+    # TODO: Don't hard-code this in....
     valid_halos = self.ahf_halos['n_star'] >= 10
     no_valid_halos = valid_halos.sum() == 0
     blank_array = np.array( [ np.nan, ]*self.ahf_halos.index.size )

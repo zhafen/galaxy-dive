@@ -41,6 +41,8 @@ class GalaxyFinder( object ):
     halo_file_tag = None,
     mtree_halos_index = None,
     main_mt_halo_id = None,
+    low_memory_mode = False,
+    memory_mode_divisions = 10,
     ):
     '''Initialize.
 
@@ -95,6 +97,14 @@ class GalaxyFinder( object ):
 
       main_mt_halo_id (int, optional) :
         Index of the main merger tree halo.
+
+      low_memory_mode (bool) :
+        If True, use less memory at the cost of reduced performance.
+
+      memory_mode_divisions (int) :
+        When low_memory_mode is True, we reduce the memory cost by doing less work at once. This divides certain
+        arrays into a number of divisions equal to memory_mode_divisions, and then the results are calculated for
+        each division before bringing everything together.
     '''
 
     # Setup the default ahf_reader
@@ -143,28 +153,41 @@ class GalaxyFinder( object ):
     '''
     Returns:
       dist_to_all_valid_halos (np.ndarray) :
-        Distance between the particle positions and all *.AHF_halos halos containing a galaxy (in pkpc).
+        Distance between self.particle_positions and all *.AHF_halos halos containing a galaxy (in pkpc).
     '''
 
     if not hasattr( self, '_dist_to_all_valid_halos' ):
 
-      self.ahf_reader.get_halos( self.snum )
-      self.ahf_reader.get_halos_add( self.snum )
-        
-      # Get the halo positions
-      halo_pos_comov = np.array([
-        self.ahf_reader.ahf_halos['Xc'],
-        self.ahf_reader.ahf_halos['Yc'],
-        self.ahf_reader.ahf_halos['Zc'],
-      ]).transpose()
-      halo_pos = halo_pos_comov/( 1. + self.redshift )/self.hubble
-      halo_pos_selected = halo_pos[self.valid_halo_inds]
-
-      # Get the distances
-      # Output is ordered such that dist[:,0] is the distance to the center of halo 0 for each particle
-      self._dist_to_all_valid_halos = scipy.spatial.distance.cdist( self.particle_positions, halo_pos_selected )
+      self._dist_to_all_valid_halos = dist_to_all_valid_halos_fn( self.particle_positions )
 
     return self._dist_to_all_valid_halos
+
+  def dist_to_all_valid_halos_fn( self, particle_positions ):
+    '''
+    Args:
+      particle_positions (np.ndarray) :
+        Location of particles to find the distance for.
+
+    Returns:
+      dist_to_all_valid_halos (np.ndarray) :
+        Distance between the particle positions and all *.AHF_halos halos containing a galaxy (in pkpc).
+    '''
+
+    self.ahf_reader.get_halos( self.snum )
+    self.ahf_reader.get_halos_add( self.snum )
+      
+    # Get the halo positions
+    halo_pos_comov = np.array([
+      self.ahf_reader.ahf_halos['Xc'],
+      self.ahf_reader.ahf_halos['Yc'],
+      self.ahf_reader.ahf_halos['Zc'],
+    ]).transpose()
+    halo_pos = halo_pos_comov/( 1. + self.redshift )/self.hubble
+    halo_pos_selected = halo_pos[self.valid_halo_inds]
+
+    # Get the distances
+    # Output is ordered such that dist[:,0] is the distance to the center of halo 0 for each particle
+    return scipy.spatial.distance.cdist( particle_positions, halo_pos_selected )
 
   ########################################################################
 
@@ -635,7 +658,7 @@ class GalaxyFinder( object ):
 
   ########################################################################
 
-  def summed_quantity_inside_galaxy_valid_halos( self, particle_quantities, fill_value ):
+  def summed_quantity_inside_galaxy_valid_halos( self, particle_quantities, fill_value=0. ):
     '''Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),
     for halos that are "valid" (i.e. usually meeting some minimum criteria).
 
@@ -650,40 +673,77 @@ class GalaxyFinder( object ):
       summed_quantity_inside_galaxy_valid (np.ndarray)
     '''
 
-    # Case where there are no halos formed yet.
-    if self.ahf_halos_length_scale_pkpc.size == 0:
-      return np.array( [] )
+    def work_fn( particle_quantities_passed, particle_positions_passed=None ):
+      '''Private function that actually does what we want.
+      '''
 
-    # Case where no halos meet the minimum criteria yet.
-    if self.valid_halo_inds.size == 0:
-      return np.array( [] )
+      # Case where there are no halos formed yet.
+      if self.ahf_halos_length_scale_pkpc.size == 0:
+        return np.array( [] )
 
-    # Make a radial cut.
-    valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
-    outside_radial_cut = self.dist_to_all_valid_halos > valid_radial_cut_pkpc[np.newaxis,:]
+      # Case where no halos meet the minimum criteria yet.
+      if self.valid_halo_inds.size == 0:
+        return np.array( [] )
 
-    # Tile the quantity for proper masking
-    quantity_tiled = np.tile( particle_quantities, ( self.valid_halo_inds.size, 1 ) ).transpose()
+      if self.low_memory_mode:
 
-    quantity_ma = np.ma.masked_array( quantity_tiled, mask=outside_radial_cut )
+        #DEBUG
+        import pdb; pdb.set_trace()
+        dist_to_all_valid_halos_used = self.dist_to_all_valid_halos_fn( particle_positions_passed )
 
-    # Do the actual sum.
-    summed_quantity_inside_galaxy_valid = quantity_ma.sum( axis=0 )
+      else:
+        
+        # Make sure we're not trying to use any weird particle positions, i.e. we're using the defaults
+        assert particle_positions_passed is None
 
-    # Fill in any values where there are no particles in the galaxy.
-    summed_quantity_inside_galaxy_valid.fill_value = fill_value
-    summed_quantity_inside_galaxy_valid = summed_quantity_inside_galaxy_valid.filled()
+        dist_to_all_valid_halos_used = self.dist_to_all_valid_halos
 
-    # Make sure that we don't count halos with NaN length scales as containing all particles.
-    has_bad_value = np.ma.fix_invalid( valid_radial_cut_pkpc ).mask
-    summed_quantity_inside_galaxy_valid = np.where( has_bad_value, np.nan, summed_quantity_inside_galaxy_valid, )
+      # Make a radial cut.
+      valid_radial_cut_pkpc = self.galaxy_cut*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
+      outside_radial_cut = dist_to_all_valid_halos_used > valid_radial_cut_pkpc[np.newaxis,:]
 
-    return summed_quantity_inside_galaxy_valid
+      # Tile the quantity for proper masking
+      quantity_tiled = np.tile( particle_quantities_passed, ( self.valid_halo_inds.size, 1 ) ).transpose()
 
-  ########################################################################
+      quantity_ma = np.ma.masked_array( quantity_tiled, mask=outside_radial_cut )
 
-  def summed_quantity_inside_galaxy( self, particle_quantities, fill_value ):
-    '''Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).
+      # Do the actual sum.
+      summed_quantity_inside_galaxy_valid = quantity_ma.sum( axis=0 )
+
+      # Fill in any values where there are no particles in the galaxy.
+      summed_quantity_inside_galaxy_valid.fill_value = fill_value
+      summed_quantity_inside_galaxy_valid = summed_quantity_inside_galaxy_valid.filled()
+
+      # Make sure that we don't count halos with NaN length scales as containing all particles.
+      has_bad_value = np.ma.fix_invalid( valid_radial_cut_pkpc ).mask
+      summed_quantity_inside_galaxy_valid = np.where( has_bad_value, np.nan, summed_quantity_inside_galaxy_valid, )
+
+      return summed_quantity_inside_galaxy_valid
+
+    if self.low_memory_mode:
+
+      # Low memory node will not necessarily work for non-zero fill_values, so assert that fill_value == 0
+      np.testing.assert_allclose( 0., fill_value, atol=1e-7 )
+
+      # Split the particle quantities into smaller lists
+      particle_quantities_chunked = utilities.chunk_list( particle_quantities, self.memory_mode_divisions )
+      particle_positions_chunked = utilities.chunk_list( self.particle_positions, self.memory_mode_divisions )
+
+      # Get the result
+      summed_quantities_split = [ work_fn( particle_quantities_chunk, particle_positions_chunk ) for \
+                                  particle_quantities_chunk, particle_positions_chunk in \
+                                  zip( particle_quantities_chunked, particle_positions_chunked ) ]
+
+      # Sum and return results
+      return np.array( summed_quantities_split ).sum( axis=0 )
+
+    else:
+      return work_fn( particle_quantities )
+
+    ########################################################################
+
+    def summed_quantity_inside_galaxy( self, particle_quantities, fill_value ):
+      '''Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).
     Args:
       particle_quantities (np.ndarray) :
         Quantities to sum.
