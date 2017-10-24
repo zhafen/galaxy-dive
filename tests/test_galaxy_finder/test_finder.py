@@ -126,7 +126,20 @@ class TestGalaxyFinder( unittest.TestCase ):
     '''Test that we can get the distance to all valid halos, formatted correctly, even for a single particle.
     '''
 
-    assert False
+    # Setup test data.
+    particle_positions = np.array( [
+      [ 29414.96458784,  30856.75007114,  32325.90901812]
+    ] )/( (1. + self.redshift)*self.hubble )
+    actual = self.galaxy_finder.dist_to_all_valid_halos_fn( particle_positions )
+
+    # Build the expected output
+    n_halos = self.galaxy_finder.ahf_reader.ahf_halos.index.size
+    n_particles = 1
+    expected_shape = ( n_particles, n_halos )
+
+    npt.assert_allclose( actual[ 0, 0, ], 0., atol=1e-7 )
+
+    self.assertEqual( actual.shape, expected_shape )
 
   ########################################################################
 
@@ -1105,10 +1118,10 @@ class TestSummedQuantityInsideGalaxy( unittest.TestCase ):
     self.galaxy_finder._ahf_halos_length_scale_pkpc = np.array([ 200., 10., 100., 50., ])
     self.galaxy_finder._valid_halo_inds = np.array([ 0, 1, 2, ])
     mock_dist_all_valid.side_effect = [ 
-      np.array( [ 0., 10., 500., ] ),
-      np.array( [ 15., 5., 485., ] ),
-      np.array( [ 10., 0., 490., ] ),
-      np.array( [ 500., 490., 0., ] ),
+      np.array( [ [ 0., 10., 500., ], ] ),
+      np.array( [ [ 15., 5., 485., ], ] ),
+      np.array( [ [ 10., 0., 490., ], ] ),
+      np.array( [ [ 500., 490., 0., ], ] ),
       np.array( [] ),
       np.array( [] ),
       np.array( [] ),

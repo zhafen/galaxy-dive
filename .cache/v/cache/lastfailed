@@ -1,3 +1,1 @@
-{
-  "tests/test_galaxy_finder/test_finder.py::TestGalaxyFinder::test_dist_to_all_valid_halos_single_particle": true
-}
+{}
