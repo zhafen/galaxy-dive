@@ -158,7 +158,7 @@ class GalaxyFinder( object ):
 
     if not hasattr( self, '_dist_to_all_valid_halos' ):
 
-      self._dist_to_all_valid_halos = dist_to_all_valid_halos_fn( self.particle_positions )
+      self._dist_to_all_valid_halos = self.dist_to_all_valid_halos_fn( self.particle_positions )
 
     return self._dist_to_all_valid_halos
 
@@ -685,10 +685,11 @@ class GalaxyFinder( object ):
       if self.valid_halo_inds.size == 0:
         return np.array( [] )
 
-      if self.low_memory_mode:
+      # If we don't have any particles, just return a filled array.
+      if particle_quantities_passed.size == 0:
+        return np.array( [ fill_value, ]*self.valid_halo_inds.size )
 
-        #DEBUG
-        import pdb; pdb.set_trace()
+      if self.low_memory_mode:
         dist_to_all_valid_halos_used = self.dist_to_all_valid_halos_fn( particle_positions_passed )
 
       else:
@@ -740,10 +741,10 @@ class GalaxyFinder( object ):
     else:
       return work_fn( particle_quantities )
 
-    ########################################################################
+  ########################################################################
 
-    def summed_quantity_inside_galaxy( self, particle_quantities, fill_value ):
-      '''Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).
+  def summed_quantity_inside_galaxy( self, particle_quantities, fill_value ):
+    '''Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).
     Args:
       particle_quantities (np.ndarray) :
         Quantities to sum.

@@ -1109,6 +1109,12 @@ class TestSummedQuantityInsideGalaxy( unittest.TestCase ):
       np.array( [ 15., 5., 485., ] ),
       np.array( [ 10., 0., 490., ] ),
       np.array( [ 500., 490., 0., ] ),
+      np.array( [] ),
+      np.array( [] ),
+      np.array( [] ),
+      np.array( [] ),
+      np.array( [] ),
+      np.array( [] ),
     ]
     particle_quantities = np.array([ 1., 2., 3., 4., ])
 
