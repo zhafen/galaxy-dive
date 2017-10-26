@@ -41,7 +41,7 @@ class GalaxyFinder( object ):
     halo_file_tag = None,
     mtree_halos_index = None,
     main_mt_halo_id = None,
-    low_memory_mode = False,
+    low_memory_mode = True,
     memory_mode_divisions = 10,
     ):
     '''Initialize.

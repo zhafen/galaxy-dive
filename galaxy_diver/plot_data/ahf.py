@@ -121,6 +121,7 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
   def plot_halo_time( self,
     y_key,
     y_data = default,
+    y_scale = default,
     hubble_param = default,
     conversion_factor = default,
     convert_to_physical = False,
@@ -188,6 +189,9 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
 
     if y_label is default:
       y_label = y_key
+
+    if y_scale is not default:
+      ax.set_yscale( y_scale )
 
     ax.set_xlabel( r'z', fontsize=22, )
     ax.set_ylabel( y_label, fontsize=22, )
