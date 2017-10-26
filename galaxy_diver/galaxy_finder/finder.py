@@ -135,7 +135,10 @@ class GalaxyFinder( object ):
     if not hasattr( self, '_valid_halo_inds' ):
 
       self.ahf_reader.get_halos( self.snum )
-      self.ahf_reader.get_halos_add( self.snum )
+      try:
+        self.ahf_reader.get_halos_add( self.snum )
+      except NameError:
+        pass
 
       # Apply a cut on containing a minimum amount of stars
       min_criteria = self.ahf_reader.ahf_halos[ self.minimum_criteria ]
@@ -174,7 +177,10 @@ class GalaxyFinder( object ):
     '''
 
     self.ahf_reader.get_halos( self.snum )
-    self.ahf_reader.get_halos_add( self.snum )
+    try:
+      self.ahf_reader.get_halos_add( self.snum )
+    except NameError:
+      pass
       
     # Get the halo positions
     halo_pos_comov = np.array([
@@ -197,7 +203,10 @@ class GalaxyFinder( object ):
     if not hasattr( self, '_ahf_halos_length_scale_pkpc' ):
 
       self.ahf_reader.get_halos( self.snum )
-      self.ahf_reader.get_halos_add( self.snum )
+      try:
+        self.ahf_reader.get_halos_add( self.snum )
+      except NameError:
+        pass
 
       # Get the relevant length scale
       if self.length_scale == 'r_scale':
@@ -237,7 +246,10 @@ class GalaxyFinder( object ):
     try:
       # Load the ahf data
       self.ahf_reader.get_halos( self.snum )
-      self.ahf_reader.get_halos_add( self.snum )
+      try:
+        self.ahf_reader.get_halos_add( self.snum )
+      except NameError:
+        pass
 
     # Typically halo files aren't created for the first snapshot.
     # Account for this.

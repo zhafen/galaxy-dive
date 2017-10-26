@@ -1,1 +1,10 @@
-{}
+{
+  "tests/test_analyze_data/test_analyze_ahf.py::TestAverageInsideGalaxy::test_save_ahf_halos_add_including_masses": true, 
+  "tests/test_analyze_data/test_analyze_ahf.py::TestCircularVelocity::test_save_ahf_halos_add_including_v_circ": true, 
+  "tests/test_galaxy_finder/test_finder.py::TestFindMassRadii::test_mass_inside_all_halos": true, 
+  "tests/test_galaxy_finder/test_finder.py::TestFindMassRadii::test_mass_inside_galaxy_cut": true, 
+  "tests/test_galaxy_finder/test_finder.py::TestSummedQuantityInsideGalaxy::test_summed_quantity_inside_galaxy": true, 
+  "tests/test_galaxy_finder/test_finder.py::TestSummedQuantityInsideGalaxy::test_summed_quantity_inside_galaxy_valid_halos": true, 
+  "tests/test_galaxy_finder/test_finder.py::TestSummedQuantityInsideGalaxy::test_summed_quantity_valid_halos_no_inside_cut": true, 
+  "tests/test_galaxy_finder/test_finder.py::TestSummedQuantityInsideGalaxy::test_weighted_summed_quantity_inside_galaxy": true
+}
