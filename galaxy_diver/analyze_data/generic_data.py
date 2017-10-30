@@ -168,11 +168,12 @@ class GenericData( object ):
 
   ########################################################################
 
-  def get_processed_data( self, data_key, *args, **kwargs ):
+  def get_processed_data( self, data_key, data_method=default, *args, **kwargs ):
     '''Get post-processed data. (Accounting for fractions, log-space, etc.).
 
     Args:
       data_key (str) : What data to get.
+      data_method (str) : What method to use for getting the data itself. Defaults to using self.get_data
       *args, **kwargs : Passed to get_data()
 
     Returns:
@@ -185,9 +186,14 @@ class GenericData( object ):
     # Account for logarithmic data
     data_key, log_flag = self.key_parser.is_log_key( data_key )
 
+    # Choose what method we're using for getting data.
+    if data_method is default:
+      get_data_method = self.get_data
+    else:
+      get_data_method = getattr( self, data_method )
+
     # Get the data and make a copy to avoid altering
-    data_original = self.get_data( data_key, *args, **kwargs )
-    data = copy.deepcopy( data_original )
+    data = copy.deepcopy( get_data_method( data_key, *args, **kwargs ) )
 
     # Actually calculate the fractional data
     if fraction_flag:

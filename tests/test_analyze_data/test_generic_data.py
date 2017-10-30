@@ -154,6 +154,47 @@ class TestDataMasker( unittest.TestCase ):
 
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+########################################################################
+########################################################################
+
+class TestGetPreprocessedData( unittest.TestCase ):
+
+  def setUp( self ):
+
+    g_data = generic_data.GenericData( **default_kwargs )
+
+    # Make it so we don't have to load in the halo data
+    g_data.r_scale = 1.
+    g_data.centered = True
+
+    g_data.base_data_shape = ( 4, )
+
+    # Setup some necessary data
+    g_data.data = {
+      'P' : np.random.rand( 3, 4 ),
+      'Den' : np.array( [ 1e-6, 1e-4, 1e2, 1e-2 ] ),
+      'R' : np.array( [ 0.25, 0.4999, 1.0, 0.5111 ] )*g_data.length_scale,
+      'PType' : np.array( [ 0, 4, 4, 0, ] ),
+    }
+
+    self.g_data = g_data
+
+  ########################################################################
+
+  @mock.patch( 'galaxy_diver.analyze_data.generic_data.GenericData.get_data_alt', create=True )
+  def test_different_get_data_method( self, mock_get_data_alt ):
+
+    mock_get_data_alt.side_effect = [ np.array([ 1., 10., 100., ]), ]
+
+    actual = self.g_data.get_processed_data( 'logZ', sl=1, data_method='get_data_alt' )
+    expected = np.array([ 0., 1., 2., ])
+
+    npt.assert_allclose( actual, expected )
+
+    mock_get_data_alt.assert_called_once_with( 'Z', sl=1 )
+
 ########################################################################
 ########################################################################
 
