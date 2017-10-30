@@ -446,7 +446,7 @@ class AHFUpdater( read_ahf.AHFReader ):
       'length_scale' : length_scale,
       'ahf_reader' : self,
     }
-    gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
+    gal_finder = galaxy_finder.GalaxyFinder( low_memory_mode=False, **galaxy_finder_kwargs )
 
     average_quantity_inside_galaxy = gal_finder.weighted_summed_quantity_inside_galaxy(
       s_data.get_data( data_key ),
