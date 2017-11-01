@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.gridspec as gridspec
 import matplotlib.patheffects as path_effects
+import matplotlib.transforms as transforms
 
 import galaxy_diver.utils.mp_utils as mp_utils
 import galaxy_diver.utils.utilities as utilities
@@ -33,7 +34,7 @@ default = object()
 class GenericPlotter( object ):
 
   @utilities.store_parameters
-  def __init__( self, data_object, label=None, ):
+  def __init__( self, data_object, label=None, color='black', ):
     '''
     Args:
       data_object ( generic_data.GenericData object or subclass of such ) : The data container to use.
@@ -51,6 +52,7 @@ class GenericPlotter( object ):
     slices = None,
     ax = default,
     fix_invalid = False,
+    invalid_fix_method = default,
     bins = 32,
     normed = True,
     x_range = default,
@@ -59,11 +61,16 @@ class GenericPlotter( object ):
     y_label = default,
     add_x_label = True, add_y_label = True,
     plot_label = default,
-    line_label = None,
+    line_label = default,
     label_fontsize = 24,
     color = 'black',
+    linestyle = '-',
+    x_scale = 'linear',
     y_scale = 'linear',
     cdf = False,
+    vertical_line = None,
+    vertical_line_kwargs = { 'linestyle' : '--', 'linewidth' : 3, 'color' : 'k', },
+    return_dist = False,
     *args, **kwargs ):
     '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
 
@@ -82,6 +89,8 @@ class GenericPlotter( object ):
       cdf (bool) : Plot a CDF instead.
     '''
 
+    print( "Plotting histogram for {}".format( data_key ) )
+
     if isinstance( slices, int ):
       sl = ( slice(None), slices )
     else:
@@ -95,7 +104,12 @@ class GenericPlotter( object ):
       weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
 
     if fix_invalid:
-      data = np.ma.fix_invalid( data ).compressed()
+      if invalid_fix_method is default:
+        data = np.ma.fix_invalid( data ).compressed()
+      else:
+        data = np.ma.fix_invalid( data )
+        data.fill_value = invalid_fix_method
+        data = data.filled()
 
     if ax is default:
       fig = plt.figure( figsize=(11,5), facecolor='white', )
@@ -113,8 +127,19 @@ class GenericPlotter( object ):
     if cdf:
       hist = np.cumsum( hist )*(edges[1] - edges[0])
 
+    if line_label is default:
+      line_label = self.label
+
+    if color is default:
+      color = self.color
+
     # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
-    ax.step( edges, np.insert(hist, 0, 0.), color=color, linewidth=3.5, label=line_label )
+    ax.step( edges, np.insert(hist, 0, 0.), color=color, linestyle=linestyle, linewidth=3.5, label=line_label )
+
+    # Plot a vertical line?
+    if vertical_line is not None:
+      trans = transforms.blended_transform_factory( ax.transData, ax.transAxes )
+      ax.plot( [ vertical_line, ]*2, [ 0., 1., ], **vertical_line_kwargs )
 
     # Plot label
     if plot_label is default:
@@ -123,6 +148,8 @@ class GenericPlotter( object ):
       plt_label = ax.annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
     elif isinstance( plot_label, dict ):
       plt_label = ax.annotate( **plot_label )
+    elif plot_label is None:
+      pass
     else:
       raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
 
@@ -144,7 +171,11 @@ class GenericPlotter( object ):
     if y_range is not default:
       ax.set_ylim( y_range )
 
+    ax.set_xscale( x_scale )
     ax.set_yscale( y_scale )
+
+    if return_dist:
+      return hist, edges
 
   ########################################################################
 
