@@ -65,6 +65,7 @@ class GenericPlotter( object ):
     label_fontsize = 24,
     color = 'black',
     linestyle = '-',
+    alpha = 1.,
     x_scale = 'linear',
     y_scale = 'linear',
     cdf = False,
@@ -134,7 +135,15 @@ class GenericPlotter( object ):
       color = self.color
 
     # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
-    ax.step( edges, np.insert(hist, 0, 0.), color=color, linestyle=linestyle, linewidth=3.5, label=line_label )
+    ax.step(
+      edges,
+      np.insert(hist, 0, 0.),
+      color=color,
+      linestyle=linestyle,
+      linewidth=3.5,
+      label=line_label,
+      alpha=alpha,
+    )
 
     # Plot a vertical line?
     if vertical_line is not None:
