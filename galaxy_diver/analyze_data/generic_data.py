@@ -117,7 +117,7 @@ class GenericData( object ):
   # Data Retrieval
   ########################################################################
 
-  def get_data( self, data_key, sl=None ):
+  def get_data( self, data_key, sl=None, data_storage=default ):
     '''Get the data from within the class. Only for getting the data. No post-processing or changing the data
     (putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
     hence a whole function for getting the data.
@@ -129,6 +129,9 @@ class GenericData( object ):
     Returns:
       data (np.ndarray) : Requested data.
     '''
+
+    if data_storage is default:
+      data_storage = self.data
 
     # Loop through, handling issues
     n_tries = 10
