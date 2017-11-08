@@ -320,15 +320,26 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
   '''Copy a gadget/gizmo snapshot, and subsample it if you choose to.
 
   Args:
-    sdir (str) : Snapshot directory to copy from.
-    snum (int) : Which snapshot to copy over.
-    copy_dir (str) : Where you want to save the copied snapshot.
-    subsamples (bool or int) : If not False, the number of particles you will have in your subsampled snapshot,
+    sdir (str) :
+      Snapshot directory to copy from.
+
+    snum (int) :
+      Which snapshot to copy over.
+
+    copy_dir (str) :
+      Where you want to save the copied snapshot.
+
+    subsamples (bool or int) :
+      If not False, the number of particles you will have in your subsampled snapshot,
       per file part.
-    redistribute (bool) : If True, redistribute the particles evenly among the snapshots.
-    n_files (str or int) : If not default, the number of pieces you want your copied snapshot broken into
+
+    redistribute (bool) :
+      If True, redistribute the particles evenly among the snapshots.
+
+    n_files (str or int) :
+      If not default, the number of pieces you want your copied snapshot broken into
       (must be less than the number of pieces in the original snapshot). In general, should really only be used when
-      subsampling.
+      subsampling or redistributing.
   '''
 
   snapdir = os.path.join( sdir, 'snapdir_{:03}'.format( snum ) )
