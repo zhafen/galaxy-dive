@@ -123,8 +123,10 @@ class SimulationData( generic_data.GenericData ):
 
     if self.length_scale_used == 'R_vir':
       return self.r_vir
-    else:
+    elif self.length_scale_used == 'r_scale':
       return self.r_scale
+    else:
+      return self.ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum][self.length_scale_used]
 
   ########################################################################
 
