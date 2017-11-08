@@ -338,8 +338,8 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
 
     n_files (str or int) :
       If not default, the number of pieces you want your copied snapshot broken into
-      (must be less than the number of pieces in the original snapshot). In general, should really only be used when
-      subsampling or redistributing.
+      (must be less than the number of pieces in the original snapshot if subsampling).
+      In general, should really only be used when subsampling or redistributing.
   '''
 
   snapdir = os.path.join( sdir, 'snapdir_{:03}'.format( snum ) )
