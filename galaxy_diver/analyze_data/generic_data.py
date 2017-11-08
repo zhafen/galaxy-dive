@@ -402,7 +402,8 @@ class DataMasker( object ):
     data_max = default,
     data_value = default,
     custom_mask = default,
-    return_or_store = 'store' ):
+    return_or_store = 'store',
+    *args, **kwargs ):
     '''Get only the particle data within a certain range. Note that it retrieves the processed data.
 
     Args:
@@ -412,6 +413,7 @@ class DataMasker( object ):
       data_value (float) : Everything except for data_value will be masked.
       custom_mask (bool) : If provided, take in a custom mask instead, using data_key as the label for the mask.
       return_or_store (str) : Whether to store the mask as part of the masks dictionary, or to return it.
+      *args, **kwargs : Passed to self.data_object.get_processed_data()
 
     Returns:
       data_mask (np.array of bools) : If requested, the mask for data in that range.
@@ -427,7 +429,7 @@ class DataMasker( object ):
     assert ( mask_outside + mask_discrete + mask_custom )==1, "Bad combination of masks!"
 
     if not mask_custom:
-      data = self.data_object.get_processed_data( data_key )
+      data = self.data_object.get_processed_data( data_key, *args, **kwargs )
 
     # Get the mask
     if mask_outside:

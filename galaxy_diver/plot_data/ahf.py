@@ -36,17 +36,19 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
   ########################################################################
 
   def plot_halos_snapshot( self,
-                           snum,
-                           ax = default,
-                           type_of_halo_id = 'ahf_halos',
-                           color = 'w',
-                           linestyle = 'solid',
-                           linewidth = 2,
-                           outline = True,
-                           center = True,
-                           hubble_param = default,
-                           radius_fraction = 1.,
-                           ):
+    snum,
+    ax = default,
+    type_of_halo_id = 'ahf_halos',
+    color = 'w',
+    linestyle = 'solid',
+    linewidth = 2,
+    outline = True,
+    center = True,
+    hubble_param = default,
+    radius_fraction = 1.,
+    length_scale = 'Rstar0.5',
+    n_halos_plotted = 100,
+    ):
     '''Plot the halos as circles at their respective locations.
     
     Args:
@@ -60,6 +62,8 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
       center (bool) : Should the plot be centered at the most massive halo at z=0?
       hubble_param (float) : If given, the positions will be converted to physical kpc.
       radius_fraction (float) : The circles will be radius_fraction*r_scale
+      length_scale (str) : What length scale to use?
+      n_halos_plotted (int) : Number of AHF halos to show.
     '''
 
     if ax is default:
@@ -67,34 +71,43 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
       ax = plt.gca()
       
     if type_of_halo_id == 'ahf_halos':
-      self.ahf_reader.get_halos( snum )
-      x_pos = self.ahf_reader.ahf_halos['Xc'][:50]
-      y_pos = self.ahf_reader.ahf_halos['Yc'][:50]
+      self.data_object.get_halos( snum )
+      self.data_object.get_halos_add( snum )
 
-      r_vir = self.ahf_reader.ahf_halos['Rvir'][:50]
+      x_pos = self.data_object.ahf_halos['Xc'][:n_halos_plotted]
+      y_pos = self.data_object.ahf_halos['Yc'][:n_halos_plotted]
 
-      self.ahf_reader.get_halos_add( snum )
-      c_analytic = self.ahf_reader.ahf_halos['cAnalytic'][:50]
+      if length_scale == 'r_scale':
+        r_vir = self.data_object.ahf_halos['Rvir'][:n_halos_plotted]
+        c_analytic = self.data_object.ahf_halos['cAnalytic'][:n_halos_plotted]
+        used_length_scale = r_vir/c_analytic
+      else:
+        used_length_scale = self.data_object.ahf_halos[length_scale][:n_halos_plotted]
 
     elif type_of_halo_id == 'merger_tree':
-      x_pos = self.ahf_reader.get_mtree_halo_quantity( 'Xc', snum, self.ahf_reader.index, self.ahf_reader.tag )
-      y_pos = self.ahf_reader.get_mtree_halo_quantity( 'Yc', snum, self.ahf_reader.index, self.ahf_reader.tag )
+      x_pos = self.data_object.get_mtree_halo_quantity( 'Xc', snum, self.data_object.index, self.data_object.tag )
+      y_pos = self.data_object.get_mtree_halo_quantity( 'Yc', snum, self.data_object.index, self.data_object.tag )
 
-      r_vir = self.ahf_reader.get_mtree_halo_quantity( 'Rvir', snum, self.ahf_reader.index, self.ahf_reader.tag )
-      c_analytic = self.ahf_reader.get_mtree_halo_quantity( 'cAnalytic', snum, self.ahf_reader.index,
-                                                            self.ahf_reader.tag )
-    r_scale = r_vir/c_analytic
-    radii = radius_fraction*r_scale
+      if length_scale == 'r_scale':
+        r_vir = self.data_object.get_mtree_halo_quantity( 'Rvir', snum, self.data_object.index, self.data_object.tag )
+        c_analytic = self.data_object.get_mtree_halo_quantity( 'cAnalytic', snum, self.data_object.index,
+                                                            self.data_object.tag )
+        used_length_scale = r_vir/c_analytic
+      else:
+        used_length_scale = self.data_object.get_mtree_halo_quantity( length_scale, snum, self.data_object.index,
+                                                                      self.data_object.tag )
+
+    radii = radius_fraction*used_length_scale
 
     if hubble_param is not default:
-      redshift = self.ahf_reader.mtree_halos[0]['redshift'][snum]
+      redshift = self.data_object.mtree_halos[0]['redshift'][snum]
       x_pos /= ( 1. + redshift )*hubble_param
       y_pos /= ( 1. + redshift )*hubble_param
       radii /= ( 1. + redshift )*hubble_param
 
     if center:
-      x_center = self.ahf_reader.mtree_halos[0]['Xc'][snum]
-      y_center = self.ahf_reader.mtree_halos[0]['Yc'][snum]
+      x_center = self.data_object.mtree_halos[0]['Xc'][snum]
+      y_center = self.data_object.mtree_halos[0]['Yc'][snum]
       
       if hubble_param is not default:
         x_center /= ( 1. + redshift )*hubble_param
@@ -140,7 +153,7 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
       fig = plt.figure( figsize=(10, 6), facecolor='white' )
       ax = plt.gca()
 
-    plotted_mtree_halo = self.data_object.ahf_reader.mtree_halos[halo_id]
+    plotted_mtree_halo = self.data_object.data_object.mtree_halos[halo_id]
 
     x_data = np.log10( 1. + plotted_mtree_halo['redshift'] )
 

@@ -591,6 +591,12 @@ def saveToLog( log_save_file ):
   return 0
 
 ########################################################################
+
+def map_interval_to_interval( values, old_min, old_max, new_min=0, new_max=1, ):
+
+  pass
+
+########################################################################
 # Tools for dealing with cosmology-specific data files.
 ########################################################################
 

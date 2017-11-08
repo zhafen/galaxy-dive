@@ -65,6 +65,7 @@ class GenericPlotter( object ):
     label_fontsize = 24,
     color = 'black',
     linestyle = '-',
+    linewidth = 3.5,
     alpha = 1.,
     x_scale = 'linear',
     y_scale = 'linear',
@@ -140,7 +141,7 @@ class GenericPlotter( object ):
       np.insert(hist, 0, 0.),
       color=color,
       linestyle=linestyle,
-      linewidth=3.5,
+      linewidth=linewidth,
       label=line_label,
       alpha=alpha,
     )
@@ -196,7 +197,6 @@ class GenericPlotter( object ):
     x_range = default, y_range = default,
     n_bins = 128,
     vmin = None, vmax = None,
-    plot_halos = False,
     add_colorbar = True,
     colorbar_args = default,
     x_label = default, y_label = default,
@@ -252,7 +252,7 @@ class GenericPlotter( object ):
     if fix_invalid:
       x_mask = np.ma.fix_invalid( x_data ).mask
       y_mask = np.ma.fix_invalid( y_data ).mask
-      mask = x_mask or y_mask
+      mask = np.ma.mask_or( x_mask, y_mask )
 
       x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
       y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
@@ -301,19 +301,6 @@ class GenericPlotter( object ):
       line_x = np.array( [ x_data.min(), x_data.max() ] )
       line_y = line_slope*line_x
       ax.plot( line_x, line_y, linewidth=3, linestyle='dashed', )
-
-    #if plot_halos:
-    #  ahf_plotter = plot_ahf.AHFPlotter( self.data_object.ptracks.ahf_reader )
-    #  snum = self.data_object.ptracks.ahf_reader.mtree_halos[0].index[slices]
-    #  ahf_plotter.plot_halos_snapshot(
-    #    snum,
-    #    ax,
-    #    color = '#4daf4a',
-    #    linewidth = 3,
-    #    hubble_param = self.data_object.ptracks.data_attrs['hubble'],
-    #    radius_fraction = self.data_object.galids.parameters['galaxy_cut']
-    #  )
-    #  assert self.data_object.galids.parameters['length_scale'] == 'r_scale'
 
     # Plot label
     if plot_label is default:
@@ -460,7 +447,7 @@ class GenericPlotter( object ):
     slices = default,
     plot_label = default,
     outline_plot_label = False,
-    label_galaxy_cut = True,
+    label_galaxy_cut = False,
     label_redshift = True,
     label_fontsize = 24,
     subplot_label_args = { 'xy' : (0.075, 0.88), 'xycoords' : 'axes fraction', 'fontsize' : 18, 'color' : 'w',  },
