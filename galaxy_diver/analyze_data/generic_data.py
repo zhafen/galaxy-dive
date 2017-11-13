@@ -503,6 +503,9 @@ class DataMasker( object ):
   def get_total_mask( self, optional_masks=None ):
     '''Get the result of combining all masks in the data.
 
+    Args:
+      optional_masks (list-like) : List of names of optional masks to use (must be found in self.optional_masks).
+
     Returns:
       total_mask (np.array of bools) : Result of all masks.
     '''
@@ -512,7 +515,10 @@ class DataMasker( object ):
     for mask_dict in self.masks:
       all_masks.append( mask_dict['mask'] )
 
-    # Get
+    # Get any requested optional masks
+    if optional_masks is not None:
+      for optional_mask in optional_masks:
+        all_masks.append( self.optional_masks[optional_mask]['mask'] )
 
     # Combine masks
     return np.any( all_masks, axis=0, keepdims=True )[0]
