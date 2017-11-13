@@ -88,6 +88,18 @@ class TestDataMasker( unittest.TestCase ):
 
   ########################################################################
 
+  def test_mask_data_optional_masks( self ):
+    '''Test that we can store a data mask as an optional mask.'''
+
+    self.data_masker.mask_data( 'logDen', -5., -1., mask_name='test_mask_a', optional_mask=True )
+
+    actual = self.data_masker.optional_masks['test_mask_a']['mask']
+    expected = np.array( [ 1, 0, 1, 0 ] ).astype( bool )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_get_total_mask( self ):
 
     # Setup some masks first.
@@ -95,6 +107,21 @@ class TestDataMasker( unittest.TestCase ):
     self.data_masker.mask_data( 'Rf', 0., 0.5, )
 
     actual = self.data_masker.get_total_mask()
+    expected = np.array( [ 1, 0, 1, 1 ] ).astype( bool )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  def test_get_total_mask_optional_masks_included( self ):
+    '''Test that we can get the total mask out even when we use some optional masks
+    '''
+
+    # Setup some masks first.
+    self.data_masker.mask_data( 'logDen', -5., -1., optional_mask=True )
+    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+
+    actual = self.data_masker.get_total_mask( optional_masks=[ 'logDen', ] )
     expected = np.array( [ 1, 0, 1, 1 ] ).astype( bool )
 
     npt.assert_allclose( expected, actual )

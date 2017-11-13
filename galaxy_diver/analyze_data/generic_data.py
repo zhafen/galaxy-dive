@@ -393,6 +393,7 @@ class DataMasker( object ):
     self.data_object = data_object
 
     self.masks = []
+    self.optional_masks = {}
 
   ########################################################################
 
@@ -403,23 +404,47 @@ class DataMasker( object ):
     data_value = default,
     custom_mask = default,
     return_or_store = 'store',
+    optional_mask = False,
+    mask_name = default,
     *args, **kwargs ):
     '''Get only the particle data within a certain range. Note that it retrieves the processed data.
 
     Args:
-      data_key (str) : Data key to base the mask off of.
-      data_min (float) : Everything below data_min will be masked.
-      data_max (float) : Everything above data_max will be masked.
-      data_value (float) : Everything except for data_value will be masked.
-      custom_mask (bool) : If provided, take in a custom mask instead, using data_key as the label for the mask.
-      return_or_store (str) : Whether to store the mask as part of the masks dictionary, or to return it.
-      *args, **kwargs : Passed to self.data_object.get_processed_data()
+      data_key (str) :
+        Data key to base the mask off of.
+
+      data_min (float) :
+        Everything below data_min will be masked.
+
+      data_max (float) :
+        Everything above data_max will be masked.
+
+      data_value (float) :
+        Everything except for data_value will be masked.
+
+      custom_mask (bool) :
+        If provided, take in a custom mask instead, using data_key as the label for the mask.
+
+      return_or_store (str) :
+        Whether to store the mask as part of the masks dictionary, or to return it.
+
+      optional_mask (bool) :
+        If True, store in the dictionary self.optional_masks instead.
+
+      mask_name (str) :
+        What name to associate with this mask? Currently only relevant if optional_mask is True.
+        By default uses the data_key as the name.
+
+      *args, **kwargs :
+        Passed to self.data_object.get_processed_data()
 
     Returns:
-      data_mask (np.array of bools) : If requested, the mask for data in that range.
+      data_mask (np.array of bools) :
+        If requested, the mask for data in that range.
 
     Modifies:
-      self.masks (list of dicts) : Appends a dictionary describing the mask.
+      self.masks (list of dicts) :
+        Appends a dictionary describing the mask.
     '''
 
     # Process what type of mask to get
@@ -448,13 +473,24 @@ class DataMasker( object ):
       mask = mask*np.ones( shape=data.shape, dtype=bool )
 
     if return_or_store == 'store':
+
       if mask_outside:
         mask_dict = {'data_key': data_key, 'data_min': data_min, 'data_max': data_max, 'mask': mask}
       elif mask_discrete:
         mask_dict = {'data_key': data_key, 'data_value' : data_value, 'mask': mask}
       elif mask_custom:
         mask_dict = {'data_key': data_key, 'custom_mask' : True, 'mask': mask}
-      self.masks.append( mask_dict )
+
+      if optional_mask:
+        if mask_name is default:
+          mask_name = data_key
+
+        assert mask_name not in self.optional_masks.keys(), "A mask with that name already exists!"
+
+        self.optional_masks[mask_name] = mask_dict
+
+      else:
+        self.masks.append( mask_dict )
 
     elif return_or_store == 'return':
       return mask
@@ -464,7 +500,7 @@ class DataMasker( object ):
 
   ########################################################################
 
-  def get_total_mask( self ):
+  def get_total_mask( self, optional_masks=None ):
     '''Get the result of combining all masks in the data.
 
     Returns:
@@ -475,6 +511,8 @@ class DataMasker( object ):
     all_masks = []
     for mask_dict in self.masks:
       all_masks.append( mask_dict['mask'] )
+
+    # Get
 
     # Combine masks
     return np.any( all_masks, axis=0, keepdims=True )[0]
