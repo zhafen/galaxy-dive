@@ -351,6 +351,149 @@ class GenericPlotter( object ):
 
   ########################################################################
 
+  def plot_scatter( self,
+    x_key, y_key,
+    weight_key = default,
+    slices = None,
+    ax = default,
+    x_range = default, y_range = default,
+    x_label = default, y_label = default,
+    add_x_label = True, add_y_label = True,
+    plot_label = default,
+    outline_plot_label = False,
+    label_galaxy_cut = False,
+    label_redshift = False,
+    label_fontsize = 24,
+    tick_param_args = default,
+    out_dir = None,
+    fix_invalid = True,
+    line_slope = default,
+    *args, **kwargs ):
+    '''Make a 2D scatter plot of the data. Extra arguments are passed to get_masked_data.
+    Args:
+      x_key, y_key (str) : Data keys to plot.
+      weight_key (str) : Data key for data to use as a weight. By default, no weight.
+      slices (int or tuple of slices) : How to slices the data.
+      ax (axis) : What axis to use. By default creates a figure and places the axis on it.
+      x_range, y_range ( (float, float) ) : Histogram edges. If default, all data is enclosed. If list, set manually.
+        If float, is +- x_range*length scale at that snapshot.
+      n_bins (int) : Number of bins in the histogram.
+      vmin, vmax (float) : Limits for the colorbar.
+      plot_halos (bool) : Whether or not to plot merger tree halos on top of the histogram.
+        Only makes sense for when dealing with positions.
+      add_colorbar (bool) : If True, add a colorbar to colorbar_args
+      colorbar_args (axis) : What axis to add the colorbar to. By default, is ax.
+      x_label, ylabel (str) : Axes labels.
+      add_x_label, add_y_label (bool) : Include axes labels?
+      plot_label (str or dict) : What to label the plot with. By default, uses self.label.
+        Can also pass a dict of full args.
+      outline_plot_label (bool) : If True, add an outline around the plot label.
+      label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.
+      label_redshift (bool) : If True, add a label indicating the redshift.
+      label_fontsize (int) : Fontsize for the labels.
+      tick_param_args (args) : Arguments to pass to ax.tick_params. By default, don't change inherent defaults.
+      out_dir (str) : If given, where to save the file.
+      fix_invalid (bool) : Fix invalid values.
+      line_slope (float) : If given, draw a line with the given slope.
+    '''
+
+    if isinstance( slices, int ):
+      sl = ( slice(None), slices )
+    else:
+      sl = slices
+
+    # Get data
+    x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **kwargs )
+    y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **kwargs )
+
+    # Fix NaNs
+    if fix_invalid:
+      x_mask = np.ma.fix_invalid( x_data ).mask
+      y_mask = np.ma.fix_invalid( y_data ).mask
+      mask = np.ma.mask_or( x_mask, y_mask )
+
+      x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
+      y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
+
+    if weight_key is default:
+      weights = None
+    else:
+      weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+
+    if x_range is default:
+      x_range = [ x_data.min(), x_data.max() ]
+    elif isinstance( x_range, float ):
+      x_range = np.array( [ -x_range, x_range ])*self.data_object.ptracks.length_scale.iloc[slices]
+    if y_range is default:
+      y_range = [ y_data.min(), y_data.max() ]
+    elif isinstance( y_range, float ):
+      y_range = np.array( [ -y_range, y_range ])*self.data_object.ptracks.length_scale.iloc[slices]
+
+    # Plot
+    if ax is default:
+      fig = plt.figure( figsize=(10,9), facecolor='white' )
+      ax = plt.gca()
+
+    s = ax.scatter( x_data, y_data, s=40, color='k', )
+    
+    # Change the z order
+    s.set_zorder( 100 )
+
+    # Halo Plot
+    if line_slope is not default:
+      line_x = np.array( [ x_data.min(), x_data.max() ] )
+      line_y = line_slope*line_x
+      ax.plot( line_x, line_y, linewidth=3, linestyle='dashed', )
+
+    # Plot label
+    if plot_label is default:
+      plt_label = ax.annotate( s=self.label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
+    elif isinstance( plot_label, str ):
+      plt_label = ax.annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
+    elif isinstance( plot_label, dict ):
+      plt_label = ax.annotate( **plot_label )
+    else:
+      raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
+    if outline_plot_label:
+      plt_label.set_path_effects([ path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal() ])
+
+    # Upper right label (info label)
+    info_label = ''
+    if label_galaxy_cut:
+      info_label = r'$r_{ \rm cut } = ' + '{:.3g}'.format( self.data_object.galids.parameters['galaxy_cut'] ) + 'r_{ s}$'
+    if label_redshift:
+      info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[slices] ) + '$, '+ info_label
+    if label_galaxy_cut or label_redshift:
+      ax.annotate( s=info_label, xy=(1.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,
+        ha='right' )
+
+    # Add axis labels
+    if add_x_label:
+      if x_label is default:
+        x_label = x_key
+      ax.set_xlabel( x_label, fontsize=label_fontsize )
+    if add_y_label:
+      if y_label is default:
+        y_label = y_key
+      ax.set_ylabel( y_label, fontsize=label_fontsize )
+
+    # Limits
+    ax.set_xlim( x_range )
+    ax.set_ylim( y_range )
+
+    # Set tick parameters
+    if tick_param_args is not default:
+      ax.tick_params( **tick_param_args )
+
+    # Save the file
+    if out_dir is not None:
+      save_file = '{}_{:03d}.png'.format( self.label, self.data_object.ptracks.snum[slices] )
+      gen_plot.save_fig( out_dir, save_file, fig=fig, dpi=75 )
+
+      plt.close()
+
+  ########################################################################
+
   def plot_time_dependent_data( self,
     ax = default,
     x_range = [ 0., np.log10(8.) ], y_range = default,
@@ -418,25 +561,36 @@ class GenericPlotter( object ):
 
   def same_axis_plot( self,
     axis_plotting_method_str,
-    defaults,
     variations,
+    ax = default,
+    out_dir = None,
+    add_line_label = False,
     *args, **kwargs ):
 
-    fig = plt.figure( figsize=(11,5), facecolor='white', )
-    ax = plt.gca()
+    if ax is default:
+      fig = plt.figure( figsize=(11,5), facecolor='white', )
+      ax = plt.gca()
 
-    all_plotting_kwargs = utilities.dict_from_defaults_and_variations( defaults, variations )
+    all_plotting_kwargs = utilities.dict_from_defaults_and_variations( kwargs, variations )
 
     axis_plotting_method = getattr( self, axis_plotting_method_str )
     for key, plotting_kwargs in all_plotting_kwargs.items():
       
       plotting_kwargs['ax'] = ax
 
-      plotting_kwargs['line_label'] = key
+      if add_line_label:
+        plotting_kwargs['line_label'] = key
 
-      axis_plotting_method( **plotting_kwargs )
+      axis_plotting_method( *args, **plotting_kwargs )
 
     ax.legend(prop={'size':16.5}, loc='upper right', fontsize=20)
+
+    # Save the file
+    if out_dir is not None:
+      save_file = '{}_{:03d}.png'.format( self.label, self.data_object.ptracks.snum[slices] )
+      gen_plot.save_fig( out_dir, save_file, fig=fig, dpi=75 )
+
+      plt.close()
 
   ########################################################################
 

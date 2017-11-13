@@ -63,7 +63,7 @@ class GenericData( object ):
   @property
   def length_scale( self ):
     '''Property for fiducial length scale. By default, is 1.
-    However, a more advanced subclass might set differently, or this might
+    However, a more advanced subclass might set this differently, or this might
     change in the future.
     '''
 
@@ -85,7 +85,7 @@ class GenericData( object ):
   @property
   def metallicity_scale( self ):
     '''Property for fiducial metallicity scale. By default is z_sun
-    However, a more advanced subclass might set differently, or this might
+    However, a more advanced subclass might set this differently, or this might
     change in the future.
     '''
 
