@@ -528,6 +528,7 @@ class DataMasker( object ):
   def get_masked_data( self,
     data_key,
     mask = 'total',
+    optional_masks = None,
     sl = None,
     apply_slice_to_mask = True,
     fix_invalid = False,
@@ -539,6 +540,7 @@ class DataMasker( object ):
     Args:
       data_key (str) : Data key to get the data for.
       mask (str or np.array of bools) : Mask to apply. If none, use the total mask.
+      optional_masks (list-like) : List of names of optional masks to use (must be found in self.optional_masks).
       sl (slice) : Slice to apply to the data
       apply_slice_to_mask (bool) : Whether or not to apply the same slice you applied to the data to the mask.
       fix_invalid (bool) : Whether or not to also mask invalid data.
@@ -564,7 +566,7 @@ class DataMasker( object ):
 
       raise Exception( "All data is masked." )
     elif mask == 'total':
-      used_mask = self.get_total_mask()
+      used_mask = self.get_total_mask( optional_masks=optional_masks )
     else:
       raise KeyError( "Unrecognized type of mask, {}".format( mask ) )
 

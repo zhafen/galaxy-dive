@@ -142,6 +142,22 @@ class TestDataMasker( unittest.TestCase ):
 
   ########################################################################
 
+  def test_get_masked_data_optional_masks_included( self ):
+    '''Test we can use get_masked_data even when we have optional masks included.
+    '''
+
+    # Setup some masks first.
+    self.data_masker.mask_data( 'logDen', -5., -1., optional_mask=True )
+    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+
+    actual = self.data_masker.get_masked_data( 'Den', optional_masks=[ 'logDen', ] )
+
+    expected = np.array( [ 1e-4 ] )
+
+    npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
   def test_get_masked_data_specified_mask( self ):
 
     mask = np.array( [ 1, 1, 0, 1 ] ).astype( bool )
