@@ -48,41 +48,78 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
     radius_fraction = 1.,
     length_scale = 'Rstar0.5',
     n_halos_plotted = 100,
+    show_valid_halos = True,
+    minimum_criteria = 'n_star',
+    minimum_value = 10,
     ):
     '''Plot the halos as circles at their respective locations.
     
     Args:
-      snum (int) : Snapshot to plot at.
-      type_of_halo_id (str): Should the merger tree halos be plotted, or the first 50 ahf halos at that redshift?
-      ax (axis object) : Axis to use. If default, one is created.
-      color (str) : What color should the circle be?
-      linestyle (str) : What linestyle to use.
-      linewidth (int) : What linewidth to use.
-      outline (bool) : Should the circles be outlined for increased visibility?
-      center (bool) : Should the plot be centered at the most massive halo at z=0?
-      hubble_param (float) : If given, the positions will be converted to physical kpc.
-      radius_fraction (float) : The circles will be radius_fraction*r_scale
-      length_scale (str) : What length scale to use?
-      n_halos_plotted (int) : Number of AHF halos to show.
+      snum (int) :
+        Snapshot to plot at.
+        
+      type_of_halo_id (str):
+        Should the merger tree halos be plotted, or the first 50 ahf halos at that redshift?
+        
+      ax (axis object) :
+        Axis to use. If default, one is created.
+        
+      color (str) :
+        What color should the circle be?
+        
+      linestyle (str) :
+        What linestyle to use.
+        
+      linewidth (int) :
+        What linewidth to use.
+        
+      outline (bool) :
+        Should the circles be outlined for increased visibility?
+        
+      center (bool) :
+        Should the plot be centered at the most massive halo at z=0?
+        
+      hubble_param (float) :
+        If given, the positions will be converted to physical kpc.
+        
+      radius_fraction (float) :
+        The circles will be radius_fraction*r_scale
+        
+      length_scale (str) :
+        What length scale to use?
+        
+      n_halos_plotted (int) :
+        Number of AHF halos to show.
+        
+      show_valid_halos, minimum_criteria, minimum_value (bool,str,int) : 
+        If valid_halos is True, only show halos with minimum criteria > minimum_value
     '''
 
     if ax is default:
       fig = plt.figure( figsize=(7,6), facecolor='white' )
       ax = plt.gca()
-      
+
     if type_of_halo_id == 'ahf_halos':
+
       self.data_object.get_halos( snum )
       self.data_object.get_halos_add( snum )
 
-      x_pos = self.data_object.ahf_halos['Xc'][:n_halos_plotted]
-      y_pos = self.data_object.ahf_halos['Yc'][:n_halos_plotted]
+      if show_valid_halos:
+        min_criteria = self.data_object.ahf_halos[ minimum_criteria ]
+        has_minimum_value = min_criteria >= minimum_value
+        sl = has_minimum_value
+      else:
+        sl = slice( 0, n_halos_plotted )
+
+      x_pos = self.data_object.ahf_halos['Xc'][sl]
+      y_pos = self.data_object.ahf_halos['Yc'][sl]
 
       if length_scale == 'r_scale':
-        r_vir = self.data_object.ahf_halos['Rvir'][:n_halos_plotted]
-        c_analytic = self.data_object.ahf_halos['cAnalytic'][:n_halos_plotted]
+        r_vir = self.data_object.ahf_halos['Rvir'][sl]
+        c_analytic = self.data_object.ahf_halos['cAnalytic'][sl]
         used_length_scale = r_vir/c_analytic
       else:
-        used_length_scale = self.data_object.ahf_halos[length_scale][:n_halos_plotted]
+        used_length_scale = self.data_object.ahf_halos[length_scale][sl]
 
     elif type_of_halo_id == 'merger_tree':
       x_pos = self.data_object.get_mtree_halo_quantity( 'Xc', snum, self.data_object.index, self.data_object.tag )
@@ -121,7 +158,7 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
 
     for i, radius in enumerate( radii ):
 
-      cir = mpatches.Circle( (x_pos[i], y_pos[i]), radius=radius, linewidth=linewidth, \
+      cir = mpatches.Circle( (x_pos.values[i], y_pos.values[i]), radius=radius, linewidth=linewidth, \
                             color=color, linestyle=linestyle, fill=False, facecolor='w' )
       ax.add_patch( cir )
 

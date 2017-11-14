@@ -55,40 +55,98 @@ class GenericPlotter( object ):
     invalid_fix_method = default,
     bins = 32,
     normed = True,
-    x_range = default,
-    y_range = default,
-    x_label = default,
-    y_label = default,
-    add_x_label = True, add_y_label = True,
-    plot_label = default,
-    line_label = default,
-    label_fontsize = 24,
     color = 'black',
     linestyle = '-',
     linewidth = 3.5,
     alpha = 1.,
-    x_scale = 'linear',
-    y_scale = 'linear',
+    x_range = default, y_range = default,
+    x_label = default, y_label = default,
+    add_x_label = True, add_y_label = True,
+    plot_label = default,
+    line_label = default,
+    label_fontsize = 24,
+    x_scale = 'linear', y_scale = 'linear',
     cdf = False,
     vertical_line = None,
     vertical_line_kwargs = { 'linestyle' : '--', 'linewidth' : 3, 'color' : 'k', },
     return_dist = False,
     *args, **kwargs ):
-    '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
+    '''Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_masked_data().
 
     Args:
-      data_key (str) : Data key to plot.
-      weight_key (str) : Data key for data to use as a weight. By default, no weight.
-      slices (int or tuple of slices) : How to slices the data.
-      ax (axis) : What axis to use. By default creates a figure and places the axis on it.
-      fix_invalid (bool) : Throw away invalid values?
-      x_label, ylabel (str) : Axes labels.
-      add_x_label, add_y_label (bool) : Include axes labels?
-      plot_label (str or dict) : What to label the plot with. By default, uses self.label.
-      line_label (str) : What label to give the line.
-      label_fontsize (int) : Fontsize for the labels.
-      y_scale (str) : What scale to use for the y axis.
-      cdf (bool) : Plot a CDF instead.
+      data_key (str) :
+        Data key to plot.
+        
+      weight_key (str) :
+        Data key for data to use as a weight. By default, no weight.
+        
+      slices (int or tuple of slices) :
+        How to slices the data.
+        
+      ax (axis) :
+        What axis to use. By default creates a figure and places the axis on it.
+        
+      fix_invalid (bool) :
+        Throw away invalid values?
+
+      invalid_fix_method (float or int) :
+        How to handle invalid values. By default throw them away. Providing a value to this argument instead replaces
+        them with that value.
+
+      bins (int or array-like) :
+        bins argument to be passed to np.histogram
+
+      normed (bool) :
+        Normalize the histogram?
+
+      color (str) :
+        Color of histogram.
+
+      linestyle (str) :
+        Linestyle of histogram.
+
+      linewidth (float) :
+        Linewidth for histogram.
+
+      alpha (float) :
+        Alpha value for histogram
+
+      x_range, y_range ( [min,max] ) :
+        What are the minimum and maximum x- and y- values to include?
+        Defaults to matplotlib's automatic choices
+        
+      x_label, ylabel (str) :
+        Axes labels. Defaults to the data_key for the x-axis and "Normalized Histogram" for the y-axis.
+        
+      add_x_label, add_y_label (bool) :
+        Include axes labels?
+        
+      plot_label (str or dict) :
+        What to label the plot with. By default, uses self.label.
+        
+      line_label (str) :
+        What label to give the line.
+        
+      label_fontsize (int) :
+        Fontsize for the labels.
+        
+      x_scale, y_scale (str) :
+        What scales to use for the x and y axes.
+        
+      cdf (bool) :
+        Plot a CDF instead.
+
+      vertical_line (float) :
+        Plot a vertical line at this value on the x-axis, if true.
+
+      vertical_line_kwargs (dict) :
+        Arguments to pass to ax.plot( for the vertical line.
+        
+      return_dist (bool) :
+        If true, return the data values and the edges for the histogram.
+
+      *args, **kwargs :
+        Extra arguments to pass to self.data_object.get_masked_data()
     '''
 
     print( "Plotting histogram for {}".format( data_key ) )
@@ -353,9 +411,11 @@ class GenericPlotter( object ):
 
   def plot_scatter( self,
     x_key, y_key,
-    weight_key = default,
     slices = None,
     ax = default,
+    marker_size = 100,
+    color = 'k',
+    marker = '.',
     x_range = default, y_range = default,
     x_label = default, y_label = default,
     add_x_label = True, add_y_label = True,
@@ -415,11 +475,6 @@ class GenericPlotter( object ):
       x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
       y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
 
-    if weight_key is default:
-      weights = None
-    else:
-      weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
-
     if x_range is default:
       x_range = [ x_data.min(), x_data.max() ]
     elif isinstance( x_range, float ):
@@ -434,7 +489,7 @@ class GenericPlotter( object ):
       fig = plt.figure( figsize=(10,9), facecolor='white' )
       ax = plt.gca()
 
-    s = ax.scatter( x_data, y_data, s=40, color='k', )
+    s = ax.scatter( x_data, y_data, s=marker_size, color=color, marker=marker )
     
     # Change the z order
     s.set_zorder( 100 )
@@ -563,12 +618,13 @@ class GenericPlotter( object ):
     axis_plotting_method_str,
     variations,
     ax = default,
+    figsize = (11,5),
     out_dir = None,
     add_line_label = False,
     *args, **kwargs ):
 
     if ax is default:
-      fig = plt.figure( figsize=(11,5), facecolor='white', )
+      fig = plt.figure( figsize=figsize, facecolor='white', )
       ax = plt.gca()
 
     all_plotting_kwargs = utilities.dict_from_defaults_and_variations( kwargs, variations )
@@ -587,7 +643,7 @@ class GenericPlotter( object ):
 
     # Save the file
     if out_dir is not None:
-      save_file = '{}_{:03d}.png'.format( self.label, self.data_object.ptracks.snum[slices] )
+      save_file = '{}_{:03d}.png'.format( self.label, self.data_object.ptracks.snum[kwargs['slices']] )
       gen_plot.save_fig( out_dir, save_file, fig=fig, dpi=75 )
 
       plt.close()
