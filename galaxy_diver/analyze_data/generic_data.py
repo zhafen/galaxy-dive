@@ -95,9 +95,6 @@ class GenericData( object ):
     change in the future.
     '''
 
-    # TODO: Address this.
-    raise Exception( "Current thinking: this should not be called." )
-
     return self.z_sun
 
   ########################################################################
@@ -213,8 +210,6 @@ class GenericData( object ):
       # Put distances in units of the virial radius
       if self.key_parser.is_position_key( data_key ):
 
-        #DEBUG
-        import pdb; pdb.set_trace()
         data /= self.length_scale
 
       # Put velocities in units of the circular velocity

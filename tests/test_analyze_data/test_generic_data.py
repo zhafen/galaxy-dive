@@ -38,7 +38,7 @@ class TestDataMasker( unittest.TestCase ):
     g_data.data = {
       'P' : np.random.rand( 3, 4 ),
       'Den' : np.array( [ 1e-6, 1e-4, 1e2, 1e-2 ] ),
-      'R' : np.array( [ 0.25, 0.4999, 1.0, 0.5111 ] )*g_data.length_scale,
+      'R' : np.array( [ 0.25, 0.4999, 1.0, 0.5111 ] ),
       'PType' : np.array( [ 0, 4, 4, 0, ] ),
     }
 
@@ -81,7 +81,7 @@ class TestDataMasker( unittest.TestCase ):
 
   def test_mask_data_returns( self ):
 
-    actual = self.data_masker.mask_data( 'Rf', 0., 0.5, return_or_store='return' )
+    actual = self.data_masker.mask_data( 'R', 0., 0.5, return_or_store='return' )
     expected = np.array( [ 0, 0, 1, 1 ] ).astype( bool )
 
     npt.assert_allclose( expected, actual )
@@ -104,7 +104,7 @@ class TestDataMasker( unittest.TestCase ):
 
     # Setup some masks first.
     self.data_masker.mask_data( 'logDen', -5., -1., )
-    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+    self.data_masker.mask_data( 'R', 0., 0.5, )
 
     actual = self.data_masker.get_total_mask()
     expected = np.array( [ 1, 0, 1, 1 ] ).astype( bool )
@@ -119,7 +119,7 @@ class TestDataMasker( unittest.TestCase ):
 
     # Setup some masks first.
     self.data_masker.mask_data( 'logDen', -5., -1., optional_mask=True )
-    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+    self.data_masker.mask_data( 'R', 0., 0.5, )
 
     actual = self.data_masker.get_total_mask( optional_masks=[ 'logDen', ] )
     expected = np.array( [ 1, 0, 1, 1 ] ).astype( bool )
@@ -132,7 +132,7 @@ class TestDataMasker( unittest.TestCase ):
 
     # Setup some masks first.
     self.data_masker.mask_data( 'logDen', -5., -1., )
-    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+    self.data_masker.mask_data( 'R', 0., 0.5, )
 
     actual = self.data_masker.get_masked_data( 'Den' )
 
@@ -148,7 +148,7 @@ class TestDataMasker( unittest.TestCase ):
 
     # Setup some masks first.
     self.data_masker.mask_data( 'logDen', -5., -1., optional_mask=True )
-    self.data_masker.mask_data( 'Rf', 0., 0.5, )
+    self.data_masker.mask_data( 'R', 0., 0.5, )
 
     actual = self.data_masker.get_masked_data( 'Den', optional_masks=[ 'logDen', ] )
 
@@ -218,7 +218,7 @@ class TestGetPreprocessedData( unittest.TestCase ):
     g_data.data = {
       'P' : np.random.rand( 3, 4 ),
       'Den' : np.array( [ 1e-6, 1e-4, 1e2, 1e-2 ] ),
-      'R' : np.array( [ 0.25, 0.4999, 1.0, 0.5111 ] )*g_data.length_scale,
+      'R' : np.array( [ 0.25, 0.4999, 1.0, 0.5111 ] ),
       'PType' : np.array( [ 0, 4, 4, 0, ] ),
     }
 
