@@ -78,6 +78,21 @@ class TestHaloData( unittest.TestCase ):
     expected = 12.95
     npt.assert_allclose( expected, actual )
 
+  ########################################################################
+
+  def test_get_mt_data_including_a( self ):
+    '''Test that we can get data from the merger tree, including multiplying by a to some power, for unit conversion'''
+
+    result = self.halo_data.get_mt_data( 'Rvir', a_power=1., )
+
+    actual = result[0]
+    expected = 188.14
+    npt.assert_allclose( expected, actual )
+
+    actual = result[-1]
+    expected = 12.95/(1. + 13.206278 )
+    npt.assert_allclose( expected, actual )
+
 ########################################################################
 ########################################################################
 

@@ -66,7 +66,7 @@ class HaloData( generic_data.GenericData ):
   ########################################################################
 
   def get_data( self, data_key, snum ):
-    '''Attribute for getting halo data at a specific snapshot.
+    '''Get halo data at a specific snapshot.
 
     Args:
       data_key (str) : What data to get.
@@ -83,9 +83,25 @@ class HaloData( generic_data.GenericData ):
 
   ########################################################################
 
-  def get_mt_data( self, data_key, mt_halo_id=0 ):
+  def get_mt_data( self, data_key, mt_halo_id=0, a_power=None, ):
+    '''Get halo data for a specific merger tree.
 
-    return self.mt_halos[mt_halo_id][data_key].values
+    Args:
+      data_key (str) : What data to get.
+      mt_halo_id (int) : What merger tree halo ID to select.
+      a_power (float) : If given, multiply the result by the scale factor 1/(1 + redshift) to this power.
+
+    Returns:
+      mt_data (np.ndarray) : Requested data.
+    '''
+
+    mt_data = self.mt_halos[mt_halo_id][data_key].values
+
+    # For converting coordinates
+    if a_power is not None:
+      mt_data *= ( 1. + self.get_mt_data( 'redshift', mt_halo_id ) )**-a_power
+
+    return mt_data
 
   ########################################################################
 
