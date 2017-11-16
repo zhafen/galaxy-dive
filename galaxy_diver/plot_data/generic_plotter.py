@@ -263,6 +263,7 @@ class GenericPlotter( object ):
   def histogram2d( self,
     x_key, y_key,
     weight_key = default,
+    x_data_args = {}, y_data_args = {},
     slices = None,
     ax = default,
     x_range = default, y_range = default,
@@ -291,6 +292,7 @@ class GenericPlotter( object ):
     Args:
       x_key, y_key (str) : Data keys to plot.
       weight_key (str) : Data key for data to use as a weight. By default, no weight.
+      x_data_args, y_data_args (dicts) : Keyword arguments to be passed only to x or y.
       slices (int or tuple of slices) : How to slices the data.
       ax (axis) : What axis to use. By default creates a figure and places the axis on it.
       x_range, y_range ( (float, float) ) : Histogram edges. If default, all data is enclosed. If list, set manually.
@@ -320,9 +322,12 @@ class GenericPlotter( object ):
     else:
       sl = slices
 
+    varying_kwargs = { 'x' : x_data_args, 'y' : y_data_args }
+    data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
+
     # Get data
-    x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **kwargs )
-    y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **kwargs )
+    x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **data_kwargs['x'] )
+    y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **data_kwargs['y'] )
 
     # Fix NaNs
     if fix_invalid:
