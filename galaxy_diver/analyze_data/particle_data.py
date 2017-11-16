@@ -120,6 +120,13 @@ class ParticleData( simulation_data.SnapshotData ):
 
   ########################################################################
 
+  def calc_pressure( self ):
+    '''Calculate the pressure in units of K/cm^3.'''
+
+    self.data['Pressure'] = self.get_data( 'NumDen' )*self.get_data( 'T' )
+
+  ########################################################################
+
   def calc_classifications( self ):
     '''Get the classification for each particle, using data from the Angles-Alcazar+16 pipeline.
     Uses classes from the tracked_particle_data_handling.py module.

@@ -310,6 +310,9 @@ class GalaxyFinder( object ):
   def find_d_other_gal( self, scaled=False ):
     '''Find the distance to the center of the closest halo that contains a galaxy, other than the main galaxy.
 
+    Args:
+      scaled (bool) : If True, scale d_other_gal by length_scale
+
     Returns:
       d_other_gal (np.ndarray) :
         For particle i, d_other_gal[i] is the distance in pkpc to the center of the nearest galaxy, besides the main galaxy.

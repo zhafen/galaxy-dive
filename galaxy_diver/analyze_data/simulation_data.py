@@ -518,6 +518,8 @@ class SimulationData( generic_data.GenericData ):
     # Subclass methods
     elif data_key == 'T':
       self.calc_temp()
+    elif data_key == 'Pressure':
+      self.calc_pressure()
 
     else:
       raise KeyError( 'NULL data_key, data_key = {}'.format( data_key ) )
@@ -556,7 +558,7 @@ class SimulationData( generic_data.GenericData ):
   # Full calculations based on the data
   ########################################################################
   
-  def calc_radial_distance(self):
+  def calc_radial_distance( self ):
     '''Calculate the distance from the origin for a given particle.'''
 
     self.data['R'] = np.sqrt( self.get_data( 'Rx' )**2. + self.get_data( 'Ry' )**2. + self.get_data( 'Rz' )**2. )
@@ -794,9 +796,7 @@ class SnapshotData( SimulationData ):
   def calc_num_den(self):
     '''Calculate the number density (it's just a simple conversion...).'''
 
-    raise Exception( "TODO: Test this" )
-
-    self.data['NumDen'] = self.data['Den']*constants.gas_den_to_nb
+    self.data['NumDen'] = self.data['Den']*constants.UNITDENSITY_IN_NUMDEN
 
   ########################################################################
 

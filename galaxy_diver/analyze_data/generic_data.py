@@ -67,6 +67,9 @@ class GenericData( object ):
     change in the future.
     '''
 
+    # TODO: Address this.
+    raise Exception( "Current thinking: this should not be called." )
+
     return 1.
 
   ########################################################################
@@ -78,6 +81,9 @@ class GenericData( object ):
     change in the future.
     '''
 
+    # TODO: Address this.
+    raise Exception( "Current thinking: this should not be called." )
+
     return 1.
 
   ########################################################################
@@ -88,6 +94,9 @@ class GenericData( object ):
     However, a more advanced subclass might set this differently, or this might
     change in the future.
     '''
+
+    # TODO: Address this.
+    raise Exception( "Current thinking: this should not be called." )
 
     return self.z_sun
 
@@ -203,6 +212,9 @@ class GenericData( object ):
 
       # Put distances in units of the virial radius
       if self.key_parser.is_position_key( data_key ):
+
+        #DEBUG
+        import pdb; pdb.set_trace()
         data /= self.length_scale
 
       # Put velocities in units of the circular velocity
@@ -601,7 +613,7 @@ class DataMasker( object ):
 
   ########################################################################
 
-  def clear_masks( self ):
+  def clear_masks( self, clear_optional_masks=False ):
     '''Reset the masks in total to nothing.
     
     Modifies:
@@ -609,3 +621,6 @@ class DataMasker( object ):
     '''
 
     self.masks = []
+
+    if clear_optional_masks:
+      self.optional_masks = {}

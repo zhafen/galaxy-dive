@@ -41,12 +41,25 @@ class GenericPlotter( object ):
     '''
 
     pass
+
+  ########################################################################
+  # Alternate inherent methods
+  ########################################################################
+
+  def __getattr__( self, attr):
+    '''By replacing getattr with the following code, we allow automatically searching the data_object
+    for the appropriate attribute as well, while losing none of the original functionality.
+    '''
+
+    print( "Attribute {} not found in plotting object. Checking data object.".format( attr ) )
+
+    return getattr( self.data_object, attr )
     
   ########################################################################
   # Specific Generic Plots
   ########################################################################
 
-  def plot_hist( self,
+  def histogram( self,
     data_key,
     weight_key = default,
     slices = None,
@@ -247,13 +260,15 @@ class GenericPlotter( object ):
 
   ########################################################################
 
-  def plot_hist_2d( self,
+  def histogram2d( self,
     x_key, y_key,
     weight_key = default,
     slices = None,
     ax = default,
     x_range = default, y_range = default,
+    x_scale = 'linear', y_scale = 'linear',
     n_bins = 128,
+    normed = False,
     vmin = None, vmax = None,
     add_colorbar = True,
     colorbar_args = default,
@@ -268,6 +283,9 @@ class GenericPlotter( object ):
     out_dir = None,
     fix_invalid = True,
     line_slope = default,
+    horizontal_line = None, vertical_line = None,
+    horizontal_line_kwargs = { 'linestyle' : '--', 'linewidth' : 5, 'color' : '#337DB8', },
+    vertical_line_kwargs = { 'linestyle' : '--', 'linewidth' : 5, 'color' : '#337DB8', },
     *args, **kwargs ):
     '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
     Args:
@@ -329,11 +347,17 @@ class GenericPlotter( object ):
     elif isinstance( y_range, float ):
       y_range = np.array( [ -y_range, y_range ])*self.data_object.ptracks.length_scale.iloc[slices]
 
-    x_edges = np.linspace( x_range[0], x_range[1], n_bins )
-    y_edges = np.linspace( y_range[0], y_range[1], n_bins )
+    if x_scale == 'log':
+      x_edges = np.logspace( np.log10( x_range[0] ), np.log10( x_range[1] ), n_bins )
+    else:
+      x_edges = np.linspace( x_range[0], x_range[1], n_bins )
+    if y_scale == 'log':
+      y_edges = np.logspace( np.log10( y_range[0] ), np.log10( y_range[1] ), n_bins )
+    else:
+      y_edges = np.linspace( y_range[0], y_range[1], n_bins )
 
     # Make the histogram
-    hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges], weights=weights )
+    hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges], weights=weights, normed=normed )
 
     # Plot
     if ax is default:
@@ -354,11 +378,18 @@ class GenericPlotter( object ):
         cbar = gen_plot.add_colorbar( **colorbar_args )
       cbar.ax.tick_params( labelsize=20 )
 
-    # Halo Plot
+    # Plot Line for easier visual interpretation
     if line_slope is not default:
       line_x = np.array( [ x_data.min(), x_data.max() ] )
       line_y = line_slope*line_x
       ax.plot( line_x, line_y, linewidth=3, linestyle='dashed', )
+
+    if horizontal_line is not None:
+      trans = transforms.blended_transform_factory( ax.transAxes, ax.transData )
+      ax.plot( [ 0., 1. ], [ horizontal_line, ]*2, transform=trans, **horizontal_line_kwargs )
+    if vertical_line is not None:
+      trans = transforms.blended_transform_factory( ax.transData, ax.transAxes )
+      ax.plot( [ vertical_line, ]*2, [ 0., 1. ], transform=trans, **vertical_line_kwargs )
 
     # Plot label
     if plot_label is default:
@@ -396,6 +427,10 @@ class GenericPlotter( object ):
     ax.set_xlim( x_range )
     ax.set_ylim( y_range )
 
+    # Scale
+    ax.set_xscale( x_scale )
+    ax.set_yscale( y_scale )
+
     # Set tick parameters
     if tick_param_args is not default:
       ax.tick_params( **tick_param_args )
@@ -416,6 +451,7 @@ class GenericPlotter( object ):
     marker_size = 100,
     color = 'k',
     marker = '.',
+    zorder = -100,
     x_range = default, y_range = default,
     x_label = default, y_label = default,
     add_x_label = True, add_y_label = True,
@@ -492,7 +528,7 @@ class GenericPlotter( object ):
     s = ax.scatter( x_data, y_data, s=marker_size, color=color, marker=marker )
     
     # Change the z order
-    s.set_zorder( 100 )
+    s.set_zorder( zorder )
 
     # Halo Plot
     if line_slope is not default:
