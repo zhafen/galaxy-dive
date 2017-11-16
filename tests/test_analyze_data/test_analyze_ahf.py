@@ -50,11 +50,42 @@ def sane_eq_array(list_in):
 ########################################################################
 ########################################################################
 
-class TestAHFUpdater( unittest.TestCase ):
+class TestHaloData( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.ahf_updater = analyze_ahf.AHFUpdater( sdir )
+    self.halo_data = analyze_ahf.HaloData( sdir, tag='smooth' )
+
+  ########################################################################
+
+  def test_mt_halos( self ):
+    '''Test we can load mt_halos.'''
+
+    self.halo_data.mt_halos
+
+  ########################################################################
+
+  def test_get_mt_data( self ):
+    '''Test that we can get data from the merger tree.'''
+
+    result = self.halo_data.get_mt_data( 'Rvir' )
+
+    actual = result[0]
+    expected = 188.14
+    npt.assert_allclose( expected, actual )
+
+    actual = result[-1]
+    expected = 12.95
+    npt.assert_allclose( expected, actual )
+
+########################################################################
+########################################################################
+
+class TestHaloUpdater( unittest.TestCase ):
+
+  def setUp( self ):
+
+    self.ahf_updater = analyze_ahf.HaloUpdater( sdir )
 
     # Remove smooth halo files that are generated
     halo_filepaths = glob.glob( './tests/data/ahf_test_data/halo_*_smooth.dat' )
@@ -85,7 +116,7 @@ class TestAHFUpdater( unittest.TestCase ):
     self.ahf_updater.save_mtree_halos( save_tag )
 
     # Load
-    new_ahf_reader = analyze_ahf.AHFUpdater( sdir )
+    new_ahf_reader = analyze_ahf.HaloUpdater( sdir )
     new_ahf_reader.get_mtree_halos( 'snum', tag=save_tag )
     actual = new_ahf_reader.mtree_halos[10]['ID']
     actual_detail = new_ahf_reader.mtree_halos[0]['ID'][500]
@@ -345,7 +376,7 @@ class TestAHFUpdater( unittest.TestCase ):
 
   ########################################################################
 
-  @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.save_ahf_halos_add' )
+  @patch( 'galaxy_diver.analyze_data.ahf.HaloUpdater.save_ahf_halos_add' )
   def test_save_multiple_ahf_halos_adds( self, mock_save_ahf_halos_add ):
 
     self.ahf_updater.save_multiple_ahf_halos_adds( data_sdir, 500, 600, 50 )
@@ -364,7 +395,7 @@ class TestMassRadii( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.ahf_updater = analyze_ahf.AHFUpdater( sdir )
+    self.ahf_updater = analyze_ahf.HaloUpdater( sdir )
 
     snum = 600
     self.ahf_updater.get_halos( snum )
@@ -421,7 +452,7 @@ class TestMassRadii( unittest.TestCase ):
 
   ########################################################################
 
-  @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
+  @patch( 'galaxy_diver.analyze_data.ahf.HaloUpdater.get_analytic_concentration' )
   def test_save_ahf_halos_add_including_mass_radii( self, mock_get_analytic_concentration ):
 
     mock_get_analytic_concentration.side_effect = [ np.arange( 9 ), ]
@@ -458,7 +489,7 @@ class TestEnclosedMass( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.ahf_updater = analyze_ahf.AHFUpdater( sdir )
+    self.ahf_updater = analyze_ahf.HaloUpdater( sdir )
 
     snum = 600
     self.ahf_updater.get_halos( snum )
@@ -541,7 +572,7 @@ class TestEnclosedMass( unittest.TestCase ):
 
   ########################################################################
 
-  @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
+  @patch( 'galaxy_diver.analyze_data.ahf.HaloUpdater.get_analytic_concentration' )
   def test_save_ahf_halos_add_including_masses( self, mock_get_analytic_concentration ):
     '''Test that we can write-out files that contain additional information, with that information
     including the mass inside some radius from the center of the halo.
@@ -581,7 +612,7 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.ahf_updater = analyze_ahf.AHFUpdater( sdir )
+    self.ahf_updater = analyze_ahf.HaloUpdater( sdir )
 
     snum = 600
     self.ahf_updater.get_halos( snum )
@@ -672,7 +703,7 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
 
   ########################################################################
 
-  @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
+  @patch( 'galaxy_diver.analyze_data.ahf.HaloUpdater.get_analytic_concentration' )
   def test_save_ahf_halos_add_including_masses( self, mock_get_analytic_concentration ):
     '''Test that we can write-out files that contain additional information, with that information
     including the mass inside some radius from the center of the halo.
@@ -713,7 +744,7 @@ class TestCircularVelocity( unittest.TestCase):
 
   def setUp( self ):
 
-    self.ahf_updater = analyze_ahf.AHFUpdater( sdir )
+    self.ahf_updater = analyze_ahf.HaloUpdater( sdir )
 
     snum = 500
     self.ahf_updater.get_halos( snum, force_reload=True )
@@ -738,7 +769,7 @@ class TestCircularVelocity( unittest.TestCase):
 
   ########################################################################
 
-  @patch( 'galaxy_diver.analyze_data.ahf.AHFUpdater.get_analytic_concentration' )
+  @patch( 'galaxy_diver.analyze_data.ahf.HaloUpdater.get_analytic_concentration' )
   def test_save_ahf_halos_add_including_v_circ( self, mock_get_analytic_concentration ):
     '''Test that we can write-out files that contain additional information, with that information
     including the circular velocity
@@ -769,7 +800,7 @@ class TestKeyParser( unittest.TestCase ):
 
   def setUp( self ):
 
-    self.ahf_data = analyze_ahf.AHFData( sdir )
+    self.ahf_data = analyze_ahf.HaloData( sdir )
 
   ########################################################################
 

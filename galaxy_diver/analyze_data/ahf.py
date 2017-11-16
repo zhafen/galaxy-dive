@@ -19,6 +19,7 @@ import galaxy_diver.read_data.metafile as read_metafile
 import galaxy_diver.utils.astro as astro_utils
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_constants as data_constants
+import galaxy_diver.utils.utilities as utilities
 
 import generic_data
 import particle_data
@@ -26,40 +27,79 @@ import particle_data
 ########################################################################
 ########################################################################
 
-class AHFData( generic_data.GenericData ):
+class HaloData( generic_data.GenericData ):
 
-  def __init__( self, ahf_data_dir ):
+  @utilities.store_parameters
+  def __init__( self, data_dir, tag=None, index=None, mt_kwargs={} ):
+    '''Constructor for HaloData
+
+    Args:
+      data_dir (str) : Directory storing the data.
+      tag (str) : If provided, what is an identifying tag for the halo data?
+      index (int) : If provided, what is the final snapshot number for the halo data? Necessary for some AHF data.
+      mt_kwargs (dict) : When loading merger tree halo files, additional arguments should be passed here.
+    '''
     
-    self.ahf_reader = read_ahf.AHFReader( ahf_data_dir )
+    self.ahf_reader = read_ahf.AHFReader( data_dir )
 
-    key_parser = AHFKeyParser()
+    key_parser = HaloKeyParser()
 
-    super( AHFData, self ).__init__( key_parser=key_parser )
+    super( HaloData, self ).__init__( key_parser=key_parser )
+
+  ########################################################################
+  # Properties
+  ########################################################################
+
+  @property
+  def mt_halos( self ):
+    '''Attribute for accessing merger tree data.
+    '''
+    
+    if not hasattr( self.ahf_reader, 'mtree_halos' ):
+
+      self.ahf_reader.get_mtree_halos( index=self.index, tag=self.tag, **self.mt_kwargs )
+
+    return self.ahf_reader.mtree_halos
 
   ########################################################################
   # Data Retrieval
   ########################################################################
 
-  def get_data( self, data_key, snum, sl=None ):
+  def get_data( self, data_key, snum ):
+    '''Attribute for getting halo data at a specific snapshot.
+
+    Args:
+      data_key (str) : What data to get.
+      snum (int) : What snapshot to open.
+
+    Returns:
+      data (np.ndarray) : Requested data.
+    '''
 
     self.ahf_reader.get_halos( snum )
     self.ahf_reader.get_halos_add( snum )
   
-    return self.ahf_reader.ahf_halos[data_key]
+    return self.ahf_reader.ahf_halos[data_key].values
+
+  ########################################################################
+
+  def get_mt_data( self, data_key, mt_halo_id=0 ):
+
+    return self.mt_halos[mt_halo_id][data_key].values
 
   ########################################################################
 
   def get_masked_data( self, *args, **kwargs ):
 
-    return super( AHFData, self ).get_masked_data( mask_multidim_data=False, *args, **kwargs )
+    return super( HaloData, self ).get_masked_data( mask_multidim_data=False, *args, **kwargs )
 
 ########################################################################
 ########################################################################
 
-class AHFKeyParser( generic_data.DataKeyParser ):
+class HaloKeyParser( generic_data.DataKeyParser ):
 
   def get_radius_key( self, multiplier, length_scale ):
-    '''Get a key for AHF data, based on a length scale and a multiple of it.
+    '''Get a key for Halo data, based on a length scale and a multiple of it.
 
     Args:
       multiplier (float) :
@@ -83,7 +123,7 @@ class AHFKeyParser( generic_data.DataKeyParser ):
   ########################################################################
 
   def get_enclosed_mass_key( self, ptype, multiplier, length_scale ):
-    '''Get a key for AHF data, corresponding to a data column that records an enclosed mass.
+    '''Get a key for Halo data, corresponding to a data column that records an enclosed mass.
 
     Args:
       ptype (str) :
@@ -104,7 +144,7 @@ class AHFKeyParser( generic_data.DataKeyParser ):
   ########################################################################
 
   def get_average_quantity_key( self, data_key, ptype, multiplier, length_scale ):
-    '''Get a key for AHF data, corresponding to a data column that records the average quantity inside a galaxy.
+    '''Get a key for Halo data, corresponding to a data column that records the average quantity inside a galaxy.
 
     Args:
       data_key (str) :
@@ -129,7 +169,7 @@ class AHFKeyParser( generic_data.DataKeyParser ):
   ########################################################################
 
   def get_velocity_at_radius_key( self, velocity_key, multiplier, length_scale ):
-    '''Get a key for AHF data, corresponding to a data column that records the velocity at at a specified radius
+    '''Get a key for Halo data, corresponding to a data column that records the velocity at at a specified radius
 
       velocity_key (str) :
         What velocity to get.
@@ -149,21 +189,21 @@ class AHFKeyParser( generic_data.DataKeyParser ):
 ########################################################################
 ########################################################################
 
-class AHFUpdater( read_ahf.AHFReader ):
-  '''Class for updating AHF data (smoothing, adding in additional columns, etc)'''
+class HaloUpdater( read_ahf.AHFReader ):
+  '''Class for updating Halo data (smoothing, adding in additional columns, etc)'''
 
   def __init__( self, *args, **kwargs ):
 
-    self.key_parser = AHFKeyParser()
+    self.key_parser = HaloKeyParser()
 
-    super( AHFUpdater, self ).__init__( *args, **kwargs )
+    super( HaloUpdater, self ).__init__( *args, **kwargs )
 
   ########################################################################
   # Get Data Values
   ########################################################################
 
   def get_accurate_redshift( self, metafile_dir ):
-    '''Get a better values of the redshift than what's stored in the AHF filename, by loading them from an external file.
+    '''Get a better values of the redshift than what's stored in the Halo filename, by loading them from an external file.
 
     Args:
       metafile_dir (str): The directory the snapshot_times are stored in.
@@ -323,7 +363,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     galaxy_cut,
     length_scale,
     ):
-    '''Get the mass inside galaxy_cut*length_scale for each AHF halo.
+    '''Get the mass inside galaxy_cut*length_scale for each Halo halo.
 
     Args:
       simulation_data_dir (str) :
@@ -387,7 +427,7 @@ class AHFUpdater( read_ahf.AHFReader ):
     weight_data_key = 'M',
     fill_value = np.nan,
     ):
-    '''Get the mass inside galaxy_cut*length_scale for each AHF halo.
+    '''Get the mass inside galaxy_cut*length_scale for each Halo halo.
 
     Args:
       data_key (str) :
@@ -518,7 +558,7 @@ class AHFUpdater( read_ahf.AHFReader ):
   ########################################################################
 
   def smooth_mtree_halos( self, metafile_dir ):
-    '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the AHF-calculated merger tree.
+    '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the Halo-calculated merger tree.
     NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.
 
     Args:
