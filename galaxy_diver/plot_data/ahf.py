@@ -190,7 +190,7 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
       fig = plt.figure( figsize=(10, 6), facecolor='white' )
       ax = plt.gca()
 
-    plotted_mtree_halo = self.data_object.data_object.mtree_halos[halo_id]
+    plotted_mtree_halo = self.data_object.mt_halos[halo_id]
 
     x_data = np.log10( 1. + plotted_mtree_halo['redshift'] )
 

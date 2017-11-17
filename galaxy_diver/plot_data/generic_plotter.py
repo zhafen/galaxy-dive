@@ -83,6 +83,7 @@ class GenericPlotter( object ):
     vertical_line = None,
     vertical_line_kwargs = { 'linestyle' : '--', 'linewidth' : 3, 'color' : 'k', },
     return_dist = False,
+    assert_contains_all_data = True,
     *args, **kwargs ):
     '''Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_masked_data().
 
@@ -156,7 +157,10 @@ class GenericPlotter( object ):
         Arguments to pass to ax.plot( for the vertical line.
         
       return_dist (bool) :
-        If true, return the data values and the edges for the histogram.
+        If True, return the data values and the edges for the histogram.
+
+      assert_contains_all_data (bool) :
+        If True, make sure that the histogram plots all selected data.
 
       *args, **kwargs :
         Extra arguments to pass to self.data_object.get_masked_data()
@@ -169,7 +173,7 @@ class GenericPlotter( object ):
     else:
       sl = slices
 
-    data = self.data_object.get_masked_data( data_key, sl=sl, *args, **kwargs )
+    data = self.data_object.get_masked_data( data_key, sl=sl, *args, **kwargs ).copy()
 
     if weight_key is default:
       weights = None
@@ -192,7 +196,8 @@ class GenericPlotter( object ):
     hist, edges = np.histogram( data, bins=bins, weights=weights )
 
     # Make sure we have all the data in the histogram
-    assert data.size == hist.sum()
+    if assert_contains_all_data:
+      assert data.size == hist.sum()
 
     if normed:
       hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
@@ -326,8 +331,8 @@ class GenericPlotter( object ):
     data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
 
     # Get data
-    x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **data_kwargs['x'] )
-    y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **data_kwargs['y'] )
+    x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
+    y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
 
     # Fix NaNs
     if fix_invalid:
@@ -869,3 +874,33 @@ class GenericPlotter( object ):
       del self.data_object.ptracks
       del self.data_object.galids
       del self.data_object.classifications
+
+########################################################################
+########################################################################
+
+class PlotterSet( utilities.SmartDict ):
+  '''Container for multiple plotters that is an enhanced dictionary.
+  '''
+
+  def __init__( self, data_object_cls, plotter_object_cls, defaults, variations ):
+    '''
+    Args:
+      data_object_cls (object) : Class for the data object.
+      plotter_object_cls (object) : Class for the plotter object.
+      defaults (dict) : Set of default arguments for loading worldline data.
+      variations (dict of dicts) : Labels and differences in arguments to be passed to Worldlines
+    '''
+
+    # Load the worldline sets
+    storage = {}
+    for key in variations.keys():
+      
+      kwargs = dict( defaults )
+      for var_key in variations[key].keys():
+        kwargs[var_key] = variations[key][var_key]
+
+      storage[key] = { 'data_object' : data_object_cls( **kwargs ), 'label' : key }
+
+    plotters_storage = utilities.SmartDict.from_class_and_args( plotter_object_cls, storage )
+
+    super( PlotterSet, self ).__init__( plotters_storage )
