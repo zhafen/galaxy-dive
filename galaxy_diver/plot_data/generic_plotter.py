@@ -46,14 +46,14 @@ class GenericPlotter( object ):
   # Alternate inherent methods
   ########################################################################
 
-  def __getattr__( self, attr):
-    '''By replacing getattr with the following code, we allow automatically searching the data_object
-    for the appropriate attribute as well, while losing none of the original functionality.
-    '''
+  #def __getattr__( self, attr):
+  #  '''By replacing getattr with the following code, we allow automatically searching the data_object
+  #  for the appropriate attribute as well, while losing none of the original functionality.
+  #  '''
 
-    print( "Attribute {} not found in plotting object. Checking data object.".format( attr ) )
+  #  print( "Attribute {} not found in plotting object. Checking data object.".format( attr ) )
 
-    return getattr( self.data_object, attr )
+  #  return getattr( self.data_object, attr )
     
   ########################################################################
   # Specific Generic Plots
@@ -418,7 +418,7 @@ class GenericPlotter( object ):
     if label_galaxy_cut:
       info_label = r'$r_{ \rm cut } = ' + '{:.3g}'.format( self.data_object.galids.parameters['galaxy_cut'] ) + 'r_{ s}$'
     if label_redshift:
-      info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[slices] ) + '$, '+ info_label
+      info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[slices] ) + '$'+ info_label
     if label_galaxy_cut or label_redshift:
       ax.annotate( s=info_label, xy=(1.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,
         ha='right' )
@@ -701,18 +701,21 @@ class GenericPlotter( object ):
     defaults,
     variations,
     slices = default,
+    n_rows = 2,
+    n_columns = 2,
+    plot_locations = [ (0,0), (0,1), (1,0), (1,1) ],
+    figsize = (10,9),
     plot_label = default,
     outline_plot_label = False,
     label_galaxy_cut = False,
     label_redshift = True,
     label_fontsize = 24,
-    subplot_label_args = { 'xy' : (0.075, 0.88), 'xycoords' : 'axes fraction', 'fontsize' : 18, 'color' : 'w',  },
+    subplot_label_args = { 'xy' : (0.075, 0.88), 'xycoords' : 'axes fraction', 'fontsize' : 20, 'color' : 'w',  },
     subplot_spacing_args = { 'hspace' : 0.0001, 'wspace' : 0.0001, },
     out_dir = None,
     ):
     '''
     Make a multi panel plot of the type of your choosing.
-    Note: Currently only compatible with a four panel plot.
 
     Args:
       panel_plotting_method_str (str) : What type of plot to make.
@@ -731,7 +734,7 @@ class GenericPlotter( object ):
       out_dir (str) : If given, where to save the file.
     '''
 
-    fig = plt.figure( figsize=(10,9), facecolor='white', )
+    fig = plt.figure( figsize=figsize, facecolor='white', )
     ax = plt.gca()
 
     fig.subplots_adjust( **subplot_spacing_args )
@@ -742,12 +745,10 @@ class GenericPlotter( object ):
     plotting_kwargs = utilities.dict_from_defaults_and_variations( defaults, variations )
 
     # Setup axes
-    gs = gridspec.GridSpec(2, 2)
+    gs = gridspec.GridSpec(n_rows, n_columns)
     axs = []
-    axs.append( plt.subplot( gs[0,0] ) )
-    axs.append( plt.subplot( gs[0,1] ) )
-    axs.append( plt.subplot( gs[1,0] ) )
-    axs.append( plt.subplot( gs[1,1] ) )
+    for plot_location in plot_locations:
+      axs.append( plt.subplot( gs[plot_location] ) )
 
     # Setup arguments further
     for i, key in enumerate( plotting_kwargs.keys() ):
@@ -765,15 +766,13 @@ class GenericPlotter( object ):
 
       # Clean up interior axes
       ax_tick_parm_args = ax_kwargs['tick_param_args'].copy()
-      if i == 0:
+      plot_location = plot_locations[i]
+      # Hide repetitive x labels
+      if plot_location[0] != n_rows -1 :
         ax_kwargs['add_x_label'] = False
         ax_tick_parm_args['labelbottom'] = False
-      if i == 1:
-        ax_kwargs['add_x_label'] = False
-        ax_tick_parm_args['labelbottom'] = False
-        ax_kwargs['add_y_label'] = False
-        ax_tick_parm_args['labelleft'] = False
-      elif i == 3:
+      # Hide repetitive y labels
+      if plot_location[1] != 0:
         ax_kwargs['add_y_label'] = False
         ax_tick_parm_args['labelleft'] = False
       ax_kwargs['tick_param_args'] = ax_tick_parm_args
@@ -794,7 +793,7 @@ class GenericPlotter( object ):
     else:
       raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
     if outline_plot_label:
-      plt_label.set_path_effects([ path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal() ])
+      plt_label.set_path_effects([ path_effects.Stroke(linewidth=2, foreground='black'), path_effects.Normal() ])
 
     # Upper right label (info label)
     info_label = ''
