@@ -667,6 +667,7 @@ class GenericPlotter( object ):
     figsize = (11,5),
     out_dir = None,
     add_line_label = False,
+    legend_args = { 'prop' : {'size':16.5}, 'loc' : 'upper right', 'fontsize' : 20 },
     *args, **kwargs ):
 
     if ax is default:
@@ -685,7 +686,7 @@ class GenericPlotter( object ):
 
       axis_plotting_method( *args, **plotting_kwargs )
 
-    ax.legend(prop={'size':16.5}, loc='upper right', fontsize=20)
+    ax.legend( **legend_args )
 
     # Save the file
     if out_dir is not None:
@@ -710,7 +711,7 @@ class GenericPlotter( object ):
     label_galaxy_cut = False,
     label_redshift = True,
     label_fontsize = 24,
-    subplot_label_args = { 'xy' : (0.075, 0.88), 'xycoords' : 'axes fraction', 'fontsize' : 20, 'color' : 'w',  },
+    subplot_label_args = { 'xy' : (0.075, 0.88), 'xycoords' : 'axes fraction', 'fontsize' : 20, 'color' : 'k',  },
     subplot_spacing_args = { 'hspace' : 0.0001, 'wspace' : 0.0001, },
     out_dir = None,
     ):
@@ -793,7 +794,10 @@ class GenericPlotter( object ):
     else:
       raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
     if outline_plot_label:
-      plt_label.set_path_effects([ path_effects.Stroke(linewidth=2, foreground='black'), path_effects.Normal() ])
+      plt_label.set_path_effects([
+        path_effects.Stroke(linewidth=3, foreground='white', background='white'),
+        path_effects.Normal()
+      ])
 
     # Upper right label (info label)
     info_label = ''
@@ -801,10 +805,16 @@ class GenericPlotter( object ):
       info_label = r'$r_{ \rm cut } = ' + '{:.3g}'.format( self.data_object.galids.parameters['galaxy_cut'] ) + 'r_{ s}$'
     if label_redshift:
       ind = defaults['slices']
-      info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[ind] ) + '$, '+ info_label
+      info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[ind] ) + '$'+ info_label
     if label_galaxy_cut or label_redshift:
-      axs[1].annotate( s=info_label, xy=(1.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,
-        ha='right' )
+      label_ax = plt.subplot( gs[0,n_columns-1,] )
+      label_ax.annotate(
+        s=info_label,
+        xy=(1.,1.0225),
+        xycoords='axes fraction',
+        fontsize=label_fontsize,
+        ha='right'
+      )
 
     # Save the file
     if out_dir is not None:
