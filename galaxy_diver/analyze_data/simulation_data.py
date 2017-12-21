@@ -12,6 +12,7 @@ from functools import wraps
 import h5py
 import numpy as np
 import numpy.testing as npt
+import pandas as pd
 import scipy
 import string
 import warnings
@@ -360,7 +361,11 @@ class SimulationData( generic_data.GenericData ):
 
     self.center_vel_coords()
 
-    self.data['V'] += self.get_data( 'P' )*self.hubble_z
+    # Handle weird formatting that happens when using data frames.
+    if isinstance( self.hubble_z, pd.Series ):
+      self.data['V'] += self.get_data( 'P' )*self.hubble_z.values
+    else:
+      self.data['V'] += self.get_data( 'P' )*self.hubble_z
 
     self.hubble_corrected = True
 
@@ -562,6 +567,13 @@ class SimulationData( generic_data.GenericData ):
     '''Calculate the distance from the origin for a given particle.'''
 
     self.data['R'] = np.sqrt( self.get_data( 'Rx' )**2. + self.get_data( 'Ry' )**2. + self.get_data( 'Rz' )**2. )
+
+  ########################################################################
+
+  def calc_radial_velocity( self ):
+    '''Calculate the distance from the origin for a given particle.'''
+
+    self.data['Vr'] = np.sqrt( self.get_data( 'Vx' )**2. + self.get_data( 'Vy' )**2. + self.get_data( 'Vz' )**2. )
 
 ########################################################################
 ########################################################################

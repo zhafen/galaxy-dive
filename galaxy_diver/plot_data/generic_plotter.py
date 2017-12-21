@@ -46,14 +46,14 @@ class GenericPlotter( object ):
   # Alternate inherent methods
   ########################################################################
 
-  #def __getattr__( self, attr):
-  #  '''By replacing getattr with the following code, we allow automatically searching the data_object
-  #  for the appropriate attribute as well, while losing none of the original functionality.
-  #  '''
+  def __getattr__( self, attr):
+    '''By replacing getattr with the following code, we allow automatically searching the data_object
+    for the appropriate attribute as well, while losing none of the original functionality.
+    '''
 
-  #  print( "Attribute {} not found in plotting object. Checking data object.".format( attr ) )
+    print( "Attribute {} not found in plotting object. Checking data object.".format( attr ) )
 
-  #  return getattr( self.data_object, attr )
+    return getattr( self.data_object, attr )
     
   ########################################################################
   # Specific Generic Plots

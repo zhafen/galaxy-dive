@@ -102,7 +102,7 @@ class TestTimeData( unittest.TestCase ):
     self.t_data.data['P'] = np.array( [ [ [1., 2., 3., 4., 5.], ]*4, ]*3 )
 
     # Create side effects for the mock functions
-    mock_hubble_z.side_effect = [ 1., ]
+    mock_hubble_z.side_effect = [ pd.Series( [ 1., ]*5 ), ]*2
     mock_get_data.side_effect = [ self.t_data.data['P'], ]
 
     self.t_data.add_hubble_flow()
