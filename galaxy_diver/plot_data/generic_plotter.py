@@ -272,11 +272,13 @@ class GenericPlotter( object ):
     slices = None,
     ax = default,
     x_range = default, y_range = default,
-    x_scale = 'linear', y_scale = 'linear',
+    x_scale = 'linear', y_scale = 'linear', z_scale = 'log',
     n_bins = 128,
+    average = False,
     normed = False,
     vmin = None, vmax = None,
     add_colorbar = True,
+    cmap = pu_cm.magma,
     colorbar_args = default,
     x_label = default, y_label = default,
     add_x_label = True, add_y_label = True,
@@ -369,12 +371,20 @@ class GenericPlotter( object ):
     # Make the histogram
     hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges], weights=weights, normed=normed )
 
+    # If doing an average, divide by the number in each bin
+    if average:
+      average_hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges], normed=normed )
+      hist2d /= average_hist2d
+
     # Plot
     if ax is default:
       fig = plt.figure( figsize=(10,9), facecolor='white' )
       ax = plt.gca()
 
-    im = ax.imshow( np.log10( hist2d ).transpose(), cmap=pu_cm.magma, interpolation='nearest',\
+    if z_scale == 'log':
+      hist2d = np.log10( hist2d )
+
+    im = ax.imshow( hist2d.transpose(), cmap=cmap, interpolation='nearest',\
                     extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]], \
                     origin='low', aspect='auto', vmin=vmin, vmax=vmax, )
 
@@ -418,7 +428,7 @@ class GenericPlotter( object ):
     if label_galaxy_cut:
       info_label = r'$r_{ \rm cut } = ' + '{:.3g}'.format( self.data_object.galids.parameters['galaxy_cut'] ) + 'r_{ s}$'
     if label_redshift:
-      info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[slices] ) + '$'+ info_label
+      info_label = r'$z=' + '{:.3f}'.format( self.data_object.redshift ) + '$'+ info_label
     if label_galaxy_cut or label_redshift:
       ax.annotate( s=info_label, xy=(1.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,
         ha='right' )

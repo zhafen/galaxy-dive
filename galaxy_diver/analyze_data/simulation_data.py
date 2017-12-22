@@ -34,7 +34,6 @@ class SimulationData( generic_data.GenericData ):
   def __init__( self,
     data_dir = None,
     ahf_data_dir = None,
-    snum = None,
     ahf_index = None,
 
     averaging_frac = 0.5,
@@ -57,7 +56,6 @@ class SimulationData( generic_data.GenericData ):
     Args:
       data_dir (str) : Directory the simulation is contained in.
       ahf_data_dir (str) : Directory simulation analysis is contained in. Defaults to data_dir
-      snum (int or array of ints) : Snapshot or snapshots to inspect.
       ahf_index (str) : What to index the snapshots by. Should be the last snapshot in the simulation *if*
                                   AHF was run backwards from the last snapshot.
                                   Required to put in manually to avoid easy mistakes.
@@ -516,8 +514,12 @@ class SimulationData( generic_data.GenericData ):
     # SimulationData methods
     if data_key == 'R':
       self.calc_radial_distance()
+    elif data_key == 'Vmag':
+      self.calc_velocity_magnitude()
     elif data_key == 'Vr':
       self.calc_radial_velocity()
+    elif data_key == 'Vtan':
+      self.calc_tangential_velocity()
     elif data_key == 'ind':
       self.calc_inds()
     elif data_key == 'L':
@@ -595,7 +597,13 @@ class SimulationData( generic_data.GenericData ):
 class SnapshotData( SimulationData ):
   '''Class for analysis of a single snapshot of data.'''
 
-  def __init__( self, *args, **kwargs ):
+  def __init__( self, snum, *args, **kwargs ):
+    '''
+    Args:
+      snum (int or array of ints) : Snapshot or snapshots to inspect.
+    '''
+
+    self.snum = snum
 
     super( SnapshotData, self ).__init__( *args, **kwargs )
 
@@ -737,17 +745,39 @@ class SnapshotData( SimulationData ):
   # Full calculations of the data
   ########################################################################
 
+  def calc_velocity_magnitude(self):
+    '''Calculate the radial velocity.'''
+
+    # Center velocity and radius
+    self.center_coords()
+    self.center_vel_coords()
+    
+    # Calculate the radial velocity
+    self.data['Vmag'] = np.linalg.norm( self.data[ 'V' ], axis=0 )
+
+  ########################################################################
+
   def calc_radial_velocity(self):
     '''Calculate the radial velocity.'''
 
-    raise Exception( "TODO: Test this" )
-
     # Center velocity and radius
-    self.change_coords_center()
-    self.change_vel_coords_center()
+    self.center_coords()
+    self.center_vel_coords()
     
     # Calculate the radial velocity
     self.data['Vr'] = (self.data['V']*self.get_data('P')).sum(0)/self.get_data('R')
+
+  ########################################################################
+
+  def calc_tangential_velocity(self):
+    '''Calculate the radial velocity.'''
+
+    # Center velocity and radius
+    self.center_coords()
+    self.center_vel_coords()
+    
+    # Calculate the radial velocity
+    self.data['Vtan'] = np.sqrt( self.get_data( 'Vmag' )**2. - self.get_data( 'Vr' )**2. )
 
   ########################################################################
 
@@ -918,16 +948,16 @@ class TimeData( SimulationData ):
 
     # Add the halo data to the class.
     self.redshift = mtree_halo['redshift']
-    scale_factor_and_hinv = 1./(1. + self.redshift)/self.data_attrs['hubble']
+    scale_factor_and_hinv = 1./(1. + self.redshift)/self.hubble_param
 
     halo_coords_comoving = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )
     self.halo_coords = halo_coords_comoving*scale_factor_and_hinv[np.newaxis,:]
     self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
     self.r_vir = mtree_halo['Rvir']*scale_factor_and_hinv
     self.r_scale = self.r_vir/mtree_halo['cAnalytic']
-    self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
-    self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
-    self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
+    self.m_vir = mtree_halo['Mvir']/self.hubble_param
+    self.m_gas = mtree_halo['M_gas']/self.hubble_param
+    self.m_star = mtree_halo['M_star']/self.hubble_param
 
     # Calculate the circular velocity
     self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
@@ -970,7 +1000,23 @@ class TimeData( SimulationData ):
         mt_halo_id = self.main_halo_id,
         a_power = scale_a_power,
         )
-      processed_data *= self.data_attrs['hubble']**scale_h_power
+      processed_data *= self.hubble_param**scale_h_power
 
     return processed_data
+
+  ########################################################################
+
+  @property                                                                                                             
+  def snum( self ):                                                                                                     
+
+    # TODO: This is a workable structure for now, but it's not ideal. This may not always be how we get the snum
+    return self.data['snum']                                                                                            
+
+  ########################################################################                                              
+
+  @property                                                                                                             
+  def hubble_param( self ):                                                                                             
+
+    # TODO: This is a workable structure for now, but it's not ideal. The hubble parameter may not always be here.
+    return self.data_attrs['hubble'] 
 

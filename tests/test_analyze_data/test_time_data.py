@@ -46,6 +46,9 @@ class TestTimeData( unittest.TestCase ):
 
   def test_retrieve_halo_data( self ):
 
+    # Setup Mock Data
+    self.t_data.data = { 'snum' : np.array([ 600, 550, 500 ]), }
+
     self.t_data.retrieve_halo_data()
 
     # Make sure we have the right redshift
