@@ -20,6 +20,7 @@ default_kwargs = {
   'ahf_data_dir' : './tests/data/analysis_dir',
   'snum' : [ 600, 550, 500 ],
   'ahf_index' : 600,
+  'store_ahf_reader' : True,
 }
 
 ########################################################################
@@ -126,6 +127,26 @@ class TestTimeData( unittest.TestCase ):
     expected = np.array( [ [1., 2., 3., 4., 5.], ]*4 )
     actual = self.t_data.get_data( 'Rx' )
     npt.assert_allclose( expected, actual )
+
+  ########################################################################
+
+  @mock.patch( 'galaxy_diver.analyze_data.ahf.HaloData.get_mt_data' )
+  def test_get_processed_data( self, mock_get_mt_data ):
+    '''Test that our processed data method works, especially when scaling data.'''
+  
+    # Setup the mock data
+    self.t_data.data['P'] = np.array( [ [ [1., 2., 3., 4., 5.], ]*4, ]*3 )
+    mock_get_mt_data.side_effect = [ np.array([1., 2., 3., 4., 5.]) ]
+
+    # So we don't have to do extra calculations that change things
+    self.t_data.centered = True
+    self.t_data.vel_centered = True
+
+    expected = np.array( [ [1., 1., 1., 1., 1.], ]*4 )/self.t_data.data_attrs['hubble']
+    actual = self.t_data.get_processed_data( 'Rx', scale_key='Rvir', scale_a_power=1., scale_h_power=-1., )
+    npt.assert_allclose( expected, actual )
+
+    mock_get_mt_data.assert_called_once_with( 'Rvir', mt_halo_id=0, a_power=1., )
 
   ########################################################################
 

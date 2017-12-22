@@ -18,6 +18,7 @@ import string
 import warnings
 
 # Imports from my own stuff
+import galaxy_diver.analyze_data.ahf as analyze_ahf
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.utils.astro as astro
 import galaxy_diver.utils.constants as constants
@@ -166,6 +167,19 @@ class SimulationData( generic_data.GenericData ):
 
     else:
       self._base_data_shape = value
+
+  ########################################################################
+
+  @property
+  def halo_data( self ):
+    '''Halo data used.
+    '''
+  
+    if not hasattr( self, '_halo_data' ):
+
+      self._halo_data = analyze_ahf.HaloData( self.ahf_data_dir )
+    
+    return self._halo_data
 
   ########################################################################
 
@@ -922,4 +936,41 @@ class TimeData( SimulationData ):
 
     if self.store_ahf_reader:
       self.ahf_reader = ahf_reader
+
+  ########################################################################
+
+  def get_processed_data( self, data_key, scale_key=None, scale_a_power=None, scale_h_power=None, *args, **kwargs ):
+    '''Modified method for getting processed method. For the most part is equivalent to calling the method
+    of the parent class, but is also capable of scaling the retrieved data by a column from the halo data.
+
+    Args:
+      scale_key (str) :
+        Halo data entry by which to divide the data by.
+
+      scale_a_power (float) :
+        The halo data that we are scaling processed_data by will be multiplied by a to this power.
+        Useful for data in cosmological units (as is often normal).
+
+      scale_h_power (float) :
+        The halo data that we are scaling processed_data by will be multiplied by the hubble parameter to this power.
+        Useful for data in cosmological units (as is often normal).
+
+      *args, **kwargs :
+        Passed to SimulationData.get_processed_data.
+
+    Returns:
+      processed_data (array-like) : Requested data array.
+    '''
+
+    processed_data = super( TimeData, self ).get_processed_data( data_key, *args, **kwargs )
+
+    if scale_key is not None:
+      processed_data /= self.halo_data.get_mt_data(
+        scale_key,
+        mt_halo_id = self.main_halo_id,
+        a_power = scale_a_power,
+        )
+      processed_data *= self.data_attrs['hubble']**scale_h_power
+
+    return processed_data
 

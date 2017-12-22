@@ -316,7 +316,7 @@ class AHFReader( object ):
   ########################################################################
 
   def get_mtree_halo_quantity( self, quantity, indice, index=None, tag=None ):
-    '''Get a desired quantity for all halos at a particular snapshot.
+    '''Get a desired quantity for all merger tree halos at a particular snapshot.
 
     Args:
       quantity (str): mtree_halo key to load in the dataset
