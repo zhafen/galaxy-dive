@@ -15,9 +15,6 @@ import string
 
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.read_data.metafile as read_metafile
-import galaxy_diver.utils.astro as astro_utils
-import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.data_constants as data_constants
 import galaxy_diver.utils.utilities as utilities
 
 import generic_data
@@ -81,19 +78,27 @@ class HaloData( generic_data.GenericData ):
 
   ########################################################################
 
-  def get_mt_data( self, data_key, mt_halo_id=0, a_power=None, ):
+  def get_mt_data( self, data_key, mt_halo_id=0, snums=None, a_power=None, return_values_only=True ):
     '''Get halo data for a specific merger tree.
 
     Args:
       data_key (str) : What data to get.
       mt_halo_id (int) : What merger tree halo ID to select.
+      snums (array-like) : If specified, get the values at these snapshots.
       a_power (float) : If given, multiply the result by the scale factor 1/(1 + redshift) to this power.
+      return_values_only (bool) : If True, get rid of pandas data formatting
 
     Returns:
       mt_data (np.ndarray) : Requested data.
     '''
 
-    mt_data = copy.copy( self.mt_halos[mt_halo_id][data_key].values )
+    mt_data = copy.copy( self.mt_halos[mt_halo_id][data_key] )
+
+    if snums is not None:
+      mt_data = mt_data.loc[snums]
+
+    if return_values_only:
+     mt_data = mt_data.values 
 
     # For converting coordinates
     if a_power is not None:

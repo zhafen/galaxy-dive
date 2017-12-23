@@ -944,7 +944,7 @@ class TimeData( SimulationData ):
     ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
     # Select the main halo at the right redshift
-    mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum]
+    mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].loc[self.snums]
 
     # Add the halo data to the class.
     self.redshift = mtree_halo['redshift']
@@ -995,11 +995,16 @@ class TimeData( SimulationData ):
     processed_data = super( TimeData, self ).get_processed_data( data_key, *args, **kwargs )
 
     if scale_key is not None:
+
+      # Get the data
       processed_data /= self.halo_data.get_mt_data(
         scale_key,
         mt_halo_id = self.main_halo_id,
         a_power = scale_a_power,
+        snums = self.snums
         )
+
+    if scale_h_power is not None:
       processed_data *= self.hubble_param**scale_h_power
 
     return processed_data
@@ -1007,7 +1012,7 @@ class TimeData( SimulationData ):
   ########################################################################
 
   @property                                                                                                             
-  def snum( self ):                                                                                                     
+  def snums( self ):                                                                                                     
 
     # TODO: This is a workable structure for now, but it's not ideal. This may not always be how we get the snum
     return self.data['snum']                                                                                            

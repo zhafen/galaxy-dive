@@ -15,6 +15,21 @@ import galaxy_diver.utils.astro as astro
 
 ########################################################################
 
+class SaneEqualityArray(np.ndarray):
+  '''Numpy array subclass that allows you to test if two arrays are equal.'''
+
+  def __eq__(self, other):
+      return (isinstance(other, np.ndarray) and self.shape == other.shape and np.allclose(self, other))
+
+def sane_eq_array(list_in):
+  '''Wrapper for SaneEqualityArray, that takes in a list.'''
+
+  arr = np.array(list_in)
+
+  return arr.view(SaneEqualityArray)
+
+########################################################################
+
 default_kwargs = {
   'data_dir' : './tests/data/sdir',
   'ahf_data_dir' : './tests/data/analysis_dir',
@@ -139,17 +154,18 @@ class TestTimeData( unittest.TestCase ):
   
     # Setup the mock data
     self.t_data.data['P'] = np.array( [ [ [1., 2., 3., 4., 5.], ]*4, ]*3 )
-    mock_get_mt_data.side_effect = [ np.array([1., 2., 3., 4., 5.]) ]
+    self.t_data.data['snum'] = sane_eq_array( [ 600, 550, 500, ] )
+    mock_get_mt_data.side_effect = [ np.array([1., 2., 3., np.nan, np.nan ]) ]
 
     # So we don't have to do extra calculations that change things
     self.t_data.centered = True
     self.t_data.vel_centered = True
 
-    expected = np.array( [ [1., 1., 1., 1., 1.], ]*4 )/self.t_data.data_attrs['hubble']
+    expected = np.array( [ [1., 1., 1., np.nan, np.nan], ]*4 )/self.t_data.data_attrs['hubble']
     actual = self.t_data.get_processed_data( 'Rx', scale_key='Rvir', scale_a_power=1., scale_h_power=-1., )
     npt.assert_allclose( expected, actual )
 
-    mock_get_mt_data.assert_called_once_with( 'Rvir', mt_halo_id=0, a_power=1., )
+    mock_get_mt_data.assert_called_once_with( 'Rvir', mt_halo_id=0, a_power=1., snums=self.t_data.data['snum'] )
 
   ########################################################################
 
