@@ -276,6 +276,7 @@ class GenericPlotter( object ):
     n_bins = 128,
     average = False,
     normed = False,
+    conditional_y = False,
     vmin = None, vmax = None,
     add_colorbar = True,
     cmap = pu_cm.magma,
@@ -375,6 +376,11 @@ class GenericPlotter( object ):
     if average:
       average_hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges], normed=normed )
       hist2d /= average_hist2d
+
+    # If making the y-axis conditional, divide by the distribution of data for the x-axis.
+    if conditional_y:
+      hist_x, x_edges = np.histogram( x_data, x_edges, normed=normed )
+      hist2d /= hist_x[:,np.newaxis]
 
     # Plot
     if ax is default:
