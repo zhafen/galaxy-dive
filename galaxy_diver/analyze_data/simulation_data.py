@@ -1005,7 +1005,7 @@ class TimeData( SimulationData ):
         )
 
     if scale_h_power is not None:
-      processed_data *= self.hubble_param**scale_h_power
+      processed_data /= self.hubble_param**scale_h_power
 
     return processed_data
 

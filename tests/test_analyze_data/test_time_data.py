@@ -161,7 +161,7 @@ class TestTimeData( unittest.TestCase ):
     self.t_data.centered = True
     self.t_data.vel_centered = True
 
-    expected = np.array( [ [1., 1., 1., np.nan, np.nan], ]*4 )/self.t_data.data_attrs['hubble']
+    expected = np.array( [ [1., 1., 1., np.nan, np.nan], ]*4 )*self.t_data.data_attrs['hubble']
     actual = self.t_data.get_processed_data( 'Rx', scale_key='Rvir', scale_a_power=1., scale_h_power=-1., )
     npt.assert_allclose( expected, actual )
 

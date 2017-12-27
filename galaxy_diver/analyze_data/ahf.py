@@ -94,15 +94,15 @@ class HaloData( generic_data.GenericData ):
 
     mt_data = copy.copy( self.mt_halos[mt_halo_id][data_key] )
 
+    # For converting coordinates
+    if a_power is not None:
+      mt_data *= ( 1. + self.get_mt_data( 'redshift', mt_halo_id ) )**-a_power
+
     if snums is not None:
       mt_data = mt_data.loc[snums]
 
     if return_values_only:
      mt_data = mt_data.values 
-
-    # For converting coordinates
-    if a_power is not None:
-      mt_data *= ( 1. + self.get_mt_data( 'redshift', mt_halo_id ) )**-a_power
 
     return mt_data
 
