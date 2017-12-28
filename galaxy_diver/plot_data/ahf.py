@@ -51,6 +51,9 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
     show_valid_halos = True,
     minimum_criteria = 'n_star',
     minimum_value = 10,
+    show_halo_id = False,
+    x_range = None,
+    y_range = None,
     ):
     '''Plot the halos as circles at their respective locations.
     
@@ -114,6 +117,8 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
       x_pos = self.data_object.ahf_halos['Xc'][sl]
       y_pos = self.data_object.ahf_halos['Yc'][sl]
 
+      halo_ids = self.data_object.ahf_halos.index[sl]
+
       if length_scale == 'r_scale':
         r_vir = self.data_object.ahf_halos['Rvir'][sl]
         c_analytic = self.data_object.ahf_halos['cAnalytic'][sl]
@@ -165,6 +170,24 @@ class AHFPlotter( generic_plotter.GenericPlotter ):
       if outline:
         cir.set_path_effects([ path_effects.Stroke(linewidth=5, foreground='black'),
                                path_effects.Normal() ])
+
+      if show_halo_id:
+
+        if x_range is not None:
+          if x_pos.values[i] > x_range[1] or x_pos.values[i] < x_range[0]:
+            continue
+        if y_range is not None:
+          if y_pos.values[i] > y_range[1] or y_pos.values[i] < y_range[0]:
+            continue
+
+        id_str = '{}'.format( halo_ids.values[i] )
+        ax.annotate( s=id_str, xy=(x_pos.values[i], y_pos.values[i]), xycoords='data', )
+
+    if x_range is not None:
+      ax.set_xlim( x_range )
+    if y_range is not None:
+      ax.set_ylim( y_range )
+
 
   ########################################################################
 

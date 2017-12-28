@@ -277,6 +277,7 @@ class GenericPlotter( object ):
     average = False,
     normed = False,
     conditional_y = False,
+    y_div_function = None,
     vmin = None, vmax = None,
     add_colorbar = True,
     cmap = pu_cm.magma,
@@ -336,6 +337,10 @@ class GenericPlotter( object ):
     # Get data
     x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
     y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
+
+    if y_div_function is not None:
+      y_div_values = y_div_function( x_data )
+      y_data /= y_div_values
 
     # Fix NaNs
     if fix_invalid:
