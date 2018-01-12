@@ -265,9 +265,6 @@ class GalaxyFinder( object ):
                     part of.
         '''
 
-        # DEBUG
-        print "Finding ids..."
-
         # Dictionary to store the data in.
         galaxy_and_halo_ids = {}
 
@@ -297,9 +294,6 @@ class GalaxyFinder( object ):
 
         # Actually get the data
         for id_type in self.ids_to_return:
-
-            # DEBUG
-            print "Finding id_type {}".format( id_type )
 
             if id_type == 'halo_id':
                 galaxy_and_halo_ids['halo_id'] = self.find_halo_id()
