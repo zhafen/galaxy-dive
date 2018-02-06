@@ -126,7 +126,13 @@ class SimulationData( generic_data.GenericData ):
         elif self.length_scale_used == 'r_scale':
             return self.r_scale
         else:
-            return self.ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum][self.length_scale_used]
+            #return self.halo_data.ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum][self.length_scale_used]
+            return self.halo_data.get_mt_data(
+                self.length_scale_used,
+                snums = self.snum,
+                return_values_only = False,
+                a_power = 1.,
+            )/self.data_attrs['hubble']
 
     ########################################################################
 
@@ -175,7 +181,11 @@ class SimulationData( generic_data.GenericData ):
 
         if not hasattr( self, '_halo_data' ):
 
-            self._halo_data = analyze_ahf.HaloData( self.ahf_data_dir )
+            self._halo_data = analyze_ahf.HaloData(
+                self.ahf_data_dir,
+                tag = self.ahf_tag,
+                index = self.ahf_index
+            )
 
         return self._halo_data
 
