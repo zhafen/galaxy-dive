@@ -79,12 +79,12 @@ class SmartDict( collections.Mapping ):
 
     results = {}
     for key in self.keys():
-        
+
       results[key] = self._storage[key]( *args, **kwargs )
 
     return SmartDict( results )
 
-  def call_custom_kwargs( self, kwargs, default_kwargs={} ):
+  def call_custom_kwargs( self, kwargs, default_kwargs={}, verbose=False ):
     '''Perform call, but using custom keyword arguments per dictionary tag.
 
     Args:
@@ -99,7 +99,10 @@ class SmartDict( collections.Mapping ):
 
     results = {}
     for key in self.keys():
-        
+
+      if verbose:
+        print( "Calling for {}".format( key ) )
+
       results[key] = self._storage[key]( **used_kwargs[key] )
 
     return SmartDict( results )
@@ -131,7 +134,7 @@ class SmartDict( collections.Mapping ):
     results = {}
 
     for key in self.keys():
-        
+
       results[key] = self._storage[key][item]
 
     return SmartDict( results )
@@ -141,7 +144,7 @@ class SmartDict( collections.Mapping ):
     results = {}
 
     for key in self.keys():
-        
+
       results[key] = self._storage[key].keys()
 
     return SmartDict( results )
@@ -163,7 +166,7 @@ class SmartDict( collections.Mapping ):
         results[key] = self._storage[key] + other
 
     return SmartDict( results )
-    
+
   __radd__ = __add__
 
   def __sub__( self, other ):
@@ -357,7 +360,7 @@ def arrays_to_set( *args ):
     result ( set ) : The converted set.
   '''
 
-  return set( zip( *args ) ) 
+  return set( zip( *args ) )
 
 def set_to_arrays( set_to_convert ):
   '''Convert a set into multiple arrays.
@@ -402,15 +405,15 @@ def chunk_list( l, n ):
 
   chunked_l = []
   for i in range( n ):
-    
+
     end_ind += len( l )/n
-    
+
     if remainder_to_distribute > 0:
       end_ind += 1
       remainder_to_distribute -= 1
-    
+
     chunked_l.append( l[ start_ind : end_ind ] )
-    
+
     start_ind = end_ind
 
   return chunked_l
@@ -425,7 +428,7 @@ def get_instance_source_dir( instance, instance_type='class' ):
   '''
 
   if instance_type == 'class':
-    inspection_object =  instance.__class__ 
+    inspection_object =  instance.__class__
   elif instance_type == 'module':
     inspection_object = instance
   else:
@@ -472,9 +475,9 @@ def print_timer( timer_string='Time taken:' ):
   Args:
     timer_string (str, optional) : Printed before printing the time.
   '''
-  
+
   def _print_timer( func ):
-    
+
     @wraps( func )
     def wrapped_func( *args, **kwargs ):
 
@@ -488,9 +491,9 @@ def print_timer( timer_string='Time taken:' ):
       print( print_string )
 
       return result
-    
+
     return wrapped_func
-  
+
   return _print_timer
 
 ########################################################################
@@ -618,7 +621,7 @@ def getHaloDataRedshift(sdir, halo_number, redshift, convert_to_proper=True):
   elif redshift > redshift_arr.max():
     print 'zhh_dataio.getHaloDataRedshift: Bumping redshift from {} to {}'.format(redshift, redshift_arr.max())
     redshift = redshift_arr.max()
-  
+
   try:
     # Get single values out of the halo data.
     arr_value_list = []
@@ -639,7 +642,7 @@ def getHaloDataRedshift(sdir, halo_number, redshift, convert_to_proper=True):
 
 ########################################################################
 
-# Get particle data and useful halo file data for a given data, all in proper units. Combine them into a class. 
+# Get particle data and useful halo file data for a given data, all in proper units. Combine them into a class.
 
 class PartDataLong(object):
 
@@ -669,7 +672,7 @@ class PartDataLong(object):
     self.M_vir = halo_data[7]
     self.M_gas = halo_data[8]
     self.M_star = halo_data[9]
-    self.CoM_coords = (halo_data[10], halo_data[11], halo_data[12]) 
+    self.CoM_coords = (halo_data[10], halo_data[11], halo_data[12])
 
   ########################################################################
 
