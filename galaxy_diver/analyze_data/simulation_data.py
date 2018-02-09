@@ -1007,12 +1007,17 @@ class TimeData( SimulationData ):
         if scale_key is not None:
 
             # Get the data
-            processed_data /= self.halo_data.get_mt_data(
+            data_to_div_by =  self.halo_data.get_mt_data(
                 scale_key,
                 mt_halo_id = self.main_halo_id,
                 a_power = scale_a_power,
                 snums = self.snums
-                )
+            )
+
+            if 'sl' in kwargs:
+                data_to_div_by = data_to_div_by[kwargs['sl'][1]]
+
+            processed_data /= data_to_div_by
 
         if scale_h_power is not None:
             processed_data /= self.hubble_param**scale_h_power

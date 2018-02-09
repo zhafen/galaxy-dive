@@ -54,7 +54,7 @@ class GenericPlotter( object ):
     print( "Attribute {} not found in plotting object. Checking data object.".format( attr ) )
 
     return getattr( self.data_object, attr )
-    
+
   ########################################################################
   # Specific Generic Plots
   ########################################################################
@@ -90,16 +90,16 @@ class GenericPlotter( object ):
     Args:
       data_key (str) :
         Data key to plot.
-        
+
       weight_key (str) :
         Data key for data to use as a weight. By default, no weight.
-        
+
       slices (int or tuple of slices) :
         How to slices the data.
-        
+
       ax (axis) :
         What axis to use. By default creates a figure and places the axis on it.
-        
+
       fix_invalid (bool) :
         Throw away invalid values?
 
@@ -128,25 +128,25 @@ class GenericPlotter( object ):
       x_range, y_range ( [min,max] ) :
         What are the minimum and maximum x- and y- values to include?
         Defaults to matplotlib's automatic choices
-        
+
       x_label, ylabel (str) :
         Axes labels. Defaults to the data_key for the x-axis and "Normalized Histogram" for the y-axis.
-        
+
       add_x_label, add_y_label (bool) :
         Include axes labels?
-        
+
       plot_label (str or dict) :
         What to label the plot with. By default, uses self.label.
-        
+
       line_label (str) :
         What label to give the line.
-        
+
       label_fontsize (int) :
         Fontsize for the labels.
-        
+
       x_scale, y_scale (str) :
         What scales to use for the x and y axes.
-        
+
       cdf (bool) :
         Plot a CDF instead.
 
@@ -155,7 +155,7 @@ class GenericPlotter( object ):
 
       vertical_line_kwargs (dict) :
         Arguments to pass to ax.plot( for the vertical line.
-        
+
       return_dist (bool) :
         If True, return the data values and the edges for the histogram.
 
@@ -557,7 +557,7 @@ class GenericPlotter( object ):
       ax = plt.gca()
 
     s = ax.scatter( x_data, y_data, s=marker_size, color=color, marker=marker )
-    
+
     # Change the z order
     s.set_zorder( zorder )
 
@@ -699,7 +699,7 @@ class GenericPlotter( object ):
 
     axis_plotting_method = getattr( self, axis_plotting_method_str )
     for key, plotting_kwargs in all_plotting_kwargs.items():
-      
+
       plotting_kwargs['ax'] = ax
 
       if add_line_label:
@@ -866,7 +866,7 @@ class GenericPlotter( object ):
       make_movie (bool) : Make a movie out of the plots, if True.
       clear_data (bool) : If True, clear memory of the data after making the plots.
     '''
-    
+
     plotting_method = getattr( self, plotting_method_str )
 
     if out_dir is not None:
@@ -924,7 +924,7 @@ class PlotterSet( utilities.SmartDict ):
     # Load the worldline sets
     storage = {}
     for key in variations.keys():
-      
+
       kwargs = dict( defaults )
       for var_key in variations[key].keys():
         kwargs[var_key] = variations[key][var_key]
