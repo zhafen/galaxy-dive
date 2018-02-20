@@ -34,7 +34,7 @@ class HaloData( generic_data.GenericData ):
       index (int) : If provided, what is the final snapshot number for the halo data? Necessary for some AHF data.
       mt_kwargs (dict) : When loading merger tree halo files, additional arguments should be passed here.
     '''
-    
+
     self.ahf_reader = read_ahf.AHFReader( data_dir )
 
     key_parser = HaloKeyParser()
@@ -49,7 +49,7 @@ class HaloData( generic_data.GenericData ):
   def mt_halos( self ):
     '''Attribute for accessing merger tree data.
     '''
-    
+
     if not hasattr( self.ahf_reader, 'mtree_halos' ):
 
       self.ahf_reader.get_mtree_halos( index=self.index, tag=self.tag, **self.mt_kwargs )
@@ -73,7 +73,7 @@ class HaloData( generic_data.GenericData ):
 
     self.ahf_reader.get_halos( snum )
     self.ahf_reader.get_halos_add( snum )
-  
+
     return self.ahf_reader.ahf_halos[data_key].values
 
   ########################################################################
@@ -102,7 +102,7 @@ class HaloData( generic_data.GenericData ):
       mt_data = mt_data.loc[snums]
 
     if return_values_only:
-     mt_data = mt_data.values 
+     mt_data = mt_data.values
 
     return mt_data
 

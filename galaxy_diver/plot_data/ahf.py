@@ -16,6 +16,7 @@ import matplotlib.patheffects as path_effects
 import matplotlib.patches as mpatches
 import matplotlib.transforms as transforms
 
+import galaxy_diver.utils.astro as astro_tools
 import galaxy_diver.plot_data.generic_plotter as generic_plotter
 
 ########################################################################
@@ -192,15 +193,32 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
         y_key,
         snums,
         n_halos = default,
-        center_mt_halo_id = None,
+        subtract_mt_halo_id = None,
+        convert_kpc_to_pkpc = True,
+        hubble_param = None,
+        omega_matter = None,
         ax = None,
+        color = 'k',
     ):
 
         if ax is None:
             fig = plt.figure( figsize=(10, 6), facecolor='white' )
             ax = plt.gca()
 
-        redshifts = self.get_mt_data( 'redshift', snums=snums )
+        redshifts = self.data_object.get_mt_data( 'redshift', snums=snums )
+
+        x_data = astro_tools.age_of_universe(
+            redshifts,
+            h = hubble_param,
+            omega_matter = omega_matter,
+        )
+
+        if subtract_mt_halo_id is not None:
+            subtract_data = self.data_object.get_mt_data(
+                y_key,
+                snums = snums,
+                mt_halo_id = subtract_mt_halo_id,
+            )
 
         for i, snum in enumerate( snums ):
 
@@ -213,13 +231,19 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
             if n_halos is not default:
                 y_data = y_data[:n_halos]
 
-            redshift = redshifts[i]
+            if subtract_mt_halo_id is not None:
+                y_data -= subtract_data[i]
 
-            x_data = [ redshift, ] * y_data.size
+            if convert_kpc_to_pkpc:
+                redshift = redshifts[i]
+                y_data /= ( 1. + redshift )*hubble_param
+
+            x_data_to_plot = [ x_data[i], ] * y_data.size
 
             ax.scatter(
-                x_data,
+                x_data_to_plot,
                 y_data,
+                color = 'k',
             )
 
     ########################################################################
