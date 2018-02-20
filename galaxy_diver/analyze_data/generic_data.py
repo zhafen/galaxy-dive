@@ -152,7 +152,7 @@ class GenericData( object ):
           # Use the keys to get the data
           function_data_keys = self.kwargs['function_args']['function_data_keys']
           input_data = [ self.get_data(function_data_key) for function_data_key in function_data_keys ]
-          
+
           # Apply the function
           data = self.kwargs['function_args']['function']( input_data )
 
@@ -172,7 +172,7 @@ class GenericData( object ):
 
     if sl is not None:
       return data[sl]
-  
+
     return data
 
   ########################################################################
@@ -325,7 +325,7 @@ class DataKeyParser( object ):
 
     Args:
       data_key (str) : Data key to check.
-  
+
     Returns:
       is_position_key (bool) : True if deals with position.
     '''
@@ -339,7 +339,7 @@ class DataKeyParser( object ):
 
     Args:
       data_key (str) : Data key to check.
-  
+
     Returns:
       is_velocity_key (bool) : True if deals with velocity.
     '''
@@ -354,7 +354,7 @@ class DataKeyParser( object ):
 
     Args:
       data_key (str) : Data key to check.
-  
+
     Returns:
       is_fraction_key (bool) : True if the data should be scaled as a fraction of the relevant scale.
     '''
@@ -373,7 +373,7 @@ class DataKeyParser( object ):
 
     Args:
       data_key (str) : Data key to check.
-  
+
     Returns:
       is_log_key (bool) : True if the data should be taken log10 of
     '''
@@ -610,7 +610,7 @@ class DataMasker( object ):
 
   def clear_masks( self, clear_optional_masks=False ):
     '''Reset the masks in total to nothing.
-    
+
     Modifies:
       self.masks (lists) : Sets to empty
     '''

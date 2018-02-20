@@ -8,14 +8,11 @@
 
 # Base python imports
 import copy
-from functools import wraps
-import h5py
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import scipy
-import string
-import warnings
+import scipy.signal as signal
 
 # Imports from my own stuff
 import galaxy_diver.analyze_data.ahf as analyze_ahf
@@ -979,7 +976,17 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
-    def get_processed_data( self, data_key, scale_key=None, scale_a_power=None, scale_h_power=None, *args, **kwargs ):
+    def get_processed_data(
+        self,
+        data_key,
+        smooth_data = False,
+        smoothing_window_length = 9,
+        smoothing_polyorder = 3,
+        scale_key = None,
+        scale_a_power = None,
+        scale_h_power = None,
+        *args, **kwargs
+    ):
         '''Modified method for getting processed method. For the most part is equivalent to calling the method
         of the parent class, but is also capable of scaling the retrieved data by a column from the halo data.
 
@@ -1004,23 +1011,30 @@ class TimeData( SimulationData ):
 
         processed_data = super( TimeData, self ).get_processed_data( data_key, *args, **kwargs )
 
+        if smooth_data:
+            processed_data = signal.savgol_filter(
+                processed_data,
+                window_length = smoothing_window_length,
+                polyorder = smoothing_polyorder,
+            )
+
         if scale_key is not None:
 
             # Get the data
-            data_to_div_by =  self.halo_data.get_mt_data(
+            data_to_div_by = self.halo_data.get_mt_data(
                 scale_key,
                 mt_halo_id = self.main_halo_id,
                 a_power = scale_a_power,
                 snums = self.snums
             )
 
+            if scale_h_power is not None:
+                processed_data /= self.hubble_param**scale_h_power
+
             if 'sl' in kwargs:
                 data_to_div_by = data_to_div_by[kwargs['sl'][1]]
 
             processed_data /= data_to_div_by
-
-        if scale_h_power is not None:
-            processed_data /= self.hubble_param**scale_h_power
 
         return processed_data
 
