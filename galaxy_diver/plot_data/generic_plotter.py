@@ -475,9 +475,11 @@ class GenericPlotter( object ):
 
   ########################################################################
 
-  def plot_scatter( self,
+  def scatter(
+    self,
     x_key, y_key,
     slices = None,
+    n_subsample = None,
     ax = default,
     marker_size = 100,
     color = 'k',
@@ -542,6 +544,13 @@ class GenericPlotter( object ):
       x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
       y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
 
+    # Subsample
+    if n_subsample is not None:
+      sampled_inds = np.random.randint( 0, x_data.size, n_subsample )
+
+      x_data = x_data[sampled_inds]
+      y_data = y_data[sampled_inds]
+
     if x_range is default:
       x_range = [ x_data.min(), x_data.max() ]
     elif isinstance( x_range, float ):
@@ -574,6 +583,8 @@ class GenericPlotter( object ):
       plt_label = ax.annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
     elif isinstance( plot_label, dict ):
       plt_label = ax.annotate( **plot_label )
+    elif plot_label is None:
+      pass
     else:
       raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
     if outline_plot_label:

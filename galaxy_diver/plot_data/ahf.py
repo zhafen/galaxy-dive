@@ -100,58 +100,71 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
             plt.figure( figsize=(7, 6), facecolor='white' )
             ax = plt.gca()
 
+        # Account for the fact that this plotting function was written prior
+        # to how we usually get data.
+        ahf_reader = self.data_object.ahf_reader
+
         if type_of_halo_id == 'ahf_halos':
 
-            self.data_object.get_halos( snum )
-            self.data_object.get_halos_add( snum )
-
             if show_valid_halos:
-                min_criteria = self.data_object.ahf_halos[ minimum_criteria ]
+                min_criteria = self.data_object.get_data(
+                    minimum_criteria, snum )
                 has_minimum_value = min_criteria >= minimum_value
                 sl = has_minimum_value
             else:
                 sl = slice( 0, n_halos_plotted )
 
-            x_pos = self.data_object.ahf_halos['Xc'][sl]
-            y_pos = self.data_object.ahf_halos['Yc'][sl]
+            x_pos = self.data_object.get_data( 'Xc', snum )[sl]
+            y_pos = self.data_object.get_data( 'Yc', snum )[sl]
 
-            halo_ids = self.data_object.ahf_halos.index[sl]
+            halo_ids = self.data_object.ahf_reader.ahf_halos.index[sl]
 
             if length_scale == 'r_scale':
-                r_vir = self.data_object.ahf_halos['Rvir'][sl]
-                c_analytic = self.data_object.ahf_halos['cAnalytic'][sl]
+                r_vir = ahf_reader.ahf_halos['Rvir'][sl]
+                c_analytic = ahf_reader.ahf_halos['cAnalytic'][sl]
                 used_length_scale = r_vir / c_analytic
             else:
-                used_length_scale = self.data_object.ahf_halos[length_scale][sl]
+                used_length_scale = ahf_reader.ahf_halos[length_scale][sl]
 
         elif type_of_halo_id == 'merger_tree':
-            x_pos = self.data_object.get_mtree_halo_quantity( 'Xc', snum, self.data_object.index, self.data_object.tag )
-            y_pos = self.data_object.get_mtree_halo_quantity( 'Yc', snum, self.data_object.index, self.data_object.tag )
+            x_pos = ahf_reader.get_mtree_halo_quantity( 'Xc', snum, ahf_reader.index, ahf_reader.tag )
+            y_pos = ahf_reader.get_mtree_halo_quantity( 'Yc', snum, ahf_reader.index, ahf_reader.tag )
 
             if length_scale == 'r_scale':
-                r_vir = self.data_object.get_mtree_halo_quantity( 'Rvir', snum, self.data_object.index, self.data_object.tag )
-                c_analytic = self.data_object.get_mtree_halo_quantity( 'cAnalytic', snum, self.data_object.index,
-                                                                                                                        self.data_object.tag )
-                used_length_scale = r_vir/c_analytic
+                r_vir = ahf_reader.get_mtree_halo_quantity( 'Rvir', snum, ahf_reader.index, ahf_reader.tag )
+                c_analytic = ahf_reader.get_mtree_halo_quantity(
+                    'cAnalytic',
+                    snum,
+                    ahf_reader.index,
+                    ahf_reader.tag
+                )
+                used_length_scale = r_vir / c_analytic
             else:
-                used_length_scale = self.data_object.get_mtree_halo_quantity( length_scale, snum, self.data_object.index,
-                                                                                                                                            self.data_object.tag )
+                used_length_scale = ahf_reader.get_mtree_halo_quantity(
+                    length_scale,
+                    snum,
+                    ahf_reader.index,
+                    ahf_reader.tag
+                )
 
-        radii = radius_fraction*used_length_scale
+        radii = radius_fraction * used_length_scale
 
         if hubble_param is not default:
-            redshift = self.data_object.mtree_halos[0]['redshift'][snum]
-            x_pos /= ( 1. + redshift )*hubble_param
-            y_pos /= ( 1. + redshift )*hubble_param
-            radii /= ( 1. + redshift )*hubble_param
+            redshift = self.data_object.get_mt_data(
+                'redshift',
+                snums = [ snum, ],
+            )
+            x_pos /= ( 1. + redshift ) * hubble_param
+            y_pos /= ( 1. + redshift ) * hubble_param
+            radii /= ( 1. + redshift ) * hubble_param
 
         if center:
-            x_center = self.data_object.mtree_halos[0]['Xc'][snum]
-            y_center = self.data_object.mtree_halos[0]['Yc'][snum]
+            x_center = ahf_reader.mtree_halos[0]['Xc'][snum]
+            y_center = ahf_reader.mtree_halos[0]['Yc'][snum]
 
             if hubble_param is not default:
-                x_center /= ( 1. + redshift )*hubble_param
-                y_center /= ( 1. + redshift )*hubble_param
+                x_center /= ( 1. + redshift ) * hubble_param
+                y_center /= ( 1. + redshift ) * hubble_param
 
             x_pos -= x_center
             y_pos -= y_center
@@ -161,13 +174,22 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
 
         for i, radius in enumerate( radii ):
 
-            cir = mpatches.Circle( (x_pos.values[i], y_pos.values[i]), radius=radius, linewidth=linewidth, \
-                                                        color=color, linestyle=linestyle, fill=False, facecolor='w' )
+            cir = mpatches.Circle(
+                (x_pos[i], y_pos[i]),
+                radius=radius,
+                linewidth=linewidth,
+                color=color,
+                linestyle=linestyle,
+                fill=False,
+                facecolor='w'
+            )
             ax.add_patch( cir )
 
             if outline:
-                cir.set_path_effects([ path_effects.Stroke(linewidth=5, foreground='black'),
-                                                              path_effects.Normal() ])
+                cir.set_path_effects([
+                    path_effects.Stroke(linewidth=5, foreground='black'),
+                    path_effects.Normal()
+                ])
 
             if show_halo_id:
 
@@ -188,7 +210,7 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
 
     ########################################################################
 
-    def plot_halo_time(
+    def plot_halos_time(
         self,
         y_key,
         snums,
@@ -202,7 +224,7 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
     ):
 
         if ax is None:
-            fig = plt.figure( figsize=(10, 6), facecolor='white' )
+            plt.figure( figsize=(10, 6), facecolor='white' )
             ax = plt.gca()
 
         redshifts = self.data_object.get_mt_data( 'redshift', snums=snums )
@@ -236,7 +258,7 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
 
             if convert_kpc_to_pkpc:
                 redshift = redshifts[i]
-                y_data /= ( 1. + redshift )*hubble_param
+                y_data /= ( 1. + redshift ) * hubble_param
 
             x_data_to_plot = [ x_data[i], ] * y_data.size
 
@@ -265,10 +287,10 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
         y_label = default,
         label = default,
         plot_change_in_halo_id = False,
-        ):
+    ):
 
         if ax is default:
-            fig = plt.figure( figsize=(10, 6), facecolor='white' )
+            plt.figure( figsize=(10, 6), facecolor='white' )
             ax = plt.gca()
 
         for i, halo_id in enumerate( halo_ids_to_plot ):
@@ -309,8 +331,14 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
 
                 for i, change_in_halo_id in enumerate( change_in_halo_ids ):
                     if change_in_halo_id != 0:
-                            ax.plot( [plotted_mtree_halo.index[i], plotted_mtree_halo.index[i] ], [0., 1.],
-                                                    transform=trans, color='k', linewidth=1, linestyle='--')
+                        ax.plot(
+                            [plotted_mtree_halo.index[i], plotted_mtree_halo.index[i] ],
+                            [0., 1.],
+                            transform=trans,
+                            color='k',
+                            linewidth=1,
+                            linestyle='--'
+                        )
 
             if label is default:
                 label = self.label
