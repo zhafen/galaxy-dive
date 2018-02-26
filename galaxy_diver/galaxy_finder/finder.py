@@ -443,10 +443,15 @@ class GalaxyFinder( object ):
         if ahf_host_id.size == 0:
             return halo_id
 
-        # Get the host halo ID
-        host_id = ahf_host_id[ halo_id ]
+        # Setup the default array.
+        host_id = np.full( halo_id.shape, -2 )
 
-        # Fix the invalid values (which come from not being associated with any halo)
+        # Get the host halo ID for valid halos
+        valid_halo_id = halo_id != -2
+        host_id[valid_halo_id] = ahf_host_id[ halo_id[valid_halo_id] ]
+
+        # Fix the invalid values
+        # (which come from not being associated with any halo)
         host_id_fixed = np.ma.fix_invalid( host_id, fill_value=-2 )
 
         return host_id_fixed.data.astype( int )
