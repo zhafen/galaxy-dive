@@ -296,7 +296,9 @@ def merge_two_dicts( dict_a, dict_b ):
     dict_b (dict) : Second dictionary to merge.
 
   Returns:
-    merged_dict (dict) : Dictionary including elements from both. dict_a's entries take priority over dict_b.
+    merged_dict (dict) :
+      Dictionary including elements from both.
+      dict_a's entries take priority over dict_b.
   '''
 
   merged_dict = dict_b.copy()
