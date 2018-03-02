@@ -25,10 +25,12 @@ import generic_data
 ########################################################################
 ########################################################################
 
+
 class SimulationData( generic_data.GenericData ):
     '''Class for handling simulation data.'''
 
-    def __init__( self,
+    def __init__(
+        self,
         data_dir = None,
         ahf_data_dir = None,
         ahf_index = None,
@@ -47,7 +49,8 @@ class SimulationData( generic_data.GenericData ):
         vel_center_method = 'halo',
         store_ahf_reader = False,
 
-        **kwargs ):
+        **kwargs
+    ):
         '''Initialize.
 
         Args:
@@ -123,13 +126,12 @@ class SimulationData( generic_data.GenericData ):
         elif self.length_scale_used == 'r_scale':
             return self.r_scale
         else:
-            #return self.halo_data.ahf_reader.mtree_halos[self.main_halo_id].loc[self.snum][self.length_scale_used]
             return self.halo_data.get_mt_data(
                 self.length_scale_used,
                 snums = self.snum,
                 return_values_only = False,
                 a_power = 1.,
-            )/self.data_attrs['hubble']
+            ) / self.data_attrs['hubble']
 
     ########################################################################
 
@@ -220,7 +222,7 @@ class SimulationData( generic_data.GenericData ):
                 is_nan = np.any( [ np.isnan( value ), np.isnan( self._redshift ) ], axis=1 )
                 not_nan_inds = np.where( np.invert( is_nan ) )[0]
 
-                test_value = np.array(value)[not_nan_inds] # Cast as np.ndarray because Pandas arrays can cause trouble.
+                test_value = np.array(value)[not_nan_inds]  # Cast as np.ndarray because Pandas arrays can cause trouble.
                 test_existing_value = np.array(self._redshift)[not_nan_inds]
                 npt.assert_allclose( test_value, test_existing_value, atol=1e-5 )
 
@@ -302,8 +304,13 @@ class SimulationData( generic_data.GenericData ):
         '''Property for the hubble function at specified redshift.'''
 
         if not hasattr( self, '_hubble_z' ):
-            self._hubble_z = astro.hubble_parameter( self.redshift, h=self.data_attrs['hubble'],
-                omega_matter=self.data_attrs['omega_matter'], omega_lambda=self.data_attrs['omega_lambda'], units='km/s/kpc' )
+            self._hubble_z = astro.hubble_parameter(
+                self.redshift,
+                h=self.data_attrs['hubble'],
+                omega_matter=self.data_attrs['omega_matter'],
+                omega_lambda=self.data_attrs['omega_lambda'],
+                units='km/s/kpc'
+            )
 
         return self._hubble_z
 
@@ -382,9 +389,9 @@ class SimulationData( generic_data.GenericData ):
 
         # Handle weird formatting that happens when using data frames.
         if isinstance( self.hubble_z, pd.Series ):
-            self.data['V'] += self.get_data( 'P' )*self.hubble_z.values
+            self.data['V'] += self.get_data( 'P' ) * self.hubble_z.values
         else:
-            self.data['V'] += self.get_data( 'P' )*self.hubble_z
+            self.data['V'] += self.get_data( 'P' ) * self.hubble_z
 
         self.hubble_corrected = True
 
@@ -443,7 +450,7 @@ class SimulationData( generic_data.GenericData ):
             break
 
         if 'data' not in locals().keys():
-            raise KeyError( "After {} tries, unable to find or create data_key, {}".format( i+1, data_key ) )
+            raise KeyError( "After {} tries, unable to find or create data_key, {}".format( i + 1, data_key ) )
 
         if sl is not None:
             return data[sl]
@@ -466,11 +473,11 @@ class SimulationData( generic_data.GenericData ):
 
         # Transpose in order to account for when the data isn't regularly shaped
         if data_key == 'Rx':
-            data = self.data['P'][0,:]
+            data = self.data['P'][0, :]
         elif data_key == 'Ry':
-            data = self.data['P'][1,:]
+            data = self.data['P'][1, :]
         elif data_key == 'Rz':
-            data = self.data['P'][2,:]
+            data = self.data['P'][2, :]
         else:
             data = self.data[data_key]
 
@@ -493,11 +500,11 @@ class SimulationData( generic_data.GenericData ):
 
         # Get data
         if data_key == 'Vx':
-            data = self.data['V'][0,:]
+            data = self.data['V'][0, :]
         elif data_key == 'Vy':
-            data = self.data['V'][1,:]
+            data = self.data['V'][1, :]
         elif data_key == 'Vz':
-            data = self.data['V'][2,:]
+            data = self.data['V'][2, :]
         else:
             data = self.data[data_key]
 
@@ -561,7 +568,7 @@ class SimulationData( generic_data.GenericData ):
             point (array-like of shape (3,)) : The point you want to find the distance to for each particle.
         '''
 
-        d_to_point = scipy.spatial.distance.cdist( self.get_data( 'P' ).transpose(), point[np.newaxis,:] )
+        d_to_point = scipy.spatial.distance.cdist( self.get_data( 'P' ).transpose(), point[np.newaxis, :] )
 
         return d_to_point.flatten()
 
@@ -576,7 +583,7 @@ class SimulationData( generic_data.GenericData ):
 
         d_to_point = self.get_distance_to_point( point )
 
-        potential_per_particle = -1.*constants.UNITG_UNIV*self.get_data( 'M' )/d_to_point
+        potential_per_particle = -1. * constants.UNITG_UNIV * self.get_data( 'M' ) / d_to_point
 
         total_potential = potential_per_particle.sum()
 
@@ -600,6 +607,7 @@ class SimulationData( generic_data.GenericData ):
 
 ########################################################################
 ########################################################################
+
 
 class SnapshotData( SimulationData ):
     '''Class for analysis of a single snapshot of data.'''
@@ -633,13 +641,13 @@ class SnapshotData( SimulationData ):
         # Add the halo data to the class.
         self.redshift = mtree_halo['redshift']
         halo_coords_comoving = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )
-        self.halo_coords = halo_coords_comoving/(1. + self.redshift)/self.data_attrs['hubble']
+        self.halo_coords = halo_coords_comoving / (1. + self.redshift) / self.data_attrs['hubble']
         self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
-        self.r_vir = mtree_halo['Rvir']/(1. + self.redshift)/self.data_attrs['hubble']
-        self.r_scale = self.r_vir/mtree_halo['cAnalytic']
-        self.m_vir = mtree_halo['Mvir']/self.data_attrs['hubble']
-        self.m_gas = mtree_halo['M_gas']/self.data_attrs['hubble']
-        self.m_star = mtree_halo['M_star']/self.data_attrs['hubble']
+        self.r_vir = mtree_halo['Rvir'] / (1. + self.redshift) / self.data_attrs['hubble']
+        self.r_scale = self.r_vir / mtree_halo['cAnalytic']
+        self.m_vir = mtree_halo['Mvir'] / self.data_attrs['hubble']
+        self.m_gas = mtree_halo['M_gas'] / self.data_attrs['hubble']
+        self.m_star = mtree_halo['M_star'] / self.data_attrs['hubble']
 
         # Calculate the circular velocity
         self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
@@ -664,7 +672,7 @@ class SnapshotData( SimulationData ):
             m_ma = self.get_masked_data( 'M', radial_mask )
             v_ma = self.get_masked_data( 'V', radial_mask )
 
-            self._v_com = ( v_ma*m_ma ).sum( 1 )/m_ma.sum()
+            self._v_com = ( v_ma * m_ma ).sum( 1 ) / m_ma.sum()
 
         return self._v_com
 
@@ -691,10 +699,10 @@ class SnapshotData( SimulationData ):
                 self.correct_hubble_flow()
 
             # Get mask for only inner components
-            r_mask = self.add_mask('R', 0., self.averaging_frac*self.R_vir, return_or_store='return')
+            r_mask = self.add_mask('R', 0., self.averaging_frac * self.R_vir, return_or_store='return')
 
             # Adapt for application to 'l', which is a multidimensional array
-            inner_mask = np.array([r_mask]*3)
+            inner_mask = np.array([r_mask] * 3)
 
             # Apply masks
             ang_momentum = self.get_data('L')
@@ -721,32 +729,34 @@ class SnapshotData( SimulationData ):
 
         raise Exception( "TODO: Test this" )
 
-        # Choose cosmology
-        cosmo = Cosmology.setCosmology('WMAP9')
+        # Previous code that needs to be cleaned up below.
 
-        # Calculate the virial radius, if necessary
-        if R_vir is not None:
-            if R_vir=='BN':
-                # Calculate R_vir off of the cosmocode def, and convert to proper kpc.
-                self.R_vir = cosmo.virialRadius(M, z)*10.**3.
+        # # Choose cosmology
+        # cosmo = Cosmology.setCosmology('WMAP9')
 
-        # Make h easier to use (don't have to write the whole thing out...)
-        h = self.data_attrs['hubble']
+        # # Calculate the virial radius, if necessary
+        # if R_vir is not None:
+        #     if R_vir == 'BN':
+        #         # Calculate R_vir off of the cosmocode def, and convert to proper kpc.
+        #         self.R_vir = cosmo.virialRadius(M, z) * 10.**3.
 
-        Mh = h*self.M_vir # Convert the halo mass to Msun/h, so as to feed it into the HMF.
-        dldz = np.abs(cosmo.line_elt(self.redshift)) # Cosmological line element in Mpc.
-        dldz_kpc = dldz*10.**3.
-        dndlog10M = cosmo.HMF(Mh, self.redshift)*self.M_vir*np.log(10)*h**4. # HMF in 1/Mpc^3
-        dndlog10M_kpc = dndlog10M*10.**-9.
-        dN_halo =  dldz_kpc*dndlog10M_kpc*np.pi*self.R_vir**2.
+        # # Make h easier to use (don't have to write the whole thing out...)
+        # h = self.data_attrs['hubble']
 
-        # Convert from per redshift to per absorption path length.
-        if time_units == 'abs_length':
-            dN_halo /= cosmo.dXdz(z)
-        elif time_units == 'redshift':
-            pass
+        # Mh = h * self.M_vir  # Convert the halo mass to Msun/h, so as to feed it into the HMF.
+        # dldz = np.abs(cosmo.line_elt(self.redshift))  # Cosmological line element in Mpc.
+        # dldz_kpc = dldz * 10.**3.
+        # dndlog10M = cosmo.HMF(Mh, self.redshift) * self.M_vir * np.log(10) * h**4.  # HMF in 1/Mpc^3
+        # dndlog10M_kpc = dndlog10M * 10.**-9.
+        # dN_halo = dldz_kpc * dndlog10M_kpc * np.pi * self.R_vir**2.
 
-        return dN_halo
+        # # Convert from per redshift to per absorption path length.
+        # if time_units == 'abs_length':
+        #     dN_halo /= cosmo.dXdz(z)
+        # elif time_units == 'redshift':
+        #     pass
+
+        # return dN_halo
 
     ########################################################################
     # Full calculations of the data
@@ -772,7 +782,7 @@ class SnapshotData( SimulationData ):
         self.center_vel_coords()
 
         # Calculate the radial velocity
-        self.data['Vr'] = (self.data['V']*self.get_data('P')).sum(0)/self.get_data('R')
+        self.data['Vr'] = (self.data['V'] * self.get_data('P')).sum(0) / self.get_data('R')
 
     ########################################################################
 
@@ -798,8 +808,8 @@ class SnapshotData( SimulationData ):
         self.change_vel_coords_center()
 
         # Calculate the angular momentum for each particle
-        m_mult = np.array([self.get_data('M'),]*3)
-        self.data['L'] = m_mult*np.cross(self.get_data('P'), self.get_data('V'), 0, 0).transpose()
+        m_mult = np.array([self.get_data('M'), ] * 3)
+        self.data['L'] = m_mult * np.cross(self.get_data('P'), self.get_data('V'), 0, 0).transpose()
 
     ########################################################################
 
@@ -825,22 +835,24 @@ class SnapshotData( SimulationData ):
             # Calculate the total angular momentum vector, if it's not calculated yet
             self.v = self.calc_total_ang_momentum()
         elif vector == 'total gas ang momentum':
-            p_d = ParticleData(self.kwargs)
-            self.v = p_d.calc_total_ang_momentum()
+
+            raise Exception( "This option is clearly broken." )
+            # p_d = ParticleData(self.kwargs)
+            self.v = self.calc_total_ang_momentum()
         else:
             self.v = vector
 
         # Get the dot product
         P = self.get_data('P')
-        dot_product = np.zeros(P[0,:].shape)
+        dot_product = np.zeros(P[0, :].shape)
         for i in range(3):
-            dot_product += self.v[i]*P[i,:]
+            dot_product += self.v[i] * P[i, :]
 
         # Isolate for the cosine
-        cos_phi = dot_product/self.get_data('R')/np.linalg.norm(self.v)
+        cos_phi = dot_product / self.get_data('R') / np.linalg.norm(self.v)
 
         # Get the angle (in degrees)
-        self.data['Phi'] = np.arccos(cos_phi)*180./np.pi
+        self.data['Phi'] = np.arccos(cos_phi) * 180. / np.pi
 
     ########################################################################
 
@@ -859,7 +871,7 @@ class SnapshotData( SimulationData ):
     def calc_num_den(self):
         '''Calculate the number density (it's just a simple conversion...).'''
 
-        self.data['NumDen'] = self.data['Den']*constants.UNITDENSITY_IN_NUMDEN
+        self.data['NumDen'] = self.data['Den'] * constants.UNITDENSITY_IN_NUMDEN
 
     ########################################################################
 
@@ -871,7 +883,7 @@ class SnapshotData( SimulationData ):
         # Assume Hydrogen makes up 75% of the gas
         X_H = 0.75
 
-        self.data['HDen'] = X_H*self.data['Den']*constants.gas_den_to_nb
+        self.data['HDen'] = X_H * self.data['Den'] * constants.gas_den_to_nb
 
     ########################################################################
 
@@ -884,9 +896,9 @@ class SnapshotData( SimulationData ):
         X_H = 0.75
 
         # Calculate the hydrogen density
-        HDen = X_H*self.data['Den']*constants.gas_den_to_nb
+        HDen = X_H * self.data['Den'] * constants.gas_den_to_nb
 
-        self.data['HIDen'] = self.data['nHI']*HDen
+        self.data['HIDen'] = self.data['nHI'] * HDen
 
     ########################################################################
     # Non-Altering Calculations
@@ -919,8 +931,8 @@ class SnapshotData( SimulationData ):
     def calc_mu(self):
         '''Calculate the mean molecular weight. '''
 
-        y_helium = self.data['Z_Species'][:,0] # Get the mass fraction of helium
-        mu = 1./(1. - 0.75*y_helium + self.data['ne'])
+        y_helium = self.data['Z_Species'][:, 0]  # Get the mass fraction of helium
+        mu = 1. / (1. - 0.75 * y_helium + self.data['ne'])
 
         return mu
 
@@ -955,16 +967,16 @@ class TimeData( SimulationData ):
 
         # Add the halo data to the class.
         self.redshift = mtree_halo['redshift']
-        scale_factor_and_hinv = 1./(1. + self.redshift)/self.hubble_param
+        scale_factor_and_hinv = 1. / (1. + self.redshift) / self.hubble_param
 
         halo_coords_comoving = np.array( [ mtree_halo['Xc'], mtree_halo['Yc'], mtree_halo['Zc'] ] )
-        self.halo_coords = halo_coords_comoving*scale_factor_and_hinv[np.newaxis,:]
+        self.halo_coords = halo_coords_comoving * scale_factor_and_hinv[np.newaxis, :]
         self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
-        self.r_vir = mtree_halo['Rvir']*scale_factor_and_hinv
-        self.r_scale = self.r_vir/mtree_halo['cAnalytic']
-        self.m_vir = mtree_halo['Mvir']/self.hubble_param
-        self.m_gas = mtree_halo['M_gas']/self.hubble_param
-        self.m_star = mtree_halo['M_star']/self.hubble_param
+        self.r_vir = mtree_halo['Rvir'] * scale_factor_and_hinv
+        self.r_scale = self.r_vir / mtree_halo['cAnalytic']
+        self.m_vir = mtree_halo['Mvir'] / self.hubble_param
+        self.m_gas = mtree_halo['M_gas'] / self.hubble_param
+        self.m_star = mtree_halo['M_star'] / self.hubble_param
 
         # Calculate the circular velocity
         self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
@@ -1054,3 +1066,8 @@ class TimeData( SimulationData ):
         # TODO: This is a workable structure for now, but it's not ideal. The hubble parameter may not always be here.
         return self.data_attrs['hubble']
 
+    ########################################################################
+
+    def calc_time_as( self ):
+
+        pass
