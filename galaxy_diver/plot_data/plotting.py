@@ -12,6 +12,7 @@ import os
 import subprocess
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as plt_colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import galaxy_diver.utils.data_operations as data_ops
@@ -73,6 +74,45 @@ def add_colorbar( fig_or_ax, color_object, method='fig', ax_location=[0.9, 0.1, 
 ########################################################################
 
 # Functions for switching between a single index and a pair of indexes in the same way that add_subplot maps single subplots.
+
+
+def custom_sequential_colormap(
+    color1,
+    color2 = (1, 1, 1),
+    cmap_name = 'custom',
+    n_bins = 256,
+):
+    '''Create a custom sequential colormap using one to two colors
+
+    Args:
+        color1 (color identifier, e.g. hex or RGB tuple) :
+            One of the two colors used. The colormap transtions from color1
+            to color2 on a gradient.
+
+        color2 (color identifier, e.g. hex or RGB tuple) :
+            One of the two colors used. The colormap transtions from color1
+            to color2 on a gradient.
+
+        cmap_name (str) :
+            What to call the colormap.
+
+        n_bins (int) :
+            Number of bins to divide the colormap into.
+
+    Returns:
+        cmap (colormap instance) :
+            Resulting colormap.
+    '''
+
+    colors = [ color1, color2 ]
+
+    cmap = plt_colors.LinearSegmentedColormap.from_list(
+        cmap_name,
+        colors,
+        N = n_bins
+    )
+
+    return cmap
 
 
 def reading_indexes( index, num_cols ):
