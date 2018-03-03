@@ -49,14 +49,14 @@ class TestTimeData( unittest.TestCase ):
         self.t_data = simulation_data.TimeData( **default_kwargs )
 
         self.t_data.data = {
-            'P' : np.zeros( ( 3, 4, 5 ) ),
-            'V' : np.zeros( ( 3, 4, 5 ) ),
+            'P': np.zeros( ( 3, 4, 5 ) ),
+            'V': np.zeros( ( 3, 4, 5 ) ),
         }
 
         self.t_data.data_attrs = {
-            'hubble' : 0.70199999999999996,
-            'omega_matter' : 0.272,
-            'omega_lambda' : 0.728,
+            'hubble': 0.70199999999999996,
+            'omega_matter': 0.272,
+            'omega_lambda': 0.728,
         }
 
     ########################################################################
@@ -64,7 +64,7 @@ class TestTimeData( unittest.TestCase ):
     def test_retrieve_halo_data( self ):
 
         # Setup Mock Data
-        self.t_data.data = { 'snum' : np.array([ 600, 550, 500 ]), }
+        self.t_data.data = { 'snum': np.array([ 600, 550, 500 ]), }
 
         self.t_data.retrieve_halo_data()
 
@@ -184,7 +184,7 @@ class TestTimeData( unittest.TestCase ):
         '''
 
         data = {
-            'redshift' : np.array( [1., 2., np.nan ] ),
+            'redshift': np.array( [1., 2., np.nan ] ),
         }
         df = pd.DataFrame( data, index=np.array( [ 1, 2, 3 ] ) )
 
@@ -198,7 +198,7 @@ class TestTimeData( unittest.TestCase ):
         '''
 
         data = {
-            'redshift' : np.array( [1., 2., 3. ] ),
+            'redshift': np.array( [1., 2., 3. ] ),
         }
         df = pd.DataFrame( data, index=np.array( [ 1, 2, 3 ] ) )
 
@@ -220,7 +220,51 @@ class TestTimeData( unittest.TestCase ):
         npt.assert_allclose( expected, actual )
 
 
+class TestCalc( unittest.TestCase ):
+
+    def setUp( self ):
+
+        self.t_data = simulation_data.TimeData( **default_kwargs )
+
+        self.t_data.data = {
+            'P': np.zeros( ( 3, 4, 5 ) ),
+            'V': np.zeros( ( 3, 4, 5 ) ),
+        }
+
+        self.t_data.data_attrs = {
+            'hubble': 0.70199999999999996,
+            'omega_matter': 0.272,
+            'omega_lambda': 0.728,
+        }
+
+    ########################################################################
+
+    def test_calc_time_as_classification( self ):
+        '''Calculate the time spent as a certain classification.
+        '''
+
+        # Set up test data
+        self.t_data.data['is_A'] = np.array([
+            [ 1, 1, 1, ],
+            [ 1, 0, 1, ],
+            [ 1, 1, 0, ],
+            [ 1, 0, 0, ],
+        ]).astype( bool )
+        self.t_data.data['dt'] = np.array([
+            1.0, 2.0, 3.0,
+        ])
+
+        self.t_data.calc_time_as_classification( 'time_as_A' )
+
+        actual = self.t_data.data['time_as_A']
+        expected = np.array([
+            [ 6., 5., 3., ],
+            [ 1., 0., 3., ],
+            [ 3., 2., 0., ],
+            [ 1., 0., 0., ],
+        ])
+
+        npt.assert_allclose( expected, actual )
+
 ########################################################################
 ########################################################################
-
-

@@ -1068,6 +1068,28 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
-    def calc_time_as( self ):
+    def calc_time_as_classification( self, data_key ):
 
-        pass
+        # Check if we should be running this function (does the provided
+        # data_key even match the format we want to parse?)
+        if data_key[:7] != 'time_as':
+            return False
+
+        # Get the data key for the classification
+        classification_data_key = 'is_{}'.format( data_key[8:] )
+
+        # Get out the classification data itself
+        classification = self.get_data( classification_data_key )
+
+        # Get out the time intervals, and tile them for formatting
+        dt = self.get_data( 'dt' )
+        dt_tiled = np.tile( dt, ( classification.shape[0], 1) )
+
+        # Get the base array out
+        valid_dt = dt_tiled * classification.astype( int )
+
+        time_as_classification = valid_dt.cumsum( axis=1 )
+
+        self.data[data_key] = time_as_classification
+
+        return True

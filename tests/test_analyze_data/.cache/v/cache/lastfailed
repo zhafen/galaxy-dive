@@ -1,1 +1,3 @@
-{}
+{
+  "test_time_data.py::TestCalc::test_calc_time_as_classification": true
+}

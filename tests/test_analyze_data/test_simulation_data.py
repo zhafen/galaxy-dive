@@ -64,3 +64,6 @@ class TestGetData( unittest.TestCase ):
         expected = self.g_data.data['P'][0][:,2]
 
         npt.assert_allclose( expected, actual )
+
+########################################################################
+
