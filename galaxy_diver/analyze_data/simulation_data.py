@@ -19,6 +19,7 @@ import galaxy_diver.analyze_data.ahf as analyze_ahf
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.utils.astro as astro
 import galaxy_diver.utils.constants as constants
+import galaxy_diver.utils.data_operations as data_operations
 
 import generic_data
 
@@ -1083,12 +1084,25 @@ class TimeData( SimulationData ):
 
         # Get out the time intervals, and tile them for formatting
         dt = self.get_data( 'dt' )
-        dt_tiled = np.tile( dt, ( classification.shape[0], 1) )
 
-        # Get the base array out
-        valid_dt = dt_tiled * classification.astype( int )
+        # Fill in the array row by row
+        time_as_classification = np.zeros( classification.shape )
+        for i, row in enumerate( classification ):
 
-        time_as_classification = valid_dt.cumsum( axis=1 )
+            # Identify regions of contiguous classification
+            contiguous_regions = data_operations.contiguous_regions( row )
+
+            # Find the cumulative time in specified regions
+            for start, end in contiguous_regions:
+
+                dt_region = dt[start:end]
+
+                # We need to flip when we sum because we want a reverse sum
+                # (due to data formatting, t=0 is at j=-1)
+                cumtime_region = np.cumsum( dt_region[::-1] )[::-1]
+
+                # Store that time
+                time_as_classification[i, start:end] = cumtime_region
 
         self.data[data_key] = time_as_classification
 
