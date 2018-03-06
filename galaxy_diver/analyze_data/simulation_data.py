@@ -989,6 +989,15 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
+    def handle_data_key_error( self, data_key ):
+
+        method_str = 'calc_{}'.format( data_key )
+        if hasattr( self, method_str ):
+            getattr( self, method_str )()
+
+        else:
+            super( TimeData, self ).handle_data_key_error( data_key )
+
     def get_processed_data(
         self,
         data_key,
