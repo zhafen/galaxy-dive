@@ -397,7 +397,7 @@ class GenericPlotter( object ):
 
     im = ax.imshow( hist2d.transpose(), cmap=cmap, interpolation='nearest',\
                     extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]], \
-                    origin='low', aspect='auto', vmin=vmin, vmax=vmax, )
+                    origin='low', aspect='equal', vmin=vmin, vmax=vmax, )
 
     # Add a colorbar
     if add_colorbar:

@@ -1007,6 +1007,7 @@ class TimeData( SimulationData ):
         smooth_data = False,
         smoothing_window_length = 9,
         smoothing_polyorder = 3,
+        a_power = None,
         scale_key = None,
         scale_a_power = None,
         scale_h_power = None,
