@@ -994,9 +994,12 @@ class TimeData( SimulationData ):
         method_str = 'calc_{}'.format( data_key )
         if hasattr( self, method_str ):
             getattr( self, method_str )()
+        elif self.calc_time_as_classification( data_key ):
+            return
 
         else:
             super( TimeData, self ).handle_data_key_error( data_key )
+            # raise KeyError( 'NULL data_key, data_key = {}'.format( data_key ) )
 
     def get_processed_data(
         self,
