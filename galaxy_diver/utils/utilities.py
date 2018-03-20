@@ -163,7 +163,7 @@ class SmartDict( collections.Mapping ):
                     results[inner_key] = {}
                     results[inner_key][key] = item[inner_key]
 
-        return results
+        return SmartDict( results )
 
     ########################################################################
     # Operation Methods
