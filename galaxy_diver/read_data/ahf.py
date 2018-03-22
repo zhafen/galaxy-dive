@@ -276,7 +276,7 @@ class AHFReader( object ):
 
     ########################################################################
 
-    def check_files_exist( self, snum_start, snum_end, snum_step ):
+    def check_files_exist( self, snum_start, snum_end, snum_step, file_str='AHF_halos' ):
         '''Check that AHF was successfully run for all files in the given range.
 
         Args:
@@ -293,7 +293,7 @@ class AHFReader( object ):
         missing_snums = []
         for snum in snums:
 
-            file_to_check = 'snap{:03d}Rpep*AHF_halos'.format( snum )
+            file_to_check = 'snap{:03d}Rpep*{}'.format( snum, file_str )
             filepath_to_check = os.path.join( self.sdir, file_to_check )
             files = glob.glob( filepath_to_check )
 
