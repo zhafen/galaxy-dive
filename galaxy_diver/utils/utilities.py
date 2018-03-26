@@ -634,10 +634,10 @@ def getHaloDataRedshift(sdir, halo_number, redshift, convert_to_proper=True):
 
     # Account for rounding errors at the edges.
     if redshift < redshift_arr.min():
-        print 'zhh_dataio.getHaloDataRedshift: Bumping redshift from {} to {}'.format(redshift, redshift_arr.min())
+        print( 'zhh_dataio.getHaloDataRedshift: Bumping redshift from {} to {}'.format(redshift, redshift_arr.min()) )
         redshift = redshift_arr.min()
     elif redshift > redshift_arr.max():
-        print 'zhh_dataio.getHaloDataRedshift: Bumping redshift from {} to {}'.format(redshift, redshift_arr.max())
+        print( 'zhh_dataio.getHaloDataRedshift: Bumping redshift from {} to {}'.format(redshift, redshift_arr.max()) )
         redshift = redshift_arr.max()
 
     try:
