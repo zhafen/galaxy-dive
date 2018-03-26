@@ -219,7 +219,7 @@ def remove_all_space( figure, num_rows, num_cols, num_plots ):
 ########################################################################
 
 
-def save_fig( out_dir, save_file, fig=None, **save_args ):
+def save_fig( out_dir, save_file, fig=None, resolution='auto', **save_args ):
     '''Save a figure using a pretty frequent combination of details.
 
     Args:
@@ -228,6 +228,7 @@ def save_fig( out_dir, save_file, fig=None, **save_args ):
 
     Keyword Args:
         fig : Figure or axis.
+        resolution : What resolution to save the figure as. Defaults to 3600 pixels on the shortest side.
     '''
 
     # Make sure the output directory exists
@@ -238,8 +239,12 @@ def save_fig( out_dir, save_file, fig=None, **save_args ):
             pass
         else:
             raise
+    
+    if resolution == 'auto':
+        figsize = np.min( fig.get_size_inches() )
+        dpi = int( 3600./figsize )
 
-    default_save_args = {'dpi': 150, 'bbox_inches': 'tight'}
+    default_save_args = {'dpi': dpi, 'bbox_inches': 'tight'}
     used_save_args = data_ops.merge_dict( save_args, default_save_args)
 
     # Save the figure.
