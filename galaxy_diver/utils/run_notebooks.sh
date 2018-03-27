@@ -17,7 +17,7 @@ do
 
     # And now run the NBs
     echo Running $nb_script ...
-    python $nb_script
+    python $nb_script "$@"
 
     # Clean up by removing scripts.
     rm $nb_script
