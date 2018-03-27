@@ -1120,3 +1120,9 @@ class TimeData( SimulationData ):
         self.data[data_key] = time_as_classification
 
         return True
+
+    ########################################################################
+
+    def calc_MetalMass( self ):
+        
+        self.data['MetalMass'] = self.get_data( 'M' ) * self.get_data( 'Z' ) * self.z_sun
