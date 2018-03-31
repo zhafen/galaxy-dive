@@ -243,6 +243,8 @@ def save_fig( out_dir, save_file, fig=None, resolution='auto', **save_args ):
     if resolution == 'auto':
         figsize = np.min( fig.get_size_inches() )
         dpi = int( 3600./figsize )
+    else:
+        dpi = resolution
 
     default_save_args = {'dpi': dpi, 'bbox_inches': 'tight'}
     used_save_args = data_ops.merge_dict( save_args, default_save_args)

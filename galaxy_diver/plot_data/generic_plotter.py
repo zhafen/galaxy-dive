@@ -359,11 +359,11 @@ class GenericPlotter( object ):
         if x_range is default:
             x_range = [ x_data.min(), x_data.max() ]
         elif isinstance( x_range, float ):
-            x_range = np.array( [ -x_range, x_range ])*self.data_object.ptracks.length_scale.iloc[slices]
+            x_range = np.array( [ -x_range, x_range ])*self.data_object.length_scale[slices]
         if y_range is default:
             y_range = [ y_data.min(), y_data.max() ]
         elif isinstance( y_range, float ):
-            y_range = np.array( [ -y_range, y_range ])*self.data_object.ptracks.length_scale.iloc[slices]
+            y_range = np.array( [ -y_range, y_range ])*self.data_object.length_scale[slices]
 
         if x_scale == 'log':
             x_edges = np.logspace( np.log10( x_range[0] ), np.log10( x_range[1] ), n_bins )
@@ -439,7 +439,10 @@ class GenericPlotter( object ):
         if label_galaxy_cut:
             info_label = r'$r_{ \rm cut } = ' + '{:.3g}'.format( self.data_object.galids.parameters['galaxy_cut'] ) + 'r_{ s}$'
         if label_redshift:
-            info_label = r'$z=' + '{:.3f}'.format( self.data_object.redshift ) + '$'+ info_label
+            try:
+                info_label = r'$z=' + '{:.3f}'.format( self.data_object.redshift ) + '$'+ info_label
+            except ValueError:
+                info_label = r'$z=' + '{:.3f}'.format( self.data_object.redshift.values[sl[1]] ) + '$'+ info_label
         if label_galaxy_cut or label_redshift:
             ax.annotate( s=info_label, xy=(1.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,
                 ha='right' )
@@ -865,6 +868,7 @@ class GenericPlotter( object ):
         iter_args,
         n_processors = 1,
         out_dir = None,
+        make_out_dir_subdir = True,
         make_movie = False,
         clear_data = False,
         *args, **kwargs ):
@@ -882,7 +886,7 @@ class GenericPlotter( object ):
 
         plotting_method = getattr( self, plotting_method_str )
 
-        if out_dir is not None:
+        if ( out_dir is not None ) and make_out_dir_subdir:
             out_dir = os.path.join( out_dir, self.label )
 
         def plotting_method_wrapper( process_args ):
