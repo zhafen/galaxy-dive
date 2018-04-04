@@ -169,6 +169,15 @@ class SmartDict( collections.Mapping ):
     # Operation Methods
     ########################################################################
 
+    def apply( self, fn ):
+
+        results = {}
+
+        for key, item in self.items():
+            results[key] = fn( item )
+
+        return SmartDict( results )
+
     def __add__( self, other ):
 
         results = {}
