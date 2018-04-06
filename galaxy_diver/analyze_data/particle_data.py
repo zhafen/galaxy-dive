@@ -8,7 +8,7 @@
 
 import numpy as np
 
-import simulation_data
+import galaxy_diver.analyze_data.simulation_data as simulation_data
 import galaxy_diver.read_data.snapshot as read_snapshot
 import galaxy_diver.utils.constants as constants
 

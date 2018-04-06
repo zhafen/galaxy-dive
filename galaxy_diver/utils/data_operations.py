@@ -8,7 +8,7 @@
 
 import copy
 import numpy as np
-import transformations
+import galaxy_diver.utils.transformations as transformations
 
 ########################################################################
 # Functions for doing simple things to data

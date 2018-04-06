@@ -20,8 +20,7 @@ import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.utils.astro as astro
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_operations as data_operations
-
-import generic_data
+import galaxy_diver.analyze_data.generic_data as generic_data
 
 ########################################################################
 ########################################################################

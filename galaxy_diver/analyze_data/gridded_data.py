@@ -11,7 +11,7 @@ import numpy as np
 import string
 
 import galaxy_diver.utils.io as io
-import simulation_data
+import galaxy_diver.analyze_data.simulation_data as simulation_data
 
 ########################################################################
 
