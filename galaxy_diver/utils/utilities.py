@@ -14,10 +14,14 @@ import inspect
 import itertools
 import numpy as np
 import os
-from StringIO import StringIO
 import subprocess
 import sys
 import time
+# Work for py2 and py3
+try:
+    from StringIO import StringIO
+except ImportError:
+        from io import StringIO
 
 ########################################################################
 ########################################################################
