@@ -437,7 +437,9 @@ def chunk_list( l, n ):
     chunked_l = []
     for i in range( n ):
 
-        end_ind += len( l )/n
+        # l/n may not always be an int, so forcing it to be one as before.
+        # But the fact that it isn't always an int seems like a bigger problem.
+        end_ind += int(len( l )/n)
 
         if remainder_to_distribute > 0:
             end_ind += 1
