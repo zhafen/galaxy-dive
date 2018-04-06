@@ -161,7 +161,7 @@ class GenericData( object ):
           data = self.data[data_key]
 
       # Calculate missing data
-      except KeyError, e:
+      except KeyError as e:
         self.handle_data_key_error( data_key )
         continue
 
