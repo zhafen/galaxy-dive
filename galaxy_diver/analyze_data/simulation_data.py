@@ -21,6 +21,7 @@ import galaxy_diver.utils.astro as astro
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_operations as data_operations
 import galaxy_diver.analyze_data.generic_data as generic_data
+import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
 ########################################################################
@@ -29,6 +30,7 @@ import galaxy_diver.analyze_data.generic_data as generic_data
 class SimulationData( generic_data.GenericData ):
     '''Class for handling simulation data.'''
 
+    @utilities.store_parameters
     def __init__(
         self,
         data_dir = None,
@@ -87,10 +89,6 @@ class SimulationData( generic_data.GenericData ):
         Keyword Args:
             function_args (dict): Dictionary of args used to specify an arbitrary function with which to generate data.
         '''
-
-        # Store the arguments
-        for arg in locals().keys():
-            setattr( self, arg, locals()[arg] )
 
         # Make sure that all the arguments have been specified.
         for attr in vars( self ).keys():
