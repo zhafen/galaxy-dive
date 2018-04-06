@@ -11,7 +11,6 @@ import glob
 import numpy as np
 import os
 import pandas as pd
-import string
 
 import galaxy_diver.galaxy_finder.finder as galaxy_finder
 import galaxy_diver.read_data.ahf as read_ahf

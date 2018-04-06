@@ -8,7 +8,6 @@
 
 import h5py
 import numpy as np
-import string
 
 import galaxy_diver.utils.io as io
 import galaxy_diver.analyze_data.simulation_data as simulation_data
@@ -167,7 +166,7 @@ class GriddedData( simulation_data.SnapshotData ):
     '''Calculate positions if you're just looking at one face of a grid.'''
 
     # Figure out which face to calculate for
-    target_face = string.split( data_key, '_' )[-1]
+    target_face = data_key.split( '_' )[-1]
 
     if target_face == 'xy':
       self.data['Rx_face_xy'] = self.get_data( 'Rx' )[:, :, 0]
@@ -184,7 +183,7 @@ class GriddedData( simulation_data.SnapshotData ):
   def calc_impact_parameter( self, data_key ):
 
     # Figure out which face to calculate for
-    target_face = string.split( data_key, '_' )[-1]
+    target_face = data_key.split( '_' )[-1]
     
     if target_face == 'xy':
       self.data[data_key] = np.sqrt( self.get_data( 'Rx_face_xy' )**2. + self.get_data( 'Ry_face_xy' )**2. ) 

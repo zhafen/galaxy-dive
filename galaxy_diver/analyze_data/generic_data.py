@@ -12,7 +12,6 @@ from functools import wraps
 import h5py
 import numpy as np
 import numpy.testing as npt
-import string
 import warnings
 
 import galaxy_diver.utils.constants as constants
