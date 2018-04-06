@@ -21,8 +21,8 @@ import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_constants as data_constants
 import galaxy_diver.utils.utilities as utilities
 
-import ahf
-import particle_data
+import galaxy_diver.analyze_data.ahf as ahf
+import galaxy_diver.analyze_data.particle_data as particle_data
 
 ########################################################################
 ########################################################################

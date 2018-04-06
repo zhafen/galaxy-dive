@@ -16,8 +16,7 @@ import string
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.read_data.metafile as read_metafile
 import galaxy_diver.utils.utilities as utilities
-
-import generic_data
+import galaxy_diver.analyze_data.generic_data as generic_data
 
 ########################################################################
 ########################################################################
