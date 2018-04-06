@@ -255,7 +255,7 @@ def save_fig( out_dir, save_file, fig=None, resolution='auto', **save_args ):
     else:
         fig.savefig('%s/%s' % (out_dir, save_file), **used_save_args)
 
-    print 'File saved at %s/%s' % (out_dir, save_file)
+    print('File saved at %s/%s' % (out_dir, save_file))
 
 ########################################################################
 

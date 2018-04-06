@@ -688,7 +688,7 @@ class HaloUpdater( read_ahf.AHFReader ):
         If True, print out additional information about how the steps are progressing.
     '''
 
-    print 'Saving *.AHF_halos_add for snum {}'.format( snum )
+    print('Saving *.AHF_halos_add for snum {}'.format( snum ))
 
     # Load the AHF_halos data
     self.get_halos( snum )

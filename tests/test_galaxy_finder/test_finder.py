@@ -440,7 +440,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = galaxy_finder.find_ids()
 
         for key in expected.keys():
-            print key
+            print(key)
             npt.assert_allclose( expected[key], actual[key], atol=1e-10 )
 
     ########################################################################
@@ -472,7 +472,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = galaxy_finder.find_ids()
 
         for key in expected.keys():
-            print key
+            print(key)
             npt.assert_allclose( expected[key], actual[key] )
 
     ########################################################################
@@ -504,7 +504,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = galaxy_finder.find_ids()
 
         for key in expected.keys():
-            print key
+            print(key)
             npt.assert_allclose( expected[key], actual[key] )
 
     ########################################################################
@@ -540,7 +540,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = galaxy_finder.find_ids()
 
         for key in expected.keys():
-            print key
+            print(key)
             npt.assert_allclose( expected[key], actual[key] )
 
     ########################################################################

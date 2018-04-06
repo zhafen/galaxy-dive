@@ -386,7 +386,7 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
         data = {}
         for i in range( n_files_orig ):
 
-            print '  Loading file {}...'.format( i )
+            print('  Loading file {}...'.format( i ))
 
             file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
             filename = os.path.join( snapdir, file_basename )
@@ -423,7 +423,7 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
         print( 'Storing data...' )
         for i in range( n_files ):
 
-            print '  Copying {} of {}'.format( i+1, n_files )
+            print('  Copying {} of {}'.format( i+1, n_files ))
 
             file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
             copy_filename = os.path.join( copy_snapdir, file_basename )
@@ -453,7 +453,7 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
     else:
         for i in range( n_files ):
 
-            print '  Copying {} of {}'.format( i+1, n_files )
+            print('  Copying {} of {}'.format( i+1, n_files ))
 
             file_basename = 'snapshot_{:03}.{}.hdf5'.format( snum, i )
             filename = os.path.join( snapdir, file_basename )
@@ -463,5 +463,5 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
             h5_wrapper = HDF5Wrapper( filename )
             h5_wrapper.copy_hdf5_file( copy_filename, subsamples=subsamples, particle_data=n_files, )
 
-    print 'Done!'
+    print('Done!')
 
