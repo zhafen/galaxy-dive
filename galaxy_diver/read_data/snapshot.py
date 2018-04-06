@@ -16,6 +16,7 @@ import os.path
 import scipy.interpolate as interpolate
 import scipy.optimize as optimize
 import math
+from builtins import int
 
 ########################################################################
 ########################################################################
@@ -186,7 +187,7 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
         ## correct to same ID as original gas particle for new stars, if bit-flip applied
     if ((np.min(ids)<0) | (np.max(ids)>1.e9)):
         bad = (ids < 0) | (ids > 1.e9)
-        ids[bad] += (1L << 31)
+        ids[bad] += (int(1) << 31)
 
     # do the cosmological conversions on final vectors as needed
     pos *= hinv*ascale # snapshot units are comoving
