@@ -100,10 +100,10 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
     # initialize variables to be read
     pos=np.zeros([npartTotal[ptype],3],dtype=float)
     vel=np.copy(pos)
-    ids=np.zeros([npartTotal[ptype]],dtype=long)
+    ids=np.zeros([npartTotal[ptype]],dtype=np.long)
     if load_additional_ids:
-      child_ids=np.zeros([npartTotal[ptype]],dtype=long)
-      id_gens=np.zeros([npartTotal[ptype]],dtype=long)
+      child_ids=np.zeros([npartTotal[ptype]],dtype=np.long)
+      id_gens=np.zeros([npartTotal[ptype]],dtype=np.long)
     mass=np.zeros([npartTotal[ptype]],dtype=float)
     if (ptype==0):
         ugas=np.copy(mass)
@@ -487,12 +487,12 @@ def setup_data_struct( ptype, flag_metals ):
   data = {
     'P' : np.zeros( [ n_particles, 3], dtype=np.float64 ),
     'V' : np.zeros( [ n_particles, 3], dtype=np.float32 ),
-    'ID' : np.zeros( n_particles, dtype=long ),
+    'ID' : np.zeros( n_particles, dtype=np.long ),
     'M' : np.zeros( n_particles, dtype=np.float32 ),
   }
   if load_additional_ids:
-    data['ChildID'] = np.zeros( n_particles, dtype=long )
-    data['IDGen'] = np.zeros( n_particles, dtype=long )
+    data['ChildID'] = np.zeros( n_particles, dtype=np.long )
+    data['IDGen'] = np.zeros( n_particles, dtype=np.long )
 
   # Information that varies depending on ptype
   if ptype == 0:
