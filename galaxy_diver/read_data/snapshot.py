@@ -16,7 +16,6 @@ import os.path
 import scipy.interpolate as interpolate
 import scipy.optimize as optimize
 import math
-from builtins import int
 
 ########################################################################
 ########################################################################
