@@ -45,11 +45,11 @@ class GenericData( object ):
 
     # For storing and creating masks to pass the data
     if data_masker is None:
-      data_masker = DataMasker( self )
+      self.data_masker = DataMasker( self )
 
     # Setup a data key parser
     if key_parser is None:
-      key_parser = DataKeyParser()
+      self.key_parser = DataKeyParser()
 
   ########################################################################
   # Properties

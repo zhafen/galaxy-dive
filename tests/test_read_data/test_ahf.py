@@ -239,6 +239,6 @@ class TestUtilities( unittest.TestCase ):
 
     # Make sure we print information about missing snapshots
     output = out.getvalue().strip()
-    self.assertEqual( output, 'Missing snums:\n400, 450,' )
+    self.assertEqual( output, 'Missing snums:\n400,\n450,' )
 
 

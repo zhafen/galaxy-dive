@@ -304,7 +304,7 @@ class AHFReader( object ):
 
             print( 'Missing snums:' )
             for missing_snum in missing_snums:
-                print( '{},'.format( missing_snum ), )
+                print( '{},'.format( missing_snum ) )
 
             return False
 
