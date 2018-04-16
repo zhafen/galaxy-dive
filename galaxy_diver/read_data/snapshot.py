@@ -44,13 +44,13 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
     if (ptype<0): return {'k':-1};
     if (ptype>5): return {'k':-1};
 
-    #print "just past ptype check"
+    #print("just past ptype check")
 
     fname,fname_base,fname_ext = check_if_filename_exists(sdir,snum,\
         snapshot_name=snapshot_name,extension=extension,four_char=four_char)
     if(fname=='NULL'): 
       raise Exception( "Couldn't read snapshot {} in {}.\nCheck if this is the right location.".format( snum, sdir ) )
-    if(loud==1): print 'loading file : '+fname
+    if(loud==1): print('loading file : '+fname)
 
     ## open file and parse its header information
     nL = 0 # initial particle point to start at 
@@ -99,10 +99,10 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
     # initialize variables to be read
     pos=np.zeros([npartTotal[ptype],3],dtype=float)
     vel=np.copy(pos)
-    ids=np.zeros([npartTotal[ptype]],dtype=long)
+    ids=np.zeros([npartTotal[ptype]],dtype=np.long)
     if load_additional_ids:
-      child_ids=np.zeros([npartTotal[ptype]],dtype=long)
-      id_gens=np.zeros([npartTotal[ptype]],dtype=long)
+      child_ids=np.zeros([npartTotal[ptype]],dtype=np.long)
+      id_gens=np.zeros([npartTotal[ptype]],dtype=np.long)
     mass=np.zeros([npartTotal[ptype]],dtype=float)
     if (ptype==0):
         ugas=np.copy(mass)
@@ -186,7 +186,7 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
         ## correct to same ID as original gas particle for new stars, if bit-flip applied
     if ((np.min(ids)<0) | (np.max(ids)>1.e9)):
         bad = (ids < 0) | (ids > 1.e9)
-        ids[bad] += (1L << 31)
+        ids[bad] += (int(1) << 31)
 
     # do the cosmological conversions on final vectors as needed
     pos *= hinv*ascale # snapshot units are comoving
@@ -486,12 +486,12 @@ def setup_data_struct( ptype, flag_metals ):
   data = {
     'P' : np.zeros( [ n_particles, 3], dtype=np.float64 ),
     'V' : np.zeros( [ n_particles, 3], dtype=np.float32 ),
-    'ID' : np.zeros( n_particles, dtype=long ),
+    'ID' : np.zeros( n_particles, dtype=np.long ),
     'M' : np.zeros( n_particles, dtype=np.float32 ),
   }
   if load_additional_ids:
-    data['ChildID'] = np.zeros( n_particles, dtype=long )
-    data['IDGen'] = np.zeros( n_particles, dtype=long )
+    data['ChildID'] = np.zeros( n_particles, dtype=np.long )
+    data['IDGen'] = np.zeros( n_particles, dtype=np.long )
 
   # Information that varies depending on ptype
   if ptype == 0:

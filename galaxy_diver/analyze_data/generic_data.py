@@ -12,10 +12,9 @@ from functools import wraps
 import h5py
 import numpy as np
 import numpy.testing as npt
-import string
 import warnings
-
 import galaxy_diver.utils.constants as constants
+import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
 
@@ -28,6 +27,7 @@ default = object()
 class GenericData( object ):
   '''Very generic data class, with getting and masking functionality.'''
 
+  @utilities.store_parameters
   def __init__( self,
     key_parser = None,
     data_masker = None,
@@ -50,11 +50,6 @@ class GenericData( object ):
     # Setup a data key parser
     if key_parser is None:
       key_parser = DataKeyParser()
-
-    # Store the arguments
-    for arg in locals().keys():
-      setattr( self, arg, locals()[arg] )
-    self.kwargs = kwargs
 
   ########################################################################
   # Properties
@@ -161,7 +156,7 @@ class GenericData( object ):
           data = self.data[data_key]
 
       # Calculate missing data
-      except KeyError, e:
+      except KeyError as e:
         self.handle_data_key_error( data_key )
         continue
 

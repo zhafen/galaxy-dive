@@ -11,7 +11,6 @@ import glob
 import numpy as np
 import os
 import pandas as pd
-import string
 
 import galaxy_diver.galaxy_finder.finder as galaxy_finder
 import galaxy_diver.read_data.ahf as read_ahf
@@ -21,8 +20,8 @@ import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_constants as data_constants
 import galaxy_diver.utils.utilities as utilities
 
-import ahf
-import particle_data
+import galaxy_diver.analyze_data.ahf as ahf
+import galaxy_diver.analyze_data.particle_data as particle_data
 
 ########################################################################
 ########################################################################
@@ -688,7 +687,7 @@ class HaloUpdater( read_ahf.AHFReader ):
         If True, print out additional information about how the steps are progressing.
     '''
 
-    print 'Saving *.AHF_halos_add for snum {}'.format( snum )
+    print('Saving *.AHF_halos_add for snum {}'.format( snum ))
 
     # Load the AHF_halos data
     self.get_halos( snum )

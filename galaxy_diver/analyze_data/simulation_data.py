@@ -20,8 +20,8 @@ import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.utils.astro as astro
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_operations as data_operations
-
-import generic_data
+import galaxy_diver.analyze_data.generic_data as generic_data
+import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
 ########################################################################
@@ -30,6 +30,7 @@ import generic_data
 class SimulationData( generic_data.GenericData ):
     '''Class for handling simulation data.'''
 
+    @utilities.store_parameters
     def __init__(
         self,
         data_dir = None,
@@ -88,10 +89,6 @@ class SimulationData( generic_data.GenericData ):
         Keyword Args:
             function_args (dict): Dictionary of args used to specify an arbitrary function with which to generate data.
         '''
-
-        # Store the arguments
-        for arg in locals().keys():
-            setattr( self, arg, locals()[arg] )
 
         # Make sure that all the arguments have been specified.
         for attr in vars( self ).keys():
@@ -444,7 +441,7 @@ class SimulationData( generic_data.GenericData ):
                     data = self.data[data_key]
 
             # Calculate missing data
-            except KeyError, e:
+            except KeyError as e:
                 self.handle_data_key_error( data_key )
                 continue
 

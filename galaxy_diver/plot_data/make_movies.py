@@ -10,7 +10,7 @@ import os
 import shutil
 import sys
 
-import plotting as gen_plot
+import galaxy_diver.plot_data.plotting as gen_plot
 
 ########################################################################
 ########################################################################
