@@ -165,18 +165,21 @@ class SmartDict( collections.Mapping ):
 
         return SmartDict( results )
 
-    ########################################################################
-    # Operation Methods
-    ########################################################################
-
-    def apply( self, fn ):
+    def apply( self, fn, *args, **kwargs ):
+        '''Apply some function to each item in the smart dictionary, and
+        return the results as a SmartDict.
+        '''
 
         results = {}
 
         for key, item in self.items():
-            results[key] = fn( item )
+            results[key] = fn( item, *args, **kwargs )
 
         return SmartDict( results )
+
+    ########################################################################
+    # Operation Methods
+    ########################################################################
 
     def __add__( self, other ):
 
