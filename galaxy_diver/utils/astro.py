@@ -8,7 +8,7 @@
 
 import numpy as np
 
-import constants
+import galaxy_diver.utils.constants as constants
 
 ########################################################################
 

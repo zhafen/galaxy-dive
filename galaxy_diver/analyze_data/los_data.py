@@ -6,7 +6,7 @@
 @status: Development
 '''
 
-import generic_data
+import galaxy_diver.analyze_data.generic_data as generic_data
 
 ########################################################################
 

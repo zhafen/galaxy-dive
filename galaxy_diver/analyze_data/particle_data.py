@@ -8,9 +8,10 @@
 
 import numpy as np
 
-import simulation_data
+import galaxy_diver.analyze_data.simulation_data as simulation_data
 import galaxy_diver.read_data.snapshot as read_snapshot
 import galaxy_diver.utils.constants as constants
+import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
 
@@ -18,6 +19,7 @@ class ParticleData( simulation_data.SnapshotData ):
   '''Subclass for particle data.
   '''
 
+  @utilities.store_parameters
   def __init__( self, sdir=None, snum=None, ptype=None, load_additional_ids=False, **kwargs ):
     '''Initialize.
 
@@ -27,17 +29,6 @@ class ParticleData( simulation_data.SnapshotData ):
       ptype (int) : Particle type to load.
       load_additional_ids (bool, optional) : Whether or not to load child_ids, etc, if they exist.
     '''
-
-    # Store args
-    for arg in locals().keys():
-      setattr( self, arg, locals()[arg] )
-
-    # Make sure that all the arguments have been specified.
-    for attr in vars( self ).keys():
-      if attr == 'kwargs' :
-        continue
-      if getattr( self, attr ) == None:
-        raise Exception( '{} not specified'.format( attr ) )
 
     super( ParticleData, self ).__init__( data_dir=sdir, snum=snum, **kwargs )
 
@@ -136,7 +127,7 @@ class ParticleData( simulation_data.SnapshotData ):
     'tracked_p_file_tag' : Identifying tag for the tracked-particle data.
     '''
 
-    sim_name = string.split( self.data_p['sdir'], '/' )[-1]
+    sim_name = self.data_p['sdir'].split( '/' )[-1]
     full_data_dir = os.path.join( self.data_p['tracked_p_data_dir'], sim_name )
 
     # Load the actual tracked particle data

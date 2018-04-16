@@ -8,16 +8,17 @@
 
 import h5py
 import numpy as np
-import string
 
 import galaxy_diver.utils.io as io
-import simulation_data
+import galaxy_diver.analyze_data.simulation_data as simulation_data
+import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
 
 class GriddedData( simulation_data.SnapshotData ):
   '''Class for handling data that forms a Cartesian grid.'''
 
+  @utilities.store_parameters
   def __init__( self, sdir=None, snum=None, Nx=None, gridsize=None, ionized=None, ion_grid=False, **kwargs ):
     '''
     Args:
@@ -30,16 +31,6 @@ class GriddedData( simulation_data.SnapshotData ):
                         'R13' : Ionization state calculated using Rahmati+13 fitting function
       ion_grid (bool) : Whether or not this is a grid containing ion information.
     '''
-    # Store args
-    for arg in locals().keys():
-      setattr( self, arg, locals()[arg] )
-
-    # Make sure that all the arguments have been specified.
-    for attr in vars( self ).keys():
-      if attr == 'kwargs' :
-        continue
-      if getattr( self, attr ) == None:
-        raise Exception( '{} not specified'.format( attr ) )
 
     # Note that we assume the grid is centered.
     super( GriddedData, self ).__init__( data_dir=sdir, snum=snum, centered=True, **kwargs )
@@ -167,7 +158,7 @@ class GriddedData( simulation_data.SnapshotData ):
     '''Calculate positions if you're just looking at one face of a grid.'''
 
     # Figure out which face to calculate for
-    target_face = string.split( data_key, '_' )[-1]
+    target_face = data_key.split( '_' )[-1]
 
     if target_face == 'xy':
       self.data['Rx_face_xy'] = self.get_data( 'Rx' )[:, :, 0]
@@ -184,7 +175,7 @@ class GriddedData( simulation_data.SnapshotData ):
   def calc_impact_parameter( self, data_key ):
 
     # Figure out which face to calculate for
-    target_face = string.split( data_key, '_' )[-1]
+    target_face = data_key.split( '_' )[-1]
     
     if target_face == 'xy':
       self.data[data_key] = np.sqrt( self.get_data( 'Rx_face_xy' )**2. + self.get_data( 'Ry_face_xy' )**2. ) 

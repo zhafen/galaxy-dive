@@ -9,7 +9,6 @@
 import h5py
 import numpy as np
 import os
-import string
 
 ########################################################################
 # Functions for dealing with files
@@ -54,7 +53,7 @@ def addCharEndLine(source_filename, char=' '):
 def abbreviatedName(snap_dir):
 
   # Dissect the name for the useful abbreviations.
-  divided_sdir = string.split(snap_dir, '/')
+  divided_sdir = snap_dir.split('/')
   if divided_sdir[-1] == '':
     del divided_sdir[-1]
   if divided_sdir[-1] == 'output':
@@ -62,7 +61,7 @@ def abbreviatedName(snap_dir):
   else:
     sim_name_index = -1
   sim_name_full = divided_sdir[sim_name_index]
-  sim_name_divided = string.split(sim_name_full, '_')
+  sim_name_divided = sim_name_full.split('_')
   sim_name = sim_name_divided[0]
 
   # Attach the appropriate name, accounting for the sometimes weird naming conventions.
@@ -119,7 +118,7 @@ def ionTag(ionized):
 
   elif ionized == 'RT':
     ionization_tag = '_ionized'
-  elif string.split(ionized, '_')[0] == 'R13':
+  elif ionized.split('_')[0] == 'R13':
     ionization_tag = '_' + ionized
   else:
     ionization_tag = '_' + ionized
@@ -154,12 +153,12 @@ def getGridFilename(sim_dir, snap_id, Nx, gridsize, ionized, ion_grid=False):
 def breakGridFilename(gridded_snapshot_file):
 
   # Break the simulation path apart
-  path_to_file = string.split(gridded_snapshot_file, '/')
+  path_to_file = gridded_snapshot_file.split('/')
   simulation = path_to_file[-2]
   grid_file = path_to_file[-1]
 
   # Break the grid file apart
-  seperated_file = string.split(grid_file, '_')
+  seperated_file = grid_file.split('_')
   snap_id = seperated_file[1]
   Nx = seperated_file[2]
   gridsize = seperated_file[3]
@@ -181,11 +180,11 @@ def getHaloFilename(sim_dir, halo_number):
 def getLOSDataFilename(snap_dir, Nx, gridsize, face, comp_method, ionized=False, den_weight='nH'):
 
   # Simulation name
-  snap_dir_divided = string.split(snap_dir,'/')
+  snap_dir_divided = snap_dir.split('/')
   if snap_dir_divided[-1] == 'output':
     snap_dir_name = snap_dir_divided[-2]
   else:
-    snap_dir_name = string.split(snap_dir,'/')[-1]
+    snap_dir_name = snap_dir.split('/')[-1]
 
   ionization_tag = ionTag(ionized)
 

@@ -10,7 +10,6 @@ import glob
 import numpy as np
 import os
 import pandas as pd
-import string
 
 import galaxy_diver.read_data.metafile as read_metafile
 
@@ -123,7 +122,7 @@ class AHFReader( object ):
                 del mtree_halo[ 'Unnamed: 93' ]
 
                 # Remove the annoying parenthesis at the end of each label.
-                mtree_halo.columns = [ string.split( label, '(' )[0] for label in list( mtree_halo ) ]
+                mtree_halo.columns = [ label.split( '(' )[0] for label in list( mtree_halo ) ]
 
                 # Remove the pound sign in front of the first column's name
                 mtree_halo = mtree_halo.rename( columns = {'#redshift':'redshift', ' ID':'ID'} )
@@ -132,8 +131,8 @@ class AHFReader( object ):
             base_filename = os.path.basename( halo_filepath )
             halo_num_str = base_filename[5:]
             if tag is not None:
-                halo_num_str = string.split( halo_num_str, '_' )[0]
-            halo_num = int( string.split( halo_num_str, '.' )[0] )
+                halo_num_str = halo_num_str.split( '_' )[0]
+            halo_num = int( halo_num_str.split( '.' )[0] )
 
             if index == 'range':
                 pass
@@ -185,7 +184,7 @@ class AHFReader( object ):
         del self.ahf_halos[ 'Unnamed: 92' ]
 
         # Remove the annoying parenthesis at the end of each label.
-        self.ahf_halos.columns = [ string.split( label, '(' )[0] for label in list( self.ahf_halos ) ]
+        self.ahf_halos.columns = [ label.split('(')[0] for label in list( self.ahf_halos ) ]
 
         # Rename the index to a more suitable name, without the '#' and the (1)
         self.ahf_halos.index.names = ['ID']
