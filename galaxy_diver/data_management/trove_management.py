@@ -49,3 +49,18 @@ class TroveManager( object ):
             self._combinations = list( itertools.product( *self.args ) )
 
         return self._combinations
+
+    ########################################################################
+
+    @property
+    def data_files( self ):
+        '''Returns:
+            All data files that should be part of the trove.
+        '''
+
+        if not hasattr( self, '_data_files' ):
+            self._data_files = [
+                self.file_format.format( *args ) for args in self.combinations
+             ]
+
+        return self._data_files

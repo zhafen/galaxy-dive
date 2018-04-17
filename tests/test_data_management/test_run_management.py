@@ -49,7 +49,7 @@ class TestTroveManager( unittest.TestCase ):
 
         self.trove_manager = trove_management.TroveManager(
             data_dir,
-            file_format,
+            file_format2,
             args_a, 
             args_b,
             args_c,
@@ -57,7 +57,7 @@ class TestTroveManager( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_combinations( self ):
+    def test_combinations( self ):
 
         actual = self.trove_manager.combinations
 
@@ -68,6 +68,23 @@ class TestTroveManager( unittest.TestCase ):
             ( 'b', 1, 6, ),
             ( 'b', 2, 6, ),
             ( 'b', 3, 6, ),
+        ]
+
+        self.assertEqual( expected, actual )
+
+    ########################################################################
+
+    def test_data_files( self ):
+
+        actual = self.trove_manager.data_files
+
+        expected = [
+            'test_a_1_6.hdf5',
+            'test_a_2_6.hdf5',
+            'test_a_3_6.hdf5',
+            'test_b_1_6.hdf5',
+            'test_b_2_6.hdf5',
+            'test_b_3_6.hdf5',
         ]
 
         self.assertEqual( expected, actual )
