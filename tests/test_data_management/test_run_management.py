@@ -14,9 +14,9 @@ import galaxy_diver.data_management.trove_management as trove_management
 data_dir = './tests/data/trove_test_dir'
 file_format = 'test_{}_{}.hdf5'
 file_format2 = 'test_{}_{}_{}.hdf5'
-parameters_a = [ 'a', 'b', ]
-parameters_b = [ 1, 2, 3, ]
-parameters_c = [ 6, 5, 4, ]
+args_a = [ 'a', 'b', ]
+args_b = [ 1, 2, 3, ]
+args_c = [ 6, ]
 
 ########################################################################
 ########################################################################
@@ -29,17 +29,48 @@ class TestTroveManagerInit( unittest.TestCase ):
         trove_manager = trove_management.TroveManager(
             data_dir,
             file_format,
-            parameters_a, 
-            parameters_b,
+            args_a, 
+            args_b,
         )
 
         self.assertEqual( data_dir, trove_manager.data_dir )
 
         self.assertEqual( file_format, trove_manager.file_format )
 
-        self.assertEqual( parameters_a, trove_manager.args[0] )
-        self.assertEqual( parameters_b, trove_manager.args[1] )
+        self.assertEqual( args_a, trove_manager.args[0] )
+        self.assertEqual( args_b, trove_manager.args[1] )
 
+########################################################################
+########################################################################
+
+class TestTroveManager( unittest.TestCase ):
+
+    def setUp( self ):
+
+        self.trove_manager = trove_management.TroveManager(
+            data_dir,
+            file_format,
+            args_a, 
+            args_b,
+            args_c,
+        )
+
+    ########################################################################
+
+    def test_get_combinations( self ):
+
+        actual = self.trove_manager.get_combinations()
+
+        expected = [
+            ( 'a', 1, 6, ),
+            ( 'a', 2, 6, ),
+            ( 'a', 3, 6, ),
+            ( 'b', 1, 6, ),
+            ( 'b', 2, 6, ),
+            ( 'b', 3, 6, ),
+        ]
+
+        self.assertEqual( expected, actual )
         
 
         

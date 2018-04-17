@@ -6,6 +6,8 @@
 @status: Development
 '''
 
+import itertools
+
 import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
@@ -35,3 +37,11 @@ class TroveManager( object ):
 
         pass
 
+    ########################################################################
+
+    def get_combinations( self ):
+        '''Returns:
+            All combinations of arguments.
+        '''
+
+        return list( itertools.product( *self.args ) )
