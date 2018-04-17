@@ -95,6 +95,8 @@ class ParticleData( simulation_data.SnapshotData ):
         self.data['h'] = P[key]
       elif key == 'age':
         self.data['Age'] = P[key]
+      elif key == 'potential':
+        self.data['Potential'] = P[key]
       else:
         raise Exception('NULL key, key={}'.format(key))
 
