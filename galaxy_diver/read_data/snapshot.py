@@ -231,7 +231,7 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
       ret_dict['id_gen'] = id_gens
 
     if potential_stored:
-      ret_dict['potential'] = potential
+      ret_dict['potential'] = potential/ascale # Convert to physical km^2/s^2
 
     return ret_dict
 
