@@ -363,9 +363,9 @@ class AHFReader( object ):
             pos_or_vel (str): Get position ('pos') or velocity ('vel').
             halo_id (int): Merger tree halo ID for the position or velocity you want.
             inds (int or np.array of ints): Indices you want the position or velocity for.
-                                                                            If type_of_halo_id == 'merger_tree', uses same index as mtree_halos.
-                                                                            Elif type_of_halo_id == 'ahf_halos', can only be a single int,
-                                                                            which should be the snapshot number.
+              If type_of_halo_id == 'merger_tree', uses same index as mtree_halos.
+              Elif type_of_halo_id == 'ahf_halos', can only be a single int,
+              which should be the snapshot number.
             type_of_halo_id (str): 'merger_tree' if the halo id is a merger tree halo id.
                                                           'ahf_halos' if the halo id is a *.AHF_halos halo id.
 

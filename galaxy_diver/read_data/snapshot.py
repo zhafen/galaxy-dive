@@ -104,6 +104,7 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
       child_ids=np.zeros([npartTotal[ptype]],dtype=np.long)
       id_gens=np.zeros([npartTotal[ptype]],dtype=np.long)
     mass=np.zeros([npartTotal[ptype]],dtype=float)
+    potential = np.copy( mass )
     if (ptype==0):
         ugas=np.copy(mass)
         rho=np.copy(mass)
@@ -135,7 +136,8 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
         if (fname_ext=='.hdf5'):
             input_struct = file
             npart = file["Header"].attrs["NumPart_ThisFile"]
-            bname = "PartType"+str(ptype)+"/"
+            ptype_full_name = "PartType{}".format( ptype )
+            bname = ptype_full_name + "/"
         else:
             npart = header_toparse['NumPart_ThisFile']
             input_struct = load_gadget_binary_particledat(file, header_toparse, ptype, skip_bh=skip_bh)
@@ -149,39 +151,46 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
         # constitute the snapshot. Added 'if' on npart[ptype]>0.
 
         if npart[ptype]>0:
-          nR=nL + npart[ptype]
-          pos[nL:nR,:]=input_struct[bname+"Coordinates"]
-          vel[nL:nR,:]=input_struct[bname+"Velocities"]
-          ids[nL:nR]=input_struct[bname+"ParticleIDs"]
-          if load_additional_ids:
-            child_ids[nL:nR]=input_struct[bname+"ParticleChildIDsNumber"]
-            id_gens[nL:nR]=input_struct[bname+"ParticleIDGenerationNumber"]
-          mass[nL:nR]=massarr[ptype]
-          if (massarr[ptype] <= 0.):
-              mass[nL:nR]=input_struct[bname+"Masses"]
-          if (ptype==0):
-              ugas[nL:nR]=input_struct[bname+"InternalEnergy"]
-              rho[nL:nR]=input_struct[bname+"Density"]
-              hsml[nL:nR]=input_struct[bname+"SmoothingLength"]
-              if (flag_cooling > 0): 
-                  nume[nL:nR]=input_struct[bname+"ElectronAbundance"]
-                  numh[nL:nR]=input_struct[bname+"NeutralHydrogenAbundance"]
-              if (flag_sfr > 0):
-                  sfr[nL:nR]=input_struct[bname+"StarFormationRate"]
-          if (ptype==0 or ptype==4) and (flag_metals > 0):
-              metal_t=input_struct[bname+"Metallicity"]
-              if (flag_metals > 1):
-                  if (metal_t.shape[0] != npart[ptype]): 
-                      metal_t=np.transpose(metal_t)
-              else:
-                  metal_t=np.reshape(np.array(metal_t),(np.array(metal_t).size,1))
-              metal[nL:nR,:]=metal_t
-          if (ptype==4) and (flag_sfr>0) and (flag_stellarage>0):
-              stellage[nL:nR]=input_struct[bname+"StellarFormationTime"]
-          if (ptype==5) and (skip_bh==0):
-              bhmass[nL:nR]=input_struct[bname+"BH_Mass"]
-              bhmdot[nL:nR]=input_struct[bname+"BH_Mdot"]
-          nL = nR # sets it for the next iteration	
+            nR=nL + npart[ptype]
+            pos[nL:nR,:]=input_struct[bname+"Coordinates"]
+            vel[nL:nR,:]=input_struct[bname+"Velocities"]
+            ids[nL:nR]=input_struct[bname+"ParticleIDs"]
+            mass[nL:nR]=massarr[ptype]
+
+            potential_stored = 'Potential' in input_struct[ptype_full_name].keys()
+            if potential_stored:
+                potential[nL:nR] = input_struct[bname+"Potential"]
+
+            if (massarr[ptype] <= 0.):
+                mass[nL:nR]=input_struct[bname+"Masses"]
+            if (ptype==0):
+                ugas[nL:nR]=input_struct[bname+"InternalEnergy"]
+                rho[nL:nR]=input_struct[bname+"Density"]
+                hsml[nL:nR]=input_struct[bname+"SmoothingLength"]
+                if (flag_cooling > 0): 
+                    nume[nL:nR]=input_struct[bname+"ElectronAbundance"]
+                    numh[nL:nR]=input_struct[bname+"NeutralHydrogenAbundance"]
+                if (flag_sfr > 0):
+                    sfr[nL:nR]=input_struct[bname+"StarFormationRate"]
+            if (ptype==0 or ptype==4) and (flag_metals > 0):
+                metal_t=input_struct[bname+"Metallicity"]
+                if (flag_metals > 1):
+                    if (metal_t.shape[0] != npart[ptype]): 
+                        metal_t=np.transpose(metal_t)
+                else:
+                    metal_t=np.reshape(np.array(metal_t),(np.array(metal_t).size,1))
+                metal[nL:nR,:]=metal_t
+            if (ptype==4) and (flag_sfr>0) and (flag_stellarage>0):
+                stellage[nL:nR]=input_struct[bname+"StellarFormationTime"]
+            if (ptype==5) and (skip_bh==0):
+                bhmass[nL:nR]=input_struct[bname+"BH_Mass"]
+                bhmdot[nL:nR]=input_struct[bname+"BH_Mdot"]
+
+            if load_additional_ids:
+              child_ids[nL:nR]=input_struct[bname+"ParticleChildIDsNumber"]
+              id_gens[nL:nR]=input_struct[bname+"ParticleIDGenerationNumber"]
+
+            nL = nR # sets it for the next iteration	
 
         ## correct to same ID as original gas particle for new stars, if bit-flip applied
     if ((np.min(ids)<0) | (np.max(ids)>1.e9)):
@@ -220,6 +229,9 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
     if load_additional_ids:
       ret_dict['child_id'] = child_ids
       ret_dict['id_gen'] = id_gens
+
+    if potential_stored:
+      ret_dict['potential'] = potential
 
     return ret_dict
 

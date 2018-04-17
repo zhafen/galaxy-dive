@@ -67,6 +67,21 @@ class TestGetSnapshotFilepath( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
+class TestLoadSnapshot( unittest.TestCase ):
+
+  def test_reads_potential( self ):
+
+    sdir = './tests/data/sdir/output'
+    snum = 600
+
+    data = read_snapshot.readsnap( sdir=sdir, snum=snum, ptype=0 )
+
+    expected_potential = 146365.1875
+    npt.assert_allclose( expected_potential, data['potential'][-3] )
+
+########################################################################
+########################################################################
+
 # TODO: If I start making my own readsnap routine again, these tests need to be done.
 #class TestReadSnapshotFiles( unittest.TestCase ):
 #
