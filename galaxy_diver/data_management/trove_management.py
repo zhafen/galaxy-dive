@@ -39,9 +39,13 @@ class TroveManager( object ):
 
     ########################################################################
 
-    def get_combinations( self ):
+    @property
+    def combinations( self ):
         '''Returns:
             All combinations of arguments.
         '''
 
-        return list( itertools.product( *self.args ) )
+        if not hasattr( self, '_combinations' ):
+            self._combinations = list( itertools.product( *self.args ) )
+
+        return self._combinations

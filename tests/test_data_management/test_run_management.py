@@ -59,7 +59,7 @@ class TestTroveManager( unittest.TestCase ):
 
     def test_get_combinations( self ):
 
-        actual = self.trove_manager.get_combinations()
+        actual = self.trove_manager.combinations
 
         expected = [
             ( 'a', 1, 6, ),
