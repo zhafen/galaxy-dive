@@ -7,6 +7,7 @@
 '''
 
 import itertools
+import os
 
 import galaxy_diver.utils.utilities as utilities
 
@@ -64,3 +65,32 @@ class TroveManager( object ):
              ]
 
         return self._data_files
+
+    ########################################################################
+
+    def get_incomplete_combinations( self ):
+        '''Returns:
+            Combinations in the trove that have not yet been done.
+        '''
+
+        incomplete_combinations = []
+        for i, data_file in enumerate( self.data_files ):
+
+            data_path = os.path.join( self.data_dir, data_file )
+            
+            if not os.path.isfile( data_path ):
+                incomplete_combinations.append( self.combinations[i] )
+
+        return incomplete_combinations
+
+    ########################################################################
+
+    def get_incomplete_data_files( self ):
+        '''Returns:
+            Data files in the trove that have not yet been done.
+        '''
+
+        return [
+            self.file_format.format( *args ) for args \
+                in self.get_incomplete_combinations()
+        ]

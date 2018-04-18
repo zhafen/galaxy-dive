@@ -12,8 +12,8 @@ import galaxy_diver.data_management.trove_management as trove_management
 ########################################################################
 
 data_dir = './tests/data/trove_test_dir'
-file_format = 'test_{}_{}.hdf5'
-file_format2 = 'test_{}_{}_{}.hdf5'
+file_format = 'test_{}_{}.dat'
+file_format2 = 'test_{}_{}_{}.dat'
 args_a = [ 'a', 'b', ]
 args_b = [ 1, 2, 3, ]
 args_c = [ 6, ]
@@ -79,16 +79,39 @@ class TestTroveManager( unittest.TestCase ):
         actual = self.trove_manager.data_files
 
         expected = [
-            'test_a_1_6.hdf5',
-            'test_a_2_6.hdf5',
-            'test_a_3_6.hdf5',
-            'test_b_1_6.hdf5',
-            'test_b_2_6.hdf5',
-            'test_b_3_6.hdf5',
+            'test_a_1_6.dat',
+            'test_a_2_6.dat',
+            'test_a_3_6.dat',
+            'test_b_1_6.dat',
+            'test_b_2_6.dat',
+            'test_b_3_6.dat',
         ]
 
         self.assertEqual( expected, actual )
-        
 
-        
+    ########################################################################
+    def test_get_incomplete_combinations( self ):
 
+        actual = self.trove_manager.get_incomplete_combinations()
+
+        expected = [
+            ( 'a', 2, 6, ),
+            ( 'b', 1, 6, ),
+            ( 'b', 3, 6, ),
+        ]
+        
+        self.assertEqual( expected, actual )
+
+    ########################################################################
+
+    def test_get_incomplete_data_files( self ):
+
+        actual = self.trove_manager.get_incomplete_data_files()
+
+        expected = [
+            'test_a_2_6.dat',
+            'test_b_1_6.dat',
+            'test_b_3_6.dat',
+        ]
+        
+        self.assertEqual( expected, actual )
