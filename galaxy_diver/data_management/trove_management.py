@@ -94,3 +94,15 @@ class TroveManager( object ):
             self.file_format.format( *args ) for args \
                 in self.get_incomplete_combinations()
         ]
+
+    ########################################################################
+
+    def get_next_args_to_use( self ):
+        '''Is this necessary? No. This function is really a wrapper that in
+        essence provides documentation.
+
+        Returns:
+            Next set of arguments to use.
+        '''
+
+        return self.get_incomplete_combinations()[0]

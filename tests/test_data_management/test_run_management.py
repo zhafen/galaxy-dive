@@ -115,3 +115,13 @@ class TestTroveManager( unittest.TestCase ):
         ]
         
         self.assertEqual( expected, actual )
+
+    ########################################################################
+
+    def test_get_next_args_to_use( self ):
+
+        actual = self.trove_manager.get_next_args_to_use()
+
+        expected = ( 'a', 2, 6, )
+
+        self.assertEqual( expected, actual )
