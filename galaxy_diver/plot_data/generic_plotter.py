@@ -225,7 +225,12 @@ class GenericPlotter( object ):
         # Plot a vertical line?
         if vertical_line is not None:
             trans = transforms.blended_transform_factory( ax.transData, ax.transAxes )
-            ax.plot( [ vertical_line, ]*2, [ 0., 1., ], **vertical_line_kwargs )
+            ax.plot(
+                [ vertical_line, ]*2,
+                [ 0., 1., ],
+                transform = trans,
+                **vertical_line_kwargs
+)
 
         # Plot label
         if plot_label is default:
