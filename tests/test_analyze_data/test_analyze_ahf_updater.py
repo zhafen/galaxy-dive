@@ -777,5 +777,5 @@ class TestCircularVelocity( unittest.TestCase):
         self.ahf_updater.get_halos_add( 600, True )
 
         # Make sure the columns exist
-        assert 'Vc(2.0Rstar0.5)' in self.ahf_updater.ahf_halos.columns
+        assert 'Vc(5.0Rstar0.5)' in self.ahf_updater.ahf_halos.columns
 

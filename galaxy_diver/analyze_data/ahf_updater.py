@@ -623,17 +623,17 @@ class HaloUpdater( read_ahf.AHFReader ):
     },
     enclosed_mass_ptypes = data_constants.STANDARD_PTYPES,
     enclosed_mass_kwargs = {
-      'galaxy_cut' : 2.0,
+      'galaxy_cut' : 5.0,
       'length_scale' : 'Rstar0.5',
     },
     average_quantity_data_keys = [ 'Vx', 'Vy', 'Vz', ],
     average_quantity_inside_galaxy_kwargs = {
       'ptype' : 'star',
-      'galaxy_cut' : 2.0,
+      'galaxy_cut' : 5.0,
       'length_scale' : 'Rstar0.5',
     },
     v_circ_kwargs = {
-      'galaxy_cut' : 2.0,
+      'galaxy_cut' : 5.0,
       'length_scale' : 'Rstar0.5',
     },
     verbose = False,

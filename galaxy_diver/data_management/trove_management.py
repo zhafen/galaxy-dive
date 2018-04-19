@@ -19,24 +19,38 @@ class TroveManager( object ):
     '''Class for managing troves of data.'''
 
     @utilities.store_parameters
-    def __init__( self, data_dir, file_format, *args ):
+    def __init__( self, file_format, *args ):
         '''Constructor.
 
         Args:
-            data_dir (str) :
-                Directory the data is stored in.
-
             file_format (str) :
                 Format for data files.
 
             *args :
-                Arguments to pass to file_format to get different data files.
+                Arguments to pass to self.get_file() to get different data files.
 
         Returns:
             TroveManager object.
         '''
 
         pass
+
+    ########################################################################
+
+    def get_file( self, *args ):
+        '''Default method for getting the data filename.
+        
+        Args:
+            *args :
+                Arguments provided. Assumes args[0] is the data dir.
+
+        Returns:
+            Filename for a given combination of args.
+        '''
+
+        filename = self.file_format.format( *args[1:] )
+
+        return os.path.join( args[0], filename )
 
     ########################################################################
 
@@ -61,7 +75,7 @@ class TroveManager( object ):
 
         if not hasattr( self, '_data_files' ):
             self._data_files = [
-                self.file_format.format( *args ) for args in self.combinations
+                self.get_file( *args ) for args in self.combinations
              ]
 
         return self._data_files
@@ -76,9 +90,7 @@ class TroveManager( object ):
         incomplete_combinations = []
         for i, data_file in enumerate( self.data_files ):
 
-            data_path = os.path.join( self.data_dir, data_file )
-            
-            if not os.path.isfile( data_path ):
+            if not os.path.isfile( data_file ):
                 incomplete_combinations.append( self.combinations[i] )
 
         return incomplete_combinations
@@ -91,7 +103,7 @@ class TroveManager( object ):
         '''
 
         return [
-            self.file_format.format( *args ) for args \
+            self.get_file( *args ) for args \
                 in self.get_incomplete_combinations()
         ]
 
