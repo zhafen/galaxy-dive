@@ -109,12 +109,26 @@ class TroveManager( object ):
 
     ########################################################################
 
-    def get_next_args_to_use( self ):
+    def get_next_args_to_use( self, when_done='return_last' ):
         '''Is this necessary? No. This function is really a wrapper that in
         essence provides documentation.
+
+
+        Args:
+            when_done (str) :
+                What to do when there are no incomplete combinations? Defaults
+                to returning the last of self.combinations.
 
         Returns:
             Next set of arguments to use.
         '''
+
+        incomplete_combinations = self.get_incomplete_combinations()
+
+        if len( incomplete_combinations ) == 0:
+            if when_done == 'return_last':
+                return self.combinations[-1]
+            elif when_done == 'return_0':
+                return 0
 
         return self.get_incomplete_combinations()[0]
