@@ -35,7 +35,7 @@ class TeXVariableFile( object ):
 
     @property
     def data_dict( self ):
-        '''Actual data.'''
+        '''Actual data stored in the file.'''
 
         if not hasattr( self, '_data_dict' ):
 
@@ -52,3 +52,21 @@ class TeXVariableFile( object ):
                 self._data_dict[name] = value
             
         return self._data_dict
+
+    ########################################################################
+
+    def write( self ):
+        '''Write the stored data_dict to the file.'''
+
+        lines = []
+
+        for key, item in self.data_dict.items():
+
+            line = '\\newcommand{\\' + key + '}{' + item + '}\n'
+
+            lines.append( line )
+
+        with open ( self.filename, 'w' ) as f:
+
+            f.writelines( lines )
+

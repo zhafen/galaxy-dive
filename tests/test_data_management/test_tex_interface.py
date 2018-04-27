@@ -16,7 +16,7 @@ filename = './tests/data/tex_test_dir/analysis_output.tex'
 ########################################################################
 ########################################################################
 
-class TestTeXVariableFile( unittest.TestCase ):
+class TestReadTeXVariableFile( unittest.TestCase ):
 
     def setUp( self ):
 
@@ -33,7 +33,41 @@ class TestTeXVariableFile( unittest.TestCase ):
 
         actual = self.tex_vfile.data_dict
 
-        #DEBUG
-        import pdb; pdb.set_trace()
+        self.assertEqual( expected, actual )
+
+########################################################################
+########################################################################
+
+
+class TestTeXVariableFileReset( unittest.TestCase ):
+
+    def setUp( self ):
+
+        self.tex_vfile = tex_interface.TeXVariableFile( filename )
+
+    def tearDown( self ):
+
+        os.remove( filename )
+
+        with open( filename, 'w' ) as f:
+            f.write( '\\newcommand{\\a}{1}\n\\newcommand{\\b}{-100}\n' )
+
+    ########################################################################
+
+    def test_write_data( self ):
+
+        self.tex_vfile._data_dict = {
+            'a' : '3',
+            'b' : '2',
+            'c' : '1',
+        }
+
+        self.tex_vfile.write()
+
+        with open( filename, 'r' ) as f:
+            actual = f.read()
+
+        expected  = '\\newcommand{\\a}{3}\n\\newcommand{\\c}{1}\n\\newcommand{\\b}{2}\n'
 
         self.assertEqual( expected, actual )
+        
