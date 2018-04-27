@@ -47,10 +47,23 @@ class TestTeXVariableFileReset( unittest.TestCase ):
 
     def tearDown( self ):
 
-        os.remove( filename )
+        if os.path.isfile( filename ):
+            os.remove( filename )
 
         with open( filename, 'w' ) as f:
             f.write( '\\newcommand{\\a}{1}\n\\newcommand{\\b}{-100}\n' )
+
+    ########################################################################
+
+    def test_data_dict_no_file( self ):
+
+        os.remove( filename )
+
+        expected = {}
+
+        actual = self.tex_vfile.data_dict
+
+        self.assertEqual( expected, actual )
 
     ########################################################################
 

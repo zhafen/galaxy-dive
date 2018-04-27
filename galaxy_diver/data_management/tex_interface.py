@@ -39,17 +39,23 @@ class TeXVariableFile( object ):
 
         if not hasattr( self, '_data_dict' ):
 
-            # Read the file
-            with open( self.filename, 'r' ) as f:
-                lines = f.readlines()
+            try:
+                # Read the file
+                with open( self.filename, 'r' ) as f:
+                    lines = f.readlines()
 
-            # Parse
-            self._data_dict = {}
-            for line in lines:
-                name = line.split( '{' )[1].split( '\\' )[-1][:-1]
-                value = line.split( '{' )[-1].split( '}' )[0]
+                # Parse
+                self._data_dict = {}
+                for line in lines:
+                    name = line.split( '{' )[1].split( '\\' )[-1][:-1]
+                    value = line.split( '{' )[-1].split( '}' )[0]
 
-                self._data_dict[name] = value
+                    self._data_dict[name] = value
+
+            except IOError:
+                print( "No pre-existing file found. Writing will be done to a fresh file." )
+
+                self._data_dict = {}
             
         return self._data_dict
 
