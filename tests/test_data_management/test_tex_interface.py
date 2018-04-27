@@ -70,4 +70,18 @@ class TestTeXVariableFileReset( unittest.TestCase ):
         expected  = '\\newcommand{\\a}{3}\n\\newcommand{\\c}{1}\n\\newcommand{\\b}{2}\n'
 
         self.assertEqual( expected, actual )
+
+    ########################################################################
+
+    def test_save_variable( self ):
+
+        self.tex_vfile.save_variable( 'c', '9000' )
+
+        with open( filename, 'r' ) as f:
+            actual = f.read()
+
+        expected  = '\\newcommand{\\a}{1}\n\\newcommand{\\c}{9000}\n\\newcommand{\\b}{-100}\n'
+
+        self.assertEqual( expected, actual )
+
         

@@ -70,3 +70,12 @@ class TeXVariableFile( object ):
 
             f.writelines( lines )
 
+    ########################################################################
+
+    def save_variable( self, key, item ):
+        '''Save a variable to the TeX file.'''
+
+        self.data_dict[key] = item
+
+        self.write()
+
