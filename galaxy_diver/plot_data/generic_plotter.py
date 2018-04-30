@@ -14,6 +14,7 @@ import matplotlib
 matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.colors as plt_colors
 import matplotlib.gridspec as gridspec
 import matplotlib.patheffects as path_effects
 import matplotlib.transforms as transforms
@@ -313,6 +314,7 @@ class GenericPlotter( object ):
                 If float, is +- x_range*length scale at that snapshot.
             n_bins (int) : Number of bins in the histogram.
             vmin, vmax (float) : Limits for the colorbar.
+            aspect (str) : What should the aspect ratio of the plot be?
             plot_halos (bool) : Whether or not to plot merger tree halos on top of the histogram.
                 Only makes sense for when dealing with positions.
             add_colorbar (bool) : If True, add a colorbar to colorbar_args
@@ -397,12 +399,20 @@ class GenericPlotter( object ):
             fig = plt.figure( figsize=(10,9), facecolor='white' )
             ax = plt.gca()
 
-        if z_scale == 'log':
-            hist2d = np.log10( hist2d )
+        if z_scale == 'linear':
+            norm = plt_colors.Normalize()
+        elif z_scale == 'log':
+            norm = plt_colors.LogNorm()
 
-        im = ax.imshow( hist2d.transpose(), cmap=cmap, interpolation='nearest',\
-                                        extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]], \
-                                        origin='low', aspect='equal', vmin=vmin, vmax=vmax, )
+        im = ax.pcolormesh(
+            x_edges,
+            y_edges,
+            hist2d.transpose(),
+            cmap = cmap,
+            norm = norm,
+            vmin = vmin,
+            vmax = vmax,
+        )
 
         # Add a colorbar
         if add_colorbar:

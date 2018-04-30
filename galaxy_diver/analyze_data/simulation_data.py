@@ -1055,7 +1055,8 @@ class TimeData( SimulationData ):
                 processed_data /= self.hubble_param**scale_h_power
 
             if 'sl' in kwargs:
-                data_to_div_by = data_to_div_by[kwargs['sl'][1]]
+                if kwargs['sl'] is not None:
+                    data_to_div_by = data_to_div_by[kwargs['sl'][1]]
 
             processed_data /= data_to_div_by
 
