@@ -290,3 +290,27 @@ class TestAlignAxes(unittest.TestCase):
     # Test if we have the transformed arrays right
     npt.assert_allclose( result[0], np.array([1., 1., 1.]) )
     npt.assert_allclose( result[1], np.array([0., 0., 2.]) )
+
+########################################################################
+########################################################################
+
+class TestCumsum2D( unittest.TestCase ):
+
+    def test_cumsum2d( self ):
+
+        arr = np.array([
+           [6, 5, 1],
+           [7, 0, 1],
+           [1, 1, 8]]
+        )
+
+        expected = np.array([
+           [6, 11, 12],
+           [13, 18, 20],
+           [14, 20, 30]]
+        )
+
+        actual = data_operations.cumsum2d( arr )
+
+        npt.assert_allclose( expected, actual )
+            

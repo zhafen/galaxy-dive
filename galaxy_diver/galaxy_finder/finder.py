@@ -214,6 +214,7 @@ class GalaxyFinder( object ):
 
     @property
     def ahf_halos_length_scale_pkpc( self ):
+        '''Actual values of the length scale used, e.g. Rvir.'''
 
         if not hasattr( self, '_ahf_halos_length_scale_pkpc' ):
 

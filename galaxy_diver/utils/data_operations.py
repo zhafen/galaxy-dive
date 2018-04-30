@@ -214,3 +214,22 @@ def contiguous_regions( condition ):
     # Reshape the result into two columns
     idx.shape = (-1, 2)
     return idx
+
+########################################################################
+
+
+def cumsum2d( arr ):
+    '''Get the cumulative sum of an array.
+
+    Args:
+        arr (array-like) :
+            Array to get the sum of.
+
+    Returns:
+        summed_arr (np.ndarray) :
+            The i,j element of summed_arr is the sum of arr[:i+1,:j+1]
+    '''
+
+    partial_sum = np.cumsum( arr, axis=0 )
+
+    return np.cumsum( partial_sum, axis=1 )
