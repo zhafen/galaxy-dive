@@ -218,7 +218,7 @@ def contiguous_regions( condition ):
 ########################################################################
 
 
-def cumsum2d( arr ):
+def cumsum2d( arr, axes=[0, 1], directions=[1, 1], ):
     '''Get the cumulative sum of an array.
 
     Args:
@@ -230,6 +230,26 @@ def cumsum2d( arr ):
             The i,j element of summed_arr is the sum of arr[:i+1,:j+1]
     '''
 
-    partial_sum = np.cumsum( arr, axis=0 )
+    summed_arr = np.copy( arr )
+    for i, axis in enumerate( axes ):
 
-    return np.cumsum( partial_sum, axis=1 )
+        # Interpret directions, watching out for mistakes
+        if directions[i] == 1:
+            flip = False
+        elif directions[i] == -1:
+            flip = True
+        else:
+            raise Exception( "Unknown direction, {}".format( directions[i] ) )
+
+        # Flip to change direction for summing
+        if flip:
+            summed_arr = np.flip( summed_arr, axis=axis )
+
+        # Do the sum
+        summed_arr = np.cumsum( summed_arr, axis=axis )
+
+        # Flip back so that the array itself is unchanged
+        if flip:
+            summed_arr = np.flip( summed_arr, axis=axis )
+
+    return summed_arr

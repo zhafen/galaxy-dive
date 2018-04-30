@@ -313,4 +313,24 @@ class TestCumsum2D( unittest.TestCase ):
         actual = data_operations.cumsum2d( arr )
 
         npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
+    def test_cumsum2d_dir( self ):
+
+        arr = np.array([
+           [6, 5, 1],
+           [7, 0, 1],
+           [1, 1, 8],
+        ])
+
+        expected = np.array([
+           [12, 6, 1],
+           [20, 7, 2],
+           [30, 16, 10],
+        ])
+
+        actual = data_operations.cumsum2d( arr, directions=[1,-1] )
+
+        npt.assert_allclose( expected, actual )
             
