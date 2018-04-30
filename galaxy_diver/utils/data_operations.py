@@ -225,6 +225,14 @@ def cumsum2d( arr, axes=[0, 1], directions=[1, 1], ):
         arr (array-like) :
             Array to get the sum of.
 
+        axes (list) :
+            What axes to sum over.
+
+        directions (list) :
+            What direction to sum along.
+                1 -> standard direction
+                -1 -> reverse direction
+
     Returns:
         summed_arr (np.ndarray) :
             The i,j element of summed_arr is the sum of arr[:i+1,:j+1]
