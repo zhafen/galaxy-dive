@@ -299,6 +299,7 @@ class GenericPlotter( object ):
         out_dir = None,
         fix_invalid = True,
         line_slope = default,
+        cdf = False,
         horizontal_line = None, vertical_line = None,
         horizontal_line_kwargs = { 'linestyle': '--', 'linewidth': 5, 'color': '#337DB8', },
         vertical_line_kwargs = { 'linestyle': '--', 'linewidth': 5, 'color': '#337DB8', },
@@ -403,6 +404,11 @@ class GenericPlotter( object ):
             norm = plt_colors.Normalize()
         elif z_scale == 'log':
             norm = plt_colors.LogNorm()
+
+        if cdf:
+            raise Exception(
+                "Not implemented yet. When implementing, use utilities.cumsum2d"
+            )
 
         im = ax.pcolormesh(
             x_edges,
