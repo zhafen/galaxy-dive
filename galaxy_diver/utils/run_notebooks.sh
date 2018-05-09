@@ -27,6 +27,7 @@ do
     # Switch back to Python 2
     module load python/2.7.13
     module unload python3
+    module load phdf5
 
     # And now run the NBs
     echo Running $nb_script ...

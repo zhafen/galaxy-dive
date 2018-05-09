@@ -9,6 +9,7 @@
 # Base python imports
 import numpy as np
 import os
+import warnings
 
 import matplotlib
 matplotlib.use('PDF')
@@ -69,6 +70,8 @@ class GenericPlotter( object ):
         invalid_fix_method = default,
         bins = 32,
         normed = True,
+        norm_type = 'probability',
+        scaling = None,
         color = 'black',
         linestyle = '-',
         linewidth = 3.5,
@@ -85,6 +88,7 @@ class GenericPlotter( object ):
         vertical_line_kwargs = { 'linestyle': '--', 'linewidth': 3, 'color': 'k', },
         return_dist = False,
         assert_contains_all_data = True,
+        data_kwargs = {},
         *args, **kwargs ):
         '''Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_masked_data().
 
@@ -174,11 +178,24 @@ class GenericPlotter( object ):
         else:
             sl = slices
 
-        data = self.data_object.get_masked_data( data_key, sl=sl, *args, **kwargs ).copy()
+        data_kwargs = utilities.merge_two_dicts( data_kwargs, kwargs )
+
+        data = self.data_object.get_masked_data(
+            data_key,
+            sl=sl,
+            *args, **data_kwargs
+        ).copy()
 
         if weight_key is default:
             weights = None
         else:
+
+            if 'scale_key' in kwargs:
+                warnings.warn(
+                    "Scaling weights by {}. Is this correct?".format(
+                        kwargs['scale_key']
+                    )
+                )
             weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
 
         if fix_invalid:
@@ -201,7 +218,14 @@ class GenericPlotter( object ):
             assert data.size == hist.sum()
 
         if normed:
-            hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
+
+            if norm_type == 'probability':
+                hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
+            elif norm_type == 'bin_width':
+                hist = hist.astype( float) / (edges[1] - edges[0])
+
+        if scaling is not None:
+            hist *= scaling
 
         if cdf:
             hist = np.cumsum( hist )*(edges[1] - edges[0])
