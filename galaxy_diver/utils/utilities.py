@@ -36,7 +36,7 @@ class SmartDict( collections.Mapping ):
         results[key] = smart_dict[key].test_class_b.foo( 2 )
     return results
 
-    NOTE: In Python 3, the inheritance class probably needs to be switched to collections.abc.Mapping.
+    NOTE: In Python 3, the parent class probably needs to be switched to collections.abc.Mapping.
     '''
 
     def __init__( self, *args, **kwargs ):
@@ -50,6 +50,9 @@ class SmartDict( collections.Mapping ):
 
     def __getitem__( self, item ):
         return self._storage[item]
+
+    def __setitem__( self, key, item ):
+        self._storage[key] = item
 
     def __repr__( self ):
 
@@ -169,18 +172,6 @@ class SmartDict( collections.Mapping ):
 
         return SmartDict( results )
 
-    def apply( self, fn, *args, **kwargs ):
-        '''Apply some function to each item in the smart dictionary, and
-        return the results as a SmartDict.
-        '''
-
-        results = {}
-
-        for key, item in self.items():
-            results[key] = fn( item, *args, **kwargs )
-
-        return SmartDict( results )
-
     ########################################################################
     # Operation Methods
     ########################################################################
@@ -287,6 +278,41 @@ class SmartDict( collections.Mapping ):
                 result += self._storage[key]
 
         return result
+
+    def apply( self, fn, *args, **kwargs ):
+        '''Apply some function to each item in the smart dictionary, and
+        return the results as a SmartDict.
+        '''
+
+        results = {}
+
+        for key, item in self.items():
+            results[key] = fn( item, *args, **kwargs )
+
+        return SmartDict( results )
+
+    def split_by_key_slice( self, sl ):
+        '''Break the smart dictionary into smaller smart dictionaries according
+        to a subset of the key.
+
+        Args:
+            sl (slice) :
+                Part of the key to use to make subsets.
+        '''
+
+        results = {}
+
+        for key, item in self.items():
+
+            key_slice = key[sl]
+            
+            try:
+                results[key_slice][key] = item
+            except KeyError:
+                results[key_slice] = SmartDict( {} )
+                results[key_slice][key] = item
+
+        return results
 
     ########################################################################
     # Construction Methods

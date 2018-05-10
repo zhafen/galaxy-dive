@@ -72,6 +72,7 @@ class GenericPlotter( object ):
         normed = True,
         norm_type = 'probability',
         scaling = None,
+        histogram_style = 'step',
         color = 'black',
         linestyle = '-',
         linewidth = 3.5,
@@ -237,15 +238,31 @@ class GenericPlotter( object ):
             color = self.color
 
         # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
-        ax.step(
-            edges,
-            np.insert(hist, 0, 0.),
-            color=color,
-            linestyle=linestyle,
-            linewidth=linewidth,
-            label=line_label,
-            alpha=alpha,
-        )
+        if histogram_style == 'step':
+            ax.step(
+                edges,
+                np.insert(hist, 0, 0.),
+                color=color,
+                linestyle=linestyle,
+                linewidth=linewidth,
+                label=line_label,
+                alpha=alpha,
+            )
+        elif histogram_style == 'line':
+            x_values = 0.5 * ( edges[:-1] + edges[1:] )
+            ax.plot(
+                x_values,
+                hist,
+                color=color,
+                linestyle=linestyle,
+                linewidth=linewidth,
+                label=line_label,
+                alpha=alpha,
+            )
+        else:
+            raise KeyError(
+                "Unrecognized histogram_style, {}".format( histogram_style )
+            )
 
         # Plot a vertical line?
         if vertical_line is not None:
