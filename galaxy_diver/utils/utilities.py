@@ -319,6 +319,11 @@ class SmartDict( collections.Mapping ):
 
         return self.apply( np.log10 )
 
+    def array( self ):
+        '''Wrapper for np.array'''
+
+        return np.array( self.values() )
+
     ########################################################################
     # Construction Methods
     ########################################################################

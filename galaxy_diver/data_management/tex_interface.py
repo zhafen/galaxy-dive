@@ -7,6 +7,7 @@
 '''
 
 import os
+import warnings
 
 import galaxy_diver.utils.utilities as utilities
 
@@ -82,6 +83,14 @@ class TeXVariableFile( object ):
         '''Save a variable to the TeX file.'''
 
         print( "Saving {} as {}".format( item, key ) )
+
+        if key in self.data_dict.keys():
+            warnings.warn(
+                "Overwriting variable {}. Previous value {}".format(
+                    key,
+                    self.data_dict[key],
+                )
+            )
 
         self.data_dict[key] = item
 
