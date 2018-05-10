@@ -81,7 +81,19 @@ class TeXVariableFile( object ):
     def save_variable( self, key, item ):
         '''Save a variable to the TeX file.'''
 
+        print( "Saving {} as {}".format( item, key ) )
+
         self.data_dict[key] = item
+
+        self.write()
+
+    ########################################################################
+
+    def delete_variable( self, key ):
+
+        print( "Deleting {}".format( key ) )
+
+        del self.data_dict[key]
 
         self.write()
 

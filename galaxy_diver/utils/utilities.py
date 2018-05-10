@@ -314,6 +314,11 @@ class SmartDict( collections.Mapping ):
 
         return results
 
+    def log10( self ):
+        '''Wrapper for np.log10'''
+
+        return self.apply( np.log10 )
+
     ########################################################################
     # Construction Methods
     ########################################################################
