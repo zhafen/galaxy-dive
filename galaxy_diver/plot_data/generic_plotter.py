@@ -692,6 +692,72 @@ class GenericPlotter( object ):
 
     ########################################################################
 
+    def plot_stacked_data(
+        self,
+        x_key,
+        y_keys,
+        colors,
+        ax = default,
+        *args, **kwargs
+    ):
+        
+        if ax is default:
+            plt.figure( figsize=(11, 5), facecolor='white' )
+            ax = plt.gca()
+
+        y_prev = np.zeros( shape=y_datas.values()[0].shape )
+
+        y_datas = []
+        for y_key in y_keys:
+            y_data = self.data_object.get_masked_data(
+                y_key,
+                *args, **kwargs
+            ).copy()
+
+            y_datas.append( y_data )
+
+        for i, y_key in y_keys:
+
+            y_next = y_prev + y_datas[i]
+
+            ax.fill_between(
+                x_data,
+                y_prev,
+                y_next,
+                color = classification_colors[key],
+                alpha = p_constants.CLASSIFICATION_ALPHA,
+            )
+
+            # Make virtual artists to allow a legend to appear
+            color_object = matplotlib.patches.Rectangle(
+                (0, 0),
+                1,
+                1,
+                fc = classification_colors[key],
+                ec = classification_colors[key],
+                alpha = p_constants.CLASSIFICATION_ALPHA,
+            )
+            color_objects.append( color_object )
+            labels.append( p_constants.CLASSIFICATION_LABELS[key] )
+
+        ax.annotate(
+            s=self.label,
+            xy=(0., 1.0225),
+            xycoords='axes fraction',
+            fontsize=22,
+        )
+
+        ax.legend(
+            color_objects,
+            labels,
+            prop={'size': 14.5},
+            ncol=5,
+            loc=(0., -0.28),
+            fontsize=20
+        )
+
+    ########################################################################
+
     def plot_time_dependent_data( self,
         ax = default,
         x_range = [ 0., np.log10(8.) ], y_range = default,
