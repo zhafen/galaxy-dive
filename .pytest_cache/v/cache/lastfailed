@@ -1,3 +1,4 @@
 {
-  "tests/test_data_management/test_run_management.py::TestTroveManager::test_get_incomplete_runs": true
+  "tests/test_data_management/test_run_management.py::TestTroveManager::test_get_incomplete_runs": true, 
+  "tests/test_galaxy_finder/test_finder.py::TestGalaxyFinder::test_find_d_other_gal_only_valid_halo_is_main": true
 }

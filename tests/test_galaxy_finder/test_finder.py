@@ -674,6 +674,28 @@ class TestGalaxyFinder( unittest.TestCase ):
 
     ########################################################################
 
+    def test_find_d_other_gal_only_valid_halo_is_main( self ):
+        '''Test that things still work when there are other halos, but the
+        only valid halo is the main halo.
+        '''
+
+        # Setup dummy data
+        self.galaxy_finder.minimum_value = 10
+        self.galaxy_finder.snum = 10
+        self.galaxy_finder.ahf_reader.sdir = './tests/data/analysis_dir5'
+        self.galaxy_finder.ahf_reader.get_halos( 10 )
+
+        # Make sure we set the number of particles correctly, to match the number we're using
+        #self.galaxy_finder.n_particles = 3
+
+        actual = self.galaxy_finder.find_d_other_gal()
+
+        expected = np.array([ -2., -2., ])
+
+        npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
     def test_find_d_other_gal_scaled_no_halos( self ):
         '''This tests we can find the shortest distance to the nearest galaxy.
         '''
