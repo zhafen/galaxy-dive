@@ -390,6 +390,7 @@ class GalaxyFinder( object ):
             valid_halo_inds_sats = self.valid_halo_inds
 
         elif ind_main_gal_in_valid_inds.size == 1:
+
             dist_to_all_valid_other_gals = np.delete(
                 self.dist_to_all_valid_halos,
                 ind_main_gal_in_valid_inds[0],
@@ -397,6 +398,10 @@ class GalaxyFinder( object ):
             )
             valid_halo_inds_sats = \
                 np.delete( self.valid_halo_inds, ind_main_gal_in_valid_inds[0] )
+
+            # Handle when the only valid halo is the main halo
+            if dist_to_all_valid_other_gals.size == 0:
+                return -2. * np.ones( (self.n_particles,) )
 
         else:
             raise Exception(
