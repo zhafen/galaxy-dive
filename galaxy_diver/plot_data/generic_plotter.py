@@ -63,6 +63,7 @@ class GenericPlotter( object ):
 
     def histogram( self,
         data_key,
+        provided_hist = None,
         weight_key = default,
         slices = None,
         ax = default,
@@ -174,63 +175,67 @@ class GenericPlotter( object ):
 
         print( "Plotting histogram for {}".format( data_key ) )
 
-        if isinstance( slices, int ):
-            sl = ( slice(None), slices )
-        else:
-            sl = slices
+        if provided_hist is None:
 
-        data_kwargs = utilities.merge_two_dicts( data_kwargs, kwargs )
-
-        data = self.data_object.get_masked_data(
-            data_key,
-            sl=sl,
-            *args, **data_kwargs
-        ).copy()
-
-        if weight_key is default:
-            weights = None
-        else:
-
-            if 'scale_key' in kwargs:
-                warnings.warn(
-                    "Scaling weights by {}. Is this correct?".format(
-                        kwargs['scale_key']
-                    )
-                )
-            weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
-
-        if fix_invalid:
-            if invalid_fix_method is default:
-                data = np.ma.fix_invalid( data ).compressed()
+            if isinstance( slices, int ):
+                sl = ( slice(None), slices )
             else:
-                data = np.ma.fix_invalid( data )
-                data.fill_value = invalid_fix_method
-                data = data.filled()
+                sl = slices
+
+            data_kwargs = utilities.merge_two_dicts( data_kwargs, kwargs )
+
+            data = self.data_object.get_masked_data(
+                data_key,
+                sl=sl,
+                *args, **data_kwargs
+            ).copy()
+
+            if weight_key is default:
+                weights = None
+            else:
+
+                if 'scale_key' in kwargs:
+                    warnings.warn(
+                        "Scaling weights by {}. Is this correct?".format(
+                            kwargs['scale_key']
+                        )
+                    )
+                weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+
+            if fix_invalid:
+                if invalid_fix_method is default:
+                    data = np.ma.fix_invalid( data ).compressed()
+                else:
+                    data = np.ma.fix_invalid( data )
+                    data.fill_value = invalid_fix_method
+                    data = data.filled()
+
+            # Make the histogram itself
+            hist, edges = np.histogram( data, bins=bins, weights=weights )
+
+            if normed:
+
+                if norm_type == 'probability':
+                    hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
+                elif norm_type == 'bin_width':
+                    hist = hist.astype( float) / (edges[1] - edges[0])
+
+            # Make sure we have all the data in the histogram
+            if assert_contains_all_data:
+                assert data.size == hist.sum()
+            if scaling is not None:
+                hist *= scaling
+
+            if cdf:
+                hist = np.cumsum( hist )*(edges[1] - edges[0])
+
+        else:
+            hist = provided_hist
+            edges = bins
 
         if ax is default:
             fig = plt.figure( figsize=(11,5), facecolor='white', )
             ax = plt.gca()
-
-        # Make the histogram itself
-        hist, edges = np.histogram( data, bins=bins, weights=weights )
-
-        # Make sure we have all the data in the histogram
-        if assert_contains_all_data:
-            assert data.size == hist.sum()
-
-        if normed:
-
-            if norm_type == 'probability':
-                hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
-            elif norm_type == 'bin_width':
-                hist = hist.astype( float) / (edges[1] - edges[0])
-
-        if scaling is not None:
-            hist *= scaling
-
-        if cdf:
-            hist = np.cumsum( hist )*(edges[1] - edges[0])
-
         if line_label is default:
             line_label = self.label
 

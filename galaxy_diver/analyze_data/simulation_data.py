@@ -876,12 +876,10 @@ class SnapshotData( SimulationData ):
     def calc_H_den(self):
         '''Calculate the H density in cgs (cm^-3). Assume the H fraction is ~0.75'''
 
-        raise Exception( "TODO: Test this" )
-
         # Assume Hydrogen makes up 75% of the gas
         X_H = 0.75
 
-        self.data['HDen'] = X_H * self.data['Den'] * constants.gas_den_to_nb
+        self.data['HDen'] = X_H * self.data['Den'] * constants.UNITDENSITY_IN_NUMDEN
 
     ########################################################################
 

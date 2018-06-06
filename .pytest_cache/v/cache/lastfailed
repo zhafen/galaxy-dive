@@ -1,4 +1,3 @@
 {
-  "tests/test_analyze_data/test_analyze_ahf_updater.py::TestHaloUpdater::test_include_ahf_halos_to_mtree_halos": true, 
   "tests/test_data_management/test_run_management.py::TestTroveManager::test_get_incomplete_runs": true
 }

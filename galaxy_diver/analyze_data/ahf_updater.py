@@ -135,11 +135,12 @@ class HaloUpdater( read_ahf.AHFReader ):
 
   ########################################################################
 
-  def get_mass_radii( self,
-    mass_fractions,
-    simulation_data_dir,
-    galaxy_cut,
-    length_scale,
+  def get_mass_radii(
+        self,
+        mass_fractions,
+        simulation_data_dir,
+        galaxy_cut,
+        length_scale,
     ):
     '''Get radii that enclose a fraction (mass_fractions[i]) of a halo's stellar mass.
 
@@ -394,13 +395,27 @@ class HaloUpdater( read_ahf.AHFReader ):
   # Alter Data
   ########################################################################
 
-  def smooth_mtree_halos( self, metafile_dir ):
+  def smooth_mtree_halos(
+        self,
+        metafile_dir,
+        keys_to_smooth = None,
+        smooth_kwargs = { 'window_len' : 20, 'window' : 'flat' },
+    ):
     '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the Halo-calculated merger tree.
     NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.
 
     Args:
       metafile_dir (str) :
         The directory the snapshot_times are stored in.
+
+        keys_to_smooth (list of strs) :
+            If given, also smooth the data given by these keys.
+            This smoothing isn't done to assume a monotonic increase, but is
+            a convolve with a moving filter through data_operations.smooth()
+
+        smooth_kwargs (dict) :
+            Specific arguments that determine exactly how the smoothing is
+            done, when also smoothing for specific keys.
 
     Modifies:
       self.mtree_halos (dict of pd.DataFrames) :
@@ -426,6 +441,17 @@ class HaloUpdater( read_ahf.AHFReader ):
 
       # Smooth Mvir
       mtree_halo['Mvir'] = np.maximum.accumulate( mtree_halo['Mvir'][::-1] )[::-1]
+
+      for smooth_key in keys_to_smooth:
+
+        smoothed_data = data_operations.smooth(
+            mtree_halo[smooth_key],
+            **smooth_kwargs,
+        )
+
+        smooth_save_key = 's' + smooth_key
+
+        mtree_halo[smooth_save_key] = smoothed_data
 
   ########################################################################
 
@@ -519,6 +545,7 @@ class HaloUpdater( read_ahf.AHFReader ):
     index = None,
     include_ahf_halos_add = True,
     include_concentration = False,
+    smooth_keys = [ 'Rstar0.5', ],
     ):
     '''Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat
 
@@ -543,7 +570,7 @@ class HaloUpdater( read_ahf.AHFReader ):
       self.include_ahf_halos_to_mtree_halos()
 
     # Smooth the halos
-    self.smooth_mtree_halos( metafile_dir )
+    self.smooth_mtree_halos( metafile_dir, smooth_keys, )
 
     # Include the concentration, if chosen.
     if include_concentration:

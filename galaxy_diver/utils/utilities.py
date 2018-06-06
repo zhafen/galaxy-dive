@@ -291,26 +291,39 @@ class SmartDict( collections.Mapping ):
 
         return SmartDict( results )
 
-    def split_by_key_slice( self, sl ):
+    def split_by_key_slice( self, sl, str_to_match=None ):
         '''Break the smart dictionary into smaller smart dictionaries according
         to a subset of the key.
 
         Args:
             sl (slice) :
                 Part of the key to use to make subsets.
+
+            str_to_match (str) :
+                If True, split into broad categories that match this string
+                in the given slice or don't.
         '''
 
         results = {}
 
+        if str_to_match is not None:
+            results[True] = SmartDict( {} )
+            results[False] = SmartDict( {} )
+
         for key, item in self.items():
 
             key_slice = key[sl]
+
+            if str_to_match is not None:
+                str_matches = key_slice == str_to_match
+                results[str_matches][key] = item
             
-            try:
-                results[key_slice][key] = item
-            except KeyError:
-                results[key_slice] = SmartDict( {} )
-                results[key_slice][key] = item
+            else:
+                try:
+                    results[key_slice][key] = item
+                except KeyError:
+                    results[key_slice] = SmartDict( {} )
+                    results[key_slice][key] = item
 
         return results
 
@@ -323,6 +336,17 @@ class SmartDict( collections.Mapping ):
         '''Wrapper for np.array'''
 
         return np.array( self.values() )
+
+    def remove_empty_items( self ):
+        '''Look for empty items and delete them.'''
+
+        keys_to_delete = []
+        for key, item in self.items():
+            if len( item ) == 0:
+                keys_to_delete.append( key )
+
+        for key in keys_to_delete:
+            del self._storage[key]
 
     ########################################################################
     # Construction Methods

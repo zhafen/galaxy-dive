@@ -8,6 +8,9 @@
 
 import copy
 import numpy as np
+import scipy
+import scipy.signal
+
 import galaxy_diver.utils.transformations as transformations
 
 ########################################################################
@@ -261,3 +264,66 @@ def cumsum2d( arr, axes=[0, 1], directions=[1, 1], ):
             summed_arr = np.flip( summed_arr, axis=axis )
 
     return summed_arr
+
+########################################################################
+
+def smooth_arr( arr, width=20, std=10 ):
+    '''Apply a gaussian filter to an array.
+    Credit to Cameron Hummels for the nice simple code I'm using.
+
+    Args:
+        arr (1D np.ndarray) :
+            array to smooth
+
+        width (int) :
+            Number of elements over which to smooth.
+
+        std (int) :
+            Sigma of the guassian for which to smooth.
+
+    Returns:
+        smoothed_arr (1D np.ndarray) :
+            Smoothed version of arr.
+    '''
+
+    b = scipy.signal.gaussian( width, std )
+    smoothed_arr = scipy.ndimage.filters.convolve1d( arr, b/b.sum() )
+
+    return smoothed_arr
+
+def smooth( x, window_len=11, window='flat' ):                                    
+    '''Simple moving-window signal smoothing (from scipy cookbook)
+
+    Args:
+        x (1D np.ndarray) :
+            array to smooth
+
+        wind_len (int) :
+            Number of elements over which to smooth.
+
+        window (str) :
+            Type of window.
+
+    Returns:
+        smoothed_arr (1D np.ndarray) :
+            Smoothed version of arr.
+    '''
+
+    if x.ndim != 1:                                                          
+        raise ValueError, "smooth only accepts 1 dimension arrays."      
+    if x.size < window_len:                                                  
+        raise ValueError, "Input vector needs to be bigger than window size."
+    if window_len<3:                                                         
+        return x                                                         
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']: 
+        raise ValueError, "Window is not one of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+
+    s=np.r_[2*x[0]-x[window_len-1::-1],x,2*x[-1]-x[-1:-window_len:-1]]       
+
+    if window == 'flat': #moving average                                     
+        w=np.ones(window_len,'d')                                        
+    else:                                                                    
+        w=eval('np.'+window+'(window_len)')                              
+
+    y=np.convolve(w/w.sum(),s,mode='same')                                   
+    return y[window_len:-window_len+1]    
