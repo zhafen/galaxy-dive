@@ -40,6 +40,7 @@ class TestGetData( unittest.TestCase ):
         # Setup some necessary data
         self.g_data.data = {
             'P' : np.random.rand( 3, 4 ),
+            'V' : np.random.rand( 3, 4 ),
         }
 
     ########################################################################

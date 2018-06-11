@@ -446,7 +446,7 @@ class HaloUpdater( read_ahf.AHFReader ):
 
         smoothed_data = data_operations.smooth(
             mtree_halo[smooth_key],
-            **smooth_kwargs,
+            **smooth_kwargs
         )
 
         smooth_save_key = 's' + smooth_key

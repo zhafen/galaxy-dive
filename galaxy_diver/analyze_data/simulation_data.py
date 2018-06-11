@@ -415,6 +415,9 @@ class SimulationData( generic_data.GenericData ):
         for i in range( n_tries ):
             try:
 
+                #DEBUG
+                # import pdb; pdb.set_trace()
+
                 # Positions
                 if self.key_parser.is_position_key( data_key ):
                     data = self.get_position_data( data_key )
@@ -523,6 +526,9 @@ class SimulationData( generic_data.GenericData ):
         if self.verbose:
             print( 'Data key {} not found in data. Attempting to calculate.'.format( data_key ) )
 
+        #DEBUG
+        # import pdb; pdb.set_trace()
+
         # SimulationData methods
         if data_key == 'R':
             self.calc_radial_distance()
@@ -594,14 +600,12 @@ class SimulationData( generic_data.GenericData ):
     def calc_radial_distance( self ):
         '''Calculate the distance from the origin for a given particle.'''
 
-        self.data['R'] = np.sqrt( self.get_data( 'Rx' )**2. + self.get_data( 'Ry' )**2. + self.get_data( 'Rz' )**2. )
+        self.data['R'] = np.sqrt(
+            self.get_data( 'Rx' )**2. + \
+            self.get_data( 'Ry' )**2. + \
+            self.get_data( 'Rz' )**2.
+        )
 
-    ########################################################################
-
-    def calc_radial_velocity( self ):
-        '''Calculate the distance from the origin for a given particle.'''
-
-        self.data['Vr'] = np.sqrt( self.get_data( 'Vx' )**2. + self.get_data( 'Vy' )**2. + self.get_data( 'Vz' )**2. )
 
 ########################################################################
 ########################################################################
@@ -625,6 +629,9 @@ class SnapshotData( SimulationData ):
     ########################################################################
 
     def retrieve_halo_data( self ):
+
+        #DEBUG
+        # import pdb; pdb.set_trace()
 
         if self.halo_data_retrieved:
             return
@@ -949,6 +956,17 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
+    @property
+    def n_snaps( self ):
+        '''Number of snapshots, i.e. data points on the time axis.'''
+
+        if not hasattr( self, '_n_snaps' ):
+            self._n_snaps = self.base_data_shape[1]
+
+        return self._n_snaps
+
+    ########################################################################
+
     def retrieve_halo_data( self ):
 
         if self.halo_data_retrieved:
@@ -984,6 +1002,33 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
+    def calc_radial_velocity( self ):
+        '''Calculate the distance from the origin for a given particle.'''
+
+        v_all = self.get_data( 'V' )
+        p_all = self.get_data( 'P' )
+        r_all = self.get_data( 'R' )
+
+        # Note that we don't need to add the hubble flow, because we've
+        # already done so in self.get_velocity_data()
+        assert self.hubble_corrected
+
+        v_r = []
+        for i in range( self.n_snaps ):
+
+            v = v_all[:,:,i]
+            p = p_all[:,:,i]
+            r = r_all[:,i]
+
+            v_r_i = ( v * p ).sum( axis=0 )/r
+
+            v_r.append( v_r_i )
+
+        # Format the output
+        self.data['Vr'] = np.array( v_r ).transpose()
+
+    ########################################################################
+
     def handle_data_key_error( self, data_key ):
 
         method_str = 'calc_{}'.format( data_key )
@@ -995,6 +1040,8 @@ class TimeData( SimulationData ):
         else:
             super( TimeData, self ).handle_data_key_error( data_key )
             # raise KeyError( 'NULL data_key, data_key = {}'.format( data_key ) )
+
+    ########################################################################
 
     def get_processed_data(
         self,

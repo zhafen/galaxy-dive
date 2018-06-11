@@ -219,17 +219,15 @@ class TestTimeData( unittest.TestCase ):
         actual = self.t_data.get_data( 'R' )
         npt.assert_allclose( expected, actual )
 
+########################################################################
+########################################################################
+
 
 class TestCalc( unittest.TestCase ):
 
     def setUp( self ):
 
         self.t_data = simulation_data.TimeData( **default_kwargs )
-
-        self.t_data.data = {
-            'P': np.zeros( ( 3, 4, 5 ) ),
-            'V': np.zeros( ( 3, 4, 5 ) ),
-        }
 
         self.t_data.data_attrs = {
             'hubble': 0.70199999999999996,
@@ -244,6 +242,7 @@ class TestCalc( unittest.TestCase ):
         '''
 
         # Set up test data
+        self.t_data.data = {}
         self.t_data.data['is_A'] = np.array([
             [ 1, 1, 1, ],
             [ 1, 0, 1, ],
@@ -265,6 +264,34 @@ class TestCalc( unittest.TestCase ):
         ])
 
         npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
+    def test_calc_radial_velocity( self ):
+
+        # Setup Mock Data
+        self.t_data.data = {
+            'P': np.zeros( ( 3, 5, 4 ) ),
+            'V': np.zeros( ( 3, 5, 4 ) ),
+            'Den': np.zeros( ( 5, 4 ) ), # Five particles, 4 snapshots
+            'snum': np.array([ 600, 550, 500, 450 ]),
+        }
+        # Offset the data slightly from the origin
+        self.t_data.retrieve_halo_data()
+        for i in range( 5 ):
+            offset = 10. * i * np.ones( shape=self.t_data.halo_coords.shape )
+            self.t_data.data['P'][:,i] = self.t_data.halo_coords + offset
+
+            vel_offset = 1. * i * np.ones( shape=self.t_data.halo_coords.shape )
+            self.t_data.data['V'][:,i] = self.t_data.halo_velocity + vel_offset
+
+        self.t_data.calc_radial_velocity()
+
+        assert self.t_data.data['Vr'].shape == ( 5, 4 )
+
+        # The first particle is located at the origin, so it should be NaN
+        for i in range( 4 ):
+            assert np.isnan( self.t_data.data['Vr'][0,i] )
 
 ########################################################################
 ########################################################################
