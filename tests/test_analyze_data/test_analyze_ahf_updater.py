@@ -200,7 +200,8 @@ class TestHaloUpdater( unittest.TestCase ):
             data_sdir,
             'snum',
             include_ahf_halos_add=False,
-            include_concentration=True
+            include_concentration=True,
+            smooth_keys = [],
         )
 
         # Load the saved files
@@ -229,7 +230,12 @@ class TestHaloUpdater( unittest.TestCase ):
         self.ahf_updater.sdir = sdir2
 
         # Get the results
-        self.ahf_updater.save_smooth_mtree_halos( data_sdir2, 440, False )
+        self.ahf_updater.save_smooth_mtree_halos(
+            data_sdir2,
+            440,
+            False,
+            smooth_keys = [],
+        )
 
         # Load the saved files
         self.ahf_updater.get_mtree_halos( 440, 'smooth' )

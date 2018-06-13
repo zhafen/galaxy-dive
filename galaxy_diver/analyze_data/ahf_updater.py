@@ -18,6 +18,7 @@ import galaxy_diver.read_data.metafile as read_metafile
 import galaxy_diver.utils.astro as astro_utils
 import galaxy_diver.utils.constants as constants
 import galaxy_diver.utils.data_constants as data_constants
+import galaxy_diver.utils.data_operations as data_operations
 import galaxy_diver.utils.utilities as utilities
 
 import galaxy_diver.analyze_data.ahf as ahf
@@ -398,7 +399,7 @@ class HaloUpdater( read_ahf.AHFReader ):
   def smooth_mtree_halos(
         self,
         metafile_dir,
-        keys_to_smooth = None,
+        keys_to_smooth = [],
         smooth_kwargs = { 'window_len' : 20, 'window' : 'flat' },
     ):
     '''Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the Halo-calculated merger tree.
