@@ -408,7 +408,7 @@ class GenericPlotter( object ):
         if weight_key is default:
             weights = None
         else:
-            weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+            weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs ).flatten()
 
         if x_range is default:
             x_range = [ x_data.min(), x_data.max() ]

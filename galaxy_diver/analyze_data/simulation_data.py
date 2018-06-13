@@ -775,7 +775,11 @@ class SnapshotData( SimulationData ):
         self.center_vel_coords()
 
         # Calculate the radial velocity
-        self.data['Vmag'] = np.linalg.norm( self.data[ 'V' ], axis=0 )
+        self.data['Vmag'] = np.sqrt(
+            self.get_data( 'Vx' )**2. + \
+            self.get_data( 'Vy' )**2. + \
+            self.get_data( 'Vz' )**2.
+        )
 
     ########################################################################
 
@@ -938,7 +942,6 @@ class SnapshotData( SimulationData ):
         mu = 1. / (1. - 0.75 * y_helium + self.data['ne'])
 
         return mu
-
 
 ########################################################################
 ########################################################################
