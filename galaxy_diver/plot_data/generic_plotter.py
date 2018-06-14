@@ -213,6 +213,10 @@ class GenericPlotter( object ):
             # Make the histogram itself
             hist, edges = np.histogram( data, bins=bins, weights=weights )
 
+            # Make sure we have all the data in the histogram
+            if assert_contains_all_data:
+                assert data.size == hist.sum()
+
             if normed:
 
                 if norm_type == 'probability':
@@ -220,9 +224,6 @@ class GenericPlotter( object ):
                 elif norm_type == 'bin_width':
                     hist = hist.astype( float) / (edges[1] - edges[0])
 
-            # Make sure we have all the data in the histogram
-            if assert_contains_all_data:
-                assert data.size == hist.sum()
             if scaling is not None:
                 hist *= scaling
 
@@ -321,6 +322,7 @@ class GenericPlotter( object ):
         x_key, y_key,
         weight_key = default,
         x_data_args = {}, y_data_args = {},
+        weight_data_args = {},
         slices = None,
         ax = default,
         x_range = default, y_range = default,
@@ -342,6 +344,7 @@ class GenericPlotter( object ):
         label_redshift = False,
         label_fontsize = 24,
         tick_param_args = default,
+        save_file = default,
         out_dir = None,
         fix_invalid = True,
         line_slope = default,
@@ -385,7 +388,11 @@ class GenericPlotter( object ):
         else:
             sl = slices
 
-        varying_kwargs = { 'x': x_data_args, 'y': y_data_args }
+        varying_kwargs = {
+            'x': x_data_args,
+            'y': y_data_args,
+            'weight': weight_data_args
+        }
         data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
 
         # Get data
@@ -408,7 +415,15 @@ class GenericPlotter( object ):
         if weight_key is default:
             weights = None
         else:
-            weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs ).flatten()
+            weights = self.data_object.get_masked_data(
+                weight_key,
+                sl=sl,
+                *args,
+                **data_kwargs['weight']
+            ).flatten()
+
+            if fix_invalid:
+                weights = np.ma.masked_array( weights, mask=mask ).compressed()
 
         if x_range is default:
             x_range = [ x_data.min(), x_data.max() ]
@@ -538,7 +553,9 @@ class GenericPlotter( object ):
 
         # Save the file
         if out_dir is not None:
-            save_file = '{}_{:03d}.png'.format( self.label, self.data_object.ptracks.snum[slices] )
+            if save_file is default:
+                save_file = '{}_{:03d}.png'.format( self.label, self.data_object.ptracks.snum[slices] )
+
             gen_plot.save_fig( out_dir, save_file, fig=fig, dpi=75 )
 
             plt.close()

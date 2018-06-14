@@ -91,3 +91,25 @@ def circular_velocity( r_vir, m_vir ):
   v_c = v_c_cgs / constants.CM_PER_KM
 
   return v_c
+
+########################################################################
+
+def get_sneii_metal_budget( m_star, y_z_ii=0.030 ):
+    '''Get the total mass of metal produced by SNe by z=0 in a galaxy with a
+    z=0 stellar mass of m_star.
+    This is taken from Peeple+2014, who use the star formation histories of
+    Leitner+2012.
+
+    Args:
+        m_star (float or array-like) :
+            Mass of the target galaxy at z=0 in units of Msun.
+
+        y_z_ii (float) :
+            Nucleosynthetic yield of all heavy 
+
+    Returns:
+        sneii_metal_budget (same as m_star):
+            Units of Msun.
+    '''
+
+    return 1.2856 * y_z_ii * m_star ** 1.0146
