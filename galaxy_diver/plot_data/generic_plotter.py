@@ -63,6 +63,7 @@ class GenericPlotter( object ):
 
     def histogram( self,
         data_key,
+        provided_data = None,
         provided_hist = None,
         weight_key = default,
         slices = None,
@@ -184,11 +185,14 @@ class GenericPlotter( object ):
 
             data_kwargs = utilities.merge_two_dicts( data_kwargs, kwargs )
 
-            data = self.data_object.get_masked_data(
-                data_key,
-                sl=sl,
-                *args, **data_kwargs
-            ).copy()
+            if provided_data is None:
+                data = self.data_object.get_masked_data(
+                    data_key,
+                    sl=sl,
+                    *args, **data_kwargs
+                ).copy()
+            else:
+                data = provided_data.copy()
 
             if weight_key is default:
                 weights = None
