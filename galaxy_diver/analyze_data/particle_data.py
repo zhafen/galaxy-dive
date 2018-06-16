@@ -141,6 +141,12 @@ class ParticleData( simulation_data.SnapshotData ):
 
   ########################################################################
 
+  def calc_MetalMass( self ):
+      
+    self.data['MetalMass'] = self.get_data( 'M' ) * self.get_data( 'Z' )
+
+  ########################################################################
+
   def find_duplicate_ids( self ):
     '''Find all the IDs in the particle data set that have duplicates.
 

@@ -526,11 +526,12 @@ class SimulationData( generic_data.GenericData ):
         if self.verbose:
             print( 'Data key {} not found in data. Attempting to calculate.'.format( data_key ) )
 
-        #DEBUG
-        # import pdb; pdb.set_trace()
+        method_str = 'calc_{}'.format( data_key )
+        if hasattr( self, method_str ):
+            getattr( self, method_str )()
 
         # SimulationData methods
-        if data_key == 'R':
+        elif data_key == 'R':
             self.calc_radial_distance()
         elif data_key == 'Vmag':
             self.calc_velocity_magnitude()
@@ -1168,7 +1169,8 @@ class TimeData( SimulationData ):
         return True
 
     ########################################################################
+    ########################################################################
 
     def calc_MetalMass( self ):
-        
+          
         self.data['MetalMass'] = self.get_data( 'M' ) * self.get_data( 'Z' ) * self.z_sun
