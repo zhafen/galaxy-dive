@@ -415,9 +415,6 @@ class SimulationData( generic_data.GenericData ):
         for i in range( n_tries ):
             try:
 
-                #DEBUG
-                # import pdb; pdb.set_trace()
-
                 # Positions
                 if self.key_parser.is_position_key( data_key ):
                     data = self.get_position_data( data_key )
@@ -630,9 +627,6 @@ class SnapshotData( SimulationData ):
     ########################################################################
 
     def retrieve_halo_data( self ):
-
-        #DEBUG
-        # import pdb; pdb.set_trace()
 
         if self.halo_data_retrieved:
             return
