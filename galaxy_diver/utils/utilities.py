@@ -279,6 +279,32 @@ class SmartDict( collections.Mapping ):
 
         return result
 
+    def keymax( self ):
+        
+        for key, item in self.items():
+            try:
+                if item_max < item:
+                    item_max = item
+                    key_max = key
+            except NameError:
+                item_max = item
+                key_max = key
+
+        return key_max, item_max
+
+    def keymin( self ):
+        
+        for key, item in self.items():
+            try:
+                if item_min > item:
+                    item_min = item
+                    key_min = key
+            except NameError:
+                item_min = item
+                key_min = key
+
+        return key_min, item_min
+
     def apply( self, fn, *args, **kwargs ):
         '''Apply some function to each item in the smart dictionary, and
         return the results as a SmartDict.
@@ -325,6 +351,35 @@ class SmartDict( collections.Mapping ):
                     results[key_slice] = SmartDict( {} )
                     results[key_slice][key] = item
 
+        return results
+
+    def split_by_dict( self, d ):
+        '''Break the smart dictionary into smaller smart dictionaries according
+        to their label provided by a dictionary
+
+        Args:
+            d (dict) :
+                Dictionary to use to split into smaller dictionaries
+        '''
+
+        results = {}
+    
+        for key, item in self.items():
+
+            try:
+                result_subkey = d[key]
+                try:
+                    results[result_subkey][key] = item
+                except KeyError:
+                    results[result_subkey] = SmartDict( {} )
+                    results[result_subkey][key] = item
+            except KeyError:
+                try:
+                    results['no label'][key] = item
+                except KeyError:
+                    results['no label'] = SmartDict( {} )
+                    results['no label'][key] = item
+        
         return results
 
     def log10( self ):

@@ -147,6 +147,17 @@ class ParticleData( simulation_data.SnapshotData ):
 
   ########################################################################
 
+  def calc_EnrichedMetalMass( self ):
+    '''Calculate the metal mass that comes from enrichment, not counting mass
+    that's at the metallicity floor. Assumes that the there will always be at
+    least one particle in the simulation that's at the metallicity floor.'''
+
+    enrichment_fraction = self.get_data( 'Z' ) - self.get_data( 'Z' ).min()
+
+    self.data['EnrichedMetalMass'] = self.get_data( 'M' ) * enrichment_fraction
+
+  ########################################################################
+
   def find_duplicate_ids( self ):
     '''Find all the IDs in the particle data set that have duplicates.
 

@@ -251,6 +251,20 @@ class TestSmartDict( unittest.TestCase ):
 
     ########################################################################
 
+    def test_keymax_and_keymin( self ):
+
+        d1 = utilities.SmartDict( { 1 : 1, 2 : 2, 3 : 3, } )
+
+        self.assertEqual( (3, 3), d1.keymax() )
+        self.assertEqual( (1, 1), d1.keymin() )
+
+        d1 = utilities.SmartDict( { 5 : 4, 2 : -1, 3 : 0, } )
+
+        self.assertEqual( (5, 4), d1.keymax() )
+        self.assertEqual( (2, -1), d1.keymin() )
+
+    ########################################################################
+
     def test_transpose( self ):
 
         d = utilities.SmartDict( {
