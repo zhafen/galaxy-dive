@@ -11,7 +11,7 @@
 #SBATCH --mail-type=begin
 #SBATCH --mail-type=fail
 #SBATCH --mail-type=end
-#SBATCH --account=TG-AST150059
+#SBATCH --account=TG-AST140023
 
 for nb in *.ipynb;
 do

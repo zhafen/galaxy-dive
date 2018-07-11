@@ -258,6 +258,28 @@ class TestHaloUpdater( unittest.TestCase ):
 
     ########################################################################
 
+    def test_save_smooth_mtree_halos_including_ahf_adds( self ):
+
+        self.ahf_updater.get_mtree_halos( 'snum', 'sparse', True )
+
+        #DEBUG
+        import pdb; pdb.set_trace()
+
+        # Get the results
+        self.ahf_updater.save_smooth_mtree_halos(
+            metafile_dir = data_sdir,
+            index = 'snum',
+            include_ahf_halos_add = True,
+            smooth_keys = [ 'Rstar0.5' ],
+            tag = 'sparse',
+            adjust_default_labels = True,
+        )
+
+        #DEBUG
+        import pdb; pdb.set_trace()
+
+    ########################################################################
+
     @patch( 'galaxy_diver.read_data.ahf.AHFReader.get_halos_add', )
     def test_save_custom_mtree_halos( self, mock_get_halos_add ):
 

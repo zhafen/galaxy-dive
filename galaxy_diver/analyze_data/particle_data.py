@@ -113,6 +113,18 @@ class ParticleData( simulation_data.SnapshotData ):
 
   ########################################################################
 
+  def calc_mu( self ):
+    '''we track this with metal species now, could do better...
+    '''
+
+    XH=0.76
+
+    yhelium = ( 1. - XH ) / ( 4. * XH )
+
+    return ( 1. + 4. * yhelium ) / ( 1. + yhelium + self.data['ne'] )
+
+  ########################################################################
+
   def calc_pressure( self ):
     '''Calculate the pressure in units of K/cm^3.'''
 

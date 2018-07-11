@@ -1,3 +1,5 @@
 {
+  "tests/test_analyze_data/test_analyze_ahf_updater.py::TestHaloUpdater::test_save_smooth_mtree_halos_including_ahf_adds": true, 
+  "tests/test_analyze_data/test_analyze_ahf_updater.py::TestHaloUpdater::test_smooth_mtree_halos_including_ahf_adds": true, 
   "tests/test_data_management/test_run_management.py::TestTroveManager::test_get_incomplete_runs": true
 }

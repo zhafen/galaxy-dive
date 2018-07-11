@@ -396,9 +396,9 @@ def load_gadget_binary_header(f):
 def gas_mu(num_e):
     '''Calculates the mean weight from gadget.'''
 
-    XH=0.76; # we track this with metal species now, could do better...
-    yhelium=(1.-XH)/(4.*XH); 
-    return (1.+4.*yhelium)/(1.+yhelium+num_e);
+    XH=0.76 # we track this with metal species now, could do better...
+    yhelium=(1.-XH)/(4.*XH)
+    return (1.+4.*yhelium)/(1.+yhelium+num_e)
 
 ########################################################################
 

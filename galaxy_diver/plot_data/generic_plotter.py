@@ -9,6 +9,7 @@
 # Base python imports
 import numpy as np
 import os
+import scipy.signal as signal
 import warnings
 
 import matplotlib
@@ -69,11 +70,15 @@ class GenericPlotter( object ):
         slices = None,
         ax = default,
         fix_invalid = False,
+        mask_zeros = False,
         invalid_fix_method = default,
         bins = 32,
         normed = True,
         norm_type = 'probability',
         scaling = None,
+        smooth = False,
+        smoothing_window_length = 9,
+        smoothing_polyorder = 3,
         histogram_style = 'step',
         color = 'black',
         linestyle = '-',
@@ -224,9 +229,17 @@ class GenericPlotter( object ):
             if normed:
 
                 if norm_type == 'probability':
-                    hist = hist.astype( float) / ( hist.sum()*(edges[1] - edges[0]) )
+                    hist = hist.astype( float ) / ( hist.sum()*(edges[1] - edges[0]) )
                 elif norm_type == 'bin_width':
-                    hist = hist.astype( float) / (edges[1] - edges[0])
+                    hist = hist.astype( float ) / (edges[1] - edges[0])
+                elif norm_type == 'outer_edge':
+                    hist = hist.astype( float ) / hist[-1]
+                elif norm_type == 'max_value':
+                    hist = hist.astype( float ) / hist.max()
+                else:
+                    raise Exception(
+                        "Unrecognized norm_type, {}".format( norm_type )
+                    )
 
             if scaling is not None:
                 hist *= scaling
@@ -237,6 +250,20 @@ class GenericPlotter( object ):
         else:
             hist = provided_hist
             edges = bins
+
+        if mask_zeros:
+            hist = np.ma.masked_where(
+                hist < 1e-14,
+                hist,
+            )
+
+        if smooth:
+            hist = signal.savgol_filter(
+                hist,
+                window_length = smoothing_window_length,
+                polyorder = smoothing_polyorder,
+            )
+
 
         if ax is default:
             fig = plt.figure( figsize=(11,5), facecolor='white', )
