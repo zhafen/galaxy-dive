@@ -446,7 +446,7 @@ class HaloUpdater( read_ahf.AHFReader ):
             for smooth_key in keys_to_smooth:
 
                 smoothed_data = data_operations.smooth(
-                        mtree_halo[smooth_key],
+                        mtree_halo[smooth_key].values,
                         **smooth_kwargs
                 )
 
@@ -466,9 +466,6 @@ class HaloUpdater( read_ahf.AHFReader ):
             self.mtree_halos (dict of pd.DataFrames) :
                 Adds additional columns contained in *.AHF_halos_add files.
         '''
-
-        #DEBUG
-        import pdb; pdb.set_trace()
 
         for mtree_id, mtree_halo in self.mtree_halos.items():
 
