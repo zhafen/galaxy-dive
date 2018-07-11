@@ -59,19 +59,16 @@ class RockstarReader( object ):
             self.data_dir,
             'out_{:03d}.list'.format( snum ),
         )
-        self.halos = pd.read_csv( self.halos_path, sep='\t', index_col=0 )
+        self.halos = pd.read_csv(
+            self.halos_path,
+            sep = ' ',
+            header = 0,
+            skiprows = range(1,16),
+            index_col = 0
+        )
 
-        #DEBUG
-        import pdb; pdb.set_trace()
-
-        # # Delete a column that shows up as a result of formatting
-        # del self.halos[ 'Unnamed: 92' ]
-
-        # # Remove the annoying parenthesis at the end of each label.
-        # self.halos.columns = [ label.split('(')[0] for label in list( self.halos ) ]
-
-        # # Rename the index to a more suitable name, without the '#' and the (1)
-        # self.halos.index.names = ['ID']
+        # Rename the index to a more suitable name, without the '#' and the (1)
+        self.halos.index.names = ['ID']
 
         # Save the snapshot number of the rockstar halos file.
         self.halos_snum = snum

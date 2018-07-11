@@ -44,6 +44,6 @@ class TestRockstarReader( unittest.TestCase ):
     self.rockstar_reader.get_halos( 600 )
 
     expected = 51
-    actual = self.rockstar_reader.rockstar_halos['numSubStruct'][6723]
+    actual = self.rockstar_reader.halos['Np'][6723]
     npt.assert_allclose( expected, actual )
 
