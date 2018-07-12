@@ -26,7 +26,7 @@ gal_finder_kwargs = {
     'redshift': 0.16946003,
     'snum': 500,
     'hubble': 0.70199999999999996,
-    'ahf_data_dir': './tests/data/analysis_dir3',
+    'halo_data_dir': './tests/data/analysis_dir3',
     'mtree_halos_index': 600,
     'main_mt_halo_id': 0,
     'halo_file_tag': 'smooth',
@@ -73,26 +73,21 @@ class TestGalaxyFinder( unittest.TestCase ):
 
         # Get the necessary reader.
         self.galaxy_finder.ahf_reader = read_ahf.AHFReader(
-            self.kwargs['ahf_data_dir'] )
+            self.kwargs['halo_data_dir'] )
 
         # Get the full needed ahf info.
         self.galaxy_finder.ahf_reader.get_halos( 500 )
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.read_data.ahf.AHFReader.get_halos_add' )
-    def test_valid_halo_inds( self, mock_get_halos_add ):
-
-        # We don't actually want get_halos_add to do anything.
-        mock_get_halos_add.side_effects = [ None, ]
+    @mock.patch( 'galaxy_diver.analyze_data.halo_data.HaloData.get_data' )
+    def test_valid_halo_inds( self, mock_get_halo_data ):
 
         # Make sure we actually have a minimum
         self.galaxy_finder.minimum_value = 10
 
-        # Modify the AHF halos data for easy replacement
-        self.galaxy_finder.ahf_reader.ahf_halos = {}
-        self.galaxy_finder.ahf_reader.ahf_halos['n_star'] = np.array(
-            [ 100, 5, 10, 0 ] )
+        # Mock the halo data
+        mock_get_halo_data.side_effect = [ np.array( [ 100, 5, 10, 0 ] ), ]
 
         actual = self.galaxy_finder.valid_halo_inds
 
@@ -120,7 +115,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = self.galaxy_finder.dist_to_all_valid_halos
 
         # Build the expected output
-        n_halos = self.galaxy_finder.ahf_reader.ahf_halos.index.size
+        n_halos = self.galaxy_finder.halo_data.data_reader.halos.index.size
         n_particles = self.galaxy_finder.n_particles
         expected_shape = ( n_particles, n_halos )
 
@@ -445,6 +440,47 @@ class TestGalaxyFinder( unittest.TestCase ):
 
     ########################################################################
 
+    def test_find_ids_rockstar( self ):
+        '''Test that this works for Rockstar as well.'''
+
+        # Update the arguments
+        used_kwargs = copy.copy( self.kwargs )
+        used_kwargs['ids_to_return'] = [
+            'd_gal',
+            'halo_id',
+            'gal_id',
+        ]
+        used_kwargs['halo_data_dir'] = './tests/data/rockstar_data_dir'
+        used_kwargs['halo_finder'] = 'Rockstar'
+
+        particle_positions = np.array([
+            [ 28634.78, 32047.87, 32400.99 ], # Halo 0
+            [ 28627.00, 32012.18, 32423.63 ], # Halo 8
+            [ 29534.48, 29714.94, 32209.94 ], # Halo 6811
+            ])
+        particle_positions *= 1./(1. + self.redshift)/self.hubble
+
+        expected = {
+            'd_gal': np.array( [ 0., 0., 0., ] ),
+            'halo_id': np.array( [0, 8, 6811] ),
+            'gal_id': np.array( [0, 8, 6811] ),
+        }
+
+        # Do the actual calculation
+        galaxy_finder = general_galaxy_finder.GalaxyFinder(
+            particle_positions,
+            **used_kwargs
+        )
+        actual = galaxy_finder.find_ids()
+
+        for key in expected.keys():
+            print(key)
+            npt.assert_allclose( expected[key], actual[key], atol=1e-10 )
+
+    ########################################################################
+
+    ########################################################################
+
     def test_find_ids_snap0( self ):
 
         particle_positions = np.array([
@@ -529,7 +565,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         }
 
         # Prepare an ahf_reader to pass along.
-        ahf_reader = read_ahf.AHFReader( self.kwargs['ahf_data_dir'] )
+        ahf_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
 
         # Muck it up by making it try to retrieve data
         ahf_reader.get_halos( 600 )
@@ -777,7 +813,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
             'redshift': 6.1627907799999999,
             'snum': 50,
             'hubble': 0.70199999999999996,
-            'ahf_data_dir': './tests/data/analysis_dir3',
+            'halo_data_dir': './tests/data/analysis_dir3',
             'mtree_halos_index': 600,
             'halo_file_tag': 'smooth',
             'main_mt_halo_id': 0,
@@ -805,7 +841,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
         self.galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, **self.kwargs )
 
         # Get the necessary reader.
-        self.galaxy_finder.ahf_reader = read_ahf.AHFReader( self.kwargs['ahf_data_dir'] )
+        self.galaxy_finder.ahf_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
 
         # Get the full needed ahf info.
         self.galaxy_finder.ahf_reader.get_halos( 50 )
@@ -852,7 +888,7 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
             'redshift': 6.1627907799999999,
             'snum': 50,
             'hubble': 0.70199999999999996,
-            'ahf_data_dir': './tests/data/analysis_dir3',
+            'halo_data_dir': './tests/data/analysis_dir3',
             'mtree_halos_index': 600,
             'halo_file_tag': 'smooth',
             'main_mt_halo_id': 0,
@@ -880,7 +916,7 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
         self.galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, **self.kwargs )
 
         # Get the necessary reader.
-        self.galaxy_finder.ahf_reader = read_ahf.AHFReader( self.kwargs['ahf_data_dir'] )
+        self.galaxy_finder.ahf_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
 
         # Get the full needed ahf info.
         self.galaxy_finder.ahf_reader.get_halos( 50 )

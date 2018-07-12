@@ -445,18 +445,20 @@ class HaloUpdater( read_ahf.AHFReader ):
 
             for smooth_key in keys_to_smooth:
 
-                full_smoothed_data = copy.copy( mtree_halo[smooth_key].values )
+                original_data = copy.copy( mtree_halo[smooth_key].values )
 
                 smoothed_data = data_operations.smooth(
-                        full_smoothed_data,
+                        original_data,
                         **smooth_kwargs
                 )
 
-                full_smoothed_data[:smoothed_data.size] = smoothed_data
+                # Replace NaN values with original values, where possible
+                smoothed_nan = np.isnan( smoothed_data )
+                smoothed_data[smoothed_nan] = original_data[smoothed_nan]
 
                 smooth_save_key = 's' + smooth_key
 
-                mtree_halo[smooth_save_key] = full_smoothed_data
+                mtree_halo[smooth_save_key] = smoothed_data
 
     ########################################################################
 

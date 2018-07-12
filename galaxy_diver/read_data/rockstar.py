@@ -67,7 +67,7 @@ class RockstarReader( object ):
             index_col = 0
         )
 
-        # Rename the index to a more suitable name, without the '#' and the (1)
+        # Rename the index to a more suitable name, without the '#'
         self.halos.index.names = ['ID']
 
         # Save the snapshot number of the rockstar halos file.
@@ -75,31 +75,4 @@ class RockstarReader( object ):
 
         # Note that we haven't added the additional halos data yet.
         self.halos_added = False
-
-    ########################################################################
-    # Utilities
-    ########################################################################
-
-    def get_filepath( self, snum, rockstar_file_type ):
-        '''Get the filepath for a specified type of Rockstar file.
-
-        Args:
-            snum (int): Snapshot number to load.
-            rockstar_file_type (str): Can be Rockstar_halos or Rockstar_mtree_idx.
-
-        Returns:
-            rockstar_filepath (str): The filepath to the specified file.
-        '''
-
-        # Load the data
-        rockstar_filename = 'snap{:03d}Rpep..z*.*.{}'.format( snum, rockstar_file_type )
-        rockstar_filepath_unexpanded = os.path.join( self.data_dir, rockstar_filename )
-        possible_filepaths = glob.glob( rockstar_filepath_unexpanded )
-        if len( possible_filepaths ) == 0:
-            raise NameError( 'No files to load for snum {} in {}'.format( snum, self.data_dir ) )
-        elif len( possible_filepaths ) > 1:
-            raise Exception( 'Multiple possible *.{} files to load'.format( rockstar_file_type ) )
-        rockstar_filepath = possible_filepaths[0]
-
-        return rockstar_filepath
 

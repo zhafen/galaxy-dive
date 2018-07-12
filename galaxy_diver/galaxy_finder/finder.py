@@ -9,7 +9,7 @@
 import numpy as np
 import scipy.spatial
 
-import galaxy_diver.read_data.ahf as read_ahf
+import galaxy_diver.analyze_data.halo_data as h_data
 import galaxy_diver.utils.utilities as utilities
 
 ########################################################################
@@ -34,8 +34,9 @@ class GalaxyFinder( object ):
         minimum_criteria = 'n_star',
         minimum_value = 10,
         ids_to_return = None,
-        ahf_reader = None,
-        ahf_data_dir = None,
+        halo_data = None,
+        halo_finder = 'AHF',
+        halo_data_dir = None,
         halo_file_tag = None,
         mtree_halos_index = None,
         main_mt_halo_id = None,
@@ -82,13 +83,17 @@ class GalaxyFinder( object ):
             ids_to_return (list of strs, optional) :
                 The types of id you want to get out.
 
-            ahf_reader (AHFReader object, optional) :
-                An instance of an object that reads in the AHF data.
-                If not given initiate one using the ahf_data_dir in kwargs
+            halo_data (HaloData object, optional) :
+                An instance of an object that retrieves halo data
+                If not given initiate one using the halo_data_dir in kwargs
 
-            ahf_data_dir (str, optional) :
-                Directory the AHF data is in. Necessary if ahf_reader is not
+            halo_data_dir (str, optional) :
+                Directory the AHF data is in. Necessary if halo_data is not
                 provided.
+
+            halo_finder (str, optional) :
+                What code were the halos found with? Examples are 'AHF',
+                'Rockstar'.
 
             halo_file_tag (int, optional) :
                 What identifying tag to use for the merger tree files? Necessary
@@ -113,9 +118,9 @@ class GalaxyFinder( object ):
                 each division before bringing everything together.
         '''
 
-        # Setup the default ahf_reader
-        if ahf_reader is None:
-            self.ahf_reader = read_ahf.AHFReader( self.ahf_data_dir )
+        # Setup the default halo_data
+        if halo_data is None:
+            self.halo_data = h_data.HaloData( self.halo_data_dir )
 
         # In the case of a minimum stellar mass, we need to divide the minimum
         # value by 1/h when getting its values out.
@@ -142,14 +147,11 @@ class GalaxyFinder( object ):
 
         if not hasattr( self, '_valid_halo_inds' ):
 
-            self.ahf_reader.get_halos( self.snum )
-            try:
-                self.ahf_reader.get_halos_add( self.snum )
-            except NameError:
-                pass
-
             # Apply a cut on containing a minimum amount of stars
-            min_criteria = self.ahf_reader.ahf_halos[ self.minimum_criteria ]
+            min_criteria = self.halo_data.get_data(
+                self.minimum_criteria,
+                snum = self.snum,
+            )
             has_minimum_value = \
                 min_criteria / self.min_conversion_factor >= self.minimum_value
 
@@ -189,17 +191,11 @@ class GalaxyFinder( object ):
                 halos containing a galaxy (in pkpc).
         '''
 
-        self.ahf_reader.get_halos( self.snum )
-        try:
-            self.ahf_reader.get_halos_add( self.snum )
-        except NameError:
-            pass
-
         # Get the halo positions
         halo_pos_comov = np.array([
-            self.ahf_reader.ahf_halos['Xc'],
-            self.ahf_reader.ahf_halos['Yc'],
-            self.ahf_reader.ahf_halos['Zc'],
+            self.halo_data.get_data( 'X', self.snum ),
+            self.halo_data.get_data( 'Y', self.snum ),
+            self.halo_data.get_data( 'Z', self.snum ),
         ]).transpose()
         halo_pos = halo_pos_comov / ( 1. + self.redshift ) / self.hubble
         halo_pos_selected = halo_pos[self.valid_halo_inds]
@@ -290,7 +286,7 @@ class GalaxyFinder( object ):
             else:
                 raise KeyError(
                     'AHF data not found for snum {} in {}'.format(
-                        self.snum, self.ahf_data_dir )
+                        self.snum, self.halo_data_dir )
                 )
 
         # Actually get the data

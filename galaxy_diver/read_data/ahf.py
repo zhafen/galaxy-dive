@@ -25,14 +25,22 @@ class AHFReader( object ):
     Note! All positions are in comoving coordinates, and everything has 1/h's sprinkled throughout.
     '''
 
-    def __init__( self, sdir ):
+    def __init__( self, data_dir ):
         '''Initializes.
 
         Args:
-            sdir (str): Simulation directory to load the AHF data from.
+            data_dir (str): Simulation directory to load the AHF data from.
         '''
 
-        self.sdir = sdir
+        self.data_dir = data_dir
+
+        # Common global names, and what columns those correspond to in the
+        # data
+        self.general_use_data_names = {
+            'X' : 'Xc',
+            'Y' : 'Yc',
+            'Z' : 'Zc',
+        }
 
     ########################################################################
     # Load Data
@@ -82,7 +90,7 @@ class AHFReader( object ):
 
         def get_halo_filepaths( unexpanded_filename ):
             '''Function for getting a list of filepaths'''
-            filepath_unexpanded = os.path.join( self.sdir, unexpanded_filename )
+            filepath_unexpanded = os.path.join( self.data_dir, unexpanded_filename )
             halo_filepaths = glob.glob( filepath_unexpanded )
             return set( halo_filepaths )
 
@@ -104,7 +112,7 @@ class AHFReader( object ):
 
         # Raise an exception if there are no files to load
         if len( halo_filepaths ) == 0:
-            raise NameError( 'No files to load in {}'.format( self.sdir ) )
+            raise NameError( 'No files to load in {}'.format( self.data_dir ) )
 
         # Set up the data storage
         self.mtree_halos = {}
@@ -169,31 +177,31 @@ class AHFReader( object ):
             force_reload (bool): Force reloading, even if there's already an ahf_halos file loaded.
 
         Modifies:
-            self.ahf_halos (pd.DataFrame): Dataframe containing the requested data.
+            self.halos (pd.DataFrame): Dataframe containing the requested data.
         '''
 
         if hasattr( self, 'ahf_halos' ):
-            if (self.ahf_halos_snum == snum) and not force_reload:
+            if (self.halos_snum == snum) and not force_reload:
                 return
 
         # Load the data
-        self.ahf_halos_path = self.get_filepath( snum, 'AHF_halos' )
-        self.ahf_halos = pd.read_csv( self.ahf_halos_path, sep='\t', index_col=0 )
+        self.halos_path = self.get_filepath( snum, 'AHF_halos' )
+        self.halos = pd.read_csv( self.halos_path, sep='\t', index_col=0 )
 
         # Delete a column that shows up as a result of formatting
-        del self.ahf_halos[ 'Unnamed: 92' ]
+        del self.halos[ 'Unnamed: 92' ]
 
         # Remove the annoying parenthesis at the end of each label.
-        self.ahf_halos.columns = [ label.split('(')[0] for label in list( self.ahf_halos ) ]
+        self.halos.columns = [ label.split('(')[0] for label in list( self.halos ) ]
 
         # Rename the index to a more suitable name, without the '#' and the (1)
-        self.ahf_halos.index.names = ['ID']
+        self.halos.index.names = ['ID']
 
         # Save the snapshot number of the ahf halos file.
-        self.ahf_halos_snum = snum
+        self.halos_snum = snum
 
         # Note that we haven't added the additional halos data yet.
-        self.ahf_halos_added = False
+        self.halos_added = False
 
     ########################################################################
 
@@ -206,25 +214,25 @@ class AHFReader( object ):
             force_reload (bool): Force reloading, even if there's already an ahf_halos file loaded.
 
         Modifies:
-            self.ahf_halos_add (pd.DataFrame): Dataframe containing the requested data.
+            self.halos_add (pd.DataFrame): Dataframe containing the requested data.
         '''
 
-        if self.ahf_halos_added:
-            if (self.ahf_halos_snum == snum) and not force_reload:
+        if self.halos_added:
+            if (self.halos_snum == snum) and not force_reload:
                 return
 
         # Load the data
-        self.ahf_halos_add_path = self.get_filepath( snum, 'AHF_halos_add' )
-        ahf_halos_add = pd.read_csv( self.ahf_halos_add_path, sep='\t', index_col=0 )
+        self.halos_add_path = self.get_filepath( snum, 'AHF_halos_add' )
+        ahf_halos_add = pd.read_csv( self.halos_add_path, sep='\t', index_col=0 )
 
         if not hasattr( self, 'ahf_halos' ) :
             self.get_halos( snum )
-        if self.ahf_halos_snum != snum:
+        if self.halos_snum != snum:
             self.get_halos( snum )
 
-        self.ahf_halos = pd.concat( [ self.ahf_halos, ahf_halos_add ], axis=1 )
+        self.halos = pd.concat( [ self.halos, ahf_halos_add ], axis=1 )
 
-        self.ahf_halos_added = True
+        self.halos_added = True
 
     ########################################################################
 
@@ -263,10 +271,10 @@ class AHFReader( object ):
 
         # Load the data
         ahf_filename = 'snap{:03d}Rpep..z*.*.{}'.format( snum, ahf_file_type )
-        ahf_filepath_unexpanded = os.path.join( self.sdir, ahf_filename )
+        ahf_filepath_unexpanded = os.path.join( self.data_dir, ahf_filename )
         possible_filepaths = glob.glob( ahf_filepath_unexpanded )
         if len( possible_filepaths ) == 0:
-            raise NameError( 'No files to load for snum {} in {}'.format( snum, self.sdir ) )
+            raise NameError( 'No files to load for snum {} in {}'.format( snum, self.data_dir ) )
         elif len( possible_filepaths ) > 1:
             raise Exception( 'Multiple possible *.{} files to load'.format( ahf_file_type ) )
         ahf_filepath = possible_filepaths[0]
@@ -293,7 +301,7 @@ class AHFReader( object ):
         for snum in snums:
 
             file_to_check = 'snap{:03d}Rpep*{}'.format( snum, file_str )
-            filepath_to_check = os.path.join( self.sdir, file_to_check )
+            filepath_to_check = os.path.join( self.data_dir, file_to_check )
             files = glob.glob( filepath_to_check )
 
             missing_ahf_files_at_this_snapshot = len( files ) == 0
@@ -393,7 +401,7 @@ class AHFReader( object ):
             if type_of_halo_id == 'merger_tree':
                 p_or_v_part = self.mtree_halos[ halo_id ][ key ][ inds ]
             elif type_of_halo_id == 'ahf_halos':
-                p_or_v_part = self.ahf_halos[ key ][ halo_id ]
+                p_or_v_part = self.halos[ key ][ halo_id ]
             else:
                 raise Exception( 'Unrecognized type_of_halo_id, {}'.format( type_of_halo_id ) )
 
