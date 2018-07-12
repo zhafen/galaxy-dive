@@ -14,6 +14,7 @@ import pytest
 import unittest
 
 import galaxy_diver.read_data.ahf as read_ahf
+import galaxy_diver.analyze_data.halo_data as analyze_halos
 import galaxy_diver.galaxy_finder.finder as general_galaxy_finder
 
 ########################################################################
@@ -72,11 +73,11 @@ class TestGalaxyFinder( unittest.TestCase ):
             halo_coords, **self.kwargs )
 
         # Get the necessary reader.
-        self.galaxy_finder.ahf_reader = read_ahf.AHFReader(
+        self.galaxy_finder.halo_data.data_reader = read_ahf.AHFReader(
             self.kwargs['halo_data_dir'] )
 
         # Get the full needed ahf info.
-        self.galaxy_finder.ahf_reader.get_halos( 500 )
+        self.galaxy_finder.halo_data.data_reader.get_halos( 500 )
 
     ########################################################################
 
@@ -142,7 +143,7 @@ class TestGalaxyFinder( unittest.TestCase ):
             particle_positions )
 
         # Build the expected output
-        n_halos = self.galaxy_finder.ahf_reader.ahf_halos.index.size
+        n_halos = self.galaxy_finder.halo_data.data_reader.halos.index.size
         n_particles = 1
         expected_shape = ( n_particles, n_halos )
 
@@ -194,7 +195,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = self.galaxy_finder.find_containing_halos( 1. )
 
         # Build the expected output
-        n_halos = self.galaxy_finder.ahf_reader.ahf_halos.index.size
+        n_halos = self.galaxy_finder.halo_data.data_reader.halos.index.size
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 0 ] = True
         expected[ 1, 0 ] = False
@@ -216,7 +217,7 @@ class TestGalaxyFinder( unittest.TestCase ):
 
         actual = self.galaxy_finder.find_containing_halos()
 
-        n_halos = self.galaxy_finder.ahf_reader.ahf_halos.index.size
+        n_halos = self.galaxy_finder.halo_data.data_reader.halos.index.size
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 0 ] = True
 
@@ -268,7 +269,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = self.galaxy_finder.find_mt_containing_halos( 1. )
 
         # Build the expected output
-        n_halos = len( self.galaxy_finder.ahf_reader.mtree_halos )
+        n_halos = len( self.galaxy_finder.halo_data.data_reader.mtree_halos )
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 0 ] = True
         expected[ 1, 0 ] = False
@@ -291,7 +292,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         actual = self.galaxy_finder.find_mt_containing_halos( 1. )
 
         # Build the expected output
-        n_halos = len( self.galaxy_finder.ahf_reader.mtree_halos )
+        n_halos = len( self.galaxy_finder.halo_data.data_reader.mtree_halos )
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 0 ] = True
 
@@ -545,8 +546,8 @@ class TestGalaxyFinder( unittest.TestCase ):
 
     ########################################################################
 
-    def test_pass_ahf_reader( self ):
-        '''Test that it still works when we pass in an ahf_reader. '''
+    def test_pass_halo_data( self ):
+        '''Test that it still works when we pass in an halo_data. '''
 
         particle_positions = np.array([
             [ 29414.96458784,  30856.75007114,  32325.90901812], # Halo 0, host halo 0
@@ -564,15 +565,17 @@ class TestGalaxyFinder( unittest.TestCase ):
             'mt_halo_id': np.array( [0, 1, 0] ),
         }
 
-        # Prepare an ahf_reader to pass along.
-        ahf_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
+        # Prepare an halo_data to pass along.
+        halo_data = analyze_halos.HaloData(
+            self.kwargs['halo_data_dir'],
+        )
 
         # Muck it up by making it try to retrieve data
-        ahf_reader.get_halos( 600 )
-        ahf_reader.get_mtree_halos( 600, tag='smooth' )
+        halo_data.data_reader.get_halos( 600 )
+        halo_data.data_reader.get_mtree_halos( 600, tag='smooth' )
 
         # Do the actual calculation
-        galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, ahf_reader=ahf_reader, **self.kwargs )
+        galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, halo_data=halo_data, **self.kwargs )
         actual = galaxy_finder.find_ids()
 
         for key in expected.keys():
@@ -718,8 +721,9 @@ class TestGalaxyFinder( unittest.TestCase ):
         # Setup dummy data
         self.galaxy_finder.minimum_value = 10
         self.galaxy_finder.snum = 10
-        self.galaxy_finder.ahf_reader.sdir = './tests/data/analysis_dir5'
-        self.galaxy_finder.ahf_reader.get_halos( 10 )
+        self.galaxy_finder.halo_data.data_reader.data_dir = \
+            './tests/data/analysis_dir5'
+        self.galaxy_finder.halo_data.data_reader.get_halos( 10 )
 
         # Make sure we set the number of particles correctly, to match the number we're using
         #self.galaxy_finder.n_particles = 3
@@ -738,8 +742,8 @@ class TestGalaxyFinder( unittest.TestCase ):
 
         # Setup dummy data
         self.galaxy_finder.snum = 1
-        self.galaxy_finder.ahf_reader.sdir = './tests/data/analysis_dir4'
-        self.galaxy_finder.ahf_reader.get_halos( 1 )
+        self.galaxy_finder.halo_data.data_reader.data_dir = './tests/data/analysis_dir4'
+        self.galaxy_finder.halo_data.data_reader.get_halos( 1 )
 
         # Make sure we set the number of particles correctly, to match the number we're using
         #self.galaxy_finder.n_particles = 3
@@ -760,8 +764,8 @@ class TestGalaxyFinder( unittest.TestCase ):
         # Setup dummy data
         self.galaxy_finder.snum = 12
         self.galaxy_finder.minimum_value = 10
-        self.galaxy_finder.ahf_reader.sdir = './tests/data/analysis_dir4'
-        self.galaxy_finder.ahf_reader.get_halos( 12 )
+        self.galaxy_finder.halo_data.data_reader.data_dir = './tests/data/analysis_dir4'
+        self.galaxy_finder.halo_data.data_reader.get_halos( 12 )
 
         # Make sure we set the number of particles correctly, to match the number we're using
         #self.galaxy_finder.n_particles = 3
@@ -841,10 +845,10 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
         self.galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, **self.kwargs )
 
         # Get the necessary reader.
-        self.galaxy_finder.ahf_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
+        self.galaxy_finder.halo_data.data_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
 
         # Get the full needed ahf info.
-        self.galaxy_finder.ahf_reader.get_halos( 50 )
+        self.galaxy_finder.halo_data.data_reader.get_halos( 50 )
 
     ########################################################################
 
@@ -853,7 +857,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
         actual = self.galaxy_finder.find_containing_halos( 1. )
 
         # Build the expected output
-        n_halos = self.galaxy_finder.ahf_reader.ahf_halos.index.size
+        n_halos = self.galaxy_finder.halo_data.data_reader.halos.index.size
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 3 ] = True # Should only be in the galaxy with sufficient stellar mass.
 
@@ -866,7 +870,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
         actual = self.galaxy_finder.find_mt_containing_halos( 1. )
 
         # Build the expected output
-        n_halos = len( self.galaxy_finder.ahf_reader.mtree_halos )
+        n_halos = len( self.galaxy_finder.halo_data.data_reader.mtree_halos )
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 0 ] = True # Should only be in the galaxy with sufficient stellar gas.
 
@@ -916,10 +920,10 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
         self.galaxy_finder = general_galaxy_finder.GalaxyFinder( particle_positions, **self.kwargs )
 
         # Get the necessary reader.
-        self.galaxy_finder.ahf_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
+        self.galaxy_finder.halo_data.data_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
 
         # Get the full needed ahf info.
-        self.galaxy_finder.ahf_reader.get_halos( 50 )
+        self.galaxy_finder.halo_data.data_reader.get_halos( 50 )
 
     ########################################################################
 
@@ -928,7 +932,7 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
         actual = self.galaxy_finder.find_containing_halos( 1. )
 
         # Build the expected output
-        n_halos = self.galaxy_finder.ahf_reader.ahf_halos.index.size
+        n_halos = self.galaxy_finder.halo_data.data_reader.halos.index.size
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 3 ] = True # Should only be in the galaxy with sufficient stellar mass.
 
@@ -941,7 +945,7 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
         actual = self.galaxy_finder.find_mt_containing_halos( 1. )
 
         # Build the expected output
-        n_halos = len( self.galaxy_finder.ahf_reader.mtree_halos )
+        n_halos = len( self.galaxy_finder.halo_data.data_reader.mtree_halos )
         expected = np.zeros( (self.galaxy_finder.particle_positions.shape[0], n_halos) ).astype( bool )
         expected[ 0, 0 ] = True # Should only be in the galaxy with sufficient stellar gas.
 

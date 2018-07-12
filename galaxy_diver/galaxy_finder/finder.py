@@ -214,23 +214,15 @@ class GalaxyFinder( object ):
 
         if not hasattr( self, '_ahf_halos_length_scale_pkpc' ):
 
-            self.ahf_reader.get_halos( self.snum )
-            try:
-                self.ahf_reader.get_halos_add( self.snum )
-            except NameError:
-                pass
-
             # Get the relevant length scale
             if self.length_scale == 'r_scale':
                 # Get the scale radius
-                r_vir = self.ahf_reader.ahf_halos['Rvir']
-                length_scale = r_vir / self.ahf_reader.ahf_halos['cAnalytic']
+                r_vir = self.halo_data.get_data( 'Rvir', self.snum )
+                length_scale = r_vir / self.halo_data.get_data(
+                    'cAnalytic', self.snum )
             else:
-                try:
-                    length_scale = self.ahf_reader.ahf_halos[self.length_scale]
-                except KeyError:
-                    length_scale = \
-                        self.ahf_reader.ahf_halos_add[self.length_scale]
+                length_scale = self.halo_data.get_data(
+                    self.length_scale, self.snum )
             self._ahf_halos_length_scale_pkpc = \
                 length_scale / ( 1. + self.redshift ) / self.hubble
 
@@ -265,29 +257,14 @@ class GalaxyFinder( object ):
         # Dictionary to store the data in.
         galaxy_and_halo_ids = {}
 
-        try:
-            # Load the ahf data
-            self.ahf_reader.get_halos( self.snum )
-            try:
-                self.ahf_reader.get_halos_add( self.snum )
-            except NameError:
-                pass
-
         # Typically halo files aren't created for the first snapshot.
         # Account for this.
-        except NameError:
-            if self.snum == 0:
-                for id_type in self.ids_to_return:
-                    galaxy_and_halo_ids[id_type] = np.empty( self.n_particles )
-                    galaxy_and_halo_ids[id_type].fill( -2. )
+        if self.snum == 0:
+            for id_type in self.ids_to_return:
+                galaxy_and_halo_ids[id_type] = np.empty( self.n_particles )
+                galaxy_and_halo_ids[id_type].fill( -2. )
 
-                return galaxy_and_halo_ids
-
-            else:
-                raise KeyError(
-                    'AHF data not found for snum {} in {}'.format(
-                        self.snum, self.halo_data_dir )
-                )
+            return galaxy_and_halo_ids
 
         # Actually get the data
         for id_type in self.ids_to_return:
@@ -334,8 +311,8 @@ class GalaxyFinder( object ):
         '''
 
         # Handle when no halos exist.
-        if self.ahf_reader.ahf_halos.size == 0:
-            return -2. * np.ones( (self.n_particles,) )
+        if self.halo_data.get_n_halos( self.snum ) == 0:
+             return -2. * np.ones( (self.n_particles,) )
 
         return np.min( self.dist_to_all_valid_halos, axis=1 )
 
@@ -355,17 +332,17 @@ class GalaxyFinder( object ):
         '''
 
         # Handle when no halos exist.
-        if self.ahf_reader.ahf_halos.size == 0:
-            return -2. * np.ones( (self.n_particles,) )
+        if self.halo_data.get_n_halos( self.snum ) == 0:
+             return -2. * np.ones( (self.n_particles,) )
 
         # Handle when all the halos aren't massive enough
         if self.valid_halo_inds.size == 0:
             return -2. * np.ones( (self.n_particles,) )
 
-        self.ahf_reader.get_mtree_halos(
+        self.halo_data.data_reader.get_mtree_halos(
             self.mtree_halos_index, self.halo_file_tag )
 
-        mtree_halo = self.ahf_reader.mtree_halos[ self.main_mt_halo_id ]
+        mtree_halo = self.halo_data.data_reader.mtree_halos[ self.main_mt_halo_id ]
 
         if self.snum < mtree_halo.index.min():
             # This mimics what would happen if ind_main_gal wasn't
@@ -438,7 +415,7 @@ class GalaxyFinder( object ):
         # Get the halo ID
         halo_id = self.find_halo_id( radial_cut_fraction )
 
-        ahf_host_id =  self.ahf_reader.ahf_halos['hostHalo']
+        ahf_host_id =  self.halo_data.get_data( 'hostHalo', self.snum )
 
         # Handle the case where we have an empty ahf_halos, because there are no halos at that redshift.
         # In this case, the ID will be -2 throughout
@@ -480,7 +457,7 @@ class GalaxyFinder( object ):
         if type_of_halo_id == 'halo_id':
 
             # Get the virial masses. It's okay to leave in comoving, since we're just finding the minimum
-            m_vir = self.ahf_reader.ahf_halos['Mvir']
+            m_vir = self.halo_data.get_data( 'Mvir', self.snum )
 
             # Handle the case where we have an empty ahf_halos, because there are no halos at that redshift.
             # In this case, the halo ID will be -2 throughout
@@ -502,8 +479,12 @@ class GalaxyFinder( object ):
             extremum_fn = np.max
 
             # Get the virial masses. It's okay to leave in comoving, since we're just finding the maximum
-            m_vir = self.ahf_reader.get_mtree_halo_quantity( quantity='Mvir', indice=self.snum,
-                                                                                                              index=self.mtree_halos_index, tag=self.halo_file_tag )
+            m_vir = self.halo_data.data_reader.get_mtree_halo_quantity(
+                quantity = 'Mvir',
+                indice = self.snum,
+                index = self.mtree_halos_index,
+                tag = self.halo_file_tag
+            )
 
         else:
             raise Exception( "Unrecognized type_of_halo_id" )
@@ -520,7 +501,7 @@ class GalaxyFinder( object ):
             halo_id = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
         elif type_of_halo_id == 'mt_halo_id':
             halo_ind = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
-            halo_ids = np.array( sorted( self.ahf_reader.mtree_halos.keys() ) )
+            halo_ids = np.array( sorted( self.halo_data.data_reader.mtree_halos.keys() ) )
             halo_id = halo_ids[halo_ind]
 
         # Account for the fact that the argmin defaults to 0 when there's nothing there
@@ -569,11 +550,14 @@ class GalaxyFinder( object ):
         '''
 
         # Load up the merger tree data
-        self.ahf_reader.get_mtree_halos( self.mtree_halos_index, self.halo_file_tag )
+        self.halo_data.data_reader.get_mtree_halos(
+            self.mtree_halos_index,
+            self.halo_file_tag
+        )
 
         part_of_halo = []
-        for halo_id in self.ahf_reader.mtree_halos.keys():
-            mtree_halo = self.ahf_reader.mtree_halos[ halo_id ]
+        for halo_id in self.halo_data.data_reader.mtree_halos.keys():
+            mtree_halo = self.halo_data.data_reader.mtree_halos[ halo_id ]
 
             # Only try to get the data if we're in the range we actually have the halos for.
             above_minimum_snap = self.snum >= mtree_halo.index.min()

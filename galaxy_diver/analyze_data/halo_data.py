@@ -143,6 +143,18 @@ class HaloData( generic_data.GenericData ):
             *args, **kwargs
         )
 
+    ########################################################################
+
+    def get_n_halos( self, snum ):
+
+        # Try to load additional postprocessed data
+        try:
+            self.data_reader.get_halos_add( snum, **self.kwargs )
+        except NameError:
+            pass
+
+        return self.data_reader.halos.index.size
+
 ########################################################################
 ########################################################################
 

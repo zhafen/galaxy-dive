@@ -63,7 +63,7 @@ class TestAHFReader( unittest.TestCase ):
     self.ahf_reader.get_halos( 500 )
 
     expected = 789
-    actual = self.ahf_reader.ahf_halos['numSubStruct'][0]
+    actual = self.ahf_reader.halos['numSubStruct'][0]
     npt.assert_allclose( expected, actual )
 
   ########################################################################
@@ -162,7 +162,7 @@ class TestAHFReader( unittest.TestCase ):
     expected = 28213.25906375 # Halo 11 X position at snum 500
 
     self.ahf_reader.get_halos( 500 )
-    actual = self.ahf_reader.ahf_halos['Xc'][ halo_id ]
+    actual = self.ahf_reader.halos['Xc'][ halo_id ]
 
     npt.assert_allclose( expected, actual )
 
@@ -181,13 +181,13 @@ class TestAHFReader( unittest.TestCase ):
 
   ########################################################################
 
-  def test_get_pos_or_vel_ahf_halos( self ):
+  def test_get_pos_or_vel_halos( self ):
 
     # Snap 550, halo 2, position
     expected = np.array([ 28687.97011391,  32183.71865825,  32460.26607195 ])
 
     # Get the values
-    actual = self.ahf_reader.get_pos_or_vel( 'pos', 2, 550, 'ahf_halos' )
+    actual = self.ahf_reader.get_pos_or_vel( 'pos', 2, 550, 'halos' )
     
     npt.assert_allclose( expected, actual )
 

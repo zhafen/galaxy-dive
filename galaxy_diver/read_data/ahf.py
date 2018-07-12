@@ -174,13 +174,13 @@ class AHFReader( object ):
         Args:
             snum (int): Snapshot number to load.
 
-            force_reload (bool): Force reloading, even if there's already an ahf_halos file loaded.
+            force_reload (bool): Force reloading, even if there's already an halos file loaded.
 
         Modifies:
             self.halos (pd.DataFrame): Dataframe containing the requested data.
         '''
 
-        if hasattr( self, 'ahf_halos' ):
+        if hasattr( self, 'halos' ):
             if (self.halos_snum == snum) and not force_reload:
                 return
 
@@ -211,7 +211,7 @@ class AHFReader( object ):
         Args:
             snum (int): Snapshot number to load.
 
-            force_reload (bool): Force reloading, even if there's already an ahf_halos file loaded.
+            force_reload (bool): Force reloading, even if there's already an halos file loaded.
 
         Modifies:
             self.halos_add (pd.DataFrame): Dataframe containing the requested data.
@@ -223,14 +223,14 @@ class AHFReader( object ):
 
         # Load the data
         self.halos_add_path = self.get_filepath( snum, 'AHF_halos_add' )
-        ahf_halos_add = pd.read_csv( self.halos_add_path, sep='\t', index_col=0 )
+        halos_add = pd.read_csv( self.halos_add_path, sep='\t', index_col=0 )
 
-        if not hasattr( self, 'ahf_halos' ) :
+        if not hasattr( self, 'halos' ) :
             self.get_halos( snum )
         if self.halos_snum != snum:
             self.get_halos( snum )
 
-        self.halos = pd.concat( [ self.halos, ahf_halos_add ], axis=1 )
+        self.halos = pd.concat( [ self.halos, halos_add ], axis=1 )
 
         self.halos_added = True
 
@@ -372,10 +372,10 @@ class AHFReader( object ):
             halo_id (int): Merger tree halo ID for the position or velocity you want.
             inds (int or np.array of ints): Indices you want the position or velocity for.
               If type_of_halo_id == 'merger_tree', uses same index as mtree_halos.
-              Elif type_of_halo_id == 'ahf_halos', can only be a single int,
+              Elif type_of_halo_id == 'halos', can only be a single int,
               which should be the snapshot number.
             type_of_halo_id (str): 'merger_tree' if the halo id is a merger tree halo id.
-                                                          'ahf_halos' if the halo id is a *.AHF_halos halo id.
+                                                          'halos' if the halo id is a *.AHF_halos halo id.
 
         Returns:
             p_or_v ( [len(inds), 3] np.array ): Position or velocity for the specified inds.
@@ -390,7 +390,7 @@ class AHFReader( object ):
             raise Exception( 'Unrecognized pos_or_vel, {}'.format( pos_or_vel ) )
 
         # Get the ahf_halo data, if requested.
-        if type_of_halo_id == 'ahf_halos':
+        if type_of_halo_id == 'halos':
             self.get_halos( inds )
 
         # Get the data.
@@ -400,7 +400,7 @@ class AHFReader( object ):
             # Get the part
             if type_of_halo_id == 'merger_tree':
                 p_or_v_part = self.mtree_halos[ halo_id ][ key ][ inds ]
-            elif type_of_halo_id == 'ahf_halos':
+            elif type_of_halo_id == 'halos':
                 p_or_v_part = self.halos[ key ][ halo_id ]
             else:
                 raise Exception( 'Unrecognized type_of_halo_id, {}'.format( type_of_halo_id ) )
