@@ -11,6 +11,7 @@ import glob
 import numpy as np
 import os
 import pandas as pd
+import unyt
 
 import galaxy_diver.read_data.ahf as read_ahf
 import galaxy_diver.read_data.rockstar as read_rockstar
@@ -99,7 +100,7 @@ class HaloData( generic_data.GenericData ):
     # Data Retrieval
     ########################################################################
 
-    def get_data( self, data_key, snum ):
+    def get_data( self, data_key, snum, units=None ):
         '''Get halo data at a specific snapshot.
 
         Args:
@@ -112,13 +113,27 @@ class HaloData( generic_data.GenericData ):
 
         # Check if the key is not unique to the halo data,
         # and if so, get the keys used for this particular data
-        if data_key in self.data_reader.general_use_data_names:
-            data_key = self.data_reader.general_use_data_names[data_key]
+        if data_key in self.data_reader.general_use_data_names.keys():
+            used_data_key = self.data_reader.general_use_data_names[data_key]
+        else:
+            used_data_key = data_key
 
         # Load the necessary data
         self.get_halos( snum )
 
-        return self.data_reader.halos[data_key].values
+        # Actual data
+        data = self.data_reader.halos[used_data_key].values
+
+        # Attach units if given
+        if used_data_key in self.data_reader.units.keys():
+            unit = self.data_reader.units[used_data_key]
+            data *= unit
+
+        # Convert to proper units, if necessary
+        if units is not None:
+            data.convert_to_units( units )
+        
+        return data
 
     ########################################################################
 

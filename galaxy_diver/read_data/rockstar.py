@@ -10,6 +10,7 @@ import glob
 import numpy as np
 import os
 import pandas as pd
+import unyt
 
 import galaxy_diver.read_data.metafile as read_metafile
 
@@ -22,7 +23,8 @@ default = object()
 
 class RockstarReader( object ):
     '''Read Rockstar data.
-    Note! All positions are in comoving coordinates, and everything has 1/h's sprinkled throughout.
+    Note! All positions are in comoving coordinates,
+    and everything has 1/h's sprinkled throughout.
     '''
 
     def __init__( self, sdir ):
@@ -40,6 +42,30 @@ class RockstarReader( object ):
             'X' : 'X',
             'Y' : 'Y',
             'Z' : 'Z',
+        }
+
+        # Data units
+        self.units = {
+            'M200b' : unyt.Msun,
+            'Vmax' : unyt.km / unyt.s,
+            'Vmax' : unyt.km / unyt.s,
+            'R200b' : unyt.Mpc,
+            'Rs' : unyt.Mpc,
+            'X' : unyt.Mpc,
+            'Y' : unyt.Mpc,
+            'Z' : unyt.Mpc,
+            'VX' : unyt.km / unyt.s,
+            'VY' : unyt.km / unyt.s,
+            'VZ' : unyt.km / unyt.s,
+            'JX' : unyt.Msun * unyt.Mpc * unyt.km / unyt.s,
+            'JY' : unyt.Msun * unyt.Mpc * unyt.km / unyt.s,
+            'JZ' : unyt.Msun * unyt.Mpc * unyt.km / unyt.s,
+            'rs_klypin' : unyt.Mpc,
+            'M200b_all' : unyt.Msun,
+            'Mvir' : unyt.Msun,
+            'M200c' : unyt.Msun,
+            'M500c' : unyt.Msun,
+            'M180b' : unyt.Msun,
         }
 
     ########################################################################

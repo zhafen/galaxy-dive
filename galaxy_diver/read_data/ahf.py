@@ -10,6 +10,7 @@ import glob
 import numpy as np
 import os
 import pandas as pd
+import unyt
 
 import galaxy_diver.read_data.metafile as read_metafile
 
@@ -40,6 +41,14 @@ class AHFReader( object ):
             'X' : 'Xc',
             'Y' : 'Yc',
             'Z' : 'Zc',
+        }
+
+        # Data units
+        self.units = {
+            'Mvir' : unyt.Msun,
+            'Xc' : unyt.kpc,
+            'Yc' : unyt.kpc,
+            'Zc' : unyt.kpc,
         }
 
     ########################################################################

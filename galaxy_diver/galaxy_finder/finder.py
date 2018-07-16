@@ -48,7 +48,7 @@ class GalaxyFinder( object ):
 
         Args:
             particle_positions (np.array) :
-                Positions with dimensions (n_particles, 3).
+                Positions with dimensions (n_particles, 3), in pkpc.
 
             redshift (float) :
                 Redshift the particles are at.
@@ -205,9 +205,9 @@ class GalaxyFinder( object ):
 
         # Get the halo positions
         halo_pos_comov = np.array([
-            self.halo_data.get_data( 'X', self.snum ),
-            self.halo_data.get_data( 'Y', self.snum ),
-            self.halo_data.get_data( 'Z', self.snum ),
+            self.halo_data.get_data( 'X', self.snum, units='kpc' ),
+            self.halo_data.get_data( 'Y', self.snum, units='kpc' ),
+            self.halo_data.get_data( 'Z', self.snum, units='kpc' ),
         ]).transpose()
         halo_pos = halo_pos_comov / ( 1. + self.redshift ) / self.hubble
         halo_pos_selected = halo_pos[self.valid_halo_inds]
