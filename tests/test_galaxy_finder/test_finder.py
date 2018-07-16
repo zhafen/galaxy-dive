@@ -459,16 +459,16 @@ class TestGalaxyFinder( unittest.TestCase ):
         used_kwargs['halo_length_scale'] = 'R200b'
 
         particle_positions = np.array([
-            [ 28634.78, 32047.87, 32400.99 ], # Halo 0
-            [ 28627.00, 32012.18, 32423.63 ], # Halo 8
-            [ 29534.48, 29714.94, 32209.94 ], # Halo 6811
+            [ 29534.48, 29714.94, 32209.94, ], # Halo 6811
+            [ 28495.69, 30439.15, 31563.17, ], # Halo 7339
+            [ 28838.19, 30631.51, 32055.31, ], # Halo 9498
             ])
         particle_positions *= 1./(1. + self.redshift)/self.hubble
 
         expected = {
             'd_gal': np.array( [ 0., 0., 0., ] ),
-            'halo_id': np.array( [0, 8, 6811] ),
-            'gal_id': np.array( [0, 8, 6811] ),
+            'halo_id': np.array( [ 6811, 7339, 9498 ] ),
+            'gal_id': np.array( [ 6811, 7339, 9498 ] ),
         }
 
         # Do the actual calculation

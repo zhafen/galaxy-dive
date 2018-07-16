@@ -229,12 +229,21 @@ class GalaxyFinder( object ):
             # Get the relevant length scale
             if self.length_scale == 'r_scale':
                 # Get the scale radius
-                r_vir = self.halo_data.get_data( self.halo_length_scale, self.snum )
+                r_vir = self.halo_data.get_data(
+                    self.halo_length_scale,
+                    self.snum,
+                    units = 'kpc',
+                )
                 length_scale = r_vir / self.halo_data.get_data(
-                    'cAnalytic', self.snum )
+                    'cAnalytic',
+                    self.snum,
+                    )
             else:
                 length_scale = self.halo_data.get_data(
-                    self.length_scale, self.snum )
+                    self.length_scale,
+                    self.snum,
+                    units = 'kpc',
+                )
             self._ahf_halos_length_scale_pkpc = \
                 length_scale / ( 1. + self.redshift ) / self.hubble
 
@@ -510,11 +519,13 @@ class GalaxyFinder( object ):
 
         # Take the extremum of the masked data
         if type_of_halo_id == 'halo_id':
-            halo_id = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
+            halo_inds = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
+            all_halo_ids = self.halo_data.get_data( 'ID', self.snum )
+            halo_id = all_halo_ids[halo_inds]
         elif type_of_halo_id == 'mt_halo_id':
-            halo_ind = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
+            halo_inds = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
             halo_ids = np.array( sorted( self.halo_data.data_reader.mtree_halos.keys() ) )
-            halo_id = halo_ids[halo_ind]
+            halo_id = halo_ids[halo_inds]
 
         # Account for the fact that the argmin defaults to 0 when there's nothing there
         mask = extremum_fn( tiled_m_vir_ma, axis=1 ).mask

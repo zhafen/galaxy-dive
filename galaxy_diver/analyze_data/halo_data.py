@@ -106,6 +106,7 @@ class HaloData( generic_data.GenericData ):
         Args:
             data_key (str) : What data to get.
             snum (int) : What snapshot to open.
+            units (str) : If not None, convert data to these units.
 
         Returns:
             data (np.ndarray) : Requested data.
@@ -122,6 +123,9 @@ class HaloData( generic_data.GenericData ):
         self.get_halos( snum )
 
         # Actual data
+        if used_data_key == 'ID':
+            return self.data_reader.halos.index
+
         data = self.data_reader.halos[used_data_key].values
 
         # Attach units if given
