@@ -186,7 +186,7 @@ class HaloUpdater( halo_data.HaloData ):
             'hubble' : s_data.data_attrs['hubble'],
             'galaxy_cut' : galaxy_cut,
             'length_scale' : length_scale,
-            'ahf_reader' : self,
+            'halo_data' : self,
         }
         gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
         
@@ -244,7 +244,7 @@ class HaloUpdater( halo_data.HaloData ):
             'hubble' : s_data.data_attrs['hubble'],
             'galaxy_cut' : galaxy_cut,
             'length_scale' : length_scale,
-            'ahf_reader' : self,
+            'halo_data' : self,
         }
         gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
 
@@ -323,7 +323,7 @@ class HaloUpdater( halo_data.HaloData ):
             'hubble' : s_data.data_attrs['hubble'],
             'galaxy_cut' : galaxy_cut,
             'length_scale' : length_scale,
-            'ahf_reader' : self,
+            'halo_data' : self,
         }
         gal_finder = galaxy_finder.GalaxyFinder( low_memory_mode=False, **galaxy_finder_kwargs )
 

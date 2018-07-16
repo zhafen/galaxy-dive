@@ -466,12 +466,11 @@ class TestMassRadii( unittest.TestCase ):
         )
 
         # Load halos_add
-        self.ahf_updater.get_halos( 600, True )
-        self.ahf_updater.get_halos_add( 600, True )
+        self.ahf_updater.get_halos( 600, force_reload=True )
 
         # Make sure the columns exist
-        assert 'Rstar0.5' in self.ahf_updater.halos.columns
-        assert 'Rstar0.99' in self.ahf_updater.halos.columns
+        assert 'Rstar0.5' in self.ahf_updater.halos_add.columns
+        assert 'Rstar0.99' in self.ahf_updater.halos_add.columns
 
 ########################################################################
 ########################################################################
@@ -591,11 +590,10 @@ class TestEnclosedMass( unittest.TestCase ):
         )
 
         # Load halos_add
-        self.ahf_updater.get_halos( 600, True )
-        self.ahf_updater.get_halos_add( 600, True )
+        self.ahf_updater.get_halos( 600, force_reload=True )
 
         # Make sure the columns exist
-        assert 'Mstar(Rvir)' in self.ahf_updater.halos.columns
+        assert 'Mstar(Rvir)' in self.ahf_updater.halos_add.columns
 
 ########################################################################
 ########################################################################
@@ -724,11 +722,10 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
         )
 
         # Load halos_add
-        self.ahf_updater.get_halos( 600, True )
-        self.ahf_updater.get_halos_add( 600, True )
+        self.ahf_updater.get_halos( 600, force_reload=True )
 
         # Make sure the columns exist
-        assert 'Vxstar(Rvir)' in self.ahf_updater.halos.columns
+        assert 'Vxstar(Rvir)' in self.ahf_updater.halos_add.columns
 
 ########################################################################
 ########################################################################
@@ -781,8 +778,7 @@ class TestCircularVelocity( unittest.TestCase):
         )
 
         # Load halos_add
-        self.ahf_updater.get_halos( 600, True )
-        self.ahf_updater.get_halos_add( 600, True )
+        self.ahf_updater.get_halos( 600, force_reload=True )
 
         # Make sure the columns exist
         assert 'Vc(5.0Rstar0.5)' in self.ahf_updater.halos.columns
