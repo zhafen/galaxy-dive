@@ -34,6 +34,8 @@
   "tests/test_analyze_data/test_analyze_ahf_updater.py::TestMassRadii::test_get_mass_radii_no_stars": true, 
   "tests/test_analyze_data/test_analyze_ahf_updater.py::TestMassRadii::test_save_ahf_halos_add_including_mass_radii": true, 
   "tests/test_analyze_data/test_analyze_ahf_updater.py::TestMassRadii::test_save_halos_add_including_mass_radii": true, 
+  "tests/test_analyze_data/test_halo_data.py::TestHaloData::test_get_mt_data": true, 
+  "tests/test_analyze_data/test_halo_data.py::TestHaloData::test_get_mt_data_including_a": true, 
   "tests/test_analyze_data/test_snapshot_data.py::TestCenterCoords::test_center_coords_halo_method": true, 
   "tests/test_analyze_data/test_snapshot_data.py::TestCenterVelCoords::test_center_vel_coords_halo_method": true, 
   "tests/test_analyze_data/test_snapshot_data.py::TestGetData::test_get_position_data": true, 
