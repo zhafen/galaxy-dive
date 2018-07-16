@@ -13,6 +13,7 @@ import os
 import pandas as pd
 
 import galaxy_diver.read_data.ahf as read_ahf
+import galaxy_diver.read_data.rockstar as read_rockstar
 import galaxy_diver.read_data.metafile as read_metafile
 import galaxy_diver.utils.utilities as utilities
 import galaxy_diver.analyze_data.generic_data as generic_data
@@ -171,10 +172,11 @@ class HaloData( generic_data.GenericData ):
 
         # Try to load additional postprocessed data
         self.data_reader.get_halos( snum, **used_kwargs )
-        try:
-            self.data_reader.get_halos_add( snum, **used_kwargs )
-        except NameError:
-            pass
+        if hasattr( self.data_reader, 'get_halos_add' ):
+            try:
+                self.data_reader.get_halos_add( snum, **used_kwargs )
+            except NameError:
+                pass
 
     ########################################################################
 

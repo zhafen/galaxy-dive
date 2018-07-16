@@ -30,6 +30,7 @@ class GalaxyFinder( object ):
         hubble,
         galaxy_cut,
         length_scale,
+        halo_length_scale = 'Rvir',
         particle_masses = None,
         minimum_criteria = 'n_star',
         minimum_value = 10,
@@ -65,6 +66,10 @@ class GalaxyFinder( object ):
             length_scale (str) :
                 Anything within galaxy_cut*length_scale is counted as being
                 inside the galaxy.
+
+            halo_length_scale (str) :
+                Anything within halo_length_scale is counted as being
+                inside the halo.
 
             particle_masses (np.ndarray, optional) :
                 Masses of particles.
@@ -120,11 +125,18 @@ class GalaxyFinder( object ):
 
         # Setup the default halo_data
         if halo_data is None:
-            self.halo_data = h_data.HaloData( self.halo_data_dir )
+            self.halo_data = h_data.HaloData(
+                self.halo_data_dir,
+                halo_finder = self.halo_finder,
+                mt_kwargs = { 
+                    'index' : self.mtree_halos_index,
+                    'tag' : self.halo_file_tag,
+                },
+        )
 
         # In the case of a minimum stellar mass, we need to divide the minimum
         # value by 1/h when getting its values out.
-        if self.minimum_criteria == 'M_star':
+        if self.minimum_criteria in [ 'M_star', 'Mvir']:
             self.min_conversion_factor = self.hubble
         else:
             self.min_conversion_factor = 1
@@ -217,7 +229,7 @@ class GalaxyFinder( object ):
             # Get the relevant length scale
             if self.length_scale == 'r_scale':
                 # Get the scale radius
-                r_vir = self.halo_data.get_data( 'Rvir', self.snum )
+                r_vir = self.halo_data.get_data( self.halo_length_scale, self.snum )
                 length_scale = r_vir / self.halo_data.get_data(
                     'cAnalytic', self.snum )
             else:
@@ -590,7 +602,7 @@ class GalaxyFinder( object ):
                 # Get the relevant length scale
                 if self.length_scale == 'r_scale':
                     # Get the scale radius
-                    r_vir = mtree_halo['Rvir'][ self.snum ]
+                    r_vir = mtree_halo[self.halo_length_scale][ self.snum ]
                     length_scale = r_vir/mtree_halo['cAnalytic'][ self.snum ]
                 else:
                     length_scale = mtree_halo[self.length_scale][ self.snum ]

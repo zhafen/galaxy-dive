@@ -451,8 +451,12 @@ class TestGalaxyFinder( unittest.TestCase ):
             'halo_id',
             'gal_id',
         ]
-        used_kwargs['halo_data_dir'] = './tests/data/rockstar_data_dir'
+        used_kwargs['halo_data_dir'] = './tests/data/rockstar_dir'
         used_kwargs['halo_finder'] = 'Rockstar'
+        used_kwargs['minimum_criteria'] = 'Np'
+        used_kwargs['minimum_value'] = 10
+        used_kwargs['length_scale'] = 'Rs'
+        used_kwargs['halo_length_scale'] = 'R200b'
 
         particle_positions = np.array([
             [ 28634.78, 32047.87, 32400.99 ], # Halo 0

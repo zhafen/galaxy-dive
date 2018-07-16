@@ -34,6 +34,14 @@ class RockstarReader( object ):
 
         self.data_dir = sdir
 
+        # Common global names, and what columns those correspond to in the
+        # data
+        self.general_use_data_names = {
+            'X' : 'X',
+            'Y' : 'Y',
+            'Z' : 'Z',
+        }
+
     ########################################################################
     # Load Data
     ########################################################################
