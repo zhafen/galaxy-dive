@@ -486,7 +486,6 @@ class HaloUpdater( halo_data.HaloData ):
                 print( "Getting data for snapshot {}".format( snum ) )
 
                 self.get_halos( snum )
-                self.get_halos_add( snum )
 
                 # Get the columns we want to add on.
                 halofile_columns = set( self.halos.columns )
@@ -606,7 +605,7 @@ class HaloUpdater( halo_data.HaloData ):
                 Directory for the metafile (used to get simulation redshift).
 
         Modifies:
-            self.sdir/halo_00000_custom.dat (text file) : Saves the custom merger tree at this location.
+            self.data_dir/halo_00000_custom.dat (text file) : Saves the custom merger tree at this location.
         '''
 
         if isinstance( snums, int ):
@@ -619,7 +618,6 @@ class HaloUpdater( halo_data.HaloData ):
             print( "Getting data for snapshot {}".format( snum ) )
 
             self.get_halos( snum )
-            self.get_halos_add( snum )
 
             ahf_frames.append( self.halos.loc[halo_id:halo_id] )
 
@@ -638,7 +636,7 @@ class HaloUpdater( halo_data.HaloData ):
         custom_mtree_halo['redshift'] = metafile_reader.snapshot_times['redshift'][snums]
 
         # Save the data
-        save_filepath = os.path.join( self.sdir, 'halo_00000_custom.dat' )
+        save_filepath = os.path.join( self.data_dir, 'halo_00000_custom.dat' )
         custom_mtree_halo.to_csv( save_filepath, sep='\t' )
 
     ########################################################################
@@ -823,7 +821,7 @@ class HaloUpdater( halo_data.HaloData ):
 
     def save_multiple_halos_adds( self, metafile_dir, snum_start, snum_end, snum_step ):
         '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
-        Do this for every *.AHF_halos file in self.sdir.
+        Do this for every *.AHF_halos file in self.data_dir.
 
         Args:
             metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.

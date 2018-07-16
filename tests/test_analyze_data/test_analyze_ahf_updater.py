@@ -105,7 +105,7 @@ class TestHaloUpdater( unittest.TestCase ):
         self.ahf_updater.get_mtree_halos(
             index = 'snum',
             tag = 'sparse',
-            force_reload = True
+            adjust_default_labels = True
         )
 
         # Function itself.
@@ -113,9 +113,8 @@ class TestHaloUpdater( unittest.TestCase ):
 
         # Test for snapshot 600
         snum = 600
-        del self.ahf_updater.halos
+        del self.ahf_updater.data_reader.halos
         self.ahf_updater.get_halos( snum )
-        self.ahf_updater.get_halos_add( snum )
         for halo_id in self.ahf_updater.mtree_halos.keys():
             test_keys = [ 'Rvir', 'cAnalytic', ]
             for test_key in test_keys:
@@ -138,9 +137,9 @@ class TestHaloUpdater( unittest.TestCase ):
 
         expected = 0.00015930
 
-        self.ahf_updater.get_mtree_halos( 'snum' )
+        self.ahf_updater.get_mtree_halos( index='snum' )
 
-        self.ahf_updater.get_accurate_redshift( './tests/data/data_dir' )
+        self.ahf_updater.get_accurate_redshift( data_sdir )
 
         actual = self.ahf_updater.mtree_halos[0]['redshift'][599]
 
@@ -174,8 +173,8 @@ class TestHaloUpdater( unittest.TestCase ):
     def test_smooth_mtree_halos_fire1( self ):
 
         # Get the right directory
-        self.ahf_updater.data_dir = data_dir2
-        self.ahf_updater.get_mtree_halos( 440 )
+        self.ahf_updater.data_reader.data_dir = data_dir2
+        self.ahf_updater.get_mtree_halos( index=440 )
 
         self.ahf_updater.smooth_mtree_halos( data_sdir2 )
 
@@ -209,7 +208,7 @@ class TestHaloUpdater( unittest.TestCase ):
         )
 
         # Load the saved files
-        self.ahf_updater.get_mtree_halos( 'snum', 'smooth' )
+        self.ahf_updater.get_mtree_halos( index='snum', tag='smooth' )
 
         # Test that the redshift worked.
         redshift_expected_598 = 0.00031860
@@ -231,7 +230,7 @@ class TestHaloUpdater( unittest.TestCase ):
     def test_save_smooth_mtree_halos_different_snum( self ):
 
         # Pass it the right directory
-        self.ahf_updater.data_dir = data_dir2
+        self.ahf_updater.data_reader.data_dir = data_dir2
 
         # Get the results
         self.ahf_updater.save_smooth_mtree_halos(
@@ -242,7 +241,7 @@ class TestHaloUpdater( unittest.TestCase ):
         )
 
         # Load the saved files
-        self.ahf_updater.get_mtree_halos( 440, 'smooth' )
+        self.ahf_updater.get_mtree_halos( index=440, tag='smooth' )
 
         # Test that the redshift worked.
         redshift_expected_439 = 0.0049998743750157
@@ -307,9 +306,8 @@ class TestHaloUpdater( unittest.TestCase ):
         self.ahf_updater.get_mtree_halos( tag='custom' )
         mtree_halo = self.ahf_updater.mtree_halos[0]
 
-        del self.ahf_updater.halos
+        del self.ahf_updater.data_reader.halos
         self.ahf_updater.get_halos( 600 )
-        self.ahf_updater.get_halos_add( 600 )
         expected = np.array( [ self.ahf_updater.halos['cAnalytic'][3], ] )
         actual = mtree_halo['cAnalytic']
         npt.assert_allclose( expected, actual )
@@ -336,7 +334,7 @@ class TestHaloUpdater( unittest.TestCase ):
     def test_get_analytic_concentration_mtree_halos( self ):
 
         # Load the saved files
-        self.ahf_updater.get_mtree_halos( 'snum', )
+        self.ahf_updater.get_mtree_halos( index='snum', )
         self.ahf_updater.get_analytic_concentration( data_sdir )
 
         c_vir_z0_expected = 10.66567139
@@ -359,7 +357,7 @@ class TestHaloUpdater( unittest.TestCase ):
         )
 
         # Load halos_add
-        self.ahf_updater.get_halos_add( 600 )
+        self.ahf_updater.data_reader.get_halos_add( 600 )
 
         # Check that we calculated the concentration correctly.
         c_vir_z0_expected = 10.66567139

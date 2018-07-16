@@ -69,6 +69,7 @@ class HaloData( generic_data.GenericData ):
 
         data_reader_used_attrs = [
             'halos',
+            'halos_add',
             'halos_snum',
             'mtree_halo_filepaths',
             'index', 
@@ -80,24 +81,6 @@ class HaloData( generic_data.GenericData ):
 
     ########################################################################
     # Properties
-    ########################################################################
-
-    @property
-    def halos( self ):
-        '''Attribute for accessing halo data.
-        '''
-
-        return self.data_reader.halos
-
-    ########################################################################
-
-    @property
-    def halos_snum( self ):
-        '''Attribute for accessing halo data.
-        '''
-
-        return self.data_reader.halos_snum
-
     ########################################################################
 
     @property
