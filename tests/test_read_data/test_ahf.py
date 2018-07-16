@@ -106,9 +106,9 @@ class TestAHFReader( unittest.TestCase ):
   def test_get_mtree_halo_files_explicit_snapshot_number( self ):
 
     # Set the directory to the correct one for FIRE-1 data
-    self.ahf_reader.sdir = sdir2
+    self.ahf_reader.data_dir = sdir2
 
-    self.ahf_reader.get_mtree_halos( 440 )
+    self.ahf_reader.get_mtree_halos( index=440 )
 
     # Halo mass at z=0 for mtree_halo_id = 0
     expected = 7.95197e+11

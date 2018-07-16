@@ -11,6 +11,5 @@
   "tests/test_data_management/test_run_management.py::TestTroveManager::test_get_incomplete_runs": true, 
   "tests/test_galaxy_finder/test_finder.py::TestGalaxyFinder::test_find_ids_rockstar": true, 
   "tests/test_galaxy_finder/test_finder.py::TestGalaxyFinder::test_pass_ahf_reader": true, 
-  "tests/test_read_data/test_ahf.py::TestAHFReader::test_get_mtree_halo_files_explicit_snapshot_number": true, 
   "tests/test_read_data/test_ahf.py::TestAHFReader::test_get_pos_or_vel_ahf_halos": true
 }
