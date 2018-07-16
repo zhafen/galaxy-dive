@@ -135,7 +135,7 @@ class HaloData( generic_data.GenericData ):
             mt_data (np.ndarray) : Requested data.
         '''
 
-        mt_data = copy.copy( self.mt_halos[mt_halo_id][data_key] )
+        mt_data = copy.copy( self.mtree_halos[mt_halo_id][data_key] )
 
         # For converting coordinates
         if a_power is not None:

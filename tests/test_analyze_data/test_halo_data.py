@@ -60,10 +60,10 @@ class TestHaloData( unittest.TestCase ):
 
     ########################################################################
 
-    def test_mt_halos( self ):
-        '''Test we can load mt_halos.'''
+    def test_mtree_halos( self ):
+        '''Test we can load mtree_halos.'''
 
-        self.halo_data.mt_halos
+        self.halo_data.mtree_halos
 
     ########################################################################
 
