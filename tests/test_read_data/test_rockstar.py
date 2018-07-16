@@ -34,7 +34,7 @@ class TestRockstarReader( unittest.TestCase ):
   def setUp( self ):
 
     self.rockstar_reader = read_rockstar.RockstarReader(
-        './tests/data/rockstar_test_data',
+        './tests/data/rockstar_dir',
     )
 
   ########################################################################

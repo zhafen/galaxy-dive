@@ -49,6 +49,9 @@ class AHFReader( object ):
             'Xc' : unyt.kpc,
             'Yc' : unyt.kpc,
             'Zc' : unyt.kpc,
+            'Rvir' : unyt.kpc,
+            'Rstar0.5' : unyt.kpc,
+            'Rstar0.9' : unyt.kpc,
         }
 
     ########################################################################
