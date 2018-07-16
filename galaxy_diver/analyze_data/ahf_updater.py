@@ -76,7 +76,7 @@ class HaloUpdater( halo_data.HaloData ):
         Args:
             metafile_dir (str): The directory the snapshot_times are stored in.
             type_of_halo_id (str): 'merger_tree' if the halo id is a merger tree halo id.
-                                                          'ahf_halos' if the halo id is a *.AHF_halos halo id.
+                                                          'halos' if the halo id is a *.AHF_halos halo id.
 
         Returns
             c_vir (np.array of floats): The concentration, defined as R_vir/r_scale.
@@ -123,14 +123,14 @@ class HaloUpdater( halo_data.HaloData ):
                 # Save the concentration
                 mtree_halo['cAnalytic'] = c_vir
 
-        elif type_of_halo_id == 'ahf_halos':
+        elif type_of_halo_id == 'halos':
 
             # Get the redshift for the halo file.
             metafile_reader.get_snapshot_times()
-            redshift = metafile_reader.snapshot_times['redshift'][self.ahf_halos_snum]
+            redshift = metafile_reader.snapshot_times['redshift'][self.halos_snum]
 
             # Get the concentration
-            c = co_concentration.concentration( self.ahf_halos['Mvir'], 'vir', redshift, model='diemer15', statistic='median')
+            c = co_concentration.concentration( self.halos['Mvir'], 'vir', redshift, model='diemer15', statistic='median')
 
             return c
 
@@ -167,7 +167,7 @@ class HaloUpdater( halo_data.HaloData ):
         # Load the simulation data
         s_data = particle_data.ParticleData(
             simulation_data_dir,
-            self.ahf_halos_snum,
+            self.halos_snum,
             ptype = data_constants.PTYPES['star'],
         )
 
@@ -175,13 +175,13 @@ class HaloUpdater( halo_data.HaloData ):
             particle_positions = s_data.data['P'].transpose()
         # Case where there are no star particles at this redshift.
         except KeyError:
-            return [ np.array( [ np.nan, ]*self.ahf_halos.index.size ), ]*len( mass_fractions )
+            return [ np.array( [ np.nan, ]*self.halos.index.size ), ]*len( mass_fractions )
 
         # Find the mass radii
         galaxy_finder_kwargs = {
             'particle_positions' : particle_positions,
             'particle_masses' : s_data.data['M'],
-            'snum' : self.ahf_halos_snum,
+            'snum' : self.halos_snum,
             'redshift' : s_data.redshift,
             'hubble' : s_data.data_attrs['hubble'],
             'galaxy_cut' : galaxy_cut,
@@ -225,7 +225,7 @@ class HaloUpdater( halo_data.HaloData ):
         # Load the simulation data
         s_data = particle_data.ParticleData(
             simulation_data_dir,
-            self.ahf_halos_snum,
+            self.halos_snum,
             data_constants.PTYPES[ptype],
         )
 
@@ -233,13 +233,13 @@ class HaloUpdater( halo_data.HaloData ):
             particle_positions = s_data.data['P'].transpose()
         # Case where there are no star particles at this redshift.
         except KeyError:
-            return np.array( [ 0., ]*self.ahf_halos.index.size )
+            return np.array( [ 0., ]*self.halos.index.size )
 
         # Find the mass radii
         galaxy_finder_kwargs = {
             'particle_positions' : particle_positions,
             'particle_masses' : s_data.data['M']*constants.UNITMASS_IN_MSUN,
-            'snum' : self.ahf_halos_snum,
+            'snum' : self.halos_snum,
             'redshift' : s_data.redshift,
             'hubble' : s_data.data_attrs['hubble'],
             'galaxy_cut' : galaxy_cut,
@@ -299,7 +299,7 @@ class HaloUpdater( halo_data.HaloData ):
         # Load the simulation data
         s_data = particle_data.ParticleData(
             simulation_data_dir,
-            self.ahf_halos_snum,
+            self.halos_snum,
             data_constants.PTYPES[ptype],
 
             # The following values need to be set, because they come into play when a galaxy is centered on halo finder
@@ -313,12 +313,12 @@ class HaloUpdater( halo_data.HaloData ):
             particle_positions = s_data.data['P'].transpose()
         # Case where there are no particles of the given ptype at this redshift.
         except KeyError:
-            return np.array( [ fill_value, ]*self.ahf_halos.index.size )
+            return np.array( [ fill_value, ]*self.halos.index.size )
 
         # Find the mass radii
         galaxy_finder_kwargs = {
             'particle_positions' : particle_positions,
-            'snum' : self.ahf_halos_snum,
+            'snum' : self.halos_snum,
             'redshift' : s_data.redshift,
             'hubble' : s_data.data_attrs['hubble'],
             'galaxy_cut' : galaxy_cut,
@@ -366,13 +366,13 @@ class HaloUpdater( halo_data.HaloData ):
         # Get the redshift, for converting the radius to pkpc/h.
         metafile_reader = read_metafile.MetafileReader( metafile_dir )
         metafile_reader.get_snapshot_times()
-        redshift = metafile_reader.snapshot_times['redshift'][self.ahf_halos_snum]
+        redshift = metafile_reader.snapshot_times['redshift'][self.halos_snum]
 
         # Get the radius in pkpc/h
         try:
-            radius = galaxy_cut*self.ahf_halos[length_scale]
+            radius = galaxy_cut*self.halos[length_scale]
         except KeyError:
-            radius = galaxy_cut*self.ahf_halos_add[length_scale]
+            radius = galaxy_cut*self.halos_add[length_scale]
         radius /= ( 1. + redshift )
 
         # Get the mass in Msun/h
@@ -380,9 +380,9 @@ class HaloUpdater( halo_data.HaloData ):
         for ptype in ptypes:
             mass_key = self.key_parser.get_enclosed_mass_key( ptype, galaxy_cut, length_scale )
             try:
-                ptype_mass = self.ahf_halos_add[mass_key]
+                ptype_mass = self.halos_add[mass_key]
             except:
-                ptype_mass = self.ahf_halos[mass_key]
+                ptype_mass = self.halos[mass_key]
             masses.append( ptype_mass )
         mass = np.array( masses ).sum( axis=0 )
 
@@ -462,7 +462,7 @@ class HaloUpdater( halo_data.HaloData ):
 
     ########################################################################
 
-    def include_ahf_halos_to_mtree_halos( self ):
+    def include_halos_to_mtree_halos( self ):
         '''While most of the halofile data are contained in *.AHF_halos files, some quantities are stored in
         *.AHF_halos files. These are usually computed manually, external to what's inherent in AHF. This routine adds
         on the the information from these files to the loaded merger tree data (which don't usually include them, because
@@ -489,13 +489,13 @@ class HaloUpdater( halo_data.HaloData ):
                 self.get_halos_add( snum )
 
                 # Get the columns we want to add on.
-                halofile_columns = set( self.ahf_halos.columns )
+                halofile_columns = set( self.halos.columns )
                 mtree_columns = set( mtree_halo.columns )
                 columns_to_add = list( halofile_columns - mtree_columns )
                 columns_to_add.sort()
 
                 # Now get the values to add
-                full_ahf_row = self.ahf_halos.loc[halo_id:halo_id] 
+                full_ahf_row = self.halos.loc[halo_id:halo_id] 
                 ahf_row = full_ahf_row[columns_to_add]
 
                 # Check for edge case, where there isn't an AHF row with specified halo number
@@ -551,7 +551,7 @@ class HaloUpdater( halo_data.HaloData ):
             self,
             metafile_dir,
             index = None,
-            include_ahf_halos_add = True,
+            include_halos_add = True,
             include_concentration = False,
             smooth_keys = [ 'Rstar0.5', ],
             **get_mtree_halo_kwargs
@@ -575,8 +575,8 @@ class HaloUpdater( halo_data.HaloData ):
         self.get_mtree_halos( index=index, **get_mtree_halo_kwargs )
 
         # Include data stored in *AHF_halos_add files.
-        if include_ahf_halos_add:
-            self.include_ahf_halos_to_mtree_halos()
+        if include_halos_add:
+            self.include_halos_to_mtree_halos()
 
         # Smooth the halos
         self.smooth_mtree_halos( metafile_dir, smooth_keys, )
@@ -621,7 +621,7 @@ class HaloUpdater( halo_data.HaloData ):
             self.get_halos( snum )
             self.get_halos_add( snum )
 
-            ahf_frames.append( self.ahf_halos.loc[halo_id:halo_id] )
+            ahf_frames.append( self.halos.loc[halo_id:halo_id] )
 
         custom_mtree_halo = pd.concat( ahf_frames )
 
@@ -643,7 +643,7 @@ class HaloUpdater( halo_data.HaloData ):
 
     ########################################################################
 
-    def save_ahf_halos_add( self,
+    def save_halos_add( self,
         snum,
         include_analytic_concentration = True,
         include_mass_radii = True,
@@ -730,19 +730,19 @@ class HaloUpdater( halo_data.HaloData ):
 
         # Figure out if there are any valid halos at this redshift if not, then a *lot* can be skipped.
         # TODO: Don't hard-code this in....
-        valid_halos = self.ahf_halos['n_star'] >= 10
+        valid_halos = self.halos['n_star'] >= 10
         no_valid_halos = valid_halos.sum() == 0
-        blank_array = np.array( [ np.nan, ]*self.ahf_halos.index.size )
+        blank_array = np.array( [ np.nan, ]*self.halos.index.size )
 
         # Create AHF_halos add
-        self.ahf_halos_add = pd.DataFrame( {}, index=self.ahf_halos.index )
-        self.ahf_halos_add.index.names = ['ID']
+        self.halos_add = pd.DataFrame( {}, index=self.halos.index )
+        self.halos_add.index.names = ['ID']
 
         # Get the analytic concentration
         if include_analytic_concentration:
             if verbose:
                 print( "Including Analytic Concentration..." )
-            self.ahf_halos_add['cAnalytic'] = self.get_analytic_concentration( metafile_dir, type_of_halo_id='ahf_halos' )
+            self.halos_add['cAnalytic'] = self.get_analytic_concentration( metafile_dir, type_of_halo_id='halos' )
 
         # Get characteristic radii
         if include_mass_radii:
@@ -756,7 +756,7 @@ class HaloUpdater( halo_data.HaloData ):
 
             for i, mass_fraction in enumerate( mass_radii_kwargs['mass_fractions'] ):
                 label = 'Rstar{}'.format( mass_fraction )
-                self.ahf_halos_add[label] = mass_radii[i]
+                self.halos_add[label] = mass_radii[i]
 
         # Get mass enclosed in a particular radius
         if include_enclosed_mass:
@@ -771,7 +771,7 @@ class HaloUpdater( halo_data.HaloData ):
 
                 label = self.key_parser.get_enclosed_mass_key( ptype, enclosed_mass_kwargs['galaxy_cut'], \
                                                                                                               enclosed_mass_kwargs['length_scale'], )
-                self.ahf_halos_add[label] = halo_masses
+                self.halos_add[label] = halo_masses
 
         # Get average quantity inside each galaxy (for halos that have galaxies)
         if include_average_quantity_inside_galaxy:
@@ -799,7 +799,7 @@ class HaloUpdater( halo_data.HaloData ):
                     average_quantity_inside_galaxy_kwargs['length_scale'],
                 )
 
-                self.ahf_halos_add[label] = average_quantity
+                self.halos_add[label] = average_quantity
 
         # Get circular velocity at a particular radius
         if include_v_circ:
@@ -813,15 +813,15 @@ class HaloUpdater( halo_data.HaloData ):
                 v_circ_kwargs['length_scale']
             ) 
 
-            self.ahf_halos_add[label] = v_circ
+            self.halos_add[label] = v_circ
 
         # Save AHF_halos add
-        save_filepath = '{}_add'.format( self.ahf_halos_path )
-        self.ahf_halos_add.to_csv( save_filepath, sep='\t' )
+        save_filepath = '{}_add'.format( self.halos_path )
+        self.halos_add.to_csv( save_filepath, sep='\t' )
 
     ########################################################################
 
-    def save_multiple_ahf_halos_adds( self, metafile_dir, snum_start, snum_end, snum_step ):
+    def save_multiple_halos_adds( self, metafile_dir, snum_start, snum_end, snum_step ):
         '''Save additional columns that would be part of *.AHF_halos files, if that didn't break AHF.
         Do this for every *.AHF_halos file in self.sdir.
 
@@ -836,5 +836,5 @@ class HaloUpdater( halo_data.HaloData ):
         for snum in range( snum_start, snum_end+snum_step, snum_step):
 
             # Save the data
-            self.save_ahf_halos_add( snum, metafile_dir )
+            self.save_halos_add( snum, metafile_dir )
 

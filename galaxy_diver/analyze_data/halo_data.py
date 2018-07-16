@@ -59,6 +59,26 @@ class HaloData( generic_data.GenericData ):
         super( HaloData, self ).__init__( key_parser=key_parser )
 
     ########################################################################
+    # Attributes
+    ########################################################################
+
+    def __getattr__( self, attr ):
+        '''There are certain attributes held by self.data_reader that we
+        would like to easily access here.
+        '''
+
+        data_reader_used_attrs = [
+            'halos',
+            'halos_snum',
+            'mtree_halo_filepaths',
+            'index', 
+            'tag',
+        ]
+
+        if attr in data_reader_used_attrs:
+            return getattr( self.data_reader, attr )
+
+    ########################################################################
     # Properties
     ########################################################################
 
@@ -72,7 +92,16 @@ class HaloData( generic_data.GenericData ):
     ########################################################################
 
     @property
-    def mt_halos( self ):
+    def halos_snum( self ):
+        '''Attribute for accessing halo data.
+        '''
+
+        return self.data_reader.halos_snum
+
+    ########################################################################
+
+    @property
+    def mtree_halos( self ):
         '''Attribute for accessing merger tree data.
         '''
 
@@ -139,28 +168,53 @@ class HaloData( generic_data.GenericData ):
 
     ########################################################################
 
-    def get_halos( self, snum ):
+    def get_halos( self, snum, **kwargs ):
         '''Get halo data.
 
         Args:
             snum (int) : What snapshot to get the halo data for.
+
+            **kwargs :
+                Additional arguments for loading the data.
+                In the event of conflict with those provided when constructing
+                the instance, arguments provided here will be preferred.
         '''
 
+        # Get the used arguments
+        used_kwargs = utilities.merge_two_dicts(
+            kwargs,
+            self.kwargs,
+        )
+
         # Try to load additional postprocessed data
-        self.data_reader.get_halos( snum, **self.kwargs )
+        self.data_reader.get_halos( snum, **used_kwargs )
         try:
-            self.data_reader.get_halos_add( snum, **self.kwargs )
+            self.data_reader.get_halos_add( snum, **used_kwargs )
         except NameError:
             pass
 
     ########################################################################
 
-    def get_masked_data( self, *args, **kwargs ):
+    def get_mtree_halos( self, **kwargs ):
+        '''Get halo data.
 
-        return super( HaloData, self ).get_masked_data(
-            mask_multidim_data = False,
-            *args, **kwargs
+        Args:
+            snum (int) : What snapshot to get the halo data for.
+
+            **kwargs :
+                Additional arguments for loading the data.
+                In the event of conflict with those provided when constructing
+                the instance, arguments provided here will be preferred.
+        '''
+
+        # Get the used arguments
+        used_kwargs = utilities.merge_two_dicts(
+            kwargs,
+            self.mt_kwargs,
         )
+
+        # Try to load additional postprocessed data
+        self.data_reader.get_mtree_halos( **used_kwargs )
 
     ########################################################################
 
@@ -170,6 +224,15 @@ class HaloData( generic_data.GenericData ):
         self.get_halos( snum )
 
         return self.data_reader.halos.index.size
+
+    ########################################################################
+
+    def get_masked_data( self, *args, **kwargs ):
+
+        return super( HaloData, self ).get_masked_data(
+            mask_multidim_data = False,
+            *args, **kwargs
+        )
 
 ########################################################################
 ########################################################################
