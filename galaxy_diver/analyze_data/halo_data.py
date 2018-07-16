@@ -63,6 +63,15 @@ class HaloData( generic_data.GenericData ):
     ########################################################################
 
     @property
+    def halos( self ):
+        '''Attribute for accessing halo data.
+        '''
+
+        return self.data_reader.halos
+
+    ########################################################################
+
+    @property
     def mt_halos( self ):
         '''Attribute for accessing merger tree data.
         '''
@@ -94,13 +103,7 @@ class HaloData( generic_data.GenericData ):
             data_key = self.data_reader.general_use_data_names[data_key]
 
         # Load the necessary data
-        self.data_reader.get_halos( snum, **self.kwargs )
-
-        # Try to load additional postprocessed data
-        try:
-            self.data_reader.get_halos_add( snum, **self.kwargs )
-        except NameError:
-            pass
+        self.get_halos( snum )
 
         return self.data_reader.halos[data_key].values
 
@@ -136,6 +139,22 @@ class HaloData( generic_data.GenericData ):
 
     ########################################################################
 
+    def get_halos( self, snum ):
+        '''Get halo data.
+
+        Args:
+            snum (int) : What snapshot to get the halo data for.
+        '''
+
+        # Try to load additional postprocessed data
+        self.data_reader.get_halos( snum, **self.kwargs )
+        try:
+            self.data_reader.get_halos_add( snum, **self.kwargs )
+        except NameError:
+            pass
+
+    ########################################################################
+
     def get_masked_data( self, *args, **kwargs ):
 
         return super( HaloData, self ).get_masked_data(
@@ -146,12 +165,9 @@ class HaloData( generic_data.GenericData ):
     ########################################################################
 
     def get_n_halos( self, snum ):
+        '''Get the number of halos (non-tracked) at a given redshift.'''
 
-        # Try to load additional postprocessed data
-        try:
-            self.data_reader.get_halos_add( snum, **self.kwargs )
-        except NameError:
-            pass
+        self.get_halos( snum )
 
         return self.data_reader.halos.index.size
 

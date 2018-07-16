@@ -13,7 +13,7 @@ import os
 import pandas as pd
 
 import galaxy_diver.galaxy_finder.finder as galaxy_finder
-import galaxy_diver.read_data.ahf as read_ahf
+import galaxy_diver.analyze_data.halo_data as halo_data
 import galaxy_diver.read_data.metafile as read_metafile
 import galaxy_diver.utils.astro as astro_utils
 import galaxy_diver.utils.constants as constants
@@ -27,7 +27,7 @@ import galaxy_diver.analyze_data.particle_data as particle_data
 ########################################################################
 ########################################################################
 
-class HaloUpdater( read_ahf.AHFReader ):
+class HaloUpdater( halo_data.HaloData ):
     '''Class for updating Halo data (smoothing, adding in additional columns, etc)'''
 
     def __init__( self, *args, **kwargs ):
