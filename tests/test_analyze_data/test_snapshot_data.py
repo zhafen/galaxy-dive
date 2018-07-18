@@ -13,7 +13,7 @@ import galaxy_diver.analyze_data.simulation_data as simulation_data
 
 default_kwargs = {
     'data_dir': './tests/data/sdir',
-    'ahf_data_dir': './tests/data/analysis_dir',
+    'halo_data_dir': './tests/data/analysis_dir',
     'snum': 500,
     'ahf_index': 600,
 }

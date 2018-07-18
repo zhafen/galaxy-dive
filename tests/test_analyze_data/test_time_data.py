@@ -33,7 +33,7 @@ def sane_eq_array(list_in):
 
 default_kwargs = {
     'data_dir': './tests/data/sdir',
-    'ahf_data_dir': './tests/data/analysis_dir',
+    'halo_data_dir': './tests/data/analysis_dir',
     'snum': [600, 550, 500],
     'ahf_index': 600,
     'store_ahf_reader': True,

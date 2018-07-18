@@ -34,7 +34,7 @@ class SimulationData( generic_data.GenericData ):
     def __init__(
         self,
         data_dir = None,
-        ahf_data_dir = None,
+        halo_data_dir = None,
         ahf_index = None,
 
         averaging_frac = 0.5,
@@ -59,7 +59,7 @@ class SimulationData( generic_data.GenericData ):
             data_dir (str) :
                  Directory the simulation is contained in.
 
-            ahf_data_dir (str) :
+            halo_data_dir (str) :
                  Directory simulation analysis is contained in. Defaults to data_dir
 
             ahf_index (str) :
@@ -128,8 +128,8 @@ class SimulationData( generic_data.GenericData ):
             if getattr( self, attr ) is None:
 
                 # Set the analysis dir to data_dir if not given
-                if attr == 'ahf_data_dir':
-                    self.ahf_data_dir = self.data_dir
+                if attr == 'halo_data_dir':
+                    self.halo_data_dir = self.data_dir
 
                 elif attr == 'ahf_index':
                     continue
@@ -210,7 +210,7 @@ class SimulationData( generic_data.GenericData ):
         if not hasattr( self, '_halo_data' ):
 
             self._halo_data = analyze_ahf.HaloData(
-                self.ahf_data_dir,
+                self.halo_data_dir,
                 tag = self.ahf_tag,
                 index = self.ahf_index
             )
@@ -585,7 +585,9 @@ class SimulationData( generic_data.GenericData ):
         # TODO: Move these to the subclasses somehow.
         # Subclass methods
         elif data_key == 'T':
-            self.calc_temp()
+            # TODO: This is a hacky fix, that should be changed...
+            if hasattr( self, 'calc_temp' ):
+                self.calc_temp()
         elif data_key == 'Pressure':
             self.calc_pressure()
 
@@ -663,7 +665,7 @@ class SnapshotData( SimulationData ):
             return
 
         # Load the AHF data
-        ahf_reader = read_ahf.AHFReader( self.ahf_data_dir )
+        ahf_reader = read_ahf.AHFReader( self.halo_data_dir )
         ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
         # Select the main halo at the right redshift
@@ -1002,7 +1004,7 @@ class TimeData( SimulationData ):
             return
 
         # Load the AHF data
-        ahf_reader = read_ahf.AHFReader( self.ahf_data_dir )
+        ahf_reader = read_ahf.AHFReader( self.halo_data_dir )
         ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
         # Select the main halo at the right redshift
