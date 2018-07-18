@@ -422,7 +422,8 @@ class GalaxyFinder( object ):
 
         # Remove the unyt part of things so that we save properly without
         # having to invoke unyt's saving feature
-        length_scale_sats = length_scale_sats.to_value()
+        if isinstance( length_scale_sats, unyt.array.unyt_array ):
+            length_scale_sats = length_scale_sats.to_value()
 
         dist_to_all_valid_other_gals_scaled = dist_to_all_valid_other_gals/length_scale_sats[np.newaxis,:]
 
