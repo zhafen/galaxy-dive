@@ -122,10 +122,11 @@ class HaloData( generic_data.GenericData ):
         # Load the necessary data
         self.get_halos( snum )
 
-        # Actual data
+        # Special cases
         if used_data_key == 'ID':
             return self.data_reader.halos.index
 
+        # Actual data
         data = self.data_reader.halos[used_data_key].values
 
         # Attach units if given

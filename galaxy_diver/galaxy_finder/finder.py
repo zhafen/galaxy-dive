@@ -6,8 +6,11 @@
 @status: Development
 '''
 
+import copy
 import numpy as np
 import scipy.spatial
+
+import unyt
 
 import galaxy_diver.analyze_data.halo_data as h_data
 import galaxy_diver.utils.utilities as utilities
@@ -47,8 +50,10 @@ class GalaxyFinder( object ):
         '''Initialize.
 
         Args:
-            particle_positions (np.array) :
-                Positions with dimensions (n_particles, 3), in pkpc.
+            particle_positions (array-like) :
+                Positions with dimensions (n_particles, 3).
+                If given a np.ndarray, assumes pkpc units.
+                Also accepts a unyt array.
 
             redshift (float) :
                 Redshift the particles are at.
@@ -133,6 +138,9 @@ class GalaxyFinder( object ):
                     'tag' : self.halo_file_tag,
                 },
         )
+
+        if not isinstance( particle_positions, unyt.array.unyt_array ):
+            particle_positions = copy.copy( particle_positions ) * unyt.kpc
 
         # In the case of a minimum stellar mass, we need to divide the minimum
         # value by 1/h when getting its values out.
@@ -379,6 +387,7 @@ class GalaxyFinder( object ):
             ind_main_gal_in_valid_inds = \
                 np.where( valid_halo_ind_is_main_gal_ind )[0]
 
+        # If the there's no index because it's automatically okay
         if ind_main_gal_in_valid_inds.size == 0:
             dist_to_all_valid_other_gals = self.dist_to_all_valid_halos
             valid_halo_inds_sats = self.valid_halo_inds
@@ -410,6 +419,10 @@ class GalaxyFinder( object ):
 
         # Now scale
         length_scale_sats = self.ahf_halos_length_scale_pkpc[ valid_halo_inds_sats ]
+
+        # Remove the unyt part of things so that we save properly without
+        # having to invoke unyt's saving feature
+        length_scale_sats = length_scale_sats.to_value()
 
         dist_to_all_valid_other_gals_scaled = dist_to_all_valid_other_gals/length_scale_sats[np.newaxis,:]
 
