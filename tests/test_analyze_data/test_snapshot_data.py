@@ -16,6 +16,8 @@ default_kwargs = {
     'halo_data_dir': './tests/data/analysis_dir',
     'snum': 500,
     'ahf_index': 600,
+    'length_scale_used' : 'r_scale',
+    'averaging_frac' : 0.5,
 }
 
 ########################################################################

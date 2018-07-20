@@ -36,21 +36,18 @@ class SimulationData( generic_data.GenericData ):
         data_dir = None,
         halo_data_dir = None,
         ahf_index = None,
-
-        averaging_frac = 0.5,
-        length_scale_used = 'r_scale',
+        averaging_frac = 5.,
+        length_scale_used = 'Rstar0.5',
         z_sun = constants.Z_MASSFRAC_SUN,
         halo_data_retrieved = False,
         centered = False,
         vel_centered = False,
         hubble_corrected = False,
-
         ahf_tag = 'smooth',
         main_halo_id = 0,
         center_method = 'halo',
         vel_center_method = 'halo',
         store_ahf_reader = False,
-
         **kwargs
     ):
         '''Initialize.
@@ -68,9 +65,10 @@ class SimulationData( generic_data.GenericData ):
                  AHF was run backwards from the last snapshot.
                  Required to put in manually to avoid easy mistakes.
 
-            averaging_frac (float) :
-                 What fraction of the radius to average over when calculating velocity and
-                 similar properties? (centered on the origin)
+            averaging_frac (dict) :
+                There are some averaged quantities (e.g. COM velocity, total
+                angular momentum) that we consider. This is the fraction of
+                length_scale_used within which we calculate these.
 
             length_scale_used (str) :
                  What length scale to use for the simulation. Will be used to put lengths in fractions.
@@ -158,7 +156,7 @@ class SimulationData( generic_data.GenericData ):
             return self.halo_data.get_mt_data(
                 self.length_scale_used,
                 snums = self.snum,
-                return_values_only = False,
+                return_values_only = False, # This is because we're only getting one value out
                 a_power = 1.,
             ) / self.data_attrs['hubble']
 
@@ -569,6 +567,8 @@ class SimulationData( generic_data.GenericData ):
             self.calc_tangential_velocity()
         elif data_key == 'ind':
             self.calc_inds()
+        elif data_key == 'L':
+            self.calc_ang_momentum()
         elif data_key == 'Phi':
             self.calc_phi()
         elif data_key == 'AbsPhi':
@@ -693,15 +693,32 @@ class SnapshotData( SimulationData ):
     ########################################################################
 
     @property
+    def central_mask( self ):
+        '''This mask is used when, for example, finding the velocity of the
+        center of mass.
+        '''
+
+        if not hasattr( self, '_central_mask' ):
+
+            self._central_mask  = self.data_masker.mask_data(
+                'Rf',
+                0.,
+                self.averaging_frac,
+                return_or_store = 'return',
+            )
+
+        return self._central_mask
+
+    ########################################################################
+
+    @property
     def v_com( self ):
         '''Property for the velocity of the center of mass.'''
 
         if not hasattr( self, '_v_com' ):
 
-            radial_mask = self.data_masker.mask_data( 'Rf', 0., self.averaging_frac, return_or_store='return' )
-
-            m_ma = self.get_masked_data( 'M', radial_mask )
-            v_ma = self.get_masked_data( 'V', radial_mask )
+            m_ma = self.get_masked_data( 'M', self.central_mask )
+            v_ma = self.get_masked_data( 'V', self.central_mask )
 
             self._v_com = ( v_ma * m_ma ).sum( 1 ) / m_ma.sum()
 
@@ -713,38 +730,22 @@ class SnapshotData( SimulationData ):
     def total_ang_momentum(self):
         '''Calculate the total angular momentum vector.'''
 
-        raise Exception( "TODO: Test and memoize this, and other attributes" )
-
         # Exit early if already calculated.
-        try:
-            self.total_ang_momentum
-            return self.total_ang_momentum
-
-        # Calculate the total angular momentum
-        except AttributeError:
-
-            # Make sure necessary ingredients are calculated
-            if not self.halo_data_retrieved:
-                self.retrieve_halo_data()
-            if not self.hubble_corrected:
-                self.correct_hubble_flow()
-
-            # Get mask for only inner components
-            r_mask = self.add_mask('R', 0., self.averaging_frac * self.R_vir, return_or_store='return')
+        if not hasattr( self, '_total_ang_momentum' ):
 
             # Adapt for application to 'l', which is a multidimensional array
-            inner_mask = np.array([r_mask] * 3)
+            inner_mask = np.array([ self.central_mask ] * 3)
 
             # Apply masks
             ang_momentum = self.get_data('L')
             l_ma = np.ma.masked_array(ang_momentum, mask=inner_mask)
 
             # Get the total angular momentum
-            self.total_ang_momentum = np.zeros(3)
+            self._total_ang_momentum = np.zeros(3)
             for i in range(3):
                 self._total_ang_momentum[i] = l_ma[i].sum()
 
-            return self._total_ang_momentum
+        return self._total_ang_momentum
 
     ########################################################################
 
@@ -843,6 +844,21 @@ class SnapshotData( SimulationData ):
 
         # Put into a multidimensional array
         self.data['ind'] = flat_inds.reshape(self.get_data('Den').shape)
+
+    ########################################################################
+
+    def calc_ang_momentum( self ):
+        '''Calculate the angular momentum.'''
+
+        m_mult = np.array( [ self.get_data('M'), ] * 3 )
+
+        p = self.get_data('P')
+        v = self.get_data('V')
+
+        l = np.cross( p, v, 0, 0).transpose()
+        l *= m
+
+        self.data['L'] = l
 
     ########################################################################
 
@@ -960,11 +976,10 @@ class SnapshotData( SimulationData ):
 class TimeData( SimulationData ):
     '''Class for analysis of a time series data, e.g. the worldlines of a number of particles.'''
 
-    def __init__( self, *args, **kwargs ):
-        '''
-        Args:
-            snums (array-like of ints) : Snapshots for the time series.
-        '''
+    def __init__(
+        self,
+        *args, **kwargs
+    ):
 
         super( TimeData, self ).__init__( *args, **kwargs )
 
@@ -1150,7 +1165,7 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
-    def calc_L(self):
+    def calc_ang_momentum( self ):
         '''Calculate the angular momentum.'''
 
         m_mult = np.array( [ self.get_data('M'), ] * 3 )
