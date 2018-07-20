@@ -569,8 +569,6 @@ class SimulationData( generic_data.GenericData ):
             self.calc_tangential_velocity()
         elif data_key == 'ind':
             self.calc_inds()
-        elif data_key == 'L':
-            self.calc_ang_momentum()
         elif data_key == 'Phi':
             self.calc_phi()
         elif data_key == 'AbsPhi':
@@ -835,21 +833,6 @@ class SnapshotData( SimulationData ):
 
     ########################################################################
 
-    def calc_ang_momentum(self):
-        '''Calculate the angular momentum.'''
-
-        raise Exception( "TODO: Test this" )
-
-        # Make sure we're centered.
-        self.change_coords_center()
-        self.change_vel_coords_center()
-
-        # Calculate the angular momentum for each particle
-        m_mult = np.array([self.get_data('M'), ] * 3)
-        self.data['L'] = m_mult * np.cross(self.get_data('P'), self.get_data('V'), 0, 0).transpose()
-
-    ########################################################################
-
     def calc_inds(self):
         '''Calculate the indices the data are located at, prior to any masks.'''
 
@@ -984,6 +967,17 @@ class TimeData( SimulationData ):
         '''
 
         super( TimeData, self ).__init__( *args, **kwargs )
+
+    ########################################################################
+
+    @property
+    def n_particles( self ):
+        '''Number of snapshots, i.e. data points on the time axis.'''
+
+        if not hasattr( self, '_n_particles' ):
+            self._n_particles = self.base_data_shape[0]
+
+        return self._n_particles
 
     ########################################################################
 
@@ -1156,6 +1150,31 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
+    def calc_L(self):
+        '''Calculate the angular momentum.'''
+
+        m_mult = np.array( [ self.get_data('M'), ] * 3 )
+
+        p_all = self.get_data('P')
+        v_all = self.get_data('V')
+
+        l_all = np.zeros( ( 3, self.n_particles, self.n_snaps ) )
+        # Calculate the angular momentum at each redshift
+        for i in range( self.n_snaps ):                                         
+                                                                                
+            v = v_all[:,:,i]                                                    
+            p = p_all[:,:,i]                                                    
+            m = m_mult[:,:,i] 
+
+            l = np.cross( p, v, 0, 0).transpose()
+            l *= m
+
+            l_all[:,:,i] = l
+
+        self.data['L'] = np.array( l_all )
+
+    ########################################################################
+
     def calc_time_as_classification( self, data_key ):
 
         # Check if we should be running this function (does the provided
@@ -1195,7 +1214,6 @@ class TimeData( SimulationData ):
 
         return True
 
-    ########################################################################
     ########################################################################
 
     def calc_MetalMass( self ):

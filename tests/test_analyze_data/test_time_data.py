@@ -205,20 +205,6 @@ class TestTimeData( unittest.TestCase ):
         self.t_data._redshift = df['redshift']
         self.t_data.redshift = np.array( [1., 2., np.nan ] )
 
-    ########################################################################
-
-    def test_calc_radial_distance( self ):
-
-        # Change the mock data
-        self.t_data.data['P'] = np.array( [ [ [1., 2., 3., 4., 5.], ]*4, ]*3 )
-
-        self.t_data.centered = True
-        self.t_data.vel_centered = True
-
-        expected = np.array( [ [1., 2., 3., 4., 5.], ]*4 )*np.sqrt( 3 )
-        actual = self.t_data.get_data( 'R' )
-        npt.assert_allclose( expected, actual )
-
 ########################################################################
 ########################################################################
 
@@ -293,5 +279,52 @@ class TestCalc( unittest.TestCase ):
         for i in range( 4 ):
             assert np.isnan( self.t_data.data['Vr'][0,i] )
 
-########################################################################
-########################################################################
+    ########################################################################
+
+    def test_calc_radial_distance( self ):
+
+        # Change the mock data
+        self.t_data.data = {
+            'P': np.array( [ [ [1., 2., 3., 4., 5.], ]*4, ]*3 ),
+            'V': np.zeros( ( 3, 4, 5 ) ),
+        }
+        
+
+        self.t_data.centered = True
+        self.t_data.vel_centered = True
+
+        expected = np.array( [ [1., 2., 3., 4., 5.], ]*4 )*np.sqrt( 3 )
+        actual = self.t_data.get_data( 'R' )
+        npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
+    def test_calc_L( self ):
+
+        # Mock data
+        self.t_data.data = {
+            'M': np.random.randn( 4, 5 ),
+            'P': np.random.randn( 3, 4, 5 ),
+            'V': np.random.randn( 3, 4, 5 ),
+        }
+        # Mock data for particle index 1 in the 3rd snapshot
+        self.t_data.data['M'][1,2] = 2.
+        self.t_data.data['P'][:,1,2] = np.array([ 1., 2., 3. ])
+        self.t_data.data['V'][:,1,2] = np.array([ 3., 5., 6. ])
+
+        self.t_data.centered = True
+        self.t_data.vel_centered = True
+        self.t_data.hubble_corrected = True
+
+        self.t_data.calc_L()
+
+        actual = self.t_data.get_data( 'L' )
+
+        # Make sure we get the general right shape
+        assert self.t_data.data['P'].shape == actual.shape
+
+        # Make sure we get exactly the right answer for a particular random
+        # particle at a random snapshot
+        expected_explicit = np.array([ -6., 6., -2. ])
+        npt.assert_allclose( expected_explicit, actual[:,1,2] )
+
