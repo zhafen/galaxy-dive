@@ -856,27 +856,24 @@ class SnapshotData( SimulationData ):
         v = self.get_data('V')
 
         l = np.cross( p, v, 0, 0).transpose()
-        l *= m
+        l *= m_mult
 
         self.data['L'] = l
 
     ########################################################################
 
-    def calc_phi(self, vector='total gas ang momentum'):
-        '''Calculate the angle (in degrees) from some vector.'''
+    def calc_phi( self, normal_vector='total ang momentum' ):
+        '''Calculate the angle (in degrees) from some vector.
+        By default the vector is the total angular momentum.
+        '''
 
         raise Exception( "TODO: Test this" )
 
         if vector == 'total ang momentum':
             # Calculate the total angular momentum vector, if it's not calculated yet
-            self.v = self.calc_total_ang_momentum()
-        elif vector == 'total gas ang momentum':
-
-            raise Exception( "This option is clearly broken." )
-            # p_d = ParticleData(self.kwargs)
-            self.v = self.calc_total_ang_momentum()
+            self.normal_vector = self.calc_total_ang_momentum()
         else:
-            self.v = vector
+            self.normal_vector = normal_vector
 
         # Get the dot product
         P = self.get_data('P')
