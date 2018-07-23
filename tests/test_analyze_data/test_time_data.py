@@ -299,7 +299,7 @@ class TestCalc( unittest.TestCase ):
 
     ########################################################################
 
-    def test_calc_L( self ):
+    def test_calc_ang_momentum( self ):
 
         # Mock data
         self.t_data.data = {
@@ -312,11 +312,12 @@ class TestCalc( unittest.TestCase ):
         self.t_data.data['P'][:,1,2] = np.array([ 1., 2., 3. ])
         self.t_data.data['V'][:,1,2] = np.array([ 3., 5., 6. ])
 
+        # Make sure we don't do automatic calculations not relevant
         self.t_data.centered = True
         self.t_data.vel_centered = True
         self.t_data.hubble_corrected = True
 
-        self.t_data.calc_L()
+        self.t_data.calc_ang_momentum()
 
         actual = self.t_data.get_data( 'L' )
 
@@ -327,4 +328,42 @@ class TestCalc( unittest.TestCase ):
         # particle at a random snapshot
         expected_explicit = np.array([ -6., 6., -2. ])
         npt.assert_allclose( expected_explicit, actual[:,1,2] )
+
+    ########################################################################
+
+    def test_calc_phi( self ):
+
+        # Mock data
+        self.t_data.data = {
+            'M': np.random.randn( 4, 5 ),
+            'P': np.random.randn( 3, 4, 5 ),
+            'V': np.random.randn( 3, 4, 5 ),
+        }
+        # Mock data for particle index 1 in the 3rd snapshot
+        expected_phi = 180. - 15. # in degrees
+        phi_r = expected_phi * np.pi / 180. # in radians
+        theta = 50. * np.pi / 180.
+        self.t_data.data['P'][:,1,2] = np.array([
+            5. * np.cos( theta ) * np.sin( phi_r ),
+            5. * np.sin( theta ) * np.sin( phi_r ),
+            5. * np.cos( phi_r ),
+        ])
+
+        # Make sure we don't do automatic calculations not relevant
+        self.t_data.centered = True
+        self.t_data.vel_centered = True
+        self.t_data.hubble_corrected = True
+
+        # Normal vector will just be in the z-direction
+        normal_vector = np.array([ 0., 0., 2. ])
+
+        # Actual calculation
+        self.t_data.calc_phi( normal_vector=normal_vector )
+
+        # Get the data
+        actual = self.t_data.data['Phi']
+
+        # Make sure we get the general right shape
+        assert self.t_data.data['M'].shape == actual.shape
+        npt.assert_allclose( expected_phi, actual[1,2] )
 

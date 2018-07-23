@@ -1183,7 +1183,53 @@ class TimeData( SimulationData ):
 
             l_all[:,:,i] = l
 
-        self.data['L'] = np.array( l_all )
+        self.data['L'] = l_all
+
+    ########################################################################
+
+    def calc_phi( self, normal_vector='total ang momentum' ):
+        '''Calculate the angle (in degrees) from some vector.
+        By default the vector is the total angular momentum.
+        '''
+
+        if normal_vector == 'total ang momentum':
+            self.normal_vector = self.total_ang_momentum
+        else:
+            self.normal_vector = normal_vector
+
+        p_all = self.get_data('P')
+        r_all = self.get_data('R')
+
+        phi_all = np.zeros( self.base_data_shape )
+        for i in range( self.n_snaps ):
+
+            p = p_all[:,:,i]                                                    
+            r = r_all[:,i]
+
+            # Get the dot product
+            dot_product = np.zeros( p[0,:].shape )
+            for j in range(3):
+                dot_product += self.normal_vector[j] * p[j,:]
+
+            # Isolate for the cosine
+            cos_phi = dot_product / r / np.linalg.norm( self.normal_vector )
+
+            # Get the angle (in degrees)
+            phi_all[:,i] = np.arccos( cos_phi ) * 180. / np.pi
+
+        self.data['Phi'] = phi_all
+
+    ########################################################################
+
+    def calc_abs_phi(self, vector='total gas ang momentum'):
+        '''Calculate the angle (in degrees) from some vector, but don't mirror it around 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).'''
+
+        raise Exception( "TODO: Test this" )
+
+        # Get the original Phi
+        self.calc_phi(vector)
+
+        self.data['AbsPhi'] = np.where(self.data['Phi'] < 90., self.data['Phi'], np.absolute(self.data['Phi'] - 180.))
 
     ########################################################################
 
