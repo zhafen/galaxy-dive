@@ -1190,16 +1190,32 @@ class TimeData( SimulationData ):
     def calc_phi( self, normal_vector='total ang momentum' ):
         '''Calculate the angle (in degrees) from some vector.
         By default the vector is the total angular momentum.
+
+        Args:
+            normal_vector (str or array-like):
+                Vector that represents the vertical.
         '''
 
+        # Exit early if already calculated with the same normal vector
+        if 'Phi' in self.data:
+            same = np.allclose(
+                self.normal_vector,
+                normal_vector
+            )
+            if same:
+                return
+
+        # Set up the normal vector
         if normal_vector == 'total ang momentum':
             self.normal_vector = self.total_ang_momentum
         else:
             self.normal_vector = normal_vector
 
+        # Get all the data we need
         p_all = self.get_data('P')
         r_all = self.get_data('R')
 
+        # Loop over each snapshot and calculate
         phi_all = np.zeros( self.base_data_shape )
         for i in range( self.n_snaps ):
 
@@ -1221,15 +1237,27 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
-    def calc_abs_phi(self, vector='total gas ang momentum'):
-        '''Calculate the angle (in degrees) from some vector, but don't mirror it around 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).'''
+    def calc_abs_phi(self, normal_vector='total ang momentum' ):
+        '''Calculate the angle (in degrees) from some vector, but mirror
+        values past 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).
+        This is useful when there's symmetry above and below 90.
 
-        raise Exception( "TODO: Test this" )
+        Args:
+            normal_vector (str or array-like):
+                Vector that represents the vertical.
+        '''
 
         # Get the original Phi
-        self.calc_phi(vector)
+        self.calc_phi( normal_vector )
 
-        self.data['AbsPhi'] = np.where(self.data['Phi'] < 90., self.data['Phi'], np.absolute(self.data['Phi'] - 180.))
+        phi = self.data['Phi']
+
+        # Actual calculation
+        self.data['AbsPhi'] = np.where(
+            phi < 90.,
+            phi,
+            np.absolute( phi - 180.)
+        )
 
     ########################################################################
 

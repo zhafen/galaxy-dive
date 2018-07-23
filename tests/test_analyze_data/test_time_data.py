@@ -365,5 +365,33 @@ class TestCalc( unittest.TestCase ):
 
         # Make sure we get the general right shape
         assert self.t_data.data['M'].shape == actual.shape
+
+        # Check that we get the right value
         npt.assert_allclose( expected_phi, actual[1,2] )
 
+    ########################################################################
+
+    def test_calc_abs_phi( self ):
+
+        # Mock data
+        self.t_data.data = {
+            'M': np.random.randn( 4, 5 ),
+            'Phi': np.random.randn( 4, 5 ),
+        }
+        # Mock data for particular indices
+        self.t_data.data['Phi'][1,2] = 180. - 15.
+        self.t_data.data['Phi'][2,2] = 15.
+        self.t_data.normal_vector = np.array( [ 1., 2., 3. ] )
+
+        # Actual calculation
+        self.t_data.calc_abs_phi( [ 1., 2., 3. ] )
+
+        # Get the data
+        actual = self.t_data.data['AbsPhi']
+
+        # Test that we get the right shape
+        assert self.t_data.data['M'].shape == actual.shape
+
+        # Check that we get the right value
+        npt.assert_allclose( 15., actual[1,2] )
+        npt.assert_allclose( 15., actual[2,2] )
