@@ -8,12 +8,9 @@
   "tests/test_analyze_data/test_analyze_ahf_updater.py::TestHaloUpdater::test_save_smooth_mtree_halos_including_ahf_adds": true, 
   "tests/test_analyze_data/test_analyze_ahf_updater.py::TestHaloUpdater::test_smooth_mtree_halos_including_ahf_adds": true, 
   "tests/test_analyze_data/test_analyze_ahf_updater.py::TestMassRadii::test_save_ahf_halos_add_including_mass_radii": true, 
-  "tests/test_analyze_data/test_time_data.py::TestCalc": true, 
   "tests/test_analyze_data/test_time_data.py::TestCalc::test_calc_L": true, 
-  "tests/test_analyze_data/test_time_data.py::TestGetData": true, 
   "tests/test_analyze_data/test_time_data.py::TestGetData::test_get_data_selected_at_time": true, 
   "tests/test_analyze_data/test_time_data.py::TestGetData::test_get_masked_data_at_time": true, 
-  "tests/test_analyze_data/test_time_data.py::TestTimeData": true, 
   "tests/test_data_management/test_run_management.py::TestTroveManager::test_get_incomplete_runs": true, 
   "tests/test_galaxy_finder/test_finder.py::TestGalaxyFinder::test_pass_ahf_reader": true, 
   "tests/test_read_data/test_ahf.py::TestAHFReader::test_get_pos_or_vel_ahf_halos": true

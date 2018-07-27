@@ -975,10 +975,12 @@ class TimeData( SimulationData ):
 
     def __init__(
         self,
+        data_masker = None,
         *args, **kwargs
     ):
 
-        data_masker = TimeDataMasker( self )
+        if data_masker is None:
+            data_masker = TimeDataMasker( self )
 
         super( TimeData, self ).__init__(
             data_masker = data_masker,
@@ -1339,6 +1341,16 @@ class TimeDataMasker( generic_data.DataMasker ):
         optional_masks = None,
         *args, **kwargs
     ):
+        '''Get data over the full time history, based on its mask at
+        one time.
+    
+        Args:
+            data_key (str): Data to get.
+            
+            snum (int): Snapshot to get the data corresponding to.
+
+            mask (
+        '''
 
         # Make sure we don't try to pass a slice to any keyword arguments
         assert 'sl' not in kwargs, 'Taking slices of the original data' + \
