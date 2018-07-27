@@ -208,6 +208,65 @@ class TestTimeData( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
+class TestGetData( unittest.TestCase ):
+
+    def setUp( self ):
+
+        self.t_data = simulation_data.TimeData( **default_kwargs )
+
+        self.t_data.data = {
+            'P': np.zeros( ( 3, 4, 5 ) ),
+            'V': np.zeros( ( 3, 4, 5 ) ),
+        }
+
+        self.t_data.data_attrs = {
+            'hubble': 0.70199999999999996,
+            'omega_matter': 0.272,
+            'omega_lambda': 0.728,
+        }
+
+    ########################################################################
+
+    def test_get_masked_data_over_time( self ):
+        '''Make sure we can get data based on its classification at a
+        particular time.
+        '''
+
+        # Mock test data
+        self.t_data.data['M'] = np.array([
+            [ 1., 2., 3., np.nan, np.nan ],
+            [ 4., 5., 6., np.nan, np.nan ],
+            [ 7., 8., 9., np.nan, np.nan ],
+            [ 11., 12., 13., np.nan, np.nan ],
+        ])
+        self.t_data.data['T'] = np.array([
+            [ 11., 12., 13., np.nan, np.nan ],
+            [ 7., 8., 9., np.nan, np.nan ],
+            [ 4., 5., 6., np.nan, np.nan ],
+            [ 1., 2., 3., np.nan, np.nan ],
+        ])
+        self.t_data.data['snum'] = np.array([
+            600, 550, 500, 450, 400,
+        ])
+
+        # Mask some data
+        self.t_data.data_masker.mask_data( 'T', 4.5, 8.5 )
+
+        # Actual calculation
+        actual = self.t_data.get_masked_data_over_time(
+            'M',
+            snum = 550,
+        )
+
+        expected = np.array([
+            [ 4., 5., 6., np.nan, np.nan ],
+            [ 7., 8., 9., np.nan, np.nan ],
+        ])
+
+        npt.assert_allclose( actual, expected )
+
+########################################################################
+########################################################################
 
 class TestCalc( unittest.TestCase ):
 

@@ -554,6 +554,7 @@ class DataMasker( object ):
       data_ma (np.array) : Compressed masked data. Because it's compressed it may not have the same shape as the
         original data.
     '''
+
     data = self.data_object.get_processed_data( data_key, sl=sl, *args, **kwargs )
 
     # Get the appropriate mask

@@ -978,7 +978,13 @@ class TimeData( SimulationData ):
         *args, **kwargs
     ):
 
-        super( TimeData, self ).__init__( *args, **kwargs )
+        data_masker = TimeDataMasker( self )
+
+        super( TimeData, self ).__init__(
+            data_masker = data_masker,
+            *args,
+            **kwargs
+        )
 
     ########################################################################
 
@@ -1146,6 +1152,13 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
+    def get_masked_data_over_time( self, *args, **kwargs ):
+        '''Wrapper for geting masked data as a function of time.'''
+
+        return self.data_masker.get_masked_data_over_time( *args, **kwargs )
+
+    ########################################################################
+
     @property
     def snums( self ):
 
@@ -1305,3 +1318,61 @@ class TimeData( SimulationData ):
     def calc_MetalMass( self ):
           
         self.data['MetalMass'] = self.get_data( 'M' ) * self.get_data( 'Z' ) * self.z_sun
+
+########################################################################
+########################################################################
+
+class TimeDataMasker( generic_data.DataMasker ):
+    '''Data masker for worldline data.'''
+
+    def __init__( self, time_data ):
+
+        super( TimeDataMasker, self ).__init__( time_data )
+
+    ########################################################################
+
+    def get_masked_data_over_time(
+        self,
+        data_key,
+        snum,
+        mask = 'total',
+        optional_masks = None,
+        *args, **kwargs
+    ):
+
+        # Make sure we don't try to pass a slice to any keyword arguments
+        assert 'sl' not in kwargs, 'Taking slices of the original data' + \
+                ' should not be done when using get_masked_data_over_time'
+
+        # Get the appropriate mask
+        if isinstance( mask, np.ndarray ):
+            used_mask = mask
+        elif isinstance( mask, bool ) or isinstance( mask, np.bool_ ):
+            if not mask:
+              return data
+            raise Exception( "All data is masked." )
+        elif mask == 'total':
+            used_mask = self.get_total_mask( optional_masks=optional_masks )
+        else:
+            raise KeyError( "Unrecognized type of mask, {}".format( mask ) )
+
+        # Get the relevant ind
+        correct_snum = self.data_object.snums == snum
+        ind = np.arange( self.data_object.n_snaps )[correct_snum][0]
+
+        # Get the boolean for the selected data
+        sl = np.invert( used_mask[:,ind] )
+        
+        # Get the masked data (masked via the slice)
+        masked_data = self.data_object.get_processed_data(
+            data_key,
+            sl = sl,
+            *args, **kwargs
+        )
+
+        return masked_data
+
+
+
+
+

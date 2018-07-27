@@ -361,6 +361,7 @@ class GenericPlotter( object ):
         n_bins = 128,
         average = False,
         normed = False,
+        hist_div_arr = None,
         conditional_y = False,
         y_div_function = None,
         vmin = None, vmax = None,
@@ -383,6 +384,7 @@ class GenericPlotter( object ):
         horizontal_line = None, vertical_line = None,
         horizontal_line_kwargs = { 'linestyle': '--', 'linewidth': 5, 'color': '#337DB8', },
         vertical_line_kwargs = { 'linestyle': '--', 'linewidth': 5, 'color': '#337DB8', },
+        return_dist = False,
         *args, **kwargs ):
         '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
         Args:
@@ -487,6 +489,10 @@ class GenericPlotter( object ):
             hist_x, x_edges = np.histogram( x_data, x_edges, normed=normed )
             hist2d /= hist_x[:,np.newaxis]
 
+        # Divide the histogram bins by this array
+        if hist_div_arr is not None:
+            hist2d /= hist_div_arr
+
         # Plot
         if ax is default:
             fig = plt.figure( figsize=(10,9), facecolor='white' )
@@ -590,6 +596,10 @@ class GenericPlotter( object ):
             gen_plot.save_fig( out_dir, save_file, fig=fig, dpi=75 )
 
             plt.close()
+
+        # Return?
+        if return_dist:
+            return hist2d, x_edges, y_edges
 
     ########################################################################
 
