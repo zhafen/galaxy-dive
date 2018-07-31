@@ -11,6 +11,7 @@
   "tests/test_analyze_data/test_time_data.py::TestCalc::test_calc_L": true, 
   "tests/test_analyze_data/test_time_data.py::TestGetData::test_get_data_selected_at_time": true, 
   "tests/test_analyze_data/test_time_data.py::TestGetData::test_get_masked_data_at_time": true, 
+  "tests/test_analyze_data/test_time_data.py::TestGetData::test_get_masked_data_over_time_seed_sample": true, 
   "tests/test_data_management/test_run_management.py::TestTroveManager::test_get_incomplete_runs": true, 
   "tests/test_galaxy_finder/test_finder.py::TestGalaxyFinder::test_pass_ahf_reader": true, 
   "tests/test_read_data/test_ahf.py::TestAHFReader::test_get_pos_or_vel_ahf_halos": true

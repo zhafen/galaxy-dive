@@ -818,7 +818,7 @@ class SnapshotData( SimulationData ):
         self.center_vel_coords()
 
         # Calculate the radial velocity
-        self.data['Vr'] = (self.data['V'] * self.get_data('P')).sum(0) / self.get_data('R')
+        self.data['Vr'] = ( self.get_data( 'V' ) * self.get_data('P')).sum(0) / self.get_data('R')
 
     ########################################################################
 
@@ -1339,6 +1339,7 @@ class TimeDataMasker( generic_data.DataMasker ):
         snum,
         mask = 'total',
         optional_masks = None,
+        n_samples = None,
         *args, **kwargs
     ):
         '''Get data over the full time history, based on its mask at
@@ -1381,6 +1382,13 @@ class TimeDataMasker( generic_data.DataMasker ):
             sl = sl,
             *args, **kwargs
         )
+
+        if n_samples is not None:
+            sampled_inds = np.random.choice(
+                np.arange( masked_data.shape[0] ),
+                n_samples,
+            )
+            masked_data = masked_data[sampled_inds,:]
 
         return masked_data
 
