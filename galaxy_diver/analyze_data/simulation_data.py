@@ -1340,6 +1340,7 @@ class TimeDataMasker( generic_data.DataMasker ):
         mask = 'total',
         optional_masks = None,
         n_samples = None,
+        seed = None,
         *args, **kwargs
     ):
         '''Get data over the full time history, based on its mask at
@@ -1383,7 +1384,13 @@ class TimeDataMasker( generic_data.DataMasker ):
             *args, **kwargs
         )
 
+        # Sample a subset of the data
         if n_samples is not None:
+
+            # If given a seed for sampling, use it
+            if seed is not None:
+                np.random.seed( seed )
+
             sampled_inds = np.random.choice(
                 np.arange( masked_data.shape[0] ),
                 n_samples,

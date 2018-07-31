@@ -282,8 +282,6 @@ class TestGetData( unittest.TestCase ):
         # Mask some data
         self.t_data.data_masker.mask_data( 'T', 0., np.inf )
 
-        seed = np.random.randint( 1e7 )
-
         # Actual calculation
         n_samples = 10
         first = self.t_data.get_masked_data_over_time(
@@ -302,6 +300,46 @@ class TestGetData( unittest.TestCase ):
             n_samples = n_samples,
         )
         assert not np.allclose( first, second )
+
+    ########################################################################
+
+    def test_get_masked_data_over_time_sample_seed( self ):
+        '''Make sure we can get data based on its classification at a
+        particular time.
+        '''
+
+        # Mock test data
+        n_particles = int( 1e3 )
+        n_snapshots = 550
+        self.t_data.data['M'] = np.random.randn( n_particles, n_snapshots )
+        self.t_data.data['T'] = np.random.randn( n_particles, n_snapshots )
+        self.t_data.data['snum'] = np.arange( 600, 600-n_snapshots, -1 )
+
+        # Mask some data
+        self.t_data.data_masker.mask_data( 'T', 0., np.inf )
+
+        seed = np.random.randint( 1e7 )
+
+        # Actual calculation
+        n_samples = 10
+        first = self.t_data.get_masked_data_over_time(
+            'M',
+            snum = 550,
+            n_samples = n_samples,
+            seed = seed,
+        )
+
+        # Make sure we have the right shape
+        self.assertEqual( first.shape, (n_samples, n_snapshots) )
+
+        # Our data shouldn't look the same, unless by rare chance.
+        second = self.t_data.get_masked_data_over_time(
+            'M',
+            snum = 550,
+            n_samples = n_samples,
+            seed = seed,
+        )
+        assert np.allclose( first, second )
 
 ########################################################################
 ########################################################################
