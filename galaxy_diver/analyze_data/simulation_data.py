@@ -1098,6 +1098,8 @@ class TimeData( SimulationData ):
         scale_key = None,
         scale_a_power = None,
         scale_h_power = None,
+        tile_data = False,
+        tile_dim = 'auto',
         *args, **kwargs
     ):
         '''Modified method for getting processed method. For the most part is equivalent to calling the method
@@ -1115,6 +1117,22 @@ class TimeData( SimulationData ):
                 The halo data that we are scaling processed_data by will be multiplied by the hubble parameter to this power.
                 Useful for data in cosmological units (as is often normal).
 
+            tile_data (bool) :
+                If True, tile data along a given direction. This is usually for
+                data formatting purposes.
+
+            tile_dim (str) :
+                If the data is tiled, what dimension of the data should match?
+                Options:
+                    default :
+                        Tiles according to data_size.
+                    'match_snaps' :
+                        The data is tiled such that the new shape is
+                        (self.n_snaps, data_size).
+                    'match_particles' :
+                        The data is tiled such that the new shape is
+                        (data_size, self.n_particles).
+
             *args, **kwargs :
                 Passed to SimulationData.get_processed_data.
 
@@ -1122,7 +1140,10 @@ class TimeData( SimulationData ):
             processed_data (array-like) : Requested data array.
         '''
 
-        processed_data = super( TimeData, self ).get_processed_data( data_key, *args, **kwargs )
+        processed_data = super( TimeData, self ).get_processed_data(
+            data_key,
+            *args, **kwargs
+        )
 
         if smooth_data:
             processed_data = signal.savgol_filter(
@@ -1149,6 +1170,23 @@ class TimeData( SimulationData ):
                     data_to_div_by = data_to_div_by[kwargs['sl'][1]]
 
             processed_data /= data_to_div_by
+
+        if tile_data:
+
+            if tile_dim == 'auto':
+                if data.shape == ( self.n_particles, ):
+                    tile_dim = 'match_snaps'
+                elif data.shape == ( self.n_snaps, ):
+                    tile_dim = 'match_particles'
+                else:
+                    raise Exception(
+                        "Unrecognized data shape, {}".format( data.shape ) )
+
+            if tile_dim == 'match_snaps':
+                data = np.tile( data, ( self.n_snaps, 1) ).transpose()
+
+            elif tile_dim == 'match_particles':
+                data = np.tile( data, ( self.n_particles, 1) )
 
         return processed_data
 
@@ -1363,7 +1401,11 @@ class TimeDataMasker( generic_data.DataMasker ):
             used_mask = mask
         elif isinstance( mask, bool ) or isinstance( mask, np.bool_ ):
             if not mask:
-              return data
+                return self.data_object.get_processed_data(
+                    data_key,
+                    *args, **kwargs
+                )
+            
             raise Exception( "All data is masked." )
         elif mask == 'total':
             used_mask = self.get_total_mask( optional_masks=optional_masks )
