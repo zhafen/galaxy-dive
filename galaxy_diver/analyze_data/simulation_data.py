@@ -1091,6 +1091,7 @@ class TimeData( SimulationData ):
     def get_processed_data(
         self,
         data_key,
+        sl = None,
         smooth_data = False,
         smoothing_window_length = 9,
         smoothing_polyorder = 3,
@@ -1102,19 +1103,31 @@ class TimeData( SimulationData ):
         tile_dim = 'auto',
         *args, **kwargs
     ):
-        '''Modified method for getting processed method. For the most part is equivalent to calling the method
-        of the parent class, but is also capable of scaling the retrieved data by a column from the halo data.
+        '''Modified method for getting processed method. For the most part is
+        equivalent to calling the method of the parent class, but is also
+        capable of scaling the retrieved data by a column from the halo data.
 
         Args:
+            data_key (str) : What to get out?
+
+            sl (slice) : Slice of the data, if requested.
+
+            smooth_data (bool) : If True, smooth the data.
+
+            smoothing_window_length, smoothing_polyorder (int) :
+                Arguments for how to smooth the data.
+
             scale_key (str) :
                 Halo data entry by which to divide the data by.
 
             scale_a_power (float) :
-                The halo data that we are scaling processed_data by will be multiplied by a to this power.
+                The halo data that we are scaling processed_data by will be
+                multiplied by a to this power.
                 Useful for data in cosmological units (as is often normal).
 
             scale_h_power (float) :
-                The halo data that we are scaling processed_data by will be multiplied by the hubble parameter to this power.
+                The halo data that we are scaling processed_data by will be
+                multiplied by the hubble parameter to this power.
                 Useful for data in cosmological units (as is often normal).
 
             tile_data (bool) :
@@ -1124,8 +1137,8 @@ class TimeData( SimulationData ):
             tile_dim (str) :
                 If the data is tiled, what dimension of the data should match?
                 Options:
-                    default :
-                        Tiles according to data_size.
+                    'auto' :
+                        Tiles according to data size.
                     'match_snaps' :
                         The data is tiled such that the new shape is
                         (self.n_snaps, data_size).
@@ -1140,8 +1153,14 @@ class TimeData( SimulationData ):
             processed_data (array-like) : Requested data array.
         '''
 
+        if ( sl is not None ) and tile_data:
+            used_sl = None
+        else:
+            used_sl = sl
+
         processed_data = super( TimeData, self ).get_processed_data(
             data_key,
+            sl = used_sl,
             *args, **kwargs
         )
 
@@ -1165,9 +1184,8 @@ class TimeData( SimulationData ):
             if scale_h_power is not None:
                 processed_data /= self.hubble_param**scale_h_power
 
-            if 'sl' in kwargs:
-                if kwargs['sl'] is not None:
-                    data_to_div_by = data_to_div_by[kwargs['sl'][1]]
+            if sl is not None:
+                data_to_div_by = data_to_div_by[sl]
 
             processed_data /= data_to_div_by
 
@@ -1193,6 +1211,9 @@ class TimeData( SimulationData ):
                     processed_data,
                     ( self.n_particles, 1),
                 )
+
+            if sl is not None:
+                processed_data = processed_data[sl]
 
         return processed_data
 
