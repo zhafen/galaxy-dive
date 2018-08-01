@@ -1174,19 +1174,25 @@ class TimeData( SimulationData ):
         if tile_data:
 
             if tile_dim == 'auto':
-                if data.shape == ( self.n_particles, ):
+                if processed_data.shape == ( self.n_particles, ):
                     tile_dim = 'match_snaps'
-                elif data.shape == ( self.n_snaps, ):
+                elif processed_data.shape == ( self.n_snaps, ):
                     tile_dim = 'match_particles'
                 else:
                     raise Exception(
                         "Unrecognized data shape, {}".format( data.shape ) )
 
             if tile_dim == 'match_snaps':
-                data = np.tile( data, ( self.n_snaps, 1) ).transpose()
+                processed_data = np.tile(
+                    processed_data,
+                    ( self.n_snaps, 1),
+                ).transpose()
 
             elif tile_dim == 'match_particles':
-                data = np.tile( data, ( self.n_particles, 1) )
+                processed_data = np.tile(
+                    processed_data,
+                    ( self.n_particles, 1),
+                )
 
         return processed_data
 
