@@ -1445,6 +1445,18 @@ class TimeDataMasker( generic_data.DataMasker ):
 
         # Get the boolean for the selected data
         sl = np.invert( used_mask[:,ind] )
+
+        # If we want to get the particle ind, we do something different
+        if data_key == 'particle_ind':
+            if n_samples is None:
+                n_particles_selected = sl.sum()
+            else:
+                n_particles_selected = n_samples
+
+            return np.tile(
+                np.arange( n_particles_selected ),
+                ( self.data_object.n_snaps, 1 ),
+            ).transpose()
         
         # Get the masked data (masked via the slice)
         masked_data = self.data_object.get_processed_data(

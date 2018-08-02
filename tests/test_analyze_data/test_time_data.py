@@ -341,6 +341,39 @@ class TestGetData( unittest.TestCase ):
         )
         assert np.allclose( first, second )
 
+    ########################################################################
+
+    def test_get_masked_data_over_time_particle_ind( self ):
+        '''Make sure we can get data based on its classification at a
+        particular time.
+        '''
+
+        # Mock test data
+        n_particles = int( 1e3 )
+        n_snapshots = 550
+        self.t_data.data['M'] = np.random.randn( n_particles, n_snapshots )
+        self.t_data.data['T'] = np.random.randn( n_particles, n_snapshots )
+        self.t_data.data['snum'] = np.arange( 600, 600-n_snapshots, -1 )
+
+        # Mask some data
+        self.t_data.data_masker.mask_data( 'T', 0., np.inf )
+
+        seed = np.random.randint( 1e7 )
+
+        # Actual calculation
+        n_samples = 10
+        actual = self.t_data.get_masked_data_over_time(
+            'particle_ind',
+            snum = 550,
+            n_samples = n_samples,
+            seed = seed,
+        )
+        expected = np.array(
+            [ np.arange( n_samples ), ]*n_snapshots
+        ).transpose()
+
+        npt.assert_allclose( expected, actual )
+
 ########################################################################
 ########################################################################
 
