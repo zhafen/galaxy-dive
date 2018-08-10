@@ -491,7 +491,6 @@ class TestGalaxyFinder( unittest.TestCase ):
         used_kwargs = copy.copy( self.kwargs )
         used_kwargs['ids_to_return'] = [
             'd_gal',
-            'halo_id',
             'gal_id',
         ]
         used_kwargs['halo_data_dir'] = './tests/data/rockstar_dir'
@@ -510,7 +509,7 @@ class TestGalaxyFinder( unittest.TestCase ):
 
         expected = {
             'd_gal': np.array( [ 0., 0., 0., ] ),
-            'halo_id': np.array( [ 6811, 7339, 9498 ] ),
+            # 'halo_id': np.array( [ 6811, 7339, 9498 ] ),
             'gal_id': np.array( [ 6811, 7339, 9498 ] ),
         }
 
@@ -930,7 +929,6 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
     def setUp( self ):
 
         gal_finder_kwargs_min_nstar = {
-            'length_scale': 'r_scale',
             'minimum_criteria': 'n_star',
             'minimum_value': 10,
 

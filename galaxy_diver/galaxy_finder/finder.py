@@ -136,21 +136,6 @@ class GalaxyFinder( object ):
         if self.mt_length_scale is None:
             self.mt_length_scale = length_scale
 
-        # Halo ID works well, but not all the time.
-        # In particular, it doesn't work when the length scale used is not
-        # the virial radius. Break when this happens
-        returning_a_halo_id = False
-        for data_type in self.ids_to_return:
-            if 'halo' in data_type:
-                returning_a_halo_id = True
-        diff_length_scale = (
-            ( length_scale != 'Rvir' ) or
-            ( self.mt_length_scale != 'Rvir' )
-        )
-        halo_id_broken = returning_a_halo_id and diff_length_scale
-        assert not halo_id_broken, "Cannot currently return a halo ID when" + \
-            " using a different length scale"
-
         # Setup the default halo_data
         if halo_data is None:
             self.halo_data = h_data.HaloData(
@@ -317,6 +302,21 @@ class GalaxyFinder( object ):
                 galaxy_and_halo_ids[id_type].fill( -2. )
 
             return galaxy_and_halo_ids
+
+        # Halo ID works well, but not all the time.
+        # In particular, it doesn't work when the length scale used is not
+        # the virial radius. Break when this happens
+        returning_a_halo_id = False
+        for data_type in self.ids_to_return:
+            if 'halo' in data_type:
+                returning_a_halo_id = True
+        diff_length_scale = (
+            ( self.length_scale != 'Rvir' ) or
+            ( self.mt_length_scale != 'Rvir' )
+        )
+        halo_id_broken = returning_a_halo_id and diff_length_scale
+        assert not halo_id_broken, "Cannot currently return a halo ID when" + \
+            " using a different length scale"
 
         # Actually get the data
         for id_type in self.ids_to_return:
