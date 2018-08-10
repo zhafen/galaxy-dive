@@ -33,6 +33,7 @@ class GalaxyFinder( object ):
         hubble,
         galaxy_cut,
         length_scale,
+        mt_length_scale = None,
         halo_length_scale = 'Rvir',
         particle_masses = None,
         minimum_criteria = 'n_star',
@@ -71,6 +72,10 @@ class GalaxyFinder( object ):
             length_scale (str) :
                 Anything within galaxy_cut*length_scale is counted as being
                 inside the galaxy.
+
+            mt_length_scale (str) :
+                Same as length scale, but for merger tree halos. Defaults to
+                length_scale.
 
             halo_length_scale (str) :
                 Anything within halo_length_scale is counted as being
@@ -127,6 +132,24 @@ class GalaxyFinder( object ):
                 memory_mode_divisions, and then the results are calculated for
                 each division before bringing everything together.
         '''
+
+        if self.mt_length_scale is None:
+            self.mt_length_scale = length_scale
+
+        # Halo ID works well, but not all the time.
+        # In particular, it doesn't work when the length scale used is not
+        # the virial radius. Break when this happens
+        returning_a_halo_id = False
+        for data_type in self.ids_to_return:
+            if 'halo' in data_type:
+                returning_a_halo_id = True
+        diff_length_scale = (
+            ( length_scale != 'Rvir' ) or
+            ( self.mt_length_scale != 'Rvir' )
+        )
+        halo_id_broken = returning_a_halo_id and diff_length_scale
+        assert not halo_id_broken, "Cannot currently return a halo ID when" + \
+            " using a different length scale"
 
         # Setup the default halo_data
         if halo_data is None:
@@ -472,20 +495,32 @@ class GalaxyFinder( object ):
 
     ########################################################################
 
-    def find_halo_id( self, radial_cut_fraction=1., type_of_halo_id='halo_id' ):
-        '''Find the smallest halos our particles are inside of some radial cut of (we define this as the halo ID).
-        In the case of using MT halo ID, we actually find the most massive our particles are inside some radial cut of.
+    def find_halo_id(
+        self,
+        radial_cut_fraction = 1.,
+        type_of_halo_id = 'halo_id',
+    ):
+        '''Find the smallest halos our particles are inside of some radial cut
+        of (we define this as the halo ID). In the case of using MT halo ID,
+        we actually find the most massive our particles are inside some
+        radial cut of.
 
         Args:
-            radial_cut_fraction (float): A particle is in a halo if it's in radial_cut_fraction*length_scale from the center.
-            type_of_halo_id (str): If 'halo_id' then this is the halo_id at a given snapshot.
-                                                          If 'mt_halo_id' then this is the halo_id according to the merger tree.
+            radial_cut_fraction (float):
+                A particle is in a halo if it's in radial_cut_fraction*length_scale from the center.
+
+            type_of_halo_id (str):
+                If 'halo_id' then this is the halo_id at a given snapshot.
+                If 'mt_halo_id' then this is the halo_id according to the
+                merger tree.
 
         Returns:
             halo_id (np.array of ints): Shape ( n_particles, ).
                 The ID of the least massive substructure the particle's part of.
-                In the case of using the 'mt_halo_id', this is the ID of the most massive merger tree halo the particle's part of.
-                If it's -2, then that particle is not part of any halo, within radial_cut_fraction*length_scale .
+                In the case of using the 'mt_halo_id', this is the ID of the
+                most massive merger tree halo the particle's part of. If it's
+                -2, then that particle is not part of any halo, within
+                radial_cut_fraction*length_scale .
         '''
 
         # Choose parameters of the rest of the function based on what type of halo ID we're using
@@ -525,7 +560,9 @@ class GalaxyFinder( object ):
             raise Exception( "Unrecognized type_of_halo_id" )
 
         # Get the cut
-        part_of_halo = find_containing_halos_fn( radial_cut_fraction=radial_cut_fraction )
+        part_of_halo = find_containing_halos_fn(
+            radial_cut_fraction = radial_cut_fraction
+        )
 
         # Mask the data
         tiled_m_vir = np.tile( m_vir, ( self.n_particles, 1 ) )
@@ -625,12 +662,12 @@ class GalaxyFinder( object ):
                 dist = scipy.spatial.distance.cdist( self.particle_positions, halo_pos )
 
                 # Get the relevant length scale
-                if self.length_scale == 'r_scale':
+                if self.mt_length_scale == 'r_scale':
                     # Get the scale radius
                     r_vir = mtree_halo[self.halo_length_scale][ self.snum ]
                     length_scale = r_vir/mtree_halo['cAnalytic'][ self.snum ]
                 else:
-                    length_scale = mtree_halo[self.length_scale][ self.snum ]
+                    length_scale = mtree_halo[self.mt_length_scale][self.snum]
                 length_scale_pkpc = length_scale/( 1. + self.redshift )/self.hubble
 
                 # Get the radial distance

@@ -441,6 +441,49 @@ class TestGalaxyFinder( unittest.TestCase ):
 
     ########################################################################
 
+    def test_find_ids_different_mt_scale( self ):
+
+        particle_positions = np.array([
+            [ 29414.96458784,  30856.75007114,  32325.90901812], # Halo 0, host halo 0
+            [ 30068.5541178 ,  32596.72758226,  32928.1115097 ], # Halo 10, host halo 1
+            [ 29459.32290246,  30768.32556725,  32357.26078864], # Halo 3783, host halo 3610
+            ])
+        # Shift the first particle over slightly to put it outside Rmax, which
+        # we'll use as our length scale.
+        particle_positions[0][0] += 4.
+        particle_positions *= 1./(1. + self.redshift)/self.hubble
+
+        expected = {
+            'd_gal': np.array( [ 4., 0., 0., ] )/(1. + self.redshift)/self.hubble,
+            'host_gal_id': np.array( [-1, 1, 3610] ),
+            'gal_id': np.array( [0, 10, 3783] ),
+            'mt_gal_id': np.array( [-2, -2, -2] ),
+        }
+
+        kwargs = copy.deepcopy( self.kwargs )
+        kwargs['mt_length_scale'] = 'Rmax'
+        kwargs['galaxy_cut'] = 0.1
+        kwargs['ids_to_return'] = [
+            'd_gal',
+            'd_other_gal_scaled',
+            'host_gal_id',
+            'gal_id',
+            'mt_gal_id',
+        ]
+
+        # Do the actual calculation
+        galaxy_finder = general_galaxy_finder.GalaxyFinder(
+            particle_positions,
+            **kwargs
+        )
+        actual = galaxy_finder.find_ids()
+
+        for key in expected.keys():
+            print(key)
+            npt.assert_allclose( expected[key], actual[key], atol=1e-10 )
+
+    ########################################################################
+
     def test_find_ids_rockstar( self ):
         '''Test that this works for Rockstar as well.'''
 
@@ -481,8 +524,6 @@ class TestGalaxyFinder( unittest.TestCase ):
         for key in expected.keys():
             print(key)
             npt.assert_allclose( expected[key], actual[key], atol=1e-10 )
-
-    ########################################################################
 
     ########################################################################
 
