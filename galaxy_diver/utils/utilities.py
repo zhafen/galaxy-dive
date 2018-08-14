@@ -353,13 +353,16 @@ class SmartDict( collections.Mapping ):
 
         return results
 
-    def split_by_dict( self, d ):
+    def split_by_dict( self, d, return_list=False ):
         '''Break the smart dictionary into smaller smart dictionaries according
         to their label provided by a dictionary
 
         Args:
             d (dict) :
                 Dictionary to use to split into smaller dictionaries
+
+            return_list (bool) :
+                If True, return a list of arrays.
         '''
 
         results = {}
@@ -380,7 +383,14 @@ class SmartDict( collections.Mapping ):
                     results['no label'] = SmartDict( {} )
                     results['no label'][key] = item
         
-        return results
+        if not return_list:
+            return results
+
+        final_results = []
+        for key, item in results.items():
+            final_results.append( item.array() )
+
+        return final_results
 
     def log10( self ):
         '''Wrapper for np.log10'''
@@ -388,9 +398,11 @@ class SmartDict( collections.Mapping ):
         return self.apply( np.log10 )
 
     def array( self ):
-        '''Wrapper for np.array'''
+        '''Returns a np.ndarray with unique order (sorted keys )'''
 
-        return np.array( self.values() )
+        values = [ x for _,x in sorted(zip( self.keys(), self.values() ) )]
+
+        return np.array( values )
 
     def remove_empty_items( self ):
         '''Look for empty items and delete them.'''

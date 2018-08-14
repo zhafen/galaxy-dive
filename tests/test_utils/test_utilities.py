@@ -279,6 +279,22 @@ class TestSmartDict( unittest.TestCase ):
 
         self.assertEqual( d.transpose(), expected )
 
+    ########################################################################
+
+    def test_array( self ):
+
+        d = utilities.SmartDict( {
+            'a' : 1,
+            'c' : 2,
+            'b' : 3,
+        } )
+
+        expected = np.array([ 1., 3., 2. ])
+
+        actual = d.array()
+
+        npt.assert_allclose( expected, actual )
+
 ########################################################################
 ########################################################################
 

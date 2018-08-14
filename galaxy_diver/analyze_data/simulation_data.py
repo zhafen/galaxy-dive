@@ -1386,6 +1386,21 @@ class TimeData( SimulationData ):
           
         self.data['MetalMass'] = self.get_data( 'M' ) * self.get_data( 'Z' ) * self.z_sun
 
+    ########################################################################
+
+    def calc_EnrichedMetalMass( self ):
+        '''Calculate the metal mass that comes from enrichment, not counting mass
+        that's at the metallicity floor. Assumes that the there will always be at
+        least one particle in the simulation that's at the metallicity floor.'''
+
+        enrichment_fraction = (
+            self.get_data( 'Z' ) - np.nanmin( self.get_data( 'Z' ) )
+        )
+
+        enrichment_fraction *= self.z_sun
+
+        self.data['EnrichedMetalMass'] = self.get_data( 'M' ) * enrichment_fraction
+
 ########################################################################
 ########################################################################
 

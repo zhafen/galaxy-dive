@@ -6,6 +6,7 @@
 @status: Development
 '''
 
+import copy
 import errno
 import numpy as np
 import os
@@ -13,6 +14,7 @@ import subprocess
 
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_colors
+import matplotlib.patches
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import galaxy_diver.utils.data_operations as data_ops
@@ -20,6 +22,163 @@ import galaxy_diver.utils.data_operations as data_ops
 ########################################################################
 ########################################################################
 
+def box_plot(
+    x_datas,
+    y_datas,
+    ax = None,
+    color = 'k',
+    x_scale = 'log',
+    y_scale = 'log',
+    y_floor = None,
+    box_upper_limit = None,
+    box_lower_limit = None,
+    box_zorder = 50,
+    blank_zorder = 30,
+    line_zorder = 10,
+    plot_boxes = True,
+    skip_single_points = True,
+    linewidth = 4,
+):
+
+    if ax is None:
+        fig = plt.figure( figsize=(11,6) )
+        ax = plt.gca()
+
+    means = {
+        'x' : [],
+        'y' : [],
+    }
+    errs = {
+        'x' : [],
+        'y' : [],
+    }
+    for x_data, y_data in zip( x_datas, y_datas ):
+
+        if ( len( x_data ) < 2 ) and skip_single_points:
+            continue
+
+        # Make copies so we don't modify the data
+        x_data = copy.copy( x_data )
+        y_data = copy.copy( y_data )
+
+        # Apply a floor
+        y_data[y_data<y_floor] = y_floor
+
+        # Put in logspace
+        if x_scale == 'log':
+            x_data = np.log10( x_data )
+        if y_scale == 'log':
+            y_data = np.log10( y_data )
+
+        x_mean = x_data.mean()
+        y_mean = y_data.mean()
+
+        x_err = x_data.std()
+        y_err = y_data.std()
+
+        # Get the negative and positive errs
+        if x_scale == 'log':
+            x_err_neg, x_err_pos = errs_from_log_errs(
+                x_mean,
+                x_err,
+            )
+        elif x_scale == 'linear':
+            x_err_neg = x_err
+            x_err_pos = x_err
+        if y_scale == 'log':
+            y_err_neg, y_err_pos = errs_from_log_errs(
+                y_mean,
+                y_err,
+                upper_limit = box_upper_limit,
+                lower_limit = box_lower_limit,
+            )
+        elif y_scale == 'linear':
+            y_err_neg = y_err
+            y_err_pos = y_err
+
+        if x_scale == 'log':
+            x_mean = 10.**x_mean
+        if y_scale == 'log':
+            y_mean = 10.**y_mean
+
+        # Store for plotting
+        means['x'].append( x_mean )
+        means['y'].append( y_mean )
+        errs['x'].append( x_mean )
+        errs['y'].append( x_mean )
+
+        left = x_mean - x_err_neg
+        bottom = y_mean - y_err_neg
+
+        width = x_err_neg + x_err_pos
+        height = y_err_neg + y_err_pos
+
+        if plot_boxes:
+            # Rectangle itself
+            rect = matplotlib.patches.Rectangle(
+                (left,bottom),
+                width,
+                height,
+                fill = False,
+                edgecolor = color,
+                linewidth = linewidth,
+                zorder = box_zorder,
+            )                
+            ax.add_patch( rect )
+            
+            # Blank rectangles to clean things up
+            rect = matplotlib.patches.Rectangle(
+                (left,bottom),
+                width,
+                height,
+                facecolor = 'w',
+                edgecolor = 'w',
+                linewidth = linewidth,
+                zorder = blank_zorder,
+            )                
+            ax.add_patch( rect )
+
+    sorted_inds = np.argsort( means['x'] )
+
+    # Plot everything else
+    ax.plot(
+        np.array( means['x'] )[sorted_inds],
+        np.array( means['y'] )[sorted_inds],
+        linewidth = linewidth,
+        color = color,
+        zorder = line_zorder,
+    )
+
+    # Set scale
+    ax.set_xscale( x_scale )
+    ax.set_yscale( y_scale )
+
+########################################################################
+
+def errs_from_log_errs( log_mean, log_err, upper_limit=None, lower_limit=None ):
+    
+    err_positive = ( 10.**log_mean ) * \
+        ( 10.**log_err - 1. )
+    err_negative = -1.*( 10.**log_mean ) * \
+        ( 10.**-log_err - 1. )
+        
+    if upper_limit is not None:
+        exceeds_limit = 10.**log_mean + err_positive > upper_limit
+        try:
+            err_positive[exceeds_limit] = ( upper_limit - 10.**log_mean )[exceeds_limit]
+        except TypeError:
+            err_positive = ( upper_limit - 10.**log_mean )
+
+    if lower_limit is not None:
+        exceeds_limit = 10.**log_mean - err_negative < lower_limit
+        try:
+            err_negative[exceeds_limit] = ( 10.**log_mean - lower_limit )[exceeds_limit]
+        except TypeError:
+            err_negative = ( 10.**log_mean - lower_limit )
+        
+    return err_negative, err_positive
+        
+########################################################################
 
 def make_movie( img_dir, file_pattern, movie_save_file, quality=1 ):
     '''Make a movie using ffmpeg.
