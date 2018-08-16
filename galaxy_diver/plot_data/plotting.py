@@ -18,6 +18,7 @@ import matplotlib.patches
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import galaxy_diver.utils.data_operations as data_ops
+import galaxy_diver.utils.astro as astro_utils
 
 ########################################################################
 ########################################################################
@@ -35,6 +36,7 @@ def box_plot(
     box_zorder = 50,
     blank_zorder = 30,
     line_zorder = 10,
+    zorder_offset = 0,
     plot_boxes = True,
     skip_single_points = True,
     linewidth = 4,
@@ -122,7 +124,7 @@ def box_plot(
                 fill = False,
                 edgecolor = color,
                 linewidth = linewidth,
-                zorder = box_zorder,
+                zorder = box_zorder - zorder_offset,
             )                
             ax.add_patch( rect )
             
@@ -134,7 +136,7 @@ def box_plot(
                 facecolor = 'w',
                 edgecolor = 'w',
                 linewidth = linewidth,
-                zorder = blank_zorder,
+                zorder = blank_zorder - zorder_offset,
             )                
             ax.add_patch( rect )
 
@@ -146,7 +148,7 @@ def box_plot(
         np.array( means['y'] )[sorted_inds],
         linewidth = linewidth,
         color = color,
-        zorder = line_zorder,
+        zorder = line_zorder - zorder_offset,
     )
 
     # Set scale
@@ -177,6 +179,54 @@ def errs_from_log_errs( log_mean, log_err, upper_limit=None, lower_limit=None ):
             err_negative = ( 10.**log_mean - lower_limit )
         
     return err_negative, err_positive
+
+########################################################################
+
+def add_redshift_to_axis(
+        ax,
+        hubble,
+        omega_matter,
+        tick_redshifts = np.array(
+            [ 0.1, 0.25, 0.4, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, ]
+        )
+    ):
+    '''Add redshift labels to the top axis of plot that has age of the universe
+    on the bottom axis.
+
+    Args:
+        ax (axis object): Original axis
+
+        hubble (float): Hubble parameter, used for calculating the age.
+
+        omega_matter (float): Cosmological param used for calcing the age.
+
+        tick_redshifts (array-like): Redshifts to plot ticks at.
+    
+    '''
+
+    tick_times = astro_utils.age_of_universe(
+        tick_redshifts,
+        h = hubble,
+        omega_matter = omega_matter,
+    )
+
+    # Make sure we aren't trying to plot ticks that would go out of bounds,
+    # because that breaks things
+    ax2_ticks = []
+    ax2_tick_labels = []
+    x_range = ax.get_xlim()
+    for ax2_tick, ax2_tick_label in zip( tick_times, tick_redshifts ):
+        if ( ax2_tick > x_range[0] ) and ( ax2_tick < x_range[1] ):
+            ax2_ticks.append( ax2_tick )
+            ax2_tick_labels.append( ax2_tick_label )
+
+    # Add a second axis for plotting
+    ax2 = ax.twiny()
+    ax2.set_xlim( x_range )
+    ax2.set_xticks( ax2_ticks )
+    ax2.set_xticklabels( ax2_tick_labels )
+
+    return ax2
         
 ########################################################################
 

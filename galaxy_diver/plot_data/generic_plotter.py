@@ -313,9 +313,21 @@ class GenericPlotter( object ):
 
         # Plot label
         if plot_label is default:
-            plt_label = ax.annotate( s=self.label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
+            plt_label = ax.annotate(
+                s = self.label,
+                xy = (0.,1.0),
+                va = 'bottom',
+                xycoords = 'axes fraction',
+                fontsize = label_fontsize,
+             )
         elif isinstance( plot_label, str ):
-            plt_label = ax.annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
+            plt_label = ax.annotate(
+                s = plot_label,
+                xy = (0.,1.0),
+                va = 'bottom',
+                xycoords = 'axes fraction',
+                fontsize = label_fontsize,
+             )
         elif isinstance( plot_label, dict ):
             plt_label = ax.annotate( **plot_label )
         elif plot_label is None:
@@ -365,6 +377,8 @@ class GenericPlotter( object ):
         conditional_y = False,
         y_div_function = None,
         vmin = None, vmax = None,
+        min_bin_value_displayed = None,
+        zorder = 0,
         add_colorbar = True,
         cmap = pu_cm.magma,
         colorbar_args = default,
@@ -493,6 +507,13 @@ class GenericPlotter( object ):
         if hist_div_arr is not None:
             hist2d /= hist_div_arr
 
+        # Mask bins below a specified value
+        if min_bin_value_displayed is not None:
+            hist2d = np.ma.masked_where(
+                hist2d < min_bin_value_displayed,
+                hist2d,
+            )
+
         # Plot
         if ax is default:
             fig = plt.figure( figsize=(10,9), facecolor='white' )
@@ -516,6 +537,7 @@ class GenericPlotter( object ):
             norm = norm,
             vmin = vmin,
             vmax = vmax,
+            zorder = zorder,
         )
 
         # Add a colorbar
@@ -542,16 +564,29 @@ class GenericPlotter( object ):
             ax.plot( [ vertical_line, ]*2, [ 0., 1. ], transform=trans, **vertical_line_kwargs )
 
         # Plot label
-        if plot_label is default:
-            plt_label = ax.annotate( s=self.label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
-        elif isinstance( plot_label, str ):
-            plt_label = ax.annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
-        elif isinstance( plot_label, dict ):
-            plt_label = ax.annotate( **plot_label )
-        else:
-            raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
-        if outline_plot_label:
-            plt_label.set_path_effects([ path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal() ])
+        if plot_label is not None:
+            if plot_label is default:
+                plt_label = ax.annotate(
+                    s = self.label,
+                    xy = (0.,1.0),
+                    va = 'bottom',
+                    xycoords = 'axes fraction',
+                    fontsize = label_fontsize,
+                 )
+            elif isinstance( plot_label, str ):
+                plt_label = ax.annotate(
+                    s = plot_label,
+                    xy = (0.,1.0),
+                    va = 'bottom',
+                    xycoords = 'axes fraction',
+                    fontsize = label_fontsize,
+                 )
+            elif isinstance( plot_label, dict ):
+                plt_label = ax.annotate( **plot_label )
+            else:
+                raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
+            if outline_plot_label:
+                plt_label.set_path_effects([ path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal() ])
 
         # Upper right label (info label)
         info_label = ''

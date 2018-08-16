@@ -4,7 +4,7 @@
 #SBATCH --partition=skx-normal
 #SBATCH --nodes=1
 #SBATCH --ntasks=48
-#SBATCH --time=0:20:00
+#SBATCH --time=0:45:00
 #SBATCH --output=/scratch/03057/zhafen/pathfinder_data/job_scripts/jobs/%j.out
 #SBATCH --error=/scratch/03057/zhafen/pathfinder_data/job_scripts/jobs/%j.err
 #SBATCH --mail-user=zhafen@u.northwestern.edu
