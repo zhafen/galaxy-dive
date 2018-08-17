@@ -175,6 +175,11 @@ def align_axes( arr, new_z_axis, point=np.array([0., 0., 0.]) ):
 
     # Find the angle we want to rotate by
     angle = np.arccos( np.dot( z_axis, new_z_axis ) / ( np.linalg.norm( z_axis ) * np.linalg.norm( new_z_axis ) ) )
+    # For some cases we need to multiply this angle by 1, or it's wrong
+    # (as seen using Firefly)
+    # However, this breaks a number of tests, so it may not always be the right
+    # thing to do...
+    angle *= -1.
 
     # Find the vector we want to rotate around
     rot_vec = np.cross( z_axis, new_z_axis )
