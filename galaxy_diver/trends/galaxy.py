@@ -160,13 +160,16 @@ def ism_oxygen_mass_frac(
 
 def ism_mass_metallicity_relation(
     m_star,
+    z_sun = 0.02,
 ):
     '''Get the ISM mass metallicity relation, as compiled by Peeples+14
     (S3.2.2). This is really just assuming that there is a fixed ratio
     between the oxygen mass and the stellar mass.
+
+    Returns: ISM mass metallicity relation, in *mass fraction*
     '''
 
-    return ism_oxygen_mass_frac( m_star ) / 0.44 * 1.366/16. * 1e-12
+    return ism_oxygen_mass_frac( m_star ) / 0.44 * 1.366/16. * 1e-12 / z_sun
 
 ########################################################################
 
@@ -187,8 +190,6 @@ def galaxy_metal_mass(
         z_sun (float) :
             Solar metallicity. Some (e.g. Peeples+14) use the Caffau+2011
             value of 0.0153, while others use the Asplund+2010 value of 0.014.
-            The FIRE simulations use a value of 0.02 .
-
         apply_stellar_z_correction (bool) :
             If True, apply the correction from B-band weighted stellar
             metallicities to mass-weighted stellar metallicities calculated
@@ -230,9 +231,20 @@ def galaxy_metal_mass(
                 m_gas *= cold_gas_correction_factor
 
             # Get metallicity
-            z_ism = ism_mass_metallicity_relation( m_star )
+            z_ism = ism_mass_metallicity_relation( m_star, z_sun )
 
-            m_z[mass_source] = m_gas * z_ism * z_sun
+            m_z[mass_source] = m_gas * z_ism
+
+        # Dust mass
+        if mass_source == 'dust':
+
+            m_dust = ism_dust_mass( m_star )
+
+            m_z[mass_source] = utilities.SmartDict( {
+                16 : m_dust / 1.5,
+                50 : m_dust,
+                84 : m_dust * 1.5,
+            } )
 
     # Total
     # Create the array
@@ -265,7 +277,19 @@ def cold_gas_fraction(
             Cold gas fraction.
     '''
 
-    m_star_peeples = 10.**np.arange( 6.7, 11.4 + 0.5, 0.5 )
+    m_star_peeples = 10.**np.array([
+        6.7,
+        7.1,
+        7.6,
+        8.2,
+        8.6,
+        9.1,
+        9.6,
+        10.1,
+        10.6,
+        11.0,
+        11.4,
+    ])
     f_g_data = {
         50 : np.array([
             7.4,
@@ -324,6 +348,23 @@ def cold_gas_fraction(
 
     return f_g
         
+########################################################################
+
+def ism_dust_mass( m_star ):
+    '''ISM dust mass, compiled by Peeples+2014, using data from Skibba+2011 and
+    Draine+2007.
+
+    Args:
+        m_star (float or array-like) :
+            Mass of the target galaxy at z=0 in units of Msun.
+
+    Returns:
+        ism_dust_mass (same as m_star):
+            Units of Msun.
+    '''
+
+    return 10.**( 0.86 * np.log10( m_star ) - 1.31 )
+
 ########################################################################
 
 def sneii_metal_budget( m_star, y_z_ii=0.030 ):
