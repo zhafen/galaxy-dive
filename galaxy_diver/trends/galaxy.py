@@ -8,6 +8,7 @@
 
 import math
 import numpy as np
+import os
 import scipy.interpolate as interp
 from scipy.optimize import newton
 import sys
@@ -421,7 +422,7 @@ def sneii_metal_budget( m_star, y_z_ii=0.030 ):
 
 ########################################################################
 
-def get_log_m_halo(log_m_star, z, paramfile="./params/smhm_true_med_params.txt"):
+def smhm_m_halo(log_m_star, z, paramfile=None ):
     '''Adapted from Behroozi+2018 (UniverseMachine EDR) by S.Wellons 7/11/18
 
     Args:
@@ -438,17 +439,34 @@ def get_log_m_halo(log_m_star, z, paramfile="./params/smhm_true_med_params.txt")
         log_m_halo (same as log_m_star) :
             log10 of the halo mass in Msun
     '''
+
+    if paramfile is None:
+        dirname = os.path.dirname( __file__ )
+        paramfile = os.path.join(
+            dirname,
+            "params",
+            "smhm_true_med_params.txt"
+        )
+
     log_m_halo = np.zeros(len(log_m_star))
     for i in range(0,len(log_m_star)):
-        log_m_halo[i] = newton(_get_log_m_star, 12., args=(z, log_m_star[i]))
+        log_m_halo[i] = newton(_smhm_m_star, 12., args=(z, log_m_star[i]))
     return log_m_halo
 
-def _get_log_m_star(log_m_halo, z, target):
-    return get_log_m_star(np.asarray([log_m_halo]), z, paramfile="smhm_true_med_params.txt")[0] - target
+def _smhm_m_star(log_m_halo, z, target):
+
+    dirname = os.path.dirname( __file__ )
+    paramfile = os.path.join(
+        dirname,
+        "params",
+        "smhm_true_med_params.txt"
+    )
+
+    return smhm_m_star(np.asarray([log_m_halo]), z, paramfile=paramfile)[0] - target
             
 ########################################################################
 
-def get_log_m_star(log_m_halo, z, paramfile="./params/smhm_true_med_params.txt"):
+def smhm_m_star(log_m_halo, z, paramfile=None):
     '''Adapted from Behroozi+2018 (UniverseMachine EDR) by S.Wellons 7/11/18
 
     Args:
@@ -465,6 +483,14 @@ def get_log_m_star(log_m_halo, z, paramfile="./params/smhm_true_med_params.txt")
         log_m_star (float or array-like):
             log10 of the stellar mass in units of Msun.
     '''
+
+    if paramfile is None:
+        dirname = os.path.dirname( __file__ )
+        paramfile = os.path.join(
+            dirname,
+            "params",
+            "smhm_true_med_params.txt"
+        )
 
     #Load params
     param_file = open(paramfile, "r") 
@@ -531,7 +557,7 @@ def get_log_m_star(log_m_halo, z, paramfile="./params/smhm_true_med_params.txt")
 
 ########################################################################
 
-def get_slope(log_m_halo, z, paramfile="./params/smhm_true_med_params.txt"):
+def smhm_slope(log_m_halo, z, paramfile=None):
     '''Adapted from Behroozi+2018 (UniverseMachine EDR) by S.Wellons 7/11/18
 
     Args:
@@ -548,6 +574,14 @@ def get_slope(log_m_halo, z, paramfile="./params/smhm_true_med_params.txt"):
         slope (float or array-like):
             Returns dlogMstar/dlogMhalo
     '''
+
+    if paramfile is None:
+        dirname = os.path.dirname( __file__ )
+        paramfile = os.path.join(
+            dirname,
+            "params",
+            "smhm_true_med_params.txt"
+        )
 
     #Load params
     param_file = open(paramfile, "r") 

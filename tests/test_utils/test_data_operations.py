@@ -294,12 +294,14 @@ class TestAlignAxes(unittest.TestCase):
     ########################################################################
 
     def test_align_vectors( self ):
+        '''Test that we can align with a random vector.'''
 
         # Vector to align
-        v = -1. * np.random.rand( 3 )
+        v = np.random.uniform( -1., 1., 3 )
 
         # Build the right answer
-        expected = np.tile( v, (3, 1) )
+        v_norm = np.linalg.norm( v )
+        expected = np.tile( v/v_norm, (3, 1) )
 
         # Create the input
         self.default_args[0] = np.array([
@@ -310,7 +312,7 @@ class TestAlignAxes(unittest.TestCase):
 
         # Align z with vector
         self.default_args[1] = v
-        
+
         # Actual calculation
         actual = self.fn(*self.default_args)
 

@@ -1185,7 +1185,13 @@ class TimeData( SimulationData ):
                 processed_data /= self.hubble_param**scale_h_power
 
             if sl is not None:
-                data_to_div_by = data_to_div_by[sl]
+                # DEBUG
+                try:
+                    data_to_div_by = data_to_div_by[sl]
+                # For when we're getting a slice of a single snapshot
+                except IndexError:
+                    assert sl[0] == slice(None)
+                    data_to_div_by = data_to_div_by[sl[1]]
 
             processed_data /= data_to_div_by
 
