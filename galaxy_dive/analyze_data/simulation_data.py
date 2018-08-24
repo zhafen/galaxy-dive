@@ -15,13 +15,13 @@ import scipy
 import scipy.signal as signal
 
 # Imports from my own stuff
-import galaxy_diver.analyze_data.ahf as analyze_ahf
-import galaxy_diver.read_data.ahf as read_ahf
-import galaxy_diver.utils.astro as astro
-import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.data_operations as data_operations
-import galaxy_diver.analyze_data.generic_data as generic_data
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.analyze_data.ahf as analyze_ahf
+import galaxy_dive.read_data.ahf as read_ahf
+import galaxy_dive.utils.astro as astro
+import galaxy_dive.utils.constants as constants
+import galaxy_dive.utils.data_operations as data_operations
+import galaxy_dive.analyze_data.generic_data as generic_data
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 ########################################################################

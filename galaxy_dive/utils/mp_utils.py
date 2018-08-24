@@ -13,7 +13,7 @@ import pdb
 import sys
 from types import MethodType
 
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 

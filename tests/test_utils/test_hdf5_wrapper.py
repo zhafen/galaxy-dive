@@ -9,7 +9,7 @@ import os
 import shutil
 import unittest
 
-import galaxy_diver.utils.hdf5_wrapper as hdf5_wrapper
+import galaxy_dive.utils.hdf5_wrapper as hdf5_wrapper
 
 ########################################################################
 

@@ -13,8 +13,8 @@ import h5py
 import numpy as np
 import numpy.testing as npt
 import warnings
-import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.utils.constants as constants
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 

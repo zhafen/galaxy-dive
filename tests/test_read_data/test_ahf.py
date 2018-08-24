@@ -15,8 +15,8 @@ import pdb
 import pytest
 import unittest
 
-import galaxy_diver.read_data.ahf as read_ahf
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.read_data.ahf as read_ahf
+import galaxy_dive.utils.utilities as utilities
 
 sdir = './tests/data/analysis_dir'
 sdir2 = './tests/data/analysis_dir2'

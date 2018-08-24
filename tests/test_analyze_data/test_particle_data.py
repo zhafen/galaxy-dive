@@ -9,8 +9,8 @@ import os
 import pdb
 import unittest
 
-import galaxy_diver.analyze_data.particle_data as particle_data
-import galaxy_diver.read_data.snapshot as read_snapshot
+import galaxy_dive.analyze_data.particle_data as particle_data
+import galaxy_dive.read_data.snapshot as read_snapshot
 
 ########################################################################
 

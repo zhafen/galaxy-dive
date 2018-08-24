@@ -7,7 +7,7 @@ import numpy.testing as npt
 import pdb
 import unittest
 
-import galaxy_diver.utils.data_operations as data_operations
+import galaxy_dive.utils.data_operations as data_operations
 
 ########################################################################
 

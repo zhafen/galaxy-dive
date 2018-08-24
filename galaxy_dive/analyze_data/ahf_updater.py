@@ -12,17 +12,17 @@ import numpy as np
 import os
 import pandas as pd
 
-import galaxy_diver.galaxy_finder.finder as galaxy_finder
-import galaxy_diver.analyze_data.halo_data as halo_data
-import galaxy_diver.read_data.metafile as read_metafile
-import galaxy_diver.utils.astro as astro_utils
-import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.data_constants as data_constants
-import galaxy_diver.utils.data_operations as data_operations
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.galaxy_finder.finder as galaxy_finder
+import galaxy_dive.analyze_data.halo_data as halo_data
+import galaxy_dive.read_data.metafile as read_metafile
+import galaxy_dive.utils.astro as astro_utils
+import galaxy_dive.utils.constants as constants
+import galaxy_dive.utils.data_constants as data_constants
+import galaxy_dive.utils.data_operations as data_operations
+import galaxy_dive.utils.utilities as utilities
 
-import galaxy_diver.analyze_data.ahf as ahf
-import galaxy_diver.analyze_data.particle_data as particle_data
+import galaxy_dive.analyze_data.ahf as ahf
+import galaxy_dive.analyze_data.particle_data as particle_data
 
 ########################################################################
 ########################################################################
@@ -84,7 +84,7 @@ class HaloUpdater( halo_data.HaloData ):
 
         # Include imports here, because this function may not in general work if colossus is not available,
         # and the rest of the module should still be made useable
-        # There may be some warnings here about the version of scipy colossus uses, as opposed to the version galaxy_diver uses
+        # There may be some warnings here about the version of scipy colossus uses, as opposed to the version galaxy_dive uses
         import colossus.cosmology.cosmology as co_cosmology
         import colossus.halo.concentration as co_concentration
 

@@ -10,7 +10,7 @@ import pdb
 import subprocess
 import unittest
 
-import galaxy_diver.utils.mp_utils as mp_utils
+import galaxy_dive.utils.mp_utils as mp_utils
 
 ########################################################################
 ########################################################################

@@ -15,7 +15,7 @@ import pdb
 import pytest
 import unittest
 
-import galaxy_diver.read_data.snapshot as read_snapshot
+import galaxy_dive.read_data.snapshot as read_snapshot
 
 ########################################################################
 

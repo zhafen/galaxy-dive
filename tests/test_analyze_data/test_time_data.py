@@ -7,8 +7,8 @@ import numpy.testing as npt
 import pandas as pd
 import unittest
 
-import galaxy_diver.analyze_data.simulation_data as simulation_data
-import galaxy_diver.utils.astro as astro
+import galaxy_dive.analyze_data.simulation_data as simulation_data
+import galaxy_dive.utils.astro as astro
 
 ########################################################################
 
@@ -114,8 +114,8 @@ class TestTimeData( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SimulationData.get_data' )
-    @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SimulationData.hubble_z', new_callable=mock.PropertyMock )
+    @mock.patch( 'galaxy_dive.analyze_data.simulation_data.SimulationData.get_data' )
+    @mock.patch( 'galaxy_dive.analyze_data.simulation_data.SimulationData.hubble_z', new_callable=mock.PropertyMock )
     def test_add_hubble_flow( self, mock_hubble_z, mock_get_data ):
 
         # Change the mock data we're using
@@ -148,7 +148,7 @@ class TestTimeData( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.analyze_data.ahf.HaloData.get_mt_data' )
+    @mock.patch( 'galaxy_dive.analyze_data.ahf.HaloData.get_mt_data' )
     def test_get_processed_data( self, mock_get_mt_data ):
         '''Test that our processed data method works, especially when scaling data.'''
 

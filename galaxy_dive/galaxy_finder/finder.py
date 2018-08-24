@@ -12,8 +12,8 @@ import scipy.spatial
 
 import unyt
 
-import galaxy_diver.analyze_data.halo_data as h_data
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.analyze_data.halo_data as h_data
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 ########################################################################

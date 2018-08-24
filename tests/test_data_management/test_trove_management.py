@@ -7,7 +7,7 @@ import numpy.testing as npt
 import os
 import unittest
 
-import galaxy_diver.data_management.trove_management as trove_management
+import galaxy_dive.data_management.trove_management as trove_management
 
 ########################################################################
 

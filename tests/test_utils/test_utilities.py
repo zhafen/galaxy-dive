@@ -9,7 +9,7 @@ import pdb
 import subprocess
 import unittest
 
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 ########################################################################
@@ -382,7 +382,7 @@ class TestGetInstanceSourceDir( unittest.TestCase ):
 
         actual = utilities.get_instance_source_dir( utilities, 'module' )
 
-        expected = os.path.join( os.getcwd(), 'galaxy_diver/utils' )
+        expected = os.path.join( os.getcwd(), 'galaxy_dive/utils' )
 
         assert actual == expected
 

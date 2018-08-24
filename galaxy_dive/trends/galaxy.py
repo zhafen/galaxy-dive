@@ -13,8 +13,8 @@ import scipy.interpolate as interp
 from scipy.optimize import newton
 import sys
 
-import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.utils.constants as constants
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 

@@ -15,10 +15,10 @@ import pdb
 import pytest
 import unittest
 
-import galaxy_diver.analyze_data.halo_data as halo_data
-import galaxy_diver.analyze_data.particle_data as particle_data
-import galaxy_diver.galaxy_finder.finder as gal_finder
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.analyze_data.halo_data as halo_data
+import galaxy_dive.analyze_data.particle_data as particle_data
+import galaxy_dive.galaxy_finder.finder as gal_finder
+import galaxy_dive.utils.utilities as utilities
 
 sdir = './tests/data/analysis_dir'
 sdir2 = './tests/data/analysis_dir2'

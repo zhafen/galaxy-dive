@@ -8,8 +8,8 @@ import numpy.testing as npt
 import pdb
 import unittest
 
-import galaxy_diver.analyze_data.generic_data as generic_data
-import galaxy_diver.read_data.snapshot as read_snapshot
+import galaxy_dive.analyze_data.generic_data as generic_data
+import galaxy_dive.read_data.snapshot as read_snapshot
 
 ########################################################################
 
@@ -226,7 +226,7 @@ class TestGetPreprocessedData( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.analyze_data.generic_data.GenericData.get_data_alt', create=True )
+    @mock.patch( 'galaxy_dive.analyze_data.generic_data.GenericData.get_data_alt', create=True )
     def test_different_get_data_method( self, mock_get_data_alt ):
 
         mock_get_data_alt.side_effect = [ np.array([ 1., 10., 100., ]), ]
@@ -274,7 +274,7 @@ class TestMetaMethods( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.analyze_data.generic_data.GenericData.test_method', create=True )
+    @mock.patch( 'galaxy_dive.analyze_data.generic_data.GenericData.test_method', create=True )
     def test_iterate_over_method( self, mock_test_method ):
 
         method_args = { 'b' : 2, }

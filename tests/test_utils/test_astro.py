@@ -7,8 +7,8 @@ import numpy.testing as npt
 import pdb
 import unittest
 
-import galaxy_diver.utils.astro as astro
-import galaxy_diver.utils.constants as constants
+import galaxy_dive.utils.astro as astro
+import galaxy_dive.utils.constants as constants
 
 ########################################################################
 

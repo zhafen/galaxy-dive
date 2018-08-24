@@ -21,8 +21,8 @@ import matplotlib.gridspec as gridspec
 import matplotlib.patheffects as path_effects
 import matplotlib.transforms as transforms
 
-import galaxy_diver.utils.mp_utils as mp_utils
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.utils.mp_utils as mp_utils
+import galaxy_dive.utils.utilities as utilities
 
 import plotting as gen_plot
 import pu_colormaps as pu_cm

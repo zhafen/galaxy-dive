@@ -7,8 +7,8 @@ import numpy.testing as npt
 import pdb
 import unittest
 
-import galaxy_diver.analyze_data.gridded_data as gridded_data
-import galaxy_diver.read_data.snapshot as read_snapshot
+import galaxy_dive.analyze_data.gridded_data as gridded_data
+import galaxy_dive.read_data.snapshot as read_snapshot
 
 ########################################################################
 
@@ -127,7 +127,7 @@ class TestGriddedData(unittest.TestCase):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SimulationData.get_data' )
+    @mock.patch( 'galaxy_dive.analyze_data.simulation_data.SimulationData.get_data' )
     def test_calc_impact_parameter( self, mock_get_data ):
 
         instance = self.test_class( **self.kwargs )

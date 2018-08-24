@@ -10,7 +10,7 @@ import numpy as np
 import numpy.testing as npt
 import unittest
 
-import galaxy_diver.read_data.metafile as read_metafile
+import galaxy_dive.read_data.metafile as read_metafile
 
 sdir = './tests/data/sdir'
 sdir2 = './tests/data/sdir2'

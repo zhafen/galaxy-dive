@@ -13,9 +13,9 @@ import numpy.testing as npt
 import pytest
 import unittest
 
-import galaxy_diver.read_data.ahf as read_ahf
-import galaxy_diver.analyze_data.halo_data as analyze_halos
-import galaxy_diver.galaxy_finder.finder as general_galaxy_finder
+import galaxy_dive.read_data.ahf as read_ahf
+import galaxy_dive.analyze_data.halo_data as analyze_halos
+import galaxy_dive.galaxy_finder.finder as general_galaxy_finder
 
 ########################################################################
 # Useful global test variables
@@ -81,7 +81,7 @@ class TestGalaxyFinder( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.analyze_data.halo_data.HaloData.get_data' )
+    @mock.patch( 'galaxy_dive.analyze_data.halo_data.HaloData.get_data' )
     def test_valid_halo_inds( self, mock_get_halo_data ):
 
         # Make sure we actually have a minimum
@@ -800,7 +800,7 @@ class TestGalaxyFinder( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.read_data.ahf.AHFReader.get_halos_add' )
+    @mock.patch( 'galaxy_dive.read_data.ahf.AHFReader.get_halos_add' )
     def test_find_d_other_gal_scaled_no_halos_with_sufficient_mass( self, mock_get_halos_add ):
         '''This tests we can find the shortest distance to the nearest galaxy.
         '''
@@ -1230,7 +1230,7 @@ class TestSummedQuantityInsideGalaxy( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos_fn' )
+    @mock.patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos_fn' )
     def test_summed_quantity_inside_galaxy_low_memory_mode( self, mock_dist_all_valid ):
         '''Test that we can get the summed quantity inside the galaxy, but reduce the memory consumption
         (at the cost of speed) by doing getting the sum for less galaxies at a given time.

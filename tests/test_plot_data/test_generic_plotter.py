@@ -7,8 +7,8 @@ import numpy.testing as npt
 import pdb
 import unittest
 
-import galaxy_diver.analyze_data.simulation_data as simulation_data
-import galaxy_diver.plot_data.generic_plotter as generic_plotter
+import galaxy_dive.analyze_data.simulation_data as simulation_data
+import galaxy_dive.plot_data.generic_plotter as generic_plotter
 
 ########################################################################
 
@@ -23,9 +23,9 @@ default_kwargs = {
 
 class TestStartup( unittest.TestCase ):
 
-  @mock.patch( 'galaxy_diver.plot_data.generic_plotter.GenericPlotter.plot_something', create=True )
-  @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SnapshotData.retrieve_halo_data' )
-  @mock.patch( 'galaxy_diver.analyze_data.simulation_data.SnapshotData.__init__' )
+  @mock.patch( 'galaxy_dive.plot_data.generic_plotter.GenericPlotter.plot_something', create=True )
+  @mock.patch( 'galaxy_dive.analyze_data.simulation_data.SnapshotData.retrieve_halo_data' )
+  @mock.patch( 'galaxy_dive.analyze_data.simulation_data.SnapshotData.__init__' )
   def test_basic( self, mock_init, mock_retrieve_halo_data, mock_plot_something ):
 
     mock_init.side_effect = [ None, ]

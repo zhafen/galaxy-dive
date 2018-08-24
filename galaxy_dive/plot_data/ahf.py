@@ -16,8 +16,8 @@ import matplotlib.patheffects as path_effects
 import matplotlib.patches as mpatches
 import matplotlib.transforms as transforms
 
-import galaxy_diver.utils.astro as astro_tools
-import galaxy_diver.plot_data.generic_plotter as generic_plotter
+import galaxy_dive.utils.astro as astro_tools
+import galaxy_dive.plot_data.generic_plotter as generic_plotter
 
 ########################################################################
 

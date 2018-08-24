@@ -17,8 +17,8 @@ import matplotlib.colors as plt_colors
 import matplotlib.patches
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-import galaxy_diver.utils.data_operations as data_ops
-import galaxy_diver.utils.astro as astro_utils
+import galaxy_dive.utils.data_operations as data_ops
+import galaxy_dive.utils.astro as astro_utils
 
 ########################################################################
 ########################################################################

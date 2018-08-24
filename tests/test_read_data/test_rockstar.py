@@ -15,8 +15,8 @@ import pdb
 import pytest
 import unittest
 
-import galaxy_diver.read_data.rockstar as read_rockstar
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.read_data.rockstar as read_rockstar
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 

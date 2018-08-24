@@ -8,10 +8,10 @@
 
 import numpy as np
 
-import galaxy_diver.analyze_data.simulation_data as simulation_data
-import galaxy_diver.read_data.snapshot as read_snapshot
-import galaxy_diver.utils.constants as constants
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.analyze_data.simulation_data as simulation_data
+import galaxy_dive.read_data.snapshot as read_snapshot
+import galaxy_dive.utils.constants as constants
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 

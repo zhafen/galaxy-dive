@@ -14,10 +14,10 @@ import os
 import pytest
 import unittest
 
-import galaxy_diver.analyze_data.ahf_updater as ahf_updater
-import galaxy_diver.read_data.ahf as read_ahf
-import galaxy_diver.analyze_data.particle_data as particle_data
-import galaxy_diver.galaxy_finder.finder as gal_finder
+import galaxy_dive.analyze_data.ahf_updater as ahf_updater
+import galaxy_dive.read_data.ahf as read_ahf
+import galaxy_dive.analyze_data.particle_data as particle_data
+import galaxy_dive.galaxy_finder.finder as gal_finder
 
 data_dir = './tests/data/analysis_dir'
 data_dir2 = './tests/data/analysis_dir2'
@@ -261,7 +261,7 @@ class TestHaloUpdater( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.read_data.ahf.AHFReader.get_halos_add', )
+    @patch( 'galaxy_dive.read_data.ahf.AHFReader.get_halos_add', )
     def test_save_custom_mtree_halos( self, mock_get_halos_add ):
 
         # Run the test
@@ -366,7 +366,7 @@ class TestHaloUpdater( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.analyze_data.ahf_updater.HaloUpdater.save_halos_add' )
+    @patch( 'galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_halos_add' )
     def test_save_multiple_halos_adds( self, mock_save_halos_add ):
 
         self.ahf_updater.save_multiple_halos_adds( data_sdir, 500, 600, 50 )
@@ -393,8 +393,8 @@ class TestMassRadii( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.get_mass_radius', )
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.get_mass_radius', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
     def test_get_mass_radii( self, mock_init, mock_get_mass_radius ):
 
         mock_init.side_effect = [ None, ]
@@ -410,7 +410,7 @@ class TestMassRadii( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
+    @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.__init__', )
     def test_get_mass_radii_no_stars( self, mock_init, ):
         '''Test that, when there are no stars in the snapshot, we return nan values.'''
 
@@ -443,7 +443,7 @@ class TestMassRadii( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
+    @patch( 'galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
     def test_save_halos_add_including_mass_radii( self, mock_get_analytic_concentration ):
 
         mock_get_analytic_concentration.side_effect = [ np.arange( 9 ), ]
@@ -487,9 +487,9 @@ class TestEnclosedMass( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
-    @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.redshift', )
-    @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.redshift', )
+    @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.__init__', )
     def test_get_enclosed_mass( self, mock_init, mock_redshift, mock_init_finder, ):
         '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
         Only two of the halos contain galaxies.
@@ -529,9 +529,9 @@ class TestEnclosedMass( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
-    @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.__init__', )
     def test_get_enclosed_mass_no_particles_ptype( self, mock_init, mock_init_finder, mock_find_containing_halos ):
         '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
         '''
@@ -563,7 +563,7 @@ class TestEnclosedMass( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
+    @patch( 'galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
     def test_save_halos_add_including_masses( self, mock_get_analytic_concentration ):
         '''Test that we can write-out files that contain additional information, with that information
         including the mass inside some radius from the center of the halo.
@@ -610,8 +610,8 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.weighted_summed_quantity_inside_galaxy', )
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.weighted_summed_quantity_inside_galaxy', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
     def test_get_average_x_velocity( self, mock_init_finder, mock_weighted_summed ):
         '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
         Only two of the halos contain galaxies.
@@ -660,9 +660,9 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
-    @patch( 'galaxy_diver.galaxy_finder.finder.GalaxyFinder.__init__', )
-    @patch( 'galaxy_diver.analyze_data.particle_data.ParticleData.__init__', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
+    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.__init__', )
     def test_get_average_x_velocity_no_particles_ptype( self, mock_init, mock_init_finder, mock_find_containing_halos ):
         '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
         '''
@@ -694,7 +694,7 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
+    @patch( 'galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
     def test_save_halos_add_including_masses( self, mock_get_analytic_concentration ):
         '''Test that we can write-out files that contain additional information, with that information
         including the mass inside some radius from the center of the halo.
@@ -760,7 +760,7 @@ class TestCircularVelocity( unittest.TestCase):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
+    @patch( 'galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration' )
     def test_save_halos_add_including_v_circ( self, mock_get_analytic_concentration ):
         '''Test that we can write-out files that contain additional information, with that information
         including the circular velocity

@@ -12,7 +12,7 @@ import os
 import pandas as pd
 import unyt
 
-import galaxy_diver.read_data.metafile as read_metafile
+import galaxy_dive.read_data.metafile as read_metafile
 
 ########################################################################
 

@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import shutil
 
-import galaxy_diver.utils.utilities as utilities
+import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
 __author__ = 'Zachary Hafen'

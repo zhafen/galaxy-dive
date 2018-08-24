@@ -7,7 +7,7 @@ import numpy as np
 import numpy.testing as npt
 import unittest
 
-import galaxy_diver.analyze_data.simulation_data as simulation_data
+import galaxy_dive.analyze_data.simulation_data as simulation_data
 
 ########################################################################
 
@@ -109,7 +109,7 @@ class TestGetData( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_diver.analyze_data.simulation_data.SnapshotData.handle_data_key_error' )
+    @patch( 'galaxy_dive.analyze_data.simulation_data.SnapshotData.handle_data_key_error' )
     def test_fails_after_too_many_attempts( self, mock_handle_data_key_error ):
         '''By mocking handle_data_key error, we can emulate it trying to do something'''
 
@@ -163,7 +163,7 @@ class TestHandleDataKeyError( unittest.TestCase ):
 
     ########################################################################
 
-    @patch.multiple( 'galaxy_diver.analyze_data.simulation_data.SnapshotData',
+    @patch.multiple( 'galaxy_dive.analyze_data.simulation_data.SnapshotData',
         calc_radial_distance=sentinel.DEFAULT, calc_radial_velocity=sentinel.DEFAULT,
         calc_inds=sentinel.DEFAULT, calc_ang_momentum=sentinel.DEFAULT,
         calc_phi=sentinel.DEFAULT, calc_abs_phi=sentinel.DEFAULT,
