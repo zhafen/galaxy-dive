@@ -130,10 +130,17 @@ def rotate_coordinates( arr, angle, axis, point=None ):
     '''Rotate a series of 3d coordinates clockwise looking down an axis.
 
     Args:
-        arr (ndarray): The coordinates to be rotated. Dimensions must be (n_coords, 3).
-        angle (float): The angle by which to rotate. Positive means clockwise.
-        axis (vector arr): The axis to rotate around.
-        point (vector arr): The point to rotate around. If none, defaults to the origin.
+        arr (ndarray):
+            The coordinates to be rotated. Dimensions must be (n_coords, 3).
+
+        angle (float):
+            The angle by which to rotate. Positive means clockwise.
+
+        axis (vector arr):
+            The axis to rotate around.
+
+        point (vector arr):
+            The point to rotate around. If none, defaults to the origin.
 
     Returns:
         rotated_arr (ndarray): The rotated array.
@@ -156,18 +163,44 @@ def rotate_coordinates( arr, angle, axis, point=None ):
 ########################################################################
 
 
-def align_axes( arr, new_z_axis, point=np.array([0., 0., 0.]) ):
-    '''Rotate a series of 3d coordinates s.t. the new z axis is aligned with the input vector new_z_axis
+def align_axes(
+    arr,
+    new_z_axis,
+    point = np.array([0., 0., 0.]),
+    align_frame = True,
+):
+    '''Rotate a series of 3d coordinates s.t. the new z axis is aligned with
+    the input vector new_z_axis
 
     Args:
-        arr (ndarray): The coordinates to be rotated. Dimensions must be (n_coords, 3).
-        new_z_axis (vector arr): The vector along which the new z axis will be aligned.
-        point (vector arr): The point to rotate around. If none, defaults to the origin.
+        arr (ndarray):
+            The coordinates to be rotated. Dimensions must be (n_coords, 3).
+
+        new_z_axis (vector arr):
+            The vector along which the new z axis will be aligned.
+
+        point (vector arr):
+            The point to rotate around. If none, defaults to the origin.
+
+        align_frame (bool):
+            If True, the coordinates are aligned along new_z_axis, but
+            the data keep their same coordinates as before. I.e. we rotate our
+            perspective s.t. new_z_axis is the new z axis.
+            If False, we rotate the data instead, and keep the coordinates
+            the same. I.e. we rotate the data z-axis to be aligned with
+            new_z_axis, but we still view the data from the original
+            perspective.
+            This just changes the sign of the angle of rotation.
 
     Returns:
         rotated_arr (ndarray): The rotated array.
     '''
     z_axis = np.array([0., 0., 1.])
+
+    if align_frame:
+        angle_sign = 1.
+    else:
+        angle_sign = -1.
 
     # If nothing to rotate, don't try.
     if np.allclose( z_axis, new_z_axis ):
@@ -177,7 +210,7 @@ def align_axes( arr, new_z_axis, point=np.array([0., 0., 0.]) ):
     angle = np.arccos( np.dot( z_axis, new_z_axis ) / ( np.linalg.norm( z_axis ) * np.linalg.norm( new_z_axis ) ) )
     # Based on how we define our angles, we need to multiply by 1 to rotate in
     # the opposite direction
-    angle *= -1.
+    angle *= angle_sign
 
     # Find the vector we want to rotate around
     rot_vec = np.cross( z_axis, new_z_axis )

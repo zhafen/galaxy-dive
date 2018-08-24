@@ -192,13 +192,14 @@ class TestAlignAxes(unittest.TestCase):
     def test_rotate_array_to_align_z_with_x(self):
 
         # Change the input array.
-        self.default_args[0] = np.array([1., 0., 0.])
+        self.default_args[0] = np.array([ 1., 0., 0., ])
+        #self.default_args[0] = np.array([0., 1., 0.])
 
         # Align z with x
-        self.default_args[1] = np.array([1., 0., 0.])
-
+        self.default_args[1] = np.array([ 1., 0., 0. ])
         result = self.fn(*self.default_args)
 
+        #expected = np.array([0., 0., 1.])
         expected = np.array([0., 0., 1.])
 
         npt.assert_allclose(expected, result)
@@ -208,7 +209,12 @@ class TestAlignAxes(unittest.TestCase):
     def test_rotate_array_to_align_z_with_x_and_check_products(self):
 
         # Change the input array.
-        self.default_args[0] = np.array([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.], [1., 0., 0.]])
+        self.default_args[0] = np.array([
+            [1., 0., 0.],
+            [0., 1., 0.],
+            [0., 0., 1.],
+            [1., 0., 0.],
+        ])
 
         # Align z with x
         self.default_args[1] = np.array([1., 0., 0.])
@@ -314,7 +320,7 @@ class TestAlignAxes(unittest.TestCase):
         self.default_args[1] = v
 
         # Actual calculation
-        actual = self.fn(*self.default_args)
+        actual = self.fn( align_frame=False, *self.default_args )
 
         npt.assert_allclose( expected, actual )
 
