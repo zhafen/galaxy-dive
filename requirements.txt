@@ -1,0 +1,9 @@
+numpy==1.14.5
+pandas==0.20.3
+mock==2.0.0
+pytest==3.4.0
+unyt==1.0.4
+colossus==1.2.1
+matplotlib==2.0.2
+h5py==2.7.0
+scipy==1.1.0
