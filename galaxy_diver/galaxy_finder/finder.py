@@ -612,15 +612,19 @@ class GalaxyFinder( object ):
     ########################################################################
 
     def find_mt_containing_halos( self, radial_cut_fraction=1. ):
-        '''Find which MergerTrace halos our particles are inside of some radial cut of.
+        '''Find which MergerTrace halos our particles are inside of some
+        radial cut of.
 
         Args:
-            radial_cut_fraction (float): A particle is in a halo if it's in radial_cut_fraction*length_scale from the center.
+            radial_cut_fraction (float):
+                A particle is in a halo if it's in
+                radial_cut_fraction*length_scale from the center.
 
         Returns:
             part_of_halo (np.array of bools): Shape (n_particles, n_halos).
-                If index [i, j] is True, then particle i is inside radial_cut_fraction*length_scale of the jth halo, defined
-                    via the MergerTrace ID.
+                If index [i, j] is True, then particle i is inside
+                radial_cut_fraction*length_scale of the jth halo, defined
+                via the MergerTrace ID.
         '''
 
         # Load up the merger tree data
@@ -633,15 +637,20 @@ class GalaxyFinder( object ):
         for halo_id in self.halo_data.data_reader.mtree_halos.keys():
             mtree_halo = self.halo_data.data_reader.mtree_halos[ halo_id ]
 
-            # Only try to get the data if we're in the range we actually have the halos for.
+            # Only try to get the data if we're in the range we actually have
+            # the halos for.
             above_minimum_snap = self.snum >= mtree_halo.index.min()
 
             # Only try to get the data if we have the minimum stellar mass
             if above_minimum_snap:
-                halo_value = mtree_halo[ self.minimum_criteria ][ self.snum ]/self.min_conversion_factor
+                halo_value = (
+                    mtree_halo[ self.minimum_criteria ][ self.snum ]
+                    / self.min_conversion_factor
+                )
                 has_minimum_value = halo_value >= self.minimum_value
             else:
-                # If it's not at the point where it can be traced, it definitely doesn't have the minimum stellar mass.
+                # If it's not at the point where it can be traced, it
+                # definitely doesn't have the minimum stellar mass.
                 has_minimum_value = False
 
             # Usual case

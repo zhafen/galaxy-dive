@@ -254,7 +254,7 @@ class TestGalaxyFinder( unittest.TestCase ):
 
         # Set the length scale
         self.galaxy_finder.galaxy_cut = 1.
-        self.galaxy_finder.length_scale = 'r_scale'
+        self.galaxy_finder.mt_length_scale = 'r_scale'
 
         r_scale_500 = 21.113602882685832
         self.galaxy_finder.particle_positions = np.array([
