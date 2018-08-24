@@ -7,9 +7,7 @@ It's currently under development, with no official release yet.
 
 ### Setup ###
 
-There is no automated setup yet. Currently you must clone the repository using
-`git clone git@bitbucket.org:zhafen/galaxy_diver.git`
-Afterwards you will need to add the repository to your python path.
+**In progress**
 
 ### Contribution guidelines ###
 
