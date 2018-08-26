@@ -8,7 +8,9 @@ It's currently under development, with no official release yet.
 ### Installation ###
 
 Using pip to install is easiest:
-`pip install galaxy-dive`
+```
+pip install galaxy-dive
+```
 
 Otherwise, clone the repository and add it to your paths.
 
