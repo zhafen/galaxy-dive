@@ -382,7 +382,7 @@ class TestGetInstanceSourceDir( unittest.TestCase ):
 
         actual = utilities.get_instance_source_dir( utilities, 'module' )
 
-        expected = os.path.join( os.getcwd(), 'galaxy_dive/utils' )
+        expected = os.path.join( os.getcwd(), 'utils' )
 
         assert actual == expected
 
