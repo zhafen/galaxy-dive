@@ -1202,9 +1202,14 @@ class TimeData( SimulationData ):
                     tile_dim = 'match_snaps'
                 elif processed_data.shape == ( self.n_snaps, ):
                     tile_dim = 'match_particles'
+                elif processed_data.shape == self.base_data_shape:
+                    tile_dim = None
                 else:
                     raise Exception(
-                        "Unrecognized data shape, {}".format( data.shape ) )
+                        "Unrecognized data shape, {}".format(
+                            processed_data.shape
+                        )
+                    )
 
             if tile_dim == 'match_snaps':
                 processed_data = np.tile(
@@ -1493,11 +1498,21 @@ class TimeDataMasker( generic_data.DataMasker ):
             if seed is not None:
                 np.random.seed( seed )
 
-            sampled_inds = np.random.choice(
-                np.arange( masked_data.shape[0] ),
-                n_samples,
-            )
-            masked_data = masked_data[sampled_inds,:]
+            n_selected_particles = masked_data.shape[0]
+            if n_samples >= n_selected_particles:
+                print( "n_samples > n_selected_particles, not sampling." )
+                return masked_data
+
+            try:
+                sampled_inds = np.random.choice(
+                    np.arange( n_selected_particles ),
+                    n_samples,
+                    replace = False,
+                )
+                masked_data = masked_data[sampled_inds,:]
+            except:
+                #DEBUG
+                import pdb; pdb.set_trace()
 
         return masked_data
 

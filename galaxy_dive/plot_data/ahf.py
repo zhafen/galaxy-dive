@@ -305,6 +305,8 @@ class HaloPlotter( generic_plotter.GenericPlotter ):
                         plotted_mtree_halo['cAnalytic']
                 else:
                     y_data = plotted_mtree_halo[y_key]
+            else:
+                y_data = custom_y_data
 
             # Make a copy of the y-data so we don't alter it.
             y_data = copy.copy( y_data )
