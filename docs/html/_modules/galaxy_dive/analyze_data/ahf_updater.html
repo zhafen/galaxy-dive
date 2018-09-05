@@ -1,0 +1,916 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.analyze_data.ahf_updater &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.analyze_data.ahf_updater</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;Tools for modifying halo data output files.</span>
+
+<span class="sd">@author: Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.galaxy_finder.finder</span> <span class="k">as</span> <span class="nn">galaxy_finder</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.analyze_data.halo_data</span> <span class="k">as</span> <span class="nn">halo_data</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.read_data.metafile</span> <span class="k">as</span> <span class="nn">read_metafile</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.astro</span> <span class="k">as</span> <span class="nn">astro_utils</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.data_constants</span> <span class="k">as</span> <span class="nn">data_constants</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.data_operations</span> <span class="k">as</span> <span class="nn">data_operations</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.utilities</span> <span class="k">as</span> <span class="nn">utilities</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.analyze_data.ahf</span> <span class="k">as</span> <span class="nn">ahf</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.analyze_data.particle_data</span> <span class="k">as</span> <span class="nn">particle_data</span>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater">[docs]</a><span class="k">class</span> <span class="nc">HaloUpdater</span><span class="p">(</span> <span class="n">halo_data</span><span class="o">.</span><span class="n">HaloData</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Class for updating Halo data (smoothing, adding in additional columns, etc)&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span> <span class="o">=</span> <span class="n">ahf</span><span class="o">.</span><span class="n">HaloKeyParser</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">(</span> <span class="n">HaloUpdater</span><span class="p">,</span> <span class="bp">self</span> <span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Get Data Values</span>
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.get_accurate_redshift"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_accurate_redshift">[docs]</a>    <span class="k">def</span> <span class="nf">get_accurate_redshift</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">metafile_dir</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get a better values of the redshift than what&#39;s stored in the Halo filename, by loading them from an external file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metafile_dir (str): The directory the snapshot_times are stored in.</span>
+
+<span class="sd">        Modifies:</span>
+<span class="sd">            self.mtree_halos (dict of pd.DataFrames): Updates the redshift column</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Get the redshift data out</span>
+        <span class="n">metafile_reader</span> <span class="o">=</span> <span class="n">read_metafile</span><span class="o">.</span><span class="n">MetafileReader</span><span class="p">(</span> <span class="n">metafile_dir</span> <span class="p">)</span>
+        <span class="n">metafile_reader</span><span class="o">.</span><span class="n">get_snapshot_times</span><span class="p">()</span>
+
+        <span class="c1"># Replace the old data</span>
+        <span class="k">for</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">mtree_halo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="p">[</span> <span class="n">halo_id</span> <span class="p">]</span>
+
+            <span class="c1"># Read and replace the new redshift</span>
+            <span class="n">new_redshift</span> <span class="o">=</span> <span class="n">metafile_reader</span><span class="o">.</span><span class="n">snapshot_times</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">][</span> <span class="n">mtree_halo</span><span class="o">.</span><span class="n">index</span> <span class="p">]</span>
+            <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_redshift</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.get_analytic_concentration"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_analytic_concentration">[docs]</a>    <span class="k">def</span> <span class="nf">get_analytic_concentration</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">metafile_dir</span><span class="p">,</span> <span class="n">type_of_halo_id</span><span class="o">=</span><span class="s1">&#39;merger_tree&#39;</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get analytic values for the halo concentration, using colossus, Benedikt Diemer&#39;s cosmology code</span>
+<span class="sd">        ( https://bitbucket.org/bdiemer/colossus ; http://www.benediktdiemer.com/code/colossus/ ).</span>
+
+<span class="sd">        Assumptions:</span>
+<span class="sd">            - We&#39;re using the default formula of Diemer&amp;Kravtstov15</span>
+<span class="sd">            - We&#39;re using the Bryan&amp;Norman1998 version of the virial radius.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metafile_dir (str): The directory the snapshot_times are stored in.</span>
+<span class="sd">            type_of_halo_id (str): &#39;merger_tree&#39; if the halo id is a merger tree halo id.</span>
+<span class="sd">                                                          &#39;halos&#39; if the halo id is a *.AHF_halos halo id.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">            c_vir (np.array of floats): The concentration, defined as R_vir/r_scale.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Include imports here, because this function may not in general work if colossus is not available,</span>
+        <span class="c1"># and the rest of the module should still be made useable</span>
+        <span class="c1"># There may be some warnings here about the version of scipy colossus uses, as opposed to the version galaxy_dive uses</span>
+        <span class="kn">import</span> <span class="nn">colossus.cosmology.cosmology</span> <span class="k">as</span> <span class="nn">co_cosmology</span>
+        <span class="kn">import</span> <span class="nn">colossus.halo.concentration</span> <span class="k">as</span> <span class="nn">co_concentration</span>
+
+        <span class="c1"># Get simulation parameters, for use in creating a cosmology</span>
+        <span class="n">metafile_reader</span> <span class="o">=</span> <span class="n">read_metafile</span><span class="o">.</span><span class="n">MetafileReader</span><span class="p">(</span> <span class="n">metafile_dir</span> <span class="p">)</span>
+        <span class="n">metafile_reader</span><span class="o">.</span><span class="n">get_used_parameters</span><span class="p">()</span>
+
+        <span class="c1"># Setup the cosmology used by the simulations</span>
+        <span class="n">sim_cosmo</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;flat&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;H0&#39;</span> <span class="p">:</span> <span class="nb">float</span><span class="p">(</span> <span class="n">metafile_reader</span><span class="o">.</span><span class="n">used_parameters</span><span class="p">[</span><span class="s1">&#39;HubbleParam&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">*</span><span class="mf">100.</span><span class="p">,</span>
+            <span class="s1">&#39;Om0&#39;</span> <span class="p">:</span> <span class="nb">float</span><span class="p">(</span> <span class="n">metafile_reader</span><span class="o">.</span><span class="n">used_parameters</span><span class="p">[</span><span class="s1">&#39;Omega0&#39;</span><span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;Ob0&#39;</span> <span class="p">:</span> <span class="nb">float</span><span class="p">(</span> <span class="n">metafile_reader</span><span class="o">.</span><span class="n">used_parameters</span><span class="p">[</span><span class="s1">&#39;OmegaBaryon&#39;</span><span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;sigma8&#39;</span> <span class="p">:</span> <span class="n">co_cosmology</span><span class="o">.</span><span class="n">cosmologies</span><span class="p">[</span><span class="s1">&#39;WMAP9&#39;</span><span class="p">][</span><span class="s1">&#39;sigma8&#39;</span><span class="p">],</span> <span class="c1"># Use WMAP9 for values we don&#39;t store in our simulations explicitly.</span>
+            <span class="s1">&#39;ns&#39;</span> <span class="p">:</span> <span class="n">co_cosmology</span><span class="o">.</span><span class="n">cosmologies</span><span class="p">[</span><span class="s1">&#39;WMAP9&#39;</span><span class="p">][</span><span class="s1">&#39;ns&#39;</span><span class="p">],</span> <span class="c1"># Use WMAP9 for values we don&#39;t store in our simulations explicitly.</span>
+        <span class="p">}</span>
+        <span class="n">cosmo</span> <span class="o">=</span> <span class="n">co_cosmology</span><span class="o">.</span><span class="n">setCosmology</span><span class="p">(</span> <span class="s1">&#39;sim_cosmo&#39;</span><span class="p">,</span> <span class="n">sim_cosmo</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">type_of_halo_id</span> <span class="o">==</span> <span class="s1">&#39;merger_tree&#39;</span><span class="p">:</span>
+
+            <span class="c1"># Loop over all mt halos</span>
+            <span class="k">for</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                <span class="c1"># Load the data</span>
+                <span class="n">mtree_halo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="p">[</span> <span class="n">halo_id</span> <span class="p">]</span>
+
+                <span class="c1"># Get the concentration out</span>
+                <span class="n">c_vir</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">m_vir</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;Mvir&#39;</span><span class="p">],</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">]</span> <span class="p">):</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">co_concentration</span><span class="o">.</span><span class="n">concentration</span><span class="p">(</span> <span class="n">m_vir</span><span class="p">,</span> <span class="s1">&#39;vir&#39;</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;diemer15&#39;</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">)</span>
+                    <span class="n">c_vir</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span>
+
+                <span class="c1"># Turn the concentration into an array</span>
+                <span class="n">c_vir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">c_vir</span> <span class="p">)</span>
+
+                <span class="c1"># Save the concentration</span>
+                <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;cAnalytic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_vir</span>
+
+        <span class="k">elif</span> <span class="n">type_of_halo_id</span> <span class="o">==</span> <span class="s1">&#39;halos&#39;</span><span class="p">:</span>
+
+            <span class="c1"># Get the redshift for the halo file.</span>
+            <span class="n">metafile_reader</span><span class="o">.</span><span class="n">get_snapshot_times</span><span class="p">()</span>
+            <span class="n">redshift</span> <span class="o">=</span> <span class="n">metafile_reader</span><span class="o">.</span><span class="n">snapshot_times</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">]</span>
+
+            <span class="c1"># Get the concentration</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">co_concentration</span><span class="o">.</span><span class="n">concentration</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="p">[</span><span class="s1">&#39;Mvir&#39;</span><span class="p">],</span> <span class="s1">&#39;vir&#39;</span><span class="p">,</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;diemer15&#39;</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">c</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.get_mass_radii"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_mass_radii">[docs]</a>    <span class="k">def</span> <span class="nf">get_mass_radii</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">mass_fractions</span><span class="p">,</span>
+                <span class="n">simulation_data_dir</span><span class="p">,</span>
+                <span class="n">galaxy_cut</span><span class="p">,</span>
+                <span class="n">length_scale</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get radii that enclose a fraction (mass_fractions[i]) of a halo&#39;s stellar mass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mass_fractions (list of floats) :</span>
+<span class="sd">                Relevant mass fractions.</span>
+
+<span class="sd">            simulation_data_dir (str) :</span>
+<span class="sd">                Directory containing the raw particle data.</span>
+
+<span class="sd">            galaxy_cut (float) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.</span>
+
+<span class="sd">            length_scale (str) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo to look for stars.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mass_radii (list of np.ndarrays) :</span>
+<span class="sd">                If M_sum_j = all mass inside galaxy_cut*length_scale for halo j, then mass_radii[i][j] is the radius that</span>
+<span class="sd">                contains a fraction mass_fractions[i] of M_sum_j.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+                
+        <span class="c1"># Load the simulation data</span>
+        <span class="n">s_data</span> <span class="o">=</span> <span class="n">particle_data</span><span class="o">.</span><span class="n">ParticleData</span><span class="p">(</span>
+            <span class="n">simulation_data_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">,</span>
+            <span class="n">ptype</span> <span class="o">=</span> <span class="n">data_constants</span><span class="o">.</span><span class="n">PTYPES</span><span class="p">[</span><span class="s1">&#39;star&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">particle_positions</span> <span class="o">=</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="c1"># Case where there are no star particles at this redshift.</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="p">),</span> <span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span> <span class="n">mass_fractions</span> <span class="p">)</span>
+
+        <span class="c1"># Find the mass radii</span>
+        <span class="n">galaxy_finder_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;particle_positions&#39;</span> <span class="p">:</span> <span class="n">particle_positions</span><span class="p">,</span>
+            <span class="s1">&#39;particle_masses&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;snum&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">,</span>
+            <span class="s1">&#39;redshift&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">redshift</span><span class="p">,</span>
+            <span class="s1">&#39;hubble&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;hubble&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;galaxy_cut&#39;</span> <span class="p">:</span> <span class="n">galaxy_cut</span><span class="p">,</span>
+            <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="n">length_scale</span><span class="p">,</span>
+            <span class="s1">&#39;halo_data&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">gal_finder</span> <span class="o">=</span> <span class="n">galaxy_finder</span><span class="o">.</span><span class="n">GalaxyFinder</span><span class="p">(</span> <span class="o">**</span><span class="n">galaxy_finder_kwargs</span> <span class="p">)</span>
+        
+        <span class="n">mass_radii</span> <span class="o">=</span> <span class="p">[</span> <span class="n">gal_finder</span><span class="o">.</span><span class="n">get_mass_radius</span><span class="p">(</span> <span class="n">mass_fraction</span> <span class="p">)</span> <span class="k">for</span> <span class="n">mass_fraction</span> <span class="ow">in</span> <span class="n">mass_fractions</span> <span class="p">]</span>
+            
+        <span class="k">return</span> <span class="n">mass_radii</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.get_enclosed_mass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_enclosed_mass">[docs]</a>    <span class="k">def</span> <span class="nf">get_enclosed_mass</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+        <span class="n">simulation_data_dir</span><span class="p">,</span>
+        <span class="n">ptype</span><span class="p">,</span>
+        <span class="n">galaxy_cut</span><span class="p">,</span>
+        <span class="n">length_scale</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the mass inside galaxy_cut*length_scale for each Halo halo.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            simulation_data_dir (str) :</span>
+<span class="sd">                Directory containing the raw particle data.</span>
+
+<span class="sd">            ptype (str) :</span>
+<span class="sd">                What particle type to get the mass for.</span>
+
+<span class="sd">            galaxy_cut (float) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.</span>
+
+<span class="sd">            length_scale (str) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mass_inside_all_halos (np.ndarray) :</span>
+<span class="sd">                mass_inside_all_halos[i] is the mass of particle type ptype inside galaxy_cut*length scale around a galaxy.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Load the simulation data</span>
+        <span class="n">s_data</span> <span class="o">=</span> <span class="n">particle_data</span><span class="o">.</span><span class="n">ParticleData</span><span class="p">(</span>
+            <span class="n">simulation_data_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">,</span>
+            <span class="n">data_constants</span><span class="o">.</span><span class="n">PTYPES</span><span class="p">[</span><span class="n">ptype</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">particle_positions</span> <span class="o">=</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="c1"># Case where there are no star particles at this redshift.</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="mf">0.</span><span class="p">,</span> <span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="p">)</span>
+
+        <span class="c1"># Find the mass radii</span>
+        <span class="n">galaxy_finder_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;particle_positions&#39;</span> <span class="p">:</span> <span class="n">particle_positions</span><span class="p">,</span>
+            <span class="s1">&#39;particle_masses&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">constants</span><span class="o">.</span><span class="n">UNITMASS_IN_MSUN</span><span class="p">,</span>
+            <span class="s1">&#39;snum&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">,</span>
+            <span class="s1">&#39;redshift&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">redshift</span><span class="p">,</span>
+            <span class="s1">&#39;hubble&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;hubble&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;galaxy_cut&#39;</span> <span class="p">:</span> <span class="n">galaxy_cut</span><span class="p">,</span>
+            <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="n">length_scale</span><span class="p">,</span>
+            <span class="s1">&#39;halo_data&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">gal_finder</span> <span class="o">=</span> <span class="n">galaxy_finder</span><span class="o">.</span><span class="n">GalaxyFinder</span><span class="p">(</span> <span class="o">**</span><span class="n">galaxy_finder_kwargs</span> <span class="p">)</span>
+
+        <span class="n">mass_inside_all_halos</span> <span class="o">=</span> <span class="n">gal_finder</span><span class="o">.</span><span class="n">mass_inside_all_halos</span>
+        
+        <span class="c1"># Make sure to put hubble constant back in so we have consistent units.</span>
+        <span class="n">mass_inside_all_halos</span> <span class="o">*=</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;hubble&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">mass_inside_all_halos</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.get_average_quantity_inside_galaxy"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_average_quantity_inside_galaxy">[docs]</a>    <span class="k">def</span> <span class="nf">get_average_quantity_inside_galaxy</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_key</span><span class="p">,</span>
+        <span class="n">simulation_data_dir</span><span class="p">,</span>
+        <span class="n">ptype</span><span class="p">,</span>
+        <span class="n">galaxy_cut</span><span class="p">,</span>
+        <span class="n">length_scale</span><span class="p">,</span>
+        <span class="n">weight_data_key</span> <span class="o">=</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span>
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the mass inside galaxy_cut*length_scale for each Halo halo.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_key (str) :</span>
+<span class="sd">                Data key for the quantity to get the average of.</span>
+
+<span class="sd">            simulation_data_dir (str) :</span>
+<span class="sd">                Directory containing the raw particle data.</span>
+
+<span class="sd">            ptype (str) :</span>
+<span class="sd">                What particle type to get the mass for.</span>
+
+<span class="sd">            galaxy_cut (float) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.</span>
+
+<span class="sd">            length_scale (str) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.</span>
+
+<span class="sd">            weight_data_key (str) :</span>
+<span class="sd">                Data key for the weight to use when averaging.</span>
+
+<span class="sd">            fill_value (float) :</span>
+<span class="sd">                What value to use when the average quantity inside the galaxy is not resolved.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            average_quantity_inside_galaxy (np.ndarray) :</span>
+<span class="sd">                average_quantity_inside_galaxy[i] is the average value of the requested quantity for particle type ptype</span>
+<span class="sd">                inside galaxy_cut*length scale around a galaxy.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Load the simulation data</span>
+        <span class="n">s_data</span> <span class="o">=</span> <span class="n">particle_data</span><span class="o">.</span><span class="n">ParticleData</span><span class="p">(</span>
+            <span class="n">simulation_data_dir</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">,</span>
+            <span class="n">data_constants</span><span class="o">.</span><span class="n">PTYPES</span><span class="p">[</span><span class="n">ptype</span><span class="p">],</span>
+
+            <span class="c1"># The following values need to be set, because they come into play when a galaxy is centered on halo finder</span>
+            <span class="c1"># data. That&#39;s obviously not the case here...</span>
+            <span class="n">centered</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">vel_centered</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">hubble_corrected</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">particle_positions</span> <span class="o">=</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="c1"># Case where there are no particles of the given ptype at this redshift.</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">fill_value</span><span class="p">,</span> <span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="p">)</span>
+
+        <span class="c1"># Find the mass radii</span>
+        <span class="n">galaxy_finder_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;particle_positions&#39;</span> <span class="p">:</span> <span class="n">particle_positions</span><span class="p">,</span>
+            <span class="s1">&#39;snum&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">,</span>
+            <span class="s1">&#39;redshift&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">redshift</span><span class="p">,</span>
+            <span class="s1">&#39;hubble&#39;</span> <span class="p">:</span> <span class="n">s_data</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;hubble&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;galaxy_cut&#39;</span> <span class="p">:</span> <span class="n">galaxy_cut</span><span class="p">,</span>
+            <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="n">length_scale</span><span class="p">,</span>
+            <span class="s1">&#39;halo_data&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">gal_finder</span> <span class="o">=</span> <span class="n">galaxy_finder</span><span class="o">.</span><span class="n">GalaxyFinder</span><span class="p">(</span> <span class="n">low_memory_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">galaxy_finder_kwargs</span> <span class="p">)</span>
+
+        <span class="n">average_quantity_inside_galaxy</span> <span class="o">=</span> <span class="n">gal_finder</span><span class="o">.</span><span class="n">weighted_summed_quantity_inside_galaxy</span><span class="p">(</span>
+            <span class="n">s_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">),</span>
+            <span class="n">s_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="n">weight_data_key</span> <span class="p">),</span>
+            <span class="n">fill_value</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">average_quantity_inside_galaxy</span></div>
+
+    <span class="c1">########################################################################</span>
+    
+<div class="viewcode-block" id="HaloUpdater.get_circular_velocity"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_circular_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">get_circular_velocity</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+        <span class="n">galaxy_cut</span><span class="p">,</span>
+        <span class="n">length_scale</span><span class="p">,</span>
+        <span class="n">metafile_dir</span><span class="p">,</span>
+        <span class="n">ptypes</span> <span class="o">=</span> <span class="n">data_constants</span><span class="o">.</span><span class="n">STANDARD_PTYPES</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the circular velocity at galaxy_cut*length_scale.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            galaxy_cut (float) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.</span>
+
+<span class="sd">            length_scale (str) :</span>
+<span class="sd">                galaxy_cut*length_scale defines the radius around the center of the halo within which to get the mass.</span>
+
+<span class="sd">            metafile_dir (str) :</span>
+<span class="sd">                Directory containing metafile data, for getting out the redshift given a snapshot.</span>
+
+<span class="sd">            ptypes (list of strs) :</span>
+<span class="sd">                Particle types to count the mass inside the halo of.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            v_circ (np.ndarray) </span>
+<span class="sd">                Circular velocity at galaxy_cut*length_scale using mass from the given ptypes.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Get the redshift, for converting the radius to pkpc/h.</span>
+        <span class="n">metafile_reader</span> <span class="o">=</span> <span class="n">read_metafile</span><span class="o">.</span><span class="n">MetafileReader</span><span class="p">(</span> <span class="n">metafile_dir</span> <span class="p">)</span>
+        <span class="n">metafile_reader</span><span class="o">.</span><span class="n">get_snapshot_times</span><span class="p">()</span>
+        <span class="n">redshift</span> <span class="o">=</span> <span class="n">metafile_reader</span><span class="o">.</span><span class="n">snapshot_times</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">halos_snum</span><span class="p">]</span>
+
+        <span class="c1"># Get the radius in pkpc/h</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="n">galaxy_cut</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="p">[</span><span class="n">length_scale</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">radius</span> <span class="o">=</span> <span class="n">galaxy_cut</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="p">[</span><span class="n">length_scale</span><span class="p">]</span>
+        <span class="n">radius</span> <span class="o">/=</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">redshift</span> <span class="p">)</span>
+
+        <span class="c1"># Get the mass in Msun/h</span>
+        <span class="n">masses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="n">ptypes</span><span class="p">:</span>
+            <span class="n">mass_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">get_enclosed_mass_key</span><span class="p">(</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">galaxy_cut</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ptype_mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="p">[</span><span class="n">mass_key</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">ptype_mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="p">[</span><span class="n">mass_key</span><span class="p">]</span>
+            <span class="n">masses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">ptype_mass</span> <span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">masses</span> <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span>
+
+        <span class="c1"># Now get the circular velocity out</span>
+        <span class="c1"># (note that we don&#39;t need to bother with converting out the 1/h&#39;s, because in this particular case they&#39;ll cancel)</span>
+        <span class="n">v_circ</span> <span class="o">=</span> <span class="n">astro_utils</span><span class="o">.</span><span class="n">circular_velocity</span><span class="p">(</span> <span class="n">radius</span><span class="p">,</span> <span class="n">mass</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">v_circ</span></div>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Alter Data</span>
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.smooth_mtree_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.smooth_mtree_halos">[docs]</a>    <span class="k">def</span> <span class="nf">smooth_mtree_halos</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">metafile_dir</span><span class="p">,</span>
+            <span class="n">keys_to_smooth</span> <span class="o">=</span> <span class="p">[],</span>
+            <span class="n">smooth_kwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;window_len&#39;</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;window&#39;</span> <span class="p">:</span> <span class="s1">&#39;flat&#39;</span> <span class="p">},</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the Halo-calculated merger tree.</span>
+<span class="sd">        NOTE: This smooths in *physical* coordinates, so it may not be exactly smooth in comoving coordinates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metafile_dir (str) :</span>
+<span class="sd">                The directory the snapshot_times are stored in.</span>
+
+<span class="sd">                keys_to_smooth (list of strs) :</span>
+<span class="sd">                        If given, also smooth the data given by these keys.</span>
+<span class="sd">                        This smoothing isn&#39;t done to assume a monotonic increase, but is</span>
+<span class="sd">                        a convolve with a moving filter through data_operations.smooth()</span>
+
+<span class="sd">                smooth_kwargs (dict) :</span>
+<span class="sd">                        Specific arguments that determine exactly how the smoothing is</span>
+<span class="sd">                        done, when also smoothing for specific keys.</span>
+
+<span class="sd">        Modifies:</span>
+<span class="sd">            self.mtree_halos (dict of pd.DataFrames) :</span>
+<span class="sd">                Changes self.mtree_halos[halo_id][&#39;Rvir&#39;] and self.mtree_halos[halo_id][&#39;Mvir&#39;] to be monotonically increasing.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># We need to get an accurate redshift in order to smooth properly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_accurate_redshift</span><span class="p">(</span> <span class="n">metafile_dir</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="c1"># Load the data</span>
+            <span class="n">mtree_halo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="p">[</span> <span class="n">halo_id</span> <span class="p">]</span>
+
+            <span class="c1"># Convert into physical coords for smoothing (we&#39;ll still leave the 1/h in place)</span>
+            <span class="n">r_vir_phys</span> <span class="o">=</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;Rvir&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+            <span class="c1"># Smooth r_vir</span>
+            <span class="n">r_vir_phys_smooth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span> <span class="n">r_vir_phys</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># Convert back into comoving and save</span>
+            <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;Rvir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_vir_phys_smooth</span><span class="o">*</span><span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+            <span class="c1"># Smooth Mvir</span>
+            <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;Mvir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;Mvir&#39;</span><span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">smooth_key</span> <span class="ow">in</span> <span class="n">keys_to_smooth</span><span class="p">:</span>
+
+                <span class="n">original_data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="n">smooth_key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="p">)</span>
+
+                <span class="n">smoothed_data</span> <span class="o">=</span> <span class="n">data_operations</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span>
+                        <span class="n">original_data</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">smooth_kwargs</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Replace NaN values with original values, where possible</span>
+                <span class="n">smoothed_nan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span> <span class="n">smoothed_data</span> <span class="p">)</span>
+                <span class="n">smoothed_data</span><span class="p">[</span><span class="n">smoothed_nan</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_data</span><span class="p">[</span><span class="n">smoothed_nan</span><span class="p">]</span>
+
+                <span class="n">smooth_save_key</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span> <span class="o">+</span> <span class="n">smooth_key</span>
+
+                <span class="n">mtree_halo</span><span class="p">[</span><span class="n">smooth_save_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">smoothed_data</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.include_halos_to_mtree_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.include_halos_to_mtree_halos">[docs]</a>    <span class="k">def</span> <span class="nf">include_halos_to_mtree_halos</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;While most of the halofile data are contained in *.AHF_halos files, some quantities are stored in</span>
+<span class="sd">        *.AHF_halos files. These are usually computed manually, external to what&#39;s inherent in AHF. This routine adds</span>
+<span class="sd">        on the the information from these files to the loaded merger tree data (which don&#39;t usually include them, because</span>
+<span class="sd">        they&#39;re not inherent to AHF.</span>
+
+<span class="sd">        Modifies:</span>
+<span class="sd">            self.mtree_halos (dict of pd.DataFrames) :</span>
+<span class="sd">                Adds additional columns contained in *.AHF_halos_add files.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">mtree_id</span><span class="p">,</span> <span class="n">mtree_halo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Looking at merger tree ID </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">mtree_id</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">halo_ids</span> <span class="o">=</span> <span class="n">mtree_halo</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">snums</span> <span class="o">=</span> <span class="n">mtree_halo</span><span class="o">.</span><span class="n">index</span>
+
+            <span class="n">ahf_frames</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">snum</span><span class="p">,</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">snums</span><span class="p">,</span> <span class="n">halo_ids</span><span class="p">,</span> <span class="p">):</span>
+
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Getting data for snapshot </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span> <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_halos</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span>
+
+                <span class="c1"># Get the columns we want to add on.</span>
+                <span class="n">halofile_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">columns</span> <span class="p">)</span>
+                <span class="n">mtree_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span> <span class="n">mtree_halo</span><span class="o">.</span><span class="n">columns</span> <span class="p">)</span>
+                <span class="n">columns_to_add</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="n">halofile_columns</span> <span class="o">-</span> <span class="n">mtree_columns</span> <span class="p">)</span>
+                <span class="n">columns_to_add</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+                <span class="c1"># Now get the values to add</span>
+                <span class="n">full_ahf_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">halo_id</span><span class="p">:</span><span class="n">halo_id</span><span class="p">]</span> 
+                <span class="n">ahf_row</span> <span class="o">=</span> <span class="n">full_ahf_row</span><span class="p">[</span><span class="n">columns_to_add</span><span class="p">]</span>
+
+                <span class="c1"># Check for edge case, where there isn&#39;t an AHF row with specified halo number</span>
+                <span class="k">if</span> <span class="n">ahf_row</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    
+                    <span class="c1"># Borrow a previous row for formatting</span>
+                    <span class="n">ahf_row</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="n">ahf_frames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+                    <span class="c1"># Drop the previous row</span>
+                    <span class="n">ahf_row</span> <span class="o">=</span> <span class="n">ahf_row</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span> <span class="n">ahf_row</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span>
+
+                    <span class="c1"># Turn all the values to np.nan, so we know that they&#39;re invalid, but the format still works.</span>
+                    <span class="p">[</span> <span class="n">ahf_row</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span> <span class="n">halo_id</span><span class="p">,</span> <span class="n">column_name</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="p">)</span> <span class="k">for</span> <span class="n">column_name</span> <span class="ow">in</span> <span class="n">columns_to_add</span> <span class="p">]</span>
+
+                <span class="n">ahf_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">ahf_row</span> <span class="p">)</span>
+
+            <span class="n">custom_mtree_halo</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span> <span class="n">ahf_frames</span> <span class="p">)</span>
+
+            <span class="c1"># Add in the snapshots, and use them as the index</span>
+            <span class="n">custom_mtree_halo</span><span class="p">[</span><span class="s1">&#39;snum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snums</span>
+            <span class="n">custom_mtree_halo</span> <span class="o">=</span> <span class="n">custom_mtree_halo</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span> <span class="s1">&#39;snum&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+            <span class="c1"># Now merge onto the mtree_halo DataFram</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="p">[</span><span class="n">mtree_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span> <span class="p">[</span> <span class="n">mtree_halo</span><span class="p">,</span> <span class="n">custom_mtree_halo</span><span class="p">,</span> <span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Save Data</span>
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.save_mtree_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_mtree_halos">[docs]</a>    <span class="k">def</span> <span class="nf">save_mtree_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">tag</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save loaded mergertree halo files in a csv file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tag (str) : If the previous file was for example &#39;/path/to/file/halo_00000.dat&#39;,</span>
+<span class="sd">                                    the new file will be &#39;/path/to/file/halo_00000_{}.dat&#39;.format( tag )</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="c1"># Load the data</span>
+            <span class="n">mtree_halo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halos</span><span class="p">[</span> <span class="n">halo_id</span> <span class="p">]</span>
+            <span class="n">halo_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtree_halo_filepaths</span><span class="p">[</span> <span class="n">halo_id</span> <span class="p">]</span>
+
+            <span class="c1"># Create the new filename</span>
+            <span class="n">filepath_base</span><span class="p">,</span> <span class="n">file_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span> <span class="n">halo_filepath</span> <span class="p">)</span>
+            <span class="n">save_filepath</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">filepath_base</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">file_ext</span> <span class="p">)</span>
+
+            <span class="n">mtree_halo</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span> <span class="n">save_filepath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.save_smooth_mtree_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_smooth_mtree_halos">[docs]</a>    <span class="k">def</span> <span class="nf">save_smooth_mtree_halos</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">metafile_dir</span><span class="p">,</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">include_halos_add</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">include_concentration</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">smooth_keys</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;Rstar0.5&#39;</span><span class="p">,</span> <span class="p">],</span>
+            <span class="o">**</span><span class="n">get_mtree_halo_kwargs</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Load halo files, smooth them, and save as a new file e.g., halo_00000_smooth.dat</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metafile_dir (str) :</span>
+<span class="sd">                The directory the metafiles (snapshot_times and used_parameters) are stored in.</span>
+
+<span class="sd">            index (str or int) :</span>
+<span class="sd">                What type of index to use. Defaults to None, which raises an exception. You *must* choose an</span>
+<span class="sd">                index, to avoid easy mistakes. See get_mtree_halos() for a full description.</span>
+
+<span class="sd">            include_concentration (bool):</span>
+<span class="sd">                Whether or not to add an additional column that gives an analytic value for the</span>
+<span class="sd">                halo concentration.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        
+        <span class="c1"># Load the data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_mtree_halos</span><span class="p">(</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">get_mtree_halo_kwargs</span> <span class="p">)</span>
+
+        <span class="c1"># Include data stored in *AHF_halos_add files.</span>
+        <span class="k">if</span> <span class="n">include_halos_add</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">include_halos_to_mtree_halos</span><span class="p">()</span>
+
+        <span class="c1"># Smooth the halos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smooth_mtree_halos</span><span class="p">(</span> <span class="n">metafile_dir</span><span class="p">,</span> <span class="n">smooth_keys</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="c1"># Include the concentration, if chosen.</span>
+        <span class="k">if</span> <span class="n">include_concentration</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_analytic_concentration</span><span class="p">(</span> <span class="n">metafile_dir</span> <span class="p">)</span>
+
+        <span class="c1"># Save the halos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_mtree_halos</span><span class="p">(</span> <span class="s1">&#39;smooth&#39;</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.save_custom_mtree_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_custom_mtree_halos">[docs]</a>    <span class="k">def</span> <span class="nf">save_custom_mtree_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">snums</span><span class="p">,</span> <span class="n">halo_ids</span><span class="p">,</span> <span class="n">metafile_dir</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save a custom merger tree.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            snums (array-like or int) :</span>
+<span class="sd">                What snapshots to generate the custom merger tree for.</span>
+<span class="sd">                If a single integer, then snums will start at that integer and count backwards by single snapshots for the</span>
+<span class="sd">                length of halo_ids</span>
+
+<span class="sd">            halo_ids (array-like) :</span>
+<span class="sd">                halo_ids[i] is the AHF_halos halo ID for the merger tree halo at snums[i].</span>
+
+<span class="sd">            metafile_dir (str) :</span>
+<span class="sd">                Directory for the metafile (used to get simulation redshift).</span>
+
+<span class="sd">        Modifies:</span>
+<span class="sd">            self.data_dir/halo_00000_custom.dat (text file) : Saves the custom merger tree at this location.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">snums</span><span class="p">,</span> <span class="nb">int</span> <span class="p">):</span>
+            <span class="n">snums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="n">snums</span><span class="p">,</span> <span class="n">snums</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span> <span class="n">halo_ids</span> <span class="p">),</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span>
+
+        <span class="c1"># Concatenate the data</span>
+        <span class="n">ahf_frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">snum</span><span class="p">,</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">snums</span><span class="p">,</span> <span class="n">halo_ids</span><span class="p">,</span> <span class="p">):</span>
+
+            <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Getting data for snapshot </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_halos</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span>
+
+            <span class="n">ahf_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">halo_id</span><span class="p">:</span><span class="n">halo_id</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">custom_mtree_halo</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span> <span class="n">ahf_frames</span> <span class="p">)</span>
+
+        <span class="c1"># Make sure to store the IDs too</span>
+        <span class="n">custom_mtree_halo</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">halo_ids</span>
+
+        <span class="c1"># Add in the snapshots, and use them as the index</span>
+        <span class="n">custom_mtree_halo</span><span class="p">[</span><span class="s1">&#39;snum&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">snums</span>
+        <span class="n">custom_mtree_halo</span> <span class="o">=</span> <span class="n">custom_mtree_halo</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span> <span class="s1">&#39;snum&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="c1"># Get and save the redshift</span>
+        <span class="n">metafile_reader</span> <span class="o">=</span> <span class="n">read_metafile</span><span class="o">.</span><span class="n">MetafileReader</span><span class="p">(</span> <span class="n">metafile_dir</span> <span class="p">)</span>
+        <span class="n">metafile_reader</span><span class="o">.</span><span class="n">get_snapshot_times</span><span class="p">()</span>
+        <span class="n">custom_mtree_halo</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metafile_reader</span><span class="o">.</span><span class="n">snapshot_times</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">][</span><span class="n">snums</span><span class="p">]</span>
+
+        <span class="c1"># Save the data</span>
+        <span class="n">save_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">&#39;halo_00000_custom.dat&#39;</span> <span class="p">)</span>
+        <span class="n">custom_mtree_halo</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span> <span class="n">save_filepath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.save_halos_add"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_halos_add">[docs]</a>    <span class="k">def</span> <span class="nf">save_halos_add</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+        <span class="n">snum</span><span class="p">,</span>
+        <span class="n">include_analytic_concentration</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_mass_radii</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_enclosed_mass</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_average_quantity_inside_galaxy</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_v_circ</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">metafile_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">simulation_data_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mass_radii_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;mass_fractions&#39;</span> <span class="p">:</span> <span class="p">[</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s1">&#39;galaxy_cut&#39;</span> <span class="p">:</span> <span class="mf">0.15</span><span class="p">,</span>
+            <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="s1">&#39;Rvir&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">enclosed_mass_ptypes</span> <span class="o">=</span> <span class="n">data_constants</span><span class="o">.</span><span class="n">STANDARD_PTYPES</span><span class="p">,</span>
+        <span class="n">enclosed_mass_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;galaxy_cut&#39;</span> <span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+            <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="s1">&#39;Rstar0.5&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">average_quantity_data_keys</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;Vx&#39;</span><span class="p">,</span> <span class="s1">&#39;Vy&#39;</span><span class="p">,</span> <span class="s1">&#39;Vz&#39;</span><span class="p">,</span> <span class="p">],</span>
+        <span class="n">average_quantity_inside_galaxy_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;ptype&#39;</span> <span class="p">:</span> <span class="s1">&#39;star&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;galaxy_cut&#39;</span> <span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+            <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="s1">&#39;Rstar0.5&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">v_circ_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;galaxy_cut&#39;</span> <span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span>
+            <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="s1">&#39;Rstar0.5&#39;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save additional columns that would be part of *.AHF_halos files, if that didn&#39;t break AHF.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            snum (int) :</span>
+<span class="sd">                Snapshot number to load.</span>
+
+<span class="sd">            include_analytic_concentration (bool) :</span>
+<span class="sd">                Include analytic concentration as one of the columns?</span>
+
+<span class="sd">            include_mass_radii (bool) :</span>
+<span class="sd">                Include radius that include some fraction of a particle&#39;s mass as one of the columns?</span>
+
+<span class="sd">            include_enclosed_mass (bool) :</span>
+<span class="sd">                Include the mass enclosed in some specified radii as one of the columns?</span>
+
+<span class="sd">            include_average_quantity_inside_galaxy (bool) :</span>
+<span class="sd">                Include the average value inside each galaxy for the quantities listed in average_quantity_data_keys?</span>
+
+<span class="sd">            include_v_circ (bool) :</span>
+<span class="sd">                Include the circular mass at some specified radii as one of the columns?</span>
+
+<span class="sd">            metafile_dir (str) :</span>
+<span class="sd">                The directory the metafiles (snapshot_times and used_parameters) are stored in.</span>
+
+<span class="sd">            simulation_data_dir (str) :</span>
+<span class="sd">                Directory containing the simulation data (used for getting the position and masses of the star particles).</span>
+
+<span class="sd">            mass_radii_kwargs (dict) :</span>
+<span class="sd">                Keyword args for self.get_mass_radii()</span>
+
+<span class="sd">            enclosed_mass_ptypes (list of strs) :</span>
+<span class="sd">                Particle types to get the mass inside a radii of.</span>
+
+<span class="sd">            enclosed_mass_kwargs (dict) :</span>
+<span class="sd">                Keyword args for self.get_enclosed_mass()</span>
+
+<span class="sd">            average_quantity_data_keys (list of strs) :</span>
+<span class="sd">                What data keys (to be passed to a standard ParticleData.get_data() function) to get the average quantity for?</span>
+
+<span class="sd">            average_quantity_kwargs (dict) :</span>
+<span class="sd">                Keyword args for self.get_average_quantity_inside_galaxy()</span>
+
+<span class="sd">            v_circ_kwargs (dict) :</span>
+<span class="sd">                Keyword args for self.get_circular_velocity()</span>
+
+<span class="sd">            verbose (bool) :</span>
+<span class="sd">                If True, print out additional information about how the steps are progressing.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Saving *.AHF_halos_add for snum </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span> <span class="p">))</span>
+
+        <span class="c1"># Load the AHF_halos data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_halos</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span>
+
+        <span class="c1"># Figure out if there are any valid halos at this redshift if not, then a *lot* can be skipped.</span>
+        <span class="c1"># TODO: Don&#39;t hard-code this in....</span>
+        <span class="n">valid_halos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="p">[</span><span class="s1">&#39;n_star&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">10</span>
+        <span class="n">no_valid_halos</span> <span class="o">=</span> <span class="n">valid_halos</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">blank_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="p">)</span>
+
+        <span class="c1"># Create AHF_halos add</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span> <span class="p">{},</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">index</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Get the analytic concentration</span>
+        <span class="k">if</span> <span class="n">include_analytic_concentration</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Including Analytic Concentration...&quot;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="p">[</span><span class="s1">&#39;cAnalytic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_analytic_concentration</span><span class="p">(</span> <span class="n">metafile_dir</span><span class="p">,</span> <span class="n">type_of_halo_id</span><span class="o">=</span><span class="s1">&#39;halos&#39;</span> <span class="p">)</span>
+
+        <span class="c1"># Get characteristic radii</span>
+        <span class="k">if</span> <span class="n">include_mass_radii</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Including Mass Radii...&quot;</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">no_valid_halos</span><span class="p">:</span>
+                <span class="n">mass_radii</span> <span class="o">=</span> <span class="p">[</span> <span class="n">blank_array</span><span class="p">,</span> <span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span> <span class="n">mass_radii_kwargs</span><span class="p">[</span><span class="s1">&#39;mass_fractions&#39;</span><span class="p">]</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mass_radii</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mass_radii</span><span class="p">(</span> <span class="n">simulation_data_dir</span> <span class="o">=</span> <span class="n">simulation_data_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">mass_radii_kwargs</span> <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mass_fraction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="n">mass_radii_kwargs</span><span class="p">[</span><span class="s1">&#39;mass_fractions&#39;</span><span class="p">]</span> <span class="p">):</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Rstar</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">mass_fraction</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass_radii</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Get mass enclosed in a particular radius</span>
+        <span class="k">if</span> <span class="n">include_enclosed_mass</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Including Enclosed Mass...&quot;</span> <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="n">enclosed_mass_ptypes</span> <span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">no_valid_halos</span><span class="p">:</span>
+                    <span class="n">halo_masses</span> <span class="o">=</span> <span class="n">blank_array</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">halo_masses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_enclosed_mass</span><span class="p">(</span> <span class="n">simulation_data_dir</span><span class="p">,</span> <span class="n">ptype</span><span class="p">,</span> <span class="o">**</span><span class="n">enclosed_mass_kwargs</span> <span class="p">)</span>
+
+                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">get_enclosed_mass_key</span><span class="p">(</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">enclosed_mass_kwargs</span><span class="p">[</span><span class="s1">&#39;galaxy_cut&#39;</span><span class="p">],</span> \
+                                                                                                              <span class="n">enclosed_mass_kwargs</span><span class="p">[</span><span class="s1">&#39;length_scale&#39;</span><span class="p">],</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">halo_masses</span>
+
+        <span class="c1"># Get average quantity inside each galaxy (for halos that have galaxies)</span>
+        <span class="k">if</span> <span class="n">include_average_quantity_inside_galaxy</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Including Average Quantities...&quot;</span> <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="n">average_quantity_data_keys</span> <span class="p">):</span>
+
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;  Finding average </span><span class="si">{}</span><span class="s2">...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span> <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">no_valid_halos</span><span class="p">:</span>
+                    <span class="n">average_quantity</span> <span class="o">=</span> <span class="n">blank_array</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">average_quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_average_quantity_inside_galaxy</span><span class="p">(</span>
+                        <span class="n">data_key</span><span class="p">,</span>
+                        <span class="n">simulation_data_dir</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">average_quantity_inside_galaxy_kwargs</span>
+                    <span class="p">)</span>
+
+                <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">get_average_quantity_key</span><span class="p">(</span>
+                    <span class="n">data_key</span><span class="p">,</span>
+                    <span class="n">average_quantity_inside_galaxy_kwargs</span><span class="p">[</span><span class="s1">&#39;ptype&#39;</span><span class="p">],</span>
+                    <span class="n">average_quantity_inside_galaxy_kwargs</span><span class="p">[</span><span class="s1">&#39;galaxy_cut&#39;</span><span class="p">],</span>
+                    <span class="n">average_quantity_inside_galaxy_kwargs</span><span class="p">[</span><span class="s1">&#39;length_scale&#39;</span><span class="p">],</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">average_quantity</span>
+
+        <span class="c1"># Get circular velocity at a particular radius</span>
+        <span class="k">if</span> <span class="n">include_v_circ</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Including Circular Velocity...&quot;</span> <span class="p">)</span>
+            <span class="n">v_circ</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_circular_velocity</span><span class="p">(</span> <span class="n">metafile_dir</span><span class="o">=</span><span class="n">metafile_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">v_circ_kwargs</span> <span class="p">)</span>
+
+            <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">get_velocity_at_radius_key</span><span class="p">(</span>
+                <span class="s1">&#39;Vc&#39;</span><span class="p">,</span>
+                <span class="n">v_circ_kwargs</span><span class="p">[</span><span class="s1">&#39;galaxy_cut&#39;</span><span class="p">],</span>
+                <span class="n">v_circ_kwargs</span><span class="p">[</span><span class="s1">&#39;length_scale&#39;</span><span class="p">]</span>
+            <span class="p">)</span> 
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_circ</span>
+
+        <span class="c1"># Save AHF_halos add</span>
+        <span class="n">save_filepath</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_add&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos_path</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">halos_add</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span> <span class="n">save_filepath</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloUpdater.save_multiple_halos_adds"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.ahf_updater.html#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_multiple_halos_adds">[docs]</a>    <span class="k">def</span> <span class="nf">save_multiple_halos_adds</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">metafile_dir</span><span class="p">,</span> <span class="n">snum_start</span><span class="p">,</span> <span class="n">snum_end</span><span class="p">,</span> <span class="n">snum_step</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save additional columns that would be part of *.AHF_halos files, if that didn&#39;t break AHF.</span>
+<span class="sd">        Do this for every *.AHF_halos file in self.data_dir.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            metafile_dir (str): The directory the metafiles (snapshot_times and used_parameters) are stored in.</span>
+<span class="sd">            snum_start (int): Starting snapshot.</span>
+<span class="sd">            snum_end (int): Ending snapshot.</span>
+<span class="sd">            snum_step (int): Step between snapshots.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Save the halos</span>
+        <span class="k">for</span> <span class="n">snum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">snum_start</span><span class="p">,</span> <span class="n">snum_end</span><span class="o">+</span><span class="n">snum_step</span><span class="p">,</span> <span class="n">snum_step</span><span class="p">):</span>
+
+            <span class="c1"># Save the data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_halos_add</span><span class="p">(</span> <span class="n">snum</span><span class="p">,</span> <span class="n">metafile_dir</span> <span class="p">)</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

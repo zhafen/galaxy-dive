@@ -1,0 +1,298 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.analyze_data.gridded_data &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.analyze_data.gridded_data</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;Subclass for analyzing particle data.</span>
+
+<span class="sd">@author: Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.io</span> <span class="k">as</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.analyze_data.simulation_data</span> <span class="k">as</span> <span class="nn">simulation_data</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.utilities</span> <span class="k">as</span> <span class="nn">utilities</span>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData">[docs]</a><span class="k">class</span> <span class="nc">GriddedData</span><span class="p">(</span> <span class="n">simulation_data</span><span class="o">.</span><span class="n">SnapshotData</span> <span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Class for handling data that forms a Cartesian grid.&#39;&#39;&#39;</span>
+
+  <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">sdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">snum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Nx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ionized</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ion_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Args:</span>
+<span class="sd">      sdir (str) : Directory the snaphost is stored in</span>
+<span class="sd">      snum (str) : Snapshot number</span>
+<span class="sd">      Nx (int) : Number of grid cells on a side</span>
+<span class="sd">      gridsize (float or str) : How large the grid is</span>
+<span class="sd">      ionized (str) : Legacy name. Originally how the ionization state is calculated. </span>
+<span class="sd">                        Currently any identifying string added to the end of the filename.</span>
+<span class="sd">                        &#39;R13&#39; : Ionization state calculated using Rahmati+13 fitting function</span>
+<span class="sd">      ion_grid (bool) : Whether or not this is a grid containing ion information.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># Note that we assume the grid is centered.</span>
+    <span class="nb">super</span><span class="p">(</span> <span class="n">GriddedData</span><span class="p">,</span> <span class="bp">self</span> <span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="n">data_dir</span><span class="o">=</span><span class="n">sdir</span><span class="p">,</span> <span class="n">snum</span><span class="o">=</span><span class="n">snum</span><span class="p">,</span> <span class="n">centered</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_data</span><span class="p">()</span>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData.retrieve_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData.retrieve_data">[docs]</a>  <span class="k">def</span> <span class="nf">retrieve_data</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+    <span class="c1"># Open file</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">grid_file_name</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">getGridFilename</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Nx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gridsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ionized</span><span class="p">,</span> \
+                          <span class="n">ion_grid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_grid</span> <span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_file_name</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span> <span class="p">)</span>
+
+    <span class="c1"># Get the grid attributes</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+
+      <span class="c1"># Get the data</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+      <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+        <span class="c1"># Parse the keys and put in a more general format</span>
+        <span class="c1"># All units should be the standard GIZMO output units</span>
+        <span class="c1"># Gas Density</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasDen&#39;</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Den&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Gas Neutral Hydrogen fraction</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasNHI&#39;</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nHI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Should be the mean free electron number per proton</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasNe&#39;</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ne&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Same as above, but due to helium</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasNe_He&#39;</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ne_He&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Star Formation Rate</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasSFR&#39;</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;SFR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Temperature</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasT&#39;</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># X Velocity</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasVx&#39;</span><span class="p">:</span>
+          <span class="n">vx</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Y Velocity</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasVy&#39;</span><span class="p">:</span>
+          <span class="n">vy</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Z Velocity</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasVz&#39;</span><span class="p">:</span>
+          <span class="n">vz</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="c1"># Metallicity</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;GasZ&#39;</span><span class="p">:</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+          <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;NULL key&#39;</span><span class="p">)</span>
+
+      <span class="c1"># Finish organizing velocity</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;V&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">load_ion_data</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+      <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+
+    <span class="c1"># Load the data</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ion_grid</span><span class="p">:</span>
+      <span class="n">load_data</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ion_grid</span><span class="p">:</span>
+      <span class="n">load_ion_data</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unrecognized ion_grid&#39;</span><span class="p">)</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+  <span class="c1">########################################################################</span>
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData.handle_data_key_error">[docs]</a>  <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Key to try and generate data for</span>
+
+<span class="sd">    Modifies:</span>
+<span class="sd">      self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">data_key</span> <span class="o">==</span>  <span class="s1">&#39;Rx&#39;</span> <span class="ow">or</span> <span class="n">data_key</span> <span class="o">==</span>  <span class="s1">&#39;Ry&#39;</span> <span class="ow">or</span> <span class="n">data_key</span> <span class="o">==</span>  <span class="s1">&#39;Rz&#39;</span> <span class="ow">or</span> <span class="n">data_key</span> <span class="o">==</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">calc_positions</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">data_key</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span>  <span class="s1">&#39;Rx_face&#39;</span> <span class="ow">or</span> <span class="n">data_key</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span>  <span class="s1">&#39;Ry_face&#39;</span> <span class="ow">or</span> <span class="n">data_key</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span>  <span class="s1">&#39;Rz_face&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">calc_face_positions</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">data_key</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span>  <span class="s1">&#39;R_face&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">calc_impact_parameter</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">data_key</span> <span class="o">==</span> <span class="s1">&#39;M&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">calc_mass</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+      <span class="nb">super</span><span class="p">(</span> <span class="n">GriddedData</span><span class="p">,</span> <span class="bp">self</span> <span class="p">)</span><span class="o">.</span><span class="n">handle_data_key_error</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData.calc_positions"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_positions">[docs]</a>  <span class="k">def</span> <span class="nf">calc_positions</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate the positions of gridcells.&#39;&#39;&#39;</span>
+
+    <span class="c1"># Get how the spacing on one side</span>
+    <span class="n">Nx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">gridsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;gridsize&#39;</span><span class="p">]</span>
+    <span class="n">pos_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">gridsize</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">gridsize</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="n">Nx</span><span class="p">)</span>
+
+    <span class="c1"># Mesh the spacing together for all the grid cells</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">pos_coords</span><span class="p">,</span> <span class="n">pos_coords</span><span class="p">,</span> <span class="n">pos_coords</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData.calc_face_positions"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_face_positions">[docs]</a>  <span class="k">def</span> <span class="nf">calc_face_positions</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate positions if you&#39;re just looking at one face of a grid.&#39;&#39;&#39;</span>
+
+    <span class="c1"># Figure out which face to calculate for</span>
+    <span class="n">target_face</span> <span class="o">=</span> <span class="n">data_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="s1">&#39;_&#39;</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">target_face</span> <span class="o">==</span> <span class="s1">&#39;xy&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Rx_face_xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx&#39;</span> <span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Ry_face_xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry&#39;</span> <span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">target_face</span> <span class="o">==</span> <span class="s1">&#39;xz&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Rx_face_xz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx&#39;</span> <span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Rz_face_xz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rz&#39;</span> <span class="p">)[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">target_face</span> <span class="o">==</span> <span class="s1">&#39;yz&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Ry_face_yz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry&#39;</span> <span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Rz_face_yz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rz&#39;</span> <span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData.calc_impact_parameter"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_impact_parameter">[docs]</a>  <span class="k">def</span> <span class="nf">calc_impact_parameter</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+
+    <span class="c1"># Figure out which face to calculate for</span>
+    <span class="n">target_face</span> <span class="o">=</span> <span class="n">data_key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="s1">&#39;_&#39;</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">target_face</span> <span class="o">==</span> <span class="s1">&#39;xy&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx_face_xy&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry_face_xy&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="p">)</span> 
+    <span class="k">elif</span> <span class="n">target_face</span> <span class="o">==</span> <span class="s1">&#39;xz&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx_face_xz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry_face_xz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="p">)</span> 
+    <span class="k">elif</span> <span class="n">target_face</span> <span class="o">==</span> <span class="s1">&#39;yz&#39;</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx_face_yz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry_face_yz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="p">)</span> </div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData.calc_mass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_mass">[docs]</a>  <span class="k">def</span> <span class="nf">calc_mass</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate the mass per grid cell.&#39;&#39;&#39;</span>
+
+    <span class="c1"># Calculate the mass per grid cell, for easy use later</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Den&#39;</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;gridsize&#39;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;Nx&#39;</span><span class="p">])</span><span class="o">**</span><span class="mf">3.</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GriddedData.calc_column_density"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.gridded_data.html#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_column_density">[docs]</a>  <span class="k">def</span> <span class="nf">calc_column_density</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">face</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate the column density for a targeted key.</span>
+
+<span class="sd">    Args --</span>
+<span class="sd">    key (str) : The data to project.</span>
+<span class="sd">    face (int) : The face to use. 0=yz, 1=xz, 2=xy.</span>
+
+<span class="sd">    Returns --</span>
+<span class="sd">    key_col_den (np.array) : The column density in {key units}/cm^2. Assumes the grid uses fiducial GIZMO units.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">key_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="n">key</span> <span class="p">)</span>
+
+    <span class="c1"># Get the projected data</span>
+    <span class="n">summed_key_data</span> <span class="o">=</span> <span class="n">key_data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">face</span><span class="p">)</span>
+
+    <span class="c1"># Get the column density</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;cell_length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;gridsize&#39;</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;Nx&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;cell_length&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">3.086e21</span>
+    <span class="n">key_col_den</span> <span class="o">=</span> <span class="n">dx</span><span class="o">*</span><span class="n">summed_key_data</span>
+
+    <span class="k">return</span> <span class="n">key_col_den</span></div></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

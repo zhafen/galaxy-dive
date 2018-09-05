@@ -1,0 +1,700 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.analyze_data.generic_data &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.analyze_data.generic_data</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;Class for analyzing simulation data.</span>
+
+<span class="sd">@author: Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Base python imports</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.testing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.utilities</span> <span class="k">as</span> <span class="nn">utilities</span>
+
+<span class="c1">########################################################################</span>
+
+<span class="c1"># For default values</span>
+<span class="n">default</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GenericData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData">[docs]</a><span class="k">class</span> <span class="nc">GenericData</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Very generic data class, with getting and masking functionality.&#39;&#39;&#39;</span>
+
+  <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+    <span class="n">key_parser</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_masker</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">z_sun</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">Z_MASSFRAC_SUN</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Initialize.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      key_parser (object) : KeyParser instance to use to interpret data keys.</span>
+<span class="sd">      data_masker (object) : DataMasker instance to use to filter and mask data.</span>
+<span class="sd">      verbose (bool) : Print out additional information.</span>
+<span class="sd">      z_sun (float) : Used mass fraction for solar metallicity.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># For storing and creating masks to pass the data</span>
+    <span class="k">if</span> <span class="n">data_masker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span> <span class="o">=</span> <span class="n">DataMasker</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+    <span class="c1"># Setup a data key parser</span>
+    <span class="k">if</span> <span class="n">key_parser</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span> <span class="o">=</span> <span class="n">DataKeyParser</span><span class="p">()</span>
+
+  <span class="c1">########################################################################</span>
+  <span class="c1"># Properties</span>
+  <span class="c1">########################################################################</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">length_scale</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Property for fiducial length scale. By default, is 1.</span>
+<span class="sd">    However, a more advanced subclass might set this differently, or this might</span>
+<span class="sd">    change in the future.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># TODO: Address this.</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;Current thinking: this should not be called.&quot;</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="mf">1.</span>
+
+  <span class="c1">########################################################################</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">velocity_scale</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Property for fiducial velocity scale. By default is 1.</span>
+<span class="sd">    However, a more advanced subclass might set this differently, or this might</span>
+<span class="sd">    change in the future.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># TODO: Address this.</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;Current thinking: this should not be called.&quot;</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="mf">1.</span>
+
+  <span class="c1">########################################################################</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">metallicity_scale</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Property for fiducial metallicity scale. By default is z_sun</span>
+<span class="sd">    However, a more advanced subclass might set this differently, or this might</span>
+<span class="sd">    change in the future.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_sun</span>
+
+  <span class="c1">########################################################################</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">base_data_shape</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Property for simulation redshift.&#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_base_data_shape&#39;</span> <span class="p">):</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_base_data_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_data_shape</span>
+
+  <span class="nd">@base_data_shape</span><span class="o">.</span><span class="n">setter</span>
+  <span class="k">def</span> <span class="nf">base_data_shape</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Setting function for simulation redshift property.&#39;&#39;&#39;</span>
+
+    <span class="c1"># If we try to set it, make sure that if it already exists we don&#39;t change it.</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_base_data_shape&#39;</span> <span class="p">):</span>
+      <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_data_shape</span> <span class="o">==</span> <span class="n">value</span>
+
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_base_data_shape</span> <span class="o">=</span> <span class="n">value</span>
+
+  <span class="c1">########################################################################</span>
+  <span class="c1"># Data Retrieval</span>
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GenericData.get_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_storage</span><span class="o">=</span><span class="n">default</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get the data from within the class. Only for getting the data. No post-processing or changing the data</span>
+<span class="sd">    (putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,</span>
+<span class="sd">    hence a whole function for getting the data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Key in the data dictionary for the key we want to get</span>
+<span class="sd">      sl (slice) : Slice of the data, if requested.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      data (np.ndarray) : Requested data.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">data_storage</span> <span class="ow">is</span> <span class="n">default</span><span class="p">:</span>
+      <span class="n">data_storage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="c1"># Loop through, handling issues</span>
+    <span class="n">n_tries</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">n_tries</span> <span class="p">):</span>
+      <span class="k">try</span><span class="p">:</span>
+
+        <span class="c1"># Arbitrary functions of the data</span>
+        <span class="k">if</span> <span class="n">data_key</span> <span class="o">==</span> <span class="s1">&#39;Function&#39;</span><span class="p">:</span>
+
+          <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;TODO: Test this&quot;</span> <span class="p">)</span>
+
+          <span class="c1"># Use the keys to get the data</span>
+          <span class="n">function_data_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;function_args&#39;</span><span class="p">][</span><span class="s1">&#39;function_data_keys&#39;</span><span class="p">]</span>
+          <span class="n">input_data</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">function_data_key</span><span class="p">)</span> <span class="k">for</span> <span class="n">function_data_key</span> <span class="ow">in</span> <span class="n">function_data_keys</span> <span class="p">]</span>
+
+          <span class="c1"># Apply the function</span>
+          <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;function_args&#39;</span><span class="p">][</span><span class="s1">&#39;function&#39;</span><span class="p">](</span> <span class="n">input_data</span> <span class="p">)</span>
+
+        <span class="c1"># Other</span>
+        <span class="k">else</span><span class="p">:</span>
+          <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span>
+
+      <span class="c1"># Calculate missing data</span>
+      <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle_data_key_error</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span>
+        <span class="k">continue</span>
+
+      <span class="k">break</span>
+
+    <span class="k">if</span> <span class="s1">&#39;data&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+      <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span> <span class="s2">&quot;After </span><span class="si">{}</span><span class="s2"> tries, unable to find or create data_key, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GenericData.get_processed_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_processed_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_processed_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">data_method</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get post-processed data. (Accounting for fractions, log-space, etc.).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : What data to get.</span>
+<span class="sd">      data_method (str) : What method to use for getting the data itself. Defaults to using self.get_data</span>
+<span class="sd">      *args, **kwargs : Passed to get_data()</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      processed_data (np.ndarray) : Requested data, including formatting.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># Account for fractional data keys</span>
+    <span class="n">data_key</span><span class="p">,</span> <span class="n">fraction_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">is_fraction_key</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span>
+
+    <span class="c1"># Account for logarithmic data</span>
+    <span class="n">data_key</span><span class="p">,</span> <span class="n">log_flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">is_log_key</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span>
+
+    <span class="c1"># Choose what method we&#39;re using for getting data.</span>
+    <span class="k">if</span> <span class="n">data_method</span> <span class="ow">is</span> <span class="n">default</span><span class="p">:</span>
+      <span class="n">get_data_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">get_data_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_method</span> <span class="p">)</span>
+
+    <span class="c1"># Get the data and make a copy to avoid altering</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span> <span class="n">get_data_method</span><span class="p">(</span> <span class="n">data_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># Actually calculate the fractional data</span>
+    <span class="k">if</span> <span class="n">fraction_flag</span><span class="p">:</span>
+
+      <span class="c1"># Put distances in units of the virial radius</span>
+      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">is_position_key</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">):</span>
+
+        <span class="n">data</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length_scale</span>
+
+      <span class="c1"># Put velocities in units of the circular velocity</span>
+      <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_parser</span><span class="o">.</span><span class="n">is_velocity_key</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">):</span>
+        <span class="n">data</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity_scale</span>
+
+      <span class="c1"># Put the metallicity in solar units</span>
+      <span class="k">elif</span> <span class="n">data_key</span> <span class="o">==</span> <span class="s1">&#39;Z&#39;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metallicity_scale</span>
+
+      <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Fraction type not recognized&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Make appropriate units into log</span>
+    <span class="k">if</span> <span class="n">log_flag</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span> <span class="n">data</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GenericData.get_masked_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_masked_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_masked_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Wrapper for getting masked data.&#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GenericData.mask_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.mask_data">[docs]</a>  <span class="k">def</span> <span class="nf">mask_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Wrapper for masking data.&#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">mask_data</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GenericData.shift"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.shift">[docs]</a>  <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.</span>
+
+<span class="sd">    data : data to be shifted</span>
+<span class="sd">    data_key : Data key for the parameters to be shifted</span>
+<span class="sd">    Parameters are a subdictionary of self.kwargs</span>
+<span class="sd">    &#39;data_key&#39; : What data key the data is shifted for</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;TODO: Test this&quot;</span> <span class="p">)</span>
+
+    <span class="n">shift_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;shift&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Exit early if not the right data key</span>
+    <span class="k">if</span> <span class="n">shift_p</span><span class="p">[</span><span class="s1">&#39;data_key&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">data_key</span><span class="p">:</span>
+      <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c1"># Shift by the mass metallicity relation.</span>
+    <span class="k">if</span> <span class="s1">&#39;MZR&#39;</span> <span class="ow">in</span> <span class="n">shift_p</span><span class="p">:</span>
+
+      <span class="c1"># Gas-phase ISM MZR fit from Ma+2015.</span>
+      <span class="c1"># Set to be no shift for gas with the mean metallicity of LLS at z=0 (This has a value of -0.45, as I last calculated)</span>
+      <span class="n">log_shift</span> <span class="o">=</span> <span class="mf">0.93</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.43</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">redshift</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.45</span>
+
+      <span class="n">data</span> <span class="o">-=</span> <span class="n">log_shift</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GenericData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.handle_data_key_error">[docs]</a>  <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Method for attempting to generate data on the fly.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Type of data to attempt to generate data for.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;This method should be replaced in the subclass!&quot;</span> <span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+  <span class="c1"># Meta Methods (for doing generic things with class methods)</span>
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="GenericData.iterate_over_method"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.iterate_over_method">[docs]</a>  <span class="k">def</span> <span class="nf">iterate_over_method</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">method_str</span><span class="p">,</span> <span class="n">iter_arg</span><span class="p">,</span> <span class="n">iter_values</span><span class="p">,</span> <span class="n">method_args</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Iterate over a specified method, and get the results out.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      method_str (str) :</span>
+<span class="sd">        Which method to use.</span>
+
+<span class="sd">      iter_arg (str) :</span>
+<span class="sd">        Which argument of the method to iterate over.</span>
+
+<span class="sd">      iter_values (list of values) :</span>
+<span class="sd">        Which values to change.</span>
+
+<span class="sd">      method_args (dict) :</span>
+<span class="sd">        Default args to pass to the method</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      results (list) : [ method( **used_args ) for used_args in all_variations_of_used_args ]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">method_str</span> <span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">iter_value</span> <span class="ow">in</span> <span class="n">iter_values</span><span class="p">:</span>
+
+      <span class="n">method_args</span><span class="p">[</span><span class="n">iter_arg</span><span class="p">]</span> <span class="o">=</span> <span class="n">iter_value</span>
+
+      <span class="n">result</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span> <span class="o">**</span><span class="n">method_args</span> <span class="p">)</span>
+
+      <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">result</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">results</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataKeyParser"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser">[docs]</a><span class="k">class</span> <span class="nc">DataKeyParser</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Class for parsing data_keys provided to SimulationData.&#39;&#39;&#39;</span>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataKeyParser.is_position_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_position_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_position_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Checks if the data key deals with position primarily.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Data key to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      is_position_key (bool) : True if deals with position.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="p">(</span> <span class="n">data_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span> <span class="p">)</span> <span class="o">|</span> <span class="p">(</span> <span class="n">data_key</span> <span class="o">==</span> <span class="s1">&#39;P&#39;</span> <span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataKeyParser.is_velocity_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_velocity_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_velocity_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Checks if the data key deals with velocity primarily.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Data key to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      is_velocity_key (bool) : True if deals with velocity.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="p">(</span> <span class="n">data_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;V&#39;</span> <span class="p">)</span></div>
+
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataKeyParser.is_fraction_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_fraction_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_fraction_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Check if the data should be some fraction of its relevant scale.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Data key to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      is_fraction_key (bool) : True if the data should be scaled as a fraction of the relevant scale.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">fraction_flag</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">data_key</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span><span class="p">:</span>
+      <span class="n">data_key</span> <span class="o">=</span> <span class="n">data_key</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">fraction_flag</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">fraction_flag</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataKeyParser.is_log_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_log_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_log_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Check if the data key indicates the data should be put in log scale.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Data key to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      is_log_key (bool) : True if the data should be taken log10 of</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">log_flag</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">data_key</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span>
+      <span class="n">data_key</span> <span class="o">=</span> <span class="n">data_key</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+      <span class="n">log_flag</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">log_flag</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataMasker"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker">[docs]</a><span class="k">class</span> <span class="nc">DataMasker</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_object</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Class for masking data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_object (GenericData object) : Used for getting data to find mask ranges.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span> <span class="o">=</span> <span class="n">data_object</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">masks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">optional_masks</span> <span class="o">=</span> <span class="p">{}</span>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataMasker.mask_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.mask_data">[docs]</a>  <span class="k">def</span> <span class="nf">mask_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+    <span class="n">data_key</span><span class="p">,</span>
+    <span class="n">data_min</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
+    <span class="n">data_max</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
+    <span class="n">data_value</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
+    <span class="n">custom_mask</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
+    <span class="n">return_or_store</span> <span class="o">=</span> <span class="s1">&#39;store&#39;</span><span class="p">,</span>
+    <span class="n">optional_mask</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">mask_name</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get only the particle data within a certain range. Note that it retrieves the processed data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) :</span>
+<span class="sd">        Data key to base the mask off of.</span>
+
+<span class="sd">      data_min (float) :</span>
+<span class="sd">        Everything below data_min will be masked.</span>
+
+<span class="sd">      data_max (float) :</span>
+<span class="sd">        Everything above data_max will be masked.</span>
+
+<span class="sd">      data_value (float) :</span>
+<span class="sd">        Everything except for data_value will be masked.</span>
+
+<span class="sd">      custom_mask (bool) :</span>
+<span class="sd">        If provided, take in a custom mask instead, using data_key as the label for the mask.</span>
+
+<span class="sd">      return_or_store (str) :</span>
+<span class="sd">        Whether to store the mask as part of the masks dictionary, or to return it.</span>
+
+<span class="sd">      optional_mask (bool) :</span>
+<span class="sd">        If True, store in the dictionary self.optional_masks instead.</span>
+
+<span class="sd">      mask_name (str) :</span>
+<span class="sd">        What name to associate with this mask? Currently only relevant if optional_mask is True.</span>
+<span class="sd">        By default uses the data_key as the name.</span>
+
+<span class="sd">      *args, **kwargs :</span>
+<span class="sd">        Passed to self.data_object.get_processed_data()</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      data_mask (np.array of bools) :</span>
+<span class="sd">        If requested, the mask for data in that range.</span>
+
+<span class="sd">    Modifies:</span>
+<span class="sd">      self.masks (list of dicts) :</span>
+<span class="sd">        Appends a dictionary describing the mask.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># Process what type of mask to get</span>
+    <span class="n">mask_outside</span> <span class="o">=</span> <span class="p">(</span> <span class="n">data_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">default</span> <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">data_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">default</span> <span class="p">)</span>
+    <span class="n">mask_discrete</span> <span class="o">=</span> <span class="n">data_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">default</span>
+    <span class="n">mask_custom</span> <span class="o">=</span> <span class="n">custom_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">default</span>
+    <span class="k">assert</span> <span class="p">(</span> <span class="n">mask_outside</span> <span class="o">+</span> <span class="n">mask_discrete</span> <span class="o">+</span> <span class="n">mask_custom</span> <span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Bad combination of masks!&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mask_custom</span><span class="p">:</span>
+      <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_processed_data</span><span class="p">(</span> <span class="n">data_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+    <span class="c1"># Get the mask</span>
+    <span class="k">if</span> <span class="n">mask_outside</span><span class="p">:</span>
+      <span class="n">data_ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_outside</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_min</span><span class="p">,</span> <span class="n">data_max</span> <span class="p">)</span>
+      <span class="n">mask</span> <span class="o">=</span> <span class="n">data_ma</span><span class="o">.</span><span class="n">mask</span>
+    <span class="k">elif</span> <span class="n">mask_discrete</span><span class="p">:</span>
+      <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span> <span class="n">data</span> <span class="o">==</span> <span class="n">data_value</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mask_custom</span><span class="p">:</span>
+      <span class="n">mask</span> <span class="o">=</span> <span class="n">custom_mask</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">NameError</span><span class="p">(</span> <span class="s2">&quot;Unspecified combination of data masking.&quot;</span> <span class="p">)</span>
+
+    <span class="c1"># Handle the case where an entire array is masked or none of it is masked</span>
+    <span class="c1"># (Make into an array for easier combination with other masks)</span>
+    <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+      <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="n">shape</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_or_store</span> <span class="o">==</span> <span class="s1">&#39;store&#39;</span><span class="p">:</span>
+
+      <span class="k">if</span> <span class="n">mask_outside</span><span class="p">:</span>
+        <span class="n">mask_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data_key&#39;</span><span class="p">:</span> <span class="n">data_key</span><span class="p">,</span> <span class="s1">&#39;data_min&#39;</span><span class="p">:</span> <span class="n">data_min</span><span class="p">,</span> <span class="s1">&#39;data_max&#39;</span><span class="p">:</span> <span class="n">data_max</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">:</span> <span class="n">mask</span><span class="p">}</span>
+      <span class="k">elif</span> <span class="n">mask_discrete</span><span class="p">:</span>
+        <span class="n">mask_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data_key&#39;</span><span class="p">:</span> <span class="n">data_key</span><span class="p">,</span> <span class="s1">&#39;data_value&#39;</span> <span class="p">:</span> <span class="n">data_value</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">:</span> <span class="n">mask</span><span class="p">}</span>
+      <span class="k">elif</span> <span class="n">mask_custom</span><span class="p">:</span>
+        <span class="n">mask_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data_key&#39;</span><span class="p">:</span> <span class="n">data_key</span><span class="p">,</span> <span class="s1">&#39;custom_mask&#39;</span> <span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;mask&#39;</span><span class="p">:</span> <span class="n">mask</span><span class="p">}</span>
+
+      <span class="k">if</span> <span class="n">optional_mask</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mask_name</span> <span class="ow">is</span> <span class="n">default</span><span class="p">:</span>
+          <span class="n">mask_name</span> <span class="o">=</span> <span class="n">data_key</span>
+
+        <span class="k">assert</span> <span class="n">mask_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional_masks</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="s2">&quot;A mask with that name already exists!&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional_masks</span><span class="p">[</span><span class="n">mask_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask_dict</span>
+
+      <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">mask_dict</span> <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">return_or_store</span> <span class="o">==</span> <span class="s1">&#39;return&#39;</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">mask</span>
+
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;NULL return_or_store&#39;</span><span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataMasker.get_total_mask"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.get_total_mask">[docs]</a>  <span class="k">def</span> <span class="nf">get_total_mask</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">optional_masks</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get the result of combining all masks in the data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      optional_masks (list-like) : List of names of optional masks to use (must be found in self.optional_masks).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      total_mask (np.array of bools) : Result of all masks.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># Compile masks</span>
+    <span class="n">all_masks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">mask_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">masks</span><span class="p">:</span>
+      <span class="n">all_masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">mask_dict</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1"># Get any requested optional masks</span>
+    <span class="k">if</span> <span class="n">optional_masks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">optional_mask</span> <span class="ow">in</span> <span class="n">optional_masks</span><span class="p">:</span>
+        <span class="n">all_masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional_masks</span><span class="p">[</span><span class="n">optional_mask</span><span class="p">][</span><span class="s1">&#39;mask&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="c1"># Combine masks</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span> <span class="n">all_masks</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataMasker.get_masked_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.get_masked_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_masked_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+    <span class="n">data_key</span><span class="p">,</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="s1">&#39;total&#39;</span><span class="p">,</span>
+    <span class="n">optional_masks</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sl</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">apply_slice_to_mask</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">fix_invalid</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">compress</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">mask_multidim_data</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get all the data that doesn&#39;t have some sort of mask applied to it. Use the processed data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      data_key (str) : Data key to get the data for.</span>
+<span class="sd">      mask (str or np.array of bools) : Mask to apply. If none, use the total mask.</span>
+<span class="sd">      optional_masks (list-like) : List of names of optional masks to use (must be found in self.optional_masks).</span>
+<span class="sd">      sl (slice) : Slice to apply to the data</span>
+<span class="sd">      apply_slice_to_mask (bool) : Whether or not to apply the same slice you applied to the data to the mask.</span>
+<span class="sd">      fix_invalid (bool) : Whether or not to also mask invalid data.</span>
+<span class="sd">      compress (bool) : Whether or not to return compressed data.</span>
+<span class="sd">      mask_multidim_data (bool) : Whether or not to change the mask to fit multidimensional data.</span>
+<span class="sd">      *args, **kwargs : Passed to get_proceesed_data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      data_ma (np.array) : Compressed masked data. Because it&#39;s compressed it may not have the same shape as the</span>
+<span class="sd">        original data.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_processed_data</span><span class="p">(</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+    <span class="c1"># Get the appropriate mask</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">mask</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="p">):</span>
+      <span class="n">used_mask</span> <span class="o">=</span> <span class="n">mask</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">mask</span><span class="p">,</span> <span class="nb">bool</span> <span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">mask</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span> <span class="p">):</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fix_invalid</span><span class="p">:</span>
+          <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">fix_invalid</span><span class="p">(</span> <span class="n">data</span> <span class="p">)</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+          <span class="k">return</span> <span class="n">data</span>
+
+      <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;All data is masked.&quot;</span> <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mask</span> <span class="o">==</span> <span class="s1">&#39;total&#39;</span><span class="p">:</span>
+      <span class="n">used_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_mask</span><span class="p">(</span> <span class="n">optional_masks</span><span class="o">=</span><span class="n">optional_masks</span> <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span> <span class="s2">&quot;Unrecognized type of mask, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">mask</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">)</span> <span class="ow">and</span> <span class="n">apply_slice_to_mask</span><span class="p">:</span>
+      <span class="n">used_mask</span> <span class="o">=</span> <span class="n">used_mask</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">fix_invalid</span><span class="p">:</span>
+      <span class="n">array_to_ma_array_fn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">fix_invalid</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">array_to_ma_array_fn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span>
+
+    <span class="c1"># Test for if the data fits the mask, or if it&#39;s multi-dimensional</span>
+    <span class="k">if</span> <span class="n">mask_multidim_data</span><span class="p">:</span>
+      <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">base_data_shape</span> <span class="p">):</span>
+        <span class="n">data_ma</span> <span class="o">=</span> <span class="p">[</span> <span class="n">array_to_ma_array_fn</span><span class="p">(</span> <span class="n">data_part</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">used_mask</span> <span class="p">)</span> <span class="k">for</span> <span class="n">data_part</span> <span class="ow">in</span> <span class="n">data</span> <span class="p">]</span>
+        <span class="n">data_ma</span> <span class="o">=</span> <span class="p">[</span> <span class="n">data_ma_part</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span> <span class="k">for</span> <span class="n">data_ma_part</span> <span class="ow">in</span> <span class="n">data_ma</span> <span class="p">]</span>
+        <span class="n">data_ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">data_ma</span> <span class="p">)</span>
+
+      <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_ma</span> <span class="o">=</span> <span class="n">array_to_ma_array_fn</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">used_mask</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">compress</span><span class="p">:</span>
+          <span class="n">data_ma</span> <span class="o">=</span> <span class="n">data_ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">data_ma</span> <span class="o">=</span> <span class="n">array_to_ma_array_fn</span><span class="p">(</span> <span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">used_mask</span> <span class="p">)</span>
+
+      <span class="k">if</span> <span class="n">compress</span><span class="p">:</span>
+        <span class="n">data_ma</span> <span class="o">=</span> <span class="n">data_ma</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">data_ma</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="DataMasker.clear_masks"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.clear_masks">[docs]</a>  <span class="k">def</span> <span class="nf">clear_masks</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">clear_optional_masks</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Reset the masks in total to nothing.</span>
+
+<span class="sd">    Modifies:</span>
+<span class="sd">      self.masks (lists) : Sets to empty</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">masks</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">clear_optional_masks</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">optional_masks</span> <span class="o">=</span> <span class="p">{}</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
