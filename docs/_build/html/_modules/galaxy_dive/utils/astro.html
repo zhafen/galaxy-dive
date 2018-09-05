@@ -1,0 +1,193 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.utils.astro &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.utils.astro</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;General astronomy utilities</span>
+
+<span class="sd">@author: Daniel Angles-Alcazar, Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="hubble_parameter"><a class="viewcode-back" href="../../../galaxy_dive.utils.astro.html#galaxy_dive.utils.astro.hubble_parameter">[docs]</a><span class="k">def</span> <span class="nf">hubble_parameter</span><span class="p">(</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">0.702</span><span class="p">,</span> <span class="n">omega_matter</span><span class="o">=</span><span class="mf">0.272</span><span class="p">,</span> <span class="n">omega_lambda</span><span class="o">=</span><span class="mf">0.728</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;km/s/Mpc&#39;</span> <span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Return Hubble factor in 1/sec for a given redshift.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    redshift (float): The input redshift.</span>
+<span class="sd">    h (float): The hubble parameter.</span>
+<span class="sd">    omega_matter (float): Cosmological mass fraction of matter.</span>
+<span class="sd">    omega_lambda (float): Cosmological mass fraction of dark energy.</span>
+<span class="sd">    units (str): The units the hubble parameter should be returned in.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    hubble_a (float): Hubble factor in specified units</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+
+  <span class="n">zp1</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">redshift</span><span class="p">)</span>
+
+  <span class="n">e_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">omega_matter</span><span class="o">*</span><span class="n">zp1</span><span class="o">**</span><span class="mf">3.</span> <span class="o">+</span> <span class="n">omega_lambda</span> <span class="p">)</span>
+
+  <span class="n">hubble_z</span> <span class="o">=</span> <span class="n">h</span><span class="o">*</span><span class="mf">100.</span><span class="o">*</span><span class="n">e_z</span>
+
+  <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;km/s/Mpc&#39;</span><span class="p">:</span>
+    <span class="k">pass</span>
+  <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;km/s/kpc&#39;</span><span class="p">:</span>
+    <span class="n">hubble_z</span> <span class="o">/=</span> <span class="mf">1e3</span>
+  <span class="k">elif</span> <span class="n">units</span> <span class="o">==</span> <span class="s1">&#39;1/s&#39;</span><span class="p">:</span>
+    <span class="n">hubble_z</span> <span class="o">/=</span> <span class="n">constants</span><span class="o">.</span><span class="n">KM_PER_KPC</span><span class="o">*</span><span class="mf">1e3</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span> <span class="s2">&quot;Unspecified units, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">units</span> <span class="p">)</span> <span class="p">)</span>
+    
+
+  <span class="k">return</span> <span class="n">hubble_z</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="age_of_universe"><a class="viewcode-back" href="../../../galaxy_dive.utils.astro.html#galaxy_dive.utils.astro.age_of_universe">[docs]</a><span class="k">def</span> <span class="nf">age_of_universe</span><span class="p">(</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">0.71</span><span class="p">,</span> <span class="n">omega_matter</span><span class="o">=</span><span class="mf">0.27</span> <span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Get the exact solution to the age of universe (for a flat universe) to a given redshift</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    redshift (float): The input redshift.</span>
+<span class="sd">    h (float): The hubble parameter.</span>
+<span class="sd">    omega_matter (float): Cosmological mass fraction of matter.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    t (float): Age of the universe in Gyr</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+
+  <span class="n">a</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">redshift</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">omega_matter</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">omega_matter</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+
+  <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.</span><span class="o">/</span><span class="p">(</span><span class="mf">3.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">omega_matter</span><span class="p">)))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="o">+</span><span class="n">x</span><span class="p">))</span> <span class="p">)</span>
+
+  <span class="n">t</span> <span class="o">*=</span> <span class="mf">13.777</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.71</span><span class="o">/</span><span class="n">h</span><span class="p">)</span> <span class="c1">## in Gyr</span>
+
+  <span class="k">return</span> <span class="n">t</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="circular_velocity"><a class="viewcode-back" href="../../../galaxy_dive.utils.astro.html#galaxy_dive.utils.astro.circular_velocity">[docs]</a><span class="k">def</span> <span class="nf">circular_velocity</span><span class="p">(</span> <span class="n">r_vir</span><span class="p">,</span> <span class="n">m_vir</span> <span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Calculate the circular velocity of a halo in km/s.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    r_vir (float or array-like) : The virial radius in pkpc.</span>
+<span class="sd">    m_vir (float or array-like) : The halo mass in Msun.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    v_c : Circular velocity of the halo in km/s, indexed the same way that ahf_reader.mtree_halos[i] is.</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+  
+  <span class="c1"># Convert r_vir and m_vir to cgs</span>
+  <span class="n">r_vir_cgs</span> <span class="o">=</span> <span class="n">r_vir</span><span class="o">*</span><span class="n">constants</span><span class="o">.</span><span class="n">CM_PER_KPC</span>
+  <span class="n">m_vir_cgs</span> <span class="o">=</span> <span class="n">m_vir</span><span class="o">*</span><span class="n">constants</span><span class="o">.</span><span class="n">MSUN</span>
+
+  <span class="c1"># Get v_c</span>
+  <span class="n">v_c_cgs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">constants</span><span class="o">.</span><span class="n">G_UNIV</span> <span class="o">*</span> <span class="n">m_vir_cgs</span> <span class="o">/</span> <span class="n">r_vir_cgs</span> <span class="p">)</span>
+
+  <span class="c1"># Convert to km/s</span>
+  <span class="n">v_c</span> <span class="o">=</span> <span class="n">v_c_cgs</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">CM_PER_KM</span>
+
+  <span class="k">return</span> <span class="n">v_c</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="get_sneii_metal_budget"><a class="viewcode-back" href="../../../galaxy_dive.utils.astro.html#galaxy_dive.utils.astro.get_sneii_metal_budget">[docs]</a><span class="k">def</span> <span class="nf">get_sneii_metal_budget</span><span class="p">(</span> <span class="n">m_star</span><span class="p">,</span> <span class="n">y_z_ii</span><span class="o">=</span><span class="mf">0.030</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get the total mass of metal produced by SNe by z=0 in a galaxy with a</span>
+<span class="sd">    z=0 stellar mass of m_star.</span>
+<span class="sd">    This is taken from Peeple+2014, who use the star formation histories of</span>
+<span class="sd">    Leitner+2012.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        m_star (float or array-like) :</span>
+<span class="sd">            Mass of the target galaxy at z=0 in units of Msun.</span>
+
+<span class="sd">        y_z_ii (float) :</span>
+<span class="sd">            Nucleosynthetic yield of all heavy </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        sneii_metal_budget (same as m_star):</span>
+<span class="sd">            Units of Msun.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="mf">1.2856</span> <span class="o">*</span> <span class="n">y_z_ii</span> <span class="o">*</span> <span class="n">m_star</span> <span class="o">**</span> <span class="mf">1.0146</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

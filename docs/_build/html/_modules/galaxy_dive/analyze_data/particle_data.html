@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.analyze_data.particle_data &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.analyze_data.particle_data</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;Subclass for analyzing particle data.</span>
+
+<span class="sd">@author: Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.analyze_data.simulation_data</span> <span class="k">as</span> <span class="nn">simulation_data</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.read_data.snapshot</span> <span class="k">as</span> <span class="nn">read_snapshot</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.constants</span> <span class="k">as</span> <span class="nn">constants</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.utilities</span> <span class="k">as</span> <span class="nn">utilities</span>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData">[docs]</a><span class="k">class</span> <span class="nc">ParticleData</span><span class="p">(</span> <span class="n">simulation_data</span><span class="o">.</span><span class="n">SnapshotData</span> <span class="p">):</span>
+  <span class="sd">&#39;&#39;&#39;Subclass for particle data.</span>
+<span class="sd">  &#39;&#39;&#39;</span>
+
+  <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">sdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">snum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ptype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">load_additional_ids</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Initialize.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      sdir (str) : Directory the snapshot is stored in</span>
+<span class="sd">      snum (int) : Snapshot number to open</span>
+<span class="sd">      ptype (int) : Particle type to load.</span>
+<span class="sd">      load_additional_ids (bool, optional) : Whether or not to load child_ids, etc, if they exist.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="nb">super</span><span class="p">(</span> <span class="n">ParticleData</span><span class="p">,</span> <span class="bp">self</span> <span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="n">data_dir</span><span class="o">=</span><span class="n">sdir</span><span class="p">,</span> <span class="n">snum</span><span class="o">=</span><span class="n">snum</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_data</span><span class="p">()</span>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.retrieve_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.retrieve_data">[docs]</a>  <span class="k">def</span> <span class="nf">retrieve_data</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+    <span class="c1"># Assume we convert from cosmological units</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">read_snapshot</span><span class="o">.</span><span class="n">readsnap</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ptype</span><span class="p">,</span> <span class="n">load_additional_ids</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">load_additional_ids</span><span class="p">,</span>
+                                <span class="n">cosmological</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="c1"># Parse the keys and put in a more general format</span>
+    <span class="c1"># All units should be the standard GIZMO output units</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+      <span class="c1"># Get the attributes</span>
+      <span class="n">attrs_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">,</span> <span class="s1">&#39;omega_lambda&#39;</span><span class="p">,</span> <span class="s1">&#39;flag_metals&#39;</span><span class="p">,</span> <span class="s1">&#39;flag_cooling&#39;</span><span class="p">,</span> <span class="s1">&#39;omega_matter&#39;</span><span class="p">,</span> <span class="s1">&#39;flag_feedbacktp&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;boxsize&#39;</span><span class="p">,</span> <span class="s1">&#39;hubble&#39;</span><span class="p">,</span> <span class="s1">&#39;flag_sfr&#39;</span><span class="p">,</span> <span class="s1">&#39;flag_stellarage&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">]</span>
+      <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">attrs_keys</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+      <span class="c1"># Get the data</span>
+      <span class="c1"># Gas Density</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;rho&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Den&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="c1"># Gas Neutral Hydrogen fraction</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;nh&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;nHI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="c1"># Should be the mean free electron number per proton</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;ne&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ne&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="c1"># Star Formation Rate</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;sfr&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;SFR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="c1"># Position</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+      <span class="c1"># Velocity</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;V&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+      <span class="c1"># Metal mass fraction</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;z&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># Total metallicity (everything not H or He)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z_Species&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">][:,</span><span class="mi">1</span><span class="p">:]</span> <span class="c1"># Details per species, [He, C, N, O, Ne, Mg, Si, S, Ca, Fe], in order</span>
+      <span class="c1"># Particle IDs</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;child_id&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ChildID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;id_gen&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;IDGen&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="c1"># Particle Masses</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="c1"># Internal energy</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;u&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="c1"># Smoothing lengths</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;h&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;potential&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Potential&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;NULL key, key=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.calc_temp"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.calc_temp">[docs]</a>  <span class="k">def</span> <span class="nf">calc_temp</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">5.</span><span class="o">/</span><span class="mf">3.</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate the temperature from the internal energy. &#39;&#39;&#39;</span>
+
+    <span class="c1">#raise Exception( TODO: Test this )</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_mu</span><span class="p">()</span>
+    <span class="n">u_cgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1.e10</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">PROTON_MASS</span><span class="o">*</span><span class="n">mu</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">u_cgs</span><span class="o">/</span><span class="n">constants</span><span class="o">.</span><span class="n">K_B</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.calc_mu"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.calc_mu">[docs]</a>  <span class="k">def</span> <span class="nf">calc_mu</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;we track this with metal species now, could do better...</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">XH</span><span class="o">=</span><span class="mf">0.76</span>
+
+    <span class="n">yhelium</span> <span class="o">=</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">-</span> <span class="n">XH</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="mf">4.</span> <span class="o">*</span> <span class="n">XH</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="mf">4.</span> <span class="o">*</span> <span class="n">yhelium</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">yhelium</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ne&#39;</span><span class="p">]</span> <span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.calc_pressure"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.calc_pressure">[docs]</a>  <span class="k">def</span> <span class="nf">calc_pressure</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate the pressure in units of K/cm^3.&#39;&#39;&#39;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;NumDen&#39;</span> <span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;T&#39;</span> <span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.calc_classifications"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.calc_classifications">[docs]</a>  <span class="k">def</span> <span class="nf">calc_classifications</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get the classification for each particle, using data from the Angles-Alcazar+16 pipeline.</span>
+<span class="sd">    Uses classes from the tracked_particle_data_handling.py module.</span>
+
+<span class="sd">    Parameters (include in data_p)</span>
+<span class="sd">    &#39;tracked_p_data_dir&#39; : Directory containing the tracked-particle data.</span>
+<span class="sd">    &#39;tracked_p_file_tag&#39; : Identifying tag for the tracked-particle data.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">sim_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_p</span><span class="p">[</span><span class="s1">&#39;sdir&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="s1">&#39;/&#39;</span> <span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">full_data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_p</span><span class="p">[</span><span class="s1">&#39;tracked_p_data_dir&#39;</span><span class="p">],</span> <span class="n">sim_name</span> <span class="p">)</span>
+
+    <span class="c1"># Load the actual tracked particle data</span>
+    <span class="n">tracked_p_data</span> <span class="o">=</span> <span class="n">tracked_particle_data_handling</span><span class="o">.</span><span class="n">TrackedParticleDataHandler</span><span class="p">(</span><span class="n">full_data_dir</span><span class="p">,</span>
+                                                                               <span class="bp">self</span><span class="o">.</span><span class="n">data_p</span><span class="p">[</span><span class="s1">&#39;tracked_p_file_tag&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Get the classifications</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Cl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracked_p_data</span><span class="o">.</span><span class="n">classify_dataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_attrs</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">])</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.calc_MetalMass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.calc_MetalMass">[docs]</a>  <span class="k">def</span> <span class="nf">calc_MetalMass</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+      
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;MetalMass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;M&#39;</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Z&#39;</span> <span class="p">)</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.calc_EnrichedMetalMass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.calc_EnrichedMetalMass">[docs]</a>  <span class="k">def</span> <span class="nf">calc_EnrichedMetalMass</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Calculate the metal mass that comes from enrichment, not counting mass</span>
+<span class="sd">    that&#39;s at the metallicity floor. Assumes that the there will always be at</span>
+<span class="sd">    least one particle in the simulation that&#39;s at the metallicity floor.&#39;&#39;&#39;</span>
+
+    <span class="n">enrichment_fraction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Z&#39;</span> <span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Z&#39;</span> <span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;EnrichedMetalMass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;M&#39;</span> <span class="p">)</span> <span class="o">*</span> <span class="n">enrichment_fraction</span></div>
+
+  <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="ParticleData.find_duplicate_ids"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.particle_data.html#galaxy_dive.analyze_data.particle_data.ParticleData.find_duplicate_ids">[docs]</a>  <span class="k">def</span> <span class="nf">find_duplicate_ids</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Find all the IDs in the particle data set that have duplicates.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      duplicate_ids ( np.ndarray ) : Array of IDs that have duplicates.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">unique_ids</span><span class="p">,</span> <span class="n">id_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;ID&#39;</span> <span class="p">),</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+
+    <span class="n">duplicate_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span> <span class="n">id_counts</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">unique_ids</span><span class="p">[</span><span class="n">duplicate_inds</span><span class="p">]</span></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

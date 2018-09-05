@@ -1,0 +1,195 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.read_data.snapshot module &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-galaxy_dive.read_data.snapshot">
+<span id="galaxy-dive-read-data-snapshot-module"></span><h1>galaxy_dive.read_data.snapshot module<a class="headerlink" href="#module-galaxy_dive.read_data.snapshot" title="Permalink to this headline">¶</a></h1>
+<p>Routines for reading in GADGET/GIZMO snapshots.</p>
+<dl class="docutils">
+<dt>&#64;author: Zach Hafen, Phil Hopkins, Claude-Andre Faucher-Giguere,</dt>
+<dd>and maybe others (this file’s been passed around a lot).</dd>
+</dl>
+<p>&#64;contact: <a class="reference external" href="mailto:zachary&#46;h&#46;hafen&#37;&#52;&#48;gmail&#46;com">zachary<span>&#46;</span>h<span>&#46;</span>hafen<span>&#64;</span>gmail<span>&#46;</span>com</a>
+&#64;status: Development</p>
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.check_if_filename_exists">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">check_if_filename_exists</code><span class="sig-paren">(</span><em>sdir</em>, <em>snum</em>, <em>snapshot_name='snapshot'</em>, <em>extension='.hdf5'</em>, <em>four_char=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#check_if_filename_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.check_if_filename_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a file name exists, and if so return information about it.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sdir (str): Simulation directory to load from.
+snum (int): Snapshot to load.
+snapshot_name (str): The base name for the snapshot.
+extension (str): The extension for the snapshot.
+four_char (bool): If True, then snapshot files have 4 digits, instead of three (e.g. 0020 instead of 020)</dd>
+<dt>Returns:</dt>
+<dd>fname_found (bool): If true, the filename was found.
+fname_base_found (str): The base for the found filename.
+fname_ext (str): The extension for the found filename.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.gas_mu">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">gas_mu</code><span class="sig-paren">(</span><em>num_e</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#gas_mu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.gas_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the mean weight from gadget.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.gas_temperature">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">gas_temperature</code><span class="sig-paren">(</span><em>u</em>, <em>num_e</em>, <em>keV=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#gas_temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.gas_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns gas particles temperature in Kelvin. Originally from PFH’s gadget lib (maybe somewhere else before?).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.get_snapshot_filepaths">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">get_snapshot_filepaths</code><span class="sig-paren">(</span><em>sdir</em>, <em>snum</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#get_snapshot_filepaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.get_snapshot_filepaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the filepath(s) to a snapshot located in a specified directory.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sdir (str) : Directory containing the simulation snapshot.
+snum (int) : Snapshot number.</dd>
+<dt>Returns:</dt>
+<dd>filepaths (list of strs) : Filepath(s) to the snapshot files.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.load_gadget_binary_header">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">load_gadget_binary_header</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#load_gadget_binary_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.load_gadget_binary_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the header information for a binary snapshot file.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>f (binary file): The file to read the information from.</dd>
+<dt>Returns:</dt>
+<dd>header_info (dict): A dictionary of info contained in the header.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.read_snapshot">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">read_snapshot</code><span class="sig-paren">(</span><em>sdir</em>, <em>snum</em>, <em>ptype</em>, <em>load_additional_ids=False</em>, <em>cosmological=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#read_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.read_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note: This is created as a function, not a class, because I’m encountering memory issues that may be related to
+classes persisting in memory. – Zach Hafen</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.read_snapshot_files">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">read_snapshot_files</code><span class="sig-paren">(</span><em>filepaths</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#read_snapshot_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.read_snapshot_files" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.readsnap">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">readsnap</code><span class="sig-paren">(</span><em>sdir</em>, <em>snum</em>, <em>ptype</em>, <em>load_additional_ids=0</em>, <em>snapshot_name='snapshot'</em>, <em>extension='.hdf5'</em>, <em>h0=0</em>, <em>cosmological=0</em>, <em>skip_bh=0</em>, <em>four_char=0</em>, <em>header_only=0</em>, <em>loud=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#readsnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.readsnap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in a particle snapshot.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sdir (str): Simulation directory to load from.
+snum (int): Snapshot to load.
+ptype (int): Particle type to load. Typically, 0=gas, 1=hi-res dark matter, 2=low-res dark matter, 4=stars.
+load_additional_ids (bool): Whether or not to also load the fields ‘ParticleChildIDsNumber’ and ‘ParticleIDGenerationNumber’.
+snapshot_name (str): The base name for the snapshot.
+extension (str): The extension for the snapshot.
+h0 (bool): If True, use present day values.
+cosmological (bool): If True, convert from comoving to physical units, and return in physical units, with factors of h accounted for.
+skip_bh (bool): If True, don’t read BH-specific fields for particles of type 5.
+four_char (bool): If True, then snapshot files have 4 digits, instead of three (e.g. 0020 instead of 020)
+header_only (bool): If True, return only the header, in stead of the full data.
+loud (bool): If True, print additional information.</dd>
+<dt>Returns:</dt>
+<dd>P (dict): A dictionary of numpy arrays containing the particle data.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.read_data.snapshot.setup_data_struct">
+<code class="descclassname">galaxy_dive.read_data.snapshot.</code><code class="descname">setup_data_struct</code><span class="sig-paren">(</span><em>ptype</em>, <em>flag_metals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/snapshot.html#setup_data_struct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.snapshot.setup_data_struct" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>ptype (int) : Particle type to load.
+flag_metals (int) : How many metal species there are.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/galaxy_dive.read_data.snapshot.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/galaxy_dive.read_data.snapshot.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
