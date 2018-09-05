@@ -1,0 +1,934 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.utils.utilities &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.utils.utilities</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;General utilities</span>
+
+<span class="sd">@author: Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">import</span> <span class="nn">errno</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="c1"># Work for py2 and py3</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">StringIO</span> <span class="k">import</span> <span class="n">StringIO</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SmartDict"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict">[docs]</a><span class="k">class</span> <span class="nc">SmartDict</span><span class="p">(</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Replacement for dictionary that allows easier access to the attributes and methods of the dictionary components.</span>
+<span class="sd">    For example, if one has a smart dictionary of TestClassA objects, each of which has a TestClassB attribute, which</span>
+<span class="sd">    in turn have a foo method, then smart_dict.test_class_b.foo(2) would be a dict with foo calculated for each.</span>
+<span class="sd">    In other words, it would be equivalent to the following code:</span>
+<span class="sd">    results = {}</span>
+<span class="sd">    for key in smart_dict.keys():</span>
+<span class="sd">        results[key] = smart_dict[key].test_class_b.foo( 2 )</span>
+<span class="sd">    return results</span>
+
+<span class="sd">    NOTE: In Python 3, the parent class probably needs to be switched to collections.abc.Mapping.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">out_str</span> <span class="o">=</span> <span class="s2">&quot;SmartDict, {</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="k">def</span> <span class="nf">get_print_obj</span><span class="p">(</span> <span class="n">obj</span> <span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">print_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">print_obj</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="k">return</span> <span class="n">print_obj</span>
+
+            <span class="n">out_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">get_print_obj</span><span class="p">(</span> <span class="n">key</span> <span class="p">),</span> <span class="n">get_print_obj</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">),</span> <span class="p">)</span>
+
+        <span class="n">out_str</span> <span class="o">+=</span> <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">out_str</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">attr</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">attr</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">](</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+<div class="viewcode-block" id="SmartDict.call_custom_kwargs"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.call_custom_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">call_custom_kwargs</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">default_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform call, but using custom keyword arguments per dictionary tag.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kwargs (dict) : Custom keyword arguments to pass.</span>
+<span class="sd">            default_kwargs (dict) : Defaults shared between keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            results (dict) : Dictionary of results.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">used_kwargs</span> <span class="o">=</span> <span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">default_kwargs</span><span class="p">,</span> <span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Calling for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">key</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">](</span> <span class="o">**</span><span class="n">used_kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SmartDict.call_iteratively"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.call_iteratively">[docs]</a>    <span class="k">def</span> <span class="nf">call_iteratively</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">args_list</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">inner_results</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">args_list</span><span class="p">:</span>
+
+                <span class="n">inner_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">](</span> <span class="n">args</span> <span class="p">)</span>
+                <span class="n">inner_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">inner_result</span> <span class="p">)</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_results</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># For handling when the Smart Dict contains dictionaries</span>
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SmartDict.inner_item"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.inner_item">[docs]</a>    <span class="k">def</span> <span class="nf">inner_item</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;When SmartDict is a dictionary of dicts themselves, this can be used to get an item from those dictionaries.&#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">item</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmartDict.inner_keys"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.inner_keys">[docs]</a>    <span class="k">def</span> <span class="nf">inner_keys</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmartDict.transpose"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Populate results dictionary</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">inner_key</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">inner_key</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="n">inner_key</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">inner_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">inner_key</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="n">inner_key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Operation Methods</span>
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">SmartDict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="fm">__radd__</span> <span class="o">=</span> <span class="fm">__add__</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">SmartDict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rsub__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">SmartDict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">SmartDict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">*</span><span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">*</span><span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="fm">__rmul__</span> <span class="o">=</span> <span class="fm">__mul__</span>
+
+    <span class="k">def</span> <span class="nf">__div__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">SmartDict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rdiv__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">SmartDict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Other operations</span>
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SmartDict.sum_contents"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.sum_contents">[docs]</a>    <span class="k">def</span> <span class="nf">sum_contents</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the sum of all the contents inside the Dict.&#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">):</span>
+
+            <span class="c1"># To handle non-standard items (e.g. things that aren&#39;t ints or floats )</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="SmartDict.keymax"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.keymax">[docs]</a>    <span class="k">def</span> <span class="nf">keymax</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">item_max</span> <span class="o">&lt;</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">item_max</span> <span class="o">=</span> <span class="n">item</span>
+                    <span class="n">key_max</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                <span class="n">item_max</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="n">key_max</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="k">return</span> <span class="n">key_max</span><span class="p">,</span> <span class="n">item_max</span></div>
+
+<div class="viewcode-block" id="SmartDict.keymin"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.keymin">[docs]</a>    <span class="k">def</span> <span class="nf">keymin</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">item_min</span> <span class="o">&gt;</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">item_min</span> <span class="o">=</span> <span class="n">item</span>
+                    <span class="n">key_min</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                <span class="n">item_min</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="n">key_min</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="k">return</span> <span class="n">key_min</span><span class="p">,</span> <span class="n">item_min</span></div>
+
+<div class="viewcode-block" id="SmartDict.apply"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Apply some function to each item in the smart dictionary, and</span>
+<span class="sd">        return the results as a SmartDict.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fn</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmartDict.split_by_key_slice"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.split_by_key_slice">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_key_slice</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">sl</span><span class="p">,</span> <span class="n">str_to_match</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Break the smart dictionary into smaller smart dictionaries according</span>
+<span class="sd">        to a subset of the key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sl (slice) :</span>
+<span class="sd">                Part of the key to use to make subsets.</span>
+
+<span class="sd">            str_to_match (str) :</span>
+<span class="sd">                If True, split into broad categories that match this string</span>
+<span class="sd">                in the given slice or don&#39;t.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">str_to_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">=</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+            <span class="n">results</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">=</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">key_slice</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">str_to_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">str_matches</span> <span class="o">=</span> <span class="n">key_slice</span> <span class="o">==</span> <span class="n">str_to_match</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">str_matches</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+            
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">key_slice</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">key_slice</span><span class="p">]</span> <span class="o">=</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">key_slice</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="SmartDict.split_by_dict"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.split_by_dict">[docs]</a>    <span class="k">def</span> <span class="nf">split_by_dict</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Break the smart dictionary into smaller smart dictionaries according</span>
+<span class="sd">        to their label provided by a dictionary</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            d (dict) :</span>
+<span class="sd">                Dictionary to use to split into smaller dictionaries</span>
+
+<span class="sd">            return_list (bool) :</span>
+<span class="sd">                If True, return a list of arrays.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result_subkey</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">result_subkey</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">result_subkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">result_subkey</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s1">&#39;no label&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s1">&#39;no label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SmartDict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s1">&#39;no label&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">return_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">results</span>
+
+        <span class="n">final_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">final_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">item</span><span class="o">.</span><span class="n">array</span><span class="p">()</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_results</span></div>
+
+<div class="viewcode-block" id="SmartDict.log10"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.log10">[docs]</a>    <span class="k">def</span> <span class="nf">log10</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Wrapper for np.log10&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmartDict.array"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.array">[docs]</a>    <span class="k">def</span> <span class="nf">array</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns a np.ndarray with unique order (sorted keys )&#39;&#39;&#39;</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="p">)</span> <span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">values</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SmartDict.remove_empty_items"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.remove_empty_items">[docs]</a>    <span class="k">def</span> <span class="nf">remove_empty_items</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Look for empty items and delete them.&#39;&#39;&#39;</span>
+
+        <span class="n">keys_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">item</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">keys_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">key</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_delete</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Construction Methods</span>
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SmartDict.from_class_and_args"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict.from_class_and_args">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_class_and_args</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">contained_cls</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">default_args</span><span class="o">=</span><span class="p">{},</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Alternate constructor. Creates a SmartDict of contained_cls objects, with arguments passed to it from</span>
+<span class="sd">        the dictionary created by defaults and variations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            contained_cls (type of object/constructor) : What class should the smart dict consist of?</span>
+<span class="sd">            args (dict/other) : Arguments that should be passed to contained_cls. If not a dict, assumed to be the first</span>
+<span class="sd">                and only argument for the constructor.</span>
+<span class="sd">            default_args : Default arguments to fill in args</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            result (SmartDict instance) : The constructed instance.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">default_args</span><span class="p">,</span> <span class="n">args</span> <span class="p">)</span>
+
+        <span class="n">storage</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span> <span class="p">):</span>
+                <span class="n">storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">contained_cls</span><span class="p">(</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">contained_cls</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span> <span class="n">storage</span> <span class="p">)</span></div></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="merge_two_dicts"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.merge_two_dicts">[docs]</a><span class="k">def</span> <span class="nf">merge_two_dicts</span><span class="p">(</span> <span class="n">dict_a</span><span class="p">,</span> <span class="n">dict_b</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Merges two dictionaries into a shallow copy.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dict_a (dict) : First dictionary to merge.</span>
+<span class="sd">        dict_b (dict) : Second dictionary to merge.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        merged_dict (dict) :</span>
+<span class="sd">            Dictionary including elements from both.</span>
+<span class="sd">            dict_a&#39;s entries take priority over dict_b.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">merged_dict</span> <span class="o">=</span> <span class="n">dict_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">merged_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">dict_a</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">merged_dict</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="dict_from_defaults_and_variations"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.dict_from_defaults_and_variations">[docs]</a><span class="k">def</span> <span class="nf">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">variations</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Create a dictionary of dictionaries from a default dictionary and variations on it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        defaults (dict) : Default dictionary. What each individual dictionary should default to.</span>
+<span class="sd">        variations (dict of dicts) : Each dictionary contains what should be different. The key for each dictionary should</span>
+<span class="sd">            be a label for it.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result (dict of dicts) : The results is basically variations, where each child dict is merged with defaults.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">defaults</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">variations</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">variations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+        <span class="n">defaults_copy</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">defaults_copy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">variations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaults_copy</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="deepgetattr"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.deepgetattr">[docs]</a><span class="k">def</span> <span class="nf">deepgetattr</span><span class="p">(</span> <span class="n">obj</span><span class="p">,</span> <span class="n">attr</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Recurses through an attribute chain to get the ultimate value.</span>
+<span class="sd">    Credit to http://pingfive.typepad.com/blog/2010/04/deep-getattr-python-function.html</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj (object) : Object for which to get the attribute.</span>
+<span class="sd">        attr (str) : Attribute to get. Can be nested, e.g. obj.foo.bar.dog</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result (attr object) : The requested attribute.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span> <span class="nb">getattr</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="n">obj</span> <span class="p">)</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="arrays_to_set"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.arrays_to_set">[docs]</a><span class="k">def</span> <span class="nf">arrays_to_set</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Convert arr1, arr2, arr3, ... to a set, where a single enrty in the set is ( arr1[j], arr2[j], ... )</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n arrays ( multiple np.ndarrays ) : The arrays to convert.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        result ( set ) : The converted set.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span> <span class="nb">zip</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span> <span class="p">)</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="set_to_arrays"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.set_to_arrays">[docs]</a><span class="k">def</span> <span class="nf">set_to_arrays</span><span class="p">(</span> <span class="n">set_to_convert</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Convert a set into multiple arrays.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        result ( set ) : The set to convert</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        n arrays ( multiple np.ndarrays ) : The converted arrays</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="nb">list</span><span class="p">(</span> <span class="n">set_to_convert</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="captured_output"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.captured_output">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">captured_output</span><span class="p">():</span>
+    <span class="n">new_out</span><span class="p">,</span> <span class="n">new_err</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(),</span> <span class="n">StringIO</span><span class="p">()</span>
+    <span class="n">old_out</span><span class="p">,</span> <span class="n">old_err</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">new_out</span><span class="p">,</span> <span class="n">new_err</span>
+        <span class="k">yield</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">old_out</span><span class="p">,</span> <span class="n">old_err</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="chunk_list"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.chunk_list">[docs]</a><span class="k">def</span> <span class="nf">chunk_list</span><span class="p">(</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Breaks a list l into n chunks, as equally as possible.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        l (list) : List to break into chunks.</span>
+<span class="sd">        n (int) : Number of chunks to break the list into.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        chunked_l ( list of lists ) : The list broken into chunks.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">start_ind</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">end_ind</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">remainder_to_distribute</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">l</span> <span class="p">)</span> <span class="o">%</span> <span class="n">n</span>
+
+    <span class="n">chunked_l</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">n</span> <span class="p">):</span>
+
+        <span class="c1"># l/n may not always be an int, so forcing it to be one as before.</span>
+        <span class="c1"># But the fact that it isn&#39;t always an int seems like a bigger problem.</span>
+        <span class="n">end_ind</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">l</span> <span class="p">)</span><span class="o">/</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">remainder_to_distribute</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">end_ind</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">remainder_to_distribute</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="n">chunked_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">l</span><span class="p">[</span> <span class="n">start_ind</span> <span class="p">:</span> <span class="n">end_ind</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">start_ind</span> <span class="o">=</span> <span class="n">end_ind</span>
+
+    <span class="k">return</span> <span class="n">chunked_l</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="get_instance_source_dir"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.get_instance_source_dir">[docs]</a><span class="k">def</span> <span class="nf">get_instance_source_dir</span><span class="p">(</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_type</span><span class="o">=</span><span class="s1">&#39;class&#39;</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get the directory containing the source code of an instance (class or module).</span>
+
+<span class="sd">    instance (object) : Instance to get the code for.</span>
+<span class="sd">    instance_type (str) : &#39;class&#39; if the instance is a class, &#39;module&#39; if the instance is a module</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">instance_type</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
+        <span class="n">inspection_object</span> <span class="o">=</span>  <span class="n">instance</span><span class="o">.</span><span class="vm">__class__</span>
+    <span class="k">elif</span> <span class="n">instance_type</span> <span class="o">==</span> <span class="s1">&#39;module&#39;</span><span class="p">:</span>
+        <span class="n">inspection_object</span> <span class="o">=</span> <span class="n">instance</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span> <span class="s2">&quot;Unrecognized instance_type, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">instance_type</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">sourcefile</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getabsfile</span><span class="p">(</span> <span class="n">inspection_object</span> <span class="p">)</span>
+
+    <span class="n">sourcedir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">sourcefile</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sourcedir</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="get_code_version"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.get_code_version">[docs]</a><span class="k">def</span> <span class="nf">get_code_version</span><span class="p">(</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_type</span><span class="o">=</span><span class="s1">&#39;class&#39;</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get the current version (git tag/commit) of the parent code for a class or module</span>
+
+<span class="sd">    instance (object) : Instance to get the code for.</span>
+<span class="sd">    instance_type (str) : &#39;class&#39; if the instance is a class, &#39;module&#39; if the instance is a module</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+    <span class="c1"># Change to the directory of the instance</span>
+    <span class="n">instancedir</span> <span class="o">=</span> <span class="n">get_instance_source_dir</span><span class="p">(</span> <span class="n">instance</span><span class="p">,</span> <span class="n">instance_type</span><span class="o">=</span><span class="n">instance_type</span> <span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="n">instancedir</span> <span class="p">)</span>
+
+    <span class="c1"># Get the code version</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">code_version</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span> <span class="p">[</span> <span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;--always&#39;</span> <span class="p">]</span> <span class="p">)</span>
+    <span class="c1"># If we fail, don&#39;t break the code.</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;failed to get version&#39;</span>
+
+    <span class="c1"># Change back</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="n">cwd</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">code_version</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="print_timer"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.print_timer">[docs]</a><span class="k">def</span> <span class="nf">print_timer</span><span class="p">(</span> <span class="n">timer_string</span><span class="o">=</span><span class="s1">&#39;Time taken:&#39;</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Decorator to time a function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        timer_string (str, optional) : Printed before printing the time.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_print_timer</span><span class="p">(</span> <span class="n">func</span> <span class="p">):</span>
+
+        <span class="nd">@wraps</span><span class="p">(</span> <span class="n">func</span> <span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapped_func</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+
+            <span class="n">time_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+            <span class="n">time_end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+            <span class="n">print_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{:.3g}</span><span class="s1"> seconds&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">timer_string</span><span class="p">,</span> <span class="n">time_end</span> <span class="o">-</span> <span class="n">time_start</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="n">print_string</span> <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">wrapped_func</span>
+
+    <span class="k">return</span> <span class="n">_print_timer</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="store_parameters"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.store_parameters">[docs]</a><span class="k">def</span> <span class="nf">store_parameters</span><span class="p">(</span> <span class="n">constructor</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Decorator for automatically storing arguments passed to a constructor.</span>
+<span class="sd">    I.e. any args passed to constructor via test_object = TestObject( *args, **kwargs )</span>
+<span class="sd">    will be stored in test_object, e.g. test_object.args</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        constructor (function) : Constructor to wrap.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span> <span class="n">constructor</span> <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapped_constructor</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+
+        <span class="n">parameters_to_store</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getcallargs</span><span class="p">(</span> <span class="n">constructor</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="c1"># Make sure we don&#39;t accidentally try to save the self argument</span>
+        <span class="k">del</span> <span class="n">parameters_to_store</span><span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">parameters_to_store</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">parameters_to_store</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stored_parameters</span> <span class="o">=</span> <span class="n">parameters_to_store</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">constructor</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapped_constructor</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="save_parameters"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.save_parameters">[docs]</a><span class="k">def</span> <span class="nf">save_parameters</span><span class="p">(</span> <span class="n">instance</span><span class="p">,</span> <span class="n">f</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Save parameters to a hdf5 file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        instance (object) :</span>
+<span class="sd">            Instance that has the attributes that are parameters. Typically stored in instance.stored_parameters.</span>
+
+<span class="sd">        f (open h5py file object) :</span>
+<span class="sd">            File to save the parameters to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        param_grp (h5py group) :</span>
+<span class="sd">            Group containing the parameters as attributes.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">param_grp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span> <span class="s1">&#39;parameters&#39;</span> <span class="p">)</span>
+    <span class="k">for</span> <span class="n">parameter_str</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">stored_parameters</span><span class="p">:</span>
+
+        <span class="n">parameter</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="n">instance</span><span class="p">,</span> <span class="n">parameter_str</span> <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parameter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">param_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">parameter_str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;None&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">param_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">parameter_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">parameter</span>
+
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span> <span class="s2">&quot;Parameter </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2"> failed to save.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">parameter_str</span><span class="p">,</span> <span class="n">parameter</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">param_grp</span></div>
+
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Make a path to a file</span>
+
+<div class="viewcode-block" id="make_dir"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.make_dir">[docs]</a><span class="k">def</span> <span class="nf">make_dir</span><span class="p">(</span> <span class="n">path</span> <span class="p">):</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span> <span class="c1"># Python &gt;2.5</span>
+        <span class="k">if</span> <span class="n">exc</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span> <span class="k">raise</span>
+
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Class modelled after unix tee, mainly for the purpose of writing to a log while also printing.</span>
+
+<div class="viewcode-block" id="Tee"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.Tee">[docs]</a><span class="k">class</span> <span class="nc">Tee</span><span class="p">:</span>
+<div class="viewcode-block" id="Tee.write"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.Tee.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out1</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out2</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">out1</span><span class="p">,</span> <span class="n">out2</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out1</span> <span class="o">=</span> <span class="n">out1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out2</span> <span class="o">=</span> <span class="n">out2</span></div>
+
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Function for saving to a file.</span>
+<div class="viewcode-block" id="saveToLog"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.saveToLog">[docs]</a><span class="k">def</span> <span class="nf">saveToLog</span><span class="p">(</span> <span class="n">log_save_file</span> <span class="p">):</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">Tee</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">log_save_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">),</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="mi">0</span></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="map_interval_to_interval"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.map_interval_to_interval">[docs]</a><span class="k">def</span> <span class="nf">map_interval_to_interval</span><span class="p">(</span> <span class="n">values</span><span class="p">,</span> <span class="n">old_min</span><span class="p">,</span> <span class="n">old_max</span><span class="p">,</span> <span class="n">new_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="p">):</span>
+
+    <span class="k">pass</span></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1"># Tools for dealing with cosmology-specific data files.</span>
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Get information from a halo file for a particular redshift.</span>
+
+<div class="viewcode-block" id="getHaloDataRedshift"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.getHaloDataRedshift">[docs]</a><span class="k">def</span> <span class="nf">getHaloDataRedshift</span><span class="p">(</span><span class="n">sdir</span><span class="p">,</span> <span class="n">halo_number</span><span class="p">,</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">convert_to_proper</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="c1"># Values returned are, in order, and in comoving units,</span>
+<span class="c1">#   redshift, halo_ID, host_ID, xpeak, ypeak, zpeak, Rvir, Mvir, Mgas, Mstar, xCOM, yCOM, zCOM.</span>
+
+    <span class="c1"># Get the halo data for all snapshots</span>
+    <span class="n">halo_file</span> <span class="o">=</span> <span class="n">getHaloFilename</span><span class="p">(</span><span class="n">sdir</span><span class="p">,</span> <span class="n">halo_number</span><span class="p">)</span>
+    <span class="n">full_halo_data</span> <span class="o">=</span> <span class="n">dataio</span><span class="o">.</span><span class="n">tuples_to_arrays</span><span class="p">(</span><span class="n">dataio</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">halo_file</span><span class="p">))</span>
+    <span class="n">redshift_arr</span> <span class="o">=</span> <span class="n">full_halo_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Account for rounding errors at the edges.</span>
+    <span class="k">if</span> <span class="n">redshift</span> <span class="o">&lt;</span> <span class="n">redshift_arr</span><span class="o">.</span><span class="n">min</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;zhh_dataio.getHaloDataRedshift: Bumping redshift from </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">redshift</span><span class="p">,</span> <span class="n">redshift_arr</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="p">)</span>
+        <span class="n">redshift</span> <span class="o">=</span> <span class="n">redshift_arr</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">redshift</span> <span class="o">&gt;</span> <span class="n">redshift_arr</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;zhh_dataio.getHaloDataRedshift: Bumping redshift from </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">redshift</span><span class="p">,</span> <span class="n">redshift_arr</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="p">)</span>
+        <span class="n">redshift</span> <span class="o">=</span> <span class="n">redshift_arr</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get single values out of the halo data.</span>
+        <span class="n">arr_value_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">full_halo_data</span><span class="p">:</span>
+            <span class="n">arr_interp</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">redshift_arr</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">arr</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">arr_value</span> <span class="o">=</span> <span class="n">arr_interp</span><span class="p">(</span><span class="n">redshift</span><span class="p">)</span>
+            <span class="n">arr_value_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arr_value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">arr_value_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">full_halo_data</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="c1"># Convert halo data to proper coordinates (the 1/h factor&#39;s still there for many of the coords)</span>
+    <span class="k">if</span> <span class="n">convert_to_proper</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
+        <span class="n">comoving_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">val_index</span> <span class="ow">in</span> <span class="n">comoving_vals</span><span class="p">:</span>
+            <span class="n">arr_value_list</span><span class="p">[</span><span class="n">val_index</span><span class="p">]</span> <span class="o">/=</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="n">arr_value_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">arr_value_list</span></div>
+
+<span class="c1">########################################################################</span>
+
+<span class="c1"># Get particle data and useful halo file data for a given data, all in proper units. Combine them into a class.</span>
+
+<div class="viewcode-block" id="PartDataLong"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.PartDataLong">[docs]</a><span class="k">class</span> <span class="nc">PartDataLong</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdir</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">halo_number</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdir</span> <span class="o">=</span> <span class="n">sdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snum</span> <span class="o">=</span> <span class="n">snum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ptype</span> <span class="o">=</span> <span class="n">ptype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">halo_number</span> <span class="o">=</span> <span class="n">halo_number</span>
+
+        <span class="c1"># Get the particles from a snapshot (in proper units)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">readsnap</span><span class="o">.</span><span class="n">readsnap</span><span class="p">(</span><span class="n">sdir</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">cosmological</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Get the halo data</span>
+        <span class="n">halo_data</span> <span class="o">=</span> <span class="n">getHaloDataRedshift</span><span class="p">(</span><span class="n">sdir</span><span class="p">,</span> <span class="n">halo_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="s1">&#39;redshift&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Get rid of 1/h factors in the halo data</span>
+        <span class="n">vals_to_be_converted</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">val_index</span> <span class="ow">in</span> <span class="n">vals_to_be_converted</span><span class="p">:</span>
+            <span class="n">halo_data</span><span class="p">[</span><span class="n">val_index</span><span class="p">]</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="s1">&#39;hubble&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Add the halo data to the class.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redshift</span> <span class="o">=</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">halo_ID</span> <span class="o">=</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host_ID</span> <span class="o">=</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peak_coords</span> <span class="o">=</span> <span class="p">(</span><span class="n">halo_data</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R_vir</span> <span class="o">=</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M_vir</span> <span class="o">=</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M_gas</span> <span class="o">=</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M_star</span> <span class="o">=</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CoM_coords</span> <span class="o">=</span> <span class="p">(</span><span class="n">halo_data</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">halo_data</span><span class="p">[</span><span class="mi">12</span><span class="p">])</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="c1"># Change coordinates to center on the main halo.</span>
+<div class="viewcode-block" id="PartDataLong.changeCoordsCenter"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.PartDataLong.changeCoordsCenter">[docs]</a>    <span class="k">def</span> <span class="nf">changeCoordsCenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peak_coords</span><span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="c1"># Calculate the distance from the origin for a given particle.</span>
+<div class="viewcode-block" id="PartDataLong.calcRadialDistance"><a class="viewcode-back" href="../../../galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.PartDataLong.calcRadialDistance">[docs]</a>    <span class="k">def</span> <span class="nf">calcRadialDistance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">]</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> <span class="n">z</span><span class="o">**</span><span class="mf">2.</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

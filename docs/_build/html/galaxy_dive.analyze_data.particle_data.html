@@ -1,0 +1,155 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.analyze_data.particle_data module &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-galaxy_dive.analyze_data.particle_data">
+<span id="galaxy-dive-analyze-data-particle-data-module"></span><h1>galaxy_dive.analyze_data.particle_data module<a class="headerlink" href="#module-galaxy_dive.analyze_data.particle_data" title="Permalink to this headline">¶</a></h1>
+<p>Subclass for analyzing particle data.</p>
+<p>&#64;author: Zach Hafen
+&#64;contact: <a class="reference external" href="mailto:zachary&#46;h&#46;hafen&#37;&#52;&#48;gmail&#46;com">zachary<span>&#46;</span>h<span>&#46;</span>hafen<span>&#64;</span>gmail<span>&#46;</span>com</a>
+&#64;status: Development</p>
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.particle_data.</code><code class="descname">ParticleData</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData" title="galaxy_dive.analyze_data.simulation_data.SnapshotData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.simulation_data.SnapshotData</span></code></a></p>
+<p>Subclass for particle data.</p>
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.calc_EnrichedMetalMass">
+<code class="descname">calc_EnrichedMetalMass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.calc_EnrichedMetalMass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.calc_EnrichedMetalMass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the metal mass that comes from enrichment, not counting mass
+that’s at the metallicity floor. Assumes that the there will always be at
+least one particle in the simulation that’s at the metallicity floor.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.calc_MetalMass">
+<code class="descname">calc_MetalMass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.calc_MetalMass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.calc_MetalMass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.calc_classifications">
+<code class="descname">calc_classifications</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.calc_classifications"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.calc_classifications" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the classification for each particle, using data from the Angles-Alcazar+16 pipeline.
+Uses classes from the tracked_particle_data_handling.py module.</p>
+<p>Parameters (include in data_p)
+‘tracked_p_data_dir’ : Directory containing the tracked-particle data.
+‘tracked_p_file_tag’ : Identifying tag for the tracked-particle data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.calc_mu">
+<code class="descname">calc_mu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.calc_mu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.calc_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>we track this with metal species now, could do better…</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.calc_pressure">
+<code class="descname">calc_pressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.calc_pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.calc_pressure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the pressure in units of K/cm^3.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.calc_temp">
+<code class="descname">calc_temp</code><span class="sig-paren">(</span><em>gamma=1.6666666666666667</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.calc_temp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.calc_temp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the temperature from the internal energy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.find_duplicate_ids">
+<code class="descname">find_duplicate_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.find_duplicate_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.find_duplicate_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all the IDs in the particle data set that have duplicates.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>duplicate_ids ( np.ndarray ) : Array of IDs that have duplicates.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.particle_data.ParticleData.retrieve_data">
+<code class="descname">retrieve_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/particle_data.html#ParticleData.retrieve_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.particle_data.ParticleData.retrieve_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/galaxy_dive.analyze_data.particle_data.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/galaxy_dive.analyze_data.particle_data.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
