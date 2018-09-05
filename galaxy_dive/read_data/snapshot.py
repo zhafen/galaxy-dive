@@ -25,16 +25,27 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
 
     Args:
       sdir (str): Simulation directory to load from.
+
       snum (int): Snapshot to load.
+
       ptype (int): Particle type to load. Typically, 0=gas, 1=hi-res dark matter, 2=low-res dark matter, 4=stars.
+
       load_additional_ids (bool): Whether or not to also load the fields 'ParticleChildIDsNumber' and 'ParticleIDGenerationNumber'.
+
       snapshot_name (str): The base name for the snapshot.
+
       extension (str): The extension for the snapshot.
+
       h0 (bool): If True, use present day values.
+
       cosmological (bool): If True, convert from comoving to physical units, and return in physical units, with factors of h accounted for.
+
       skip_bh (bool): If True, don't read BH-specific fields for particles of type 5.
+
       four_char (bool): If True, then snapshot files have 4 digits, instead of three (e.g. 0020 instead of 020)
+
       header_only (bool): If True, return only the header, in stead of the full data.
+
       loud (bool): If True, print additional information.
 
     Returns:

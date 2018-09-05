@@ -58,16 +58,27 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">      sdir (str): Simulation directory to load from.</span>
+
 <span class="sd">      snum (int): Snapshot to load.</span>
+
 <span class="sd">      ptype (int): Particle type to load. Typically, 0=gas, 1=hi-res dark matter, 2=low-res dark matter, 4=stars.</span>
+
 <span class="sd">      load_additional_ids (bool): Whether or not to also load the fields &#39;ParticleChildIDsNumber&#39; and &#39;ParticleIDGenerationNumber&#39;.</span>
+
 <span class="sd">      snapshot_name (str): The base name for the snapshot.</span>
+
 <span class="sd">      extension (str): The extension for the snapshot.</span>
+
 <span class="sd">      h0 (bool): If True, use present day values.</span>
+
 <span class="sd">      cosmological (bool): If True, convert from comoving to physical units, and return in physical units, with factors of h accounted for.</span>
+
 <span class="sd">      skip_bh (bool): If True, don&#39;t read BH-specific fields for particles of type 5.</span>
+
 <span class="sd">      four_char (bool): If True, then snapshot files have 4 digits, instead of three (e.g. 0020 instead of 020)</span>
+
 <span class="sd">      header_only (bool): If True, return only the header, in stead of the full data.</span>
+
 <span class="sd">      loud (bool): If True, print additional information.</span>
 
 <span class="sd">    Returns:</span>

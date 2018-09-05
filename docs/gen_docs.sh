@@ -4,4 +4,5 @@
 sphinx-apidoc -o . ../galaxy_dive -e -f
 
 # Make the files
+make clean
 make html
