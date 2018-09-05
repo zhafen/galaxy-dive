@@ -231,6 +231,11 @@ class GenericData( object ):
 
     return self.data_masker.get_masked_data( *args, **kwargs )
 
+  def mask_data( self, *args, **kwargs ):
+    '''Wrapper for masking data.'''
+
+    return self.data_masker.mask_data( *args, **kwargs )
+
   ########################################################################
 
   def shift( self, data, data_key ):
