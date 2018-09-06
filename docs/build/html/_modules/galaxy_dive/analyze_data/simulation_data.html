@@ -750,8 +750,8 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_v_com&#39;</span> <span class="p">):</span>
 
-            <span class="n">m_ma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">central_mask</span> <span class="p">)</span>
-            <span class="n">v_ma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">central_mask</span> <span class="p">)</span>
+            <span class="n">m_ma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">central_mask</span> <span class="p">)</span>
+            <span class="n">v_ma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">central_mask</span> <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_v_com</span> <span class="o">=</span> <span class="p">(</span> <span class="n">v_ma</span> <span class="o">*</span> <span class="n">m_ma</span> <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">/</span> <span class="n">m_ma</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
@@ -1263,10 +1263,10 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.get_masked_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.get_masked_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_masked_data_over_time</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.get_selected_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.get_selected_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data_over_time</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Wrapper for geting masked data as a function of time.&#39;&#39;&#39;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">get_masked_data_over_time</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">get_selected_data_over_time</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
 
     <span class="c1">########################################################################</span>
 
@@ -1457,7 +1457,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeDataMasker.get_masked_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeDataMasker.get_masked_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_masked_data_over_time</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeDataMasker.get_selected_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeDataMasker.get_selected_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data_over_time</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_key</span><span class="p">,</span>
         <span class="n">snum</span><span class="p">,</span>
@@ -1480,7 +1480,7 @@
 
         <span class="c1"># Make sure we don&#39;t try to pass a slice to any keyword arguments</span>
         <span class="k">assert</span> <span class="s1">&#39;sl&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;Taking slices of the original data&#39;</span> <span class="o">+</span> \
-                <span class="s1">&#39; should not be done when using get_masked_data_over_time&#39;</span>
+                <span class="s1">&#39; should not be done when using get_selected_data_over_time&#39;</span>
 
         <span class="c1"># Get the appropriate mask</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">mask</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="p">):</span>

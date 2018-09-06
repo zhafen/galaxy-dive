@@ -43,7 +43,7 @@
 <dl class="method">
 <dt id="galaxy_dive.plot_data.generic_plotter.GenericPlotter.histogram">
 <code class="descname">histogram</code><span class="sig-paren">(</span><em>data_key</em>, <em>provided_data=None</em>, <em>provided_hist=None</em>, <em>weight_key=&lt;object object&gt;</em>, <em>slices=None</em>, <em>ax=&lt;object object&gt;</em>, <em>fix_invalid=False</em>, <em>mask_zeros=False</em>, <em>invalid_fix_method=&lt;object object&gt;</em>, <em>bins=32</em>, <em>normed=True</em>, <em>norm_type='probability'</em>, <em>scaling=None</em>, <em>smooth=False</em>, <em>smoothing_window_length=9</em>, <em>smoothing_polyorder=3</em>, <em>histogram_style='step'</em>, <em>color='black'</em>, <em>linestyle='-'</em>, <em>linewidth=3.5</em>, <em>alpha=1.0</em>, <em>x_range=&lt;object object&gt;</em>, <em>y_range=&lt;object object&gt;</em>, <em>x_label=&lt;object object&gt;</em>, <em>y_label=&lt;object object&gt;</em>, <em>add_x_label=True</em>, <em>add_y_label=True</em>, <em>plot_label=&lt;object object&gt;</em>, <em>line_label=&lt;object object&gt;</em>, <em>label_fontsize=24</em>, <em>x_scale='linear'</em>, <em>y_scale='linear'</em>, <em>cdf=False</em>, <em>vertical_line=None</em>, <em>vertical_line_kwargs={'color': 'k'</em>, <em>'linestyle': '--'</em>, <em>'linewidth': 3}</em>, <em>return_dist=False</em>, <em>assert_contains_all_data=True</em>, <em>data_kwargs={}</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#GenericPlotter.histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.GenericPlotter.histogram" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_masked_data().</p>
+<dd><p>Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_selected_data().</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd><dl class="first last docutils">
@@ -98,7 +98,7 @@ Defaults to matplotlib’s automatic choices</dd>
 <dt>assert_contains_all_data (bool) :</dt>
 <dd>If True, make sure that the histogram plots all selected data.</dd>
 <dt><a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs :</dt>
-<dd>Extra arguments to pass to self.data_object.get_masked_data()</dd>
+<dd>Extra arguments to pass to self.data_object.get_selected_data()</dd>
 </dl>
 </dd>
 </dl>
@@ -107,7 +107,7 @@ Defaults to matplotlib’s automatic choices</dd>
 <dl class="method">
 <dt id="galaxy_dive.plot_data.generic_plotter.GenericPlotter.histogram2d">
 <code class="descname">histogram2d</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_key</em>, <em>weight_key=&lt;object object&gt;</em>, <em>x_data_args={}</em>, <em>y_data_args={}</em>, <em>weight_data_args={}</em>, <em>slices=None</em>, <em>ax=&lt;object object&gt;</em>, <em>x_range=&lt;object object&gt;</em>, <em>y_range=&lt;object object&gt;</em>, <em>x_scale='linear'</em>, <em>y_scale='linear'</em>, <em>z_scale='log'</em>, <em>n_bins=128</em>, <em>average=False</em>, <em>normed=False</em>, <em>hist_div_arr=None</em>, <em>conditional_y=False</em>, <em>y_div_function=None</em>, <em>vmin=None</em>, <em>vmax=None</em>, <em>min_bin_value_displayed=None</em>, <em>zorder=0</em>, <em>add_colorbar=True</em>, <em>cmap=&lt;matplotlib.colors.ListedColormap object&gt;</em>, <em>colorbar_args=&lt;object object&gt;</em>, <em>x_label=&lt;object object&gt;</em>, <em>y_label=&lt;object object&gt;</em>, <em>add_x_label=True</em>, <em>add_y_label=True</em>, <em>plot_label=&lt;object object&gt;</em>, <em>outline_plot_label=False</em>, <em>label_galaxy_cut=False</em>, <em>label_redshift=False</em>, <em>label_fontsize=24</em>, <em>tick_param_args=&lt;object object&gt;</em>, <em>save_file=&lt;object object&gt;</em>, <em>out_dir=None</em>, <em>fix_invalid=True</em>, <em>line_slope=&lt;object object&gt;</em>, <em>cdf=False</em>, <em>horizontal_line=None</em>, <em>vertical_line=None</em>, <em>horizontal_line_kwargs={'color': '#337DB8'</em>, <em>'linestyle': '--'</em>, <em>'linewidth': 5}</em>, <em>vertical_line_kwargs={'color': '#337DB8'</em>, <em>'linestyle': '--'</em>, <em>'linewidth': 5}</em>, <em>return_dist=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#GenericPlotter.histogram2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.GenericPlotter.histogram2d" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
+<dd><p>Make a 2D histogram of the data. Extra arguments are passed to get_selected_data.
 Args:</p>
 <blockquote>
 <div><p>x_key, y_key (str) : Data keys to plot.
@@ -217,7 +217,7 @@ out_dir (str) : If given, where to save the file.</p>
 <dl class="method">
 <dt id="galaxy_dive.plot_data.generic_plotter.GenericPlotter.scatter">
 <code class="descname">scatter</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_key</em>, <em>slices=None</em>, <em>n_subsample=None</em>, <em>ax=&lt;object object&gt;</em>, <em>marker_size=100</em>, <em>color='k'</em>, <em>marker='.'</em>, <em>zorder=-100</em>, <em>x_range=&lt;object object&gt;</em>, <em>y_range=&lt;object object&gt;</em>, <em>x_label=&lt;object object&gt;</em>, <em>y_label=&lt;object object&gt;</em>, <em>add_x_label=True</em>, <em>add_y_label=True</em>, <em>plot_label=&lt;object object&gt;</em>, <em>outline_plot_label=False</em>, <em>label_galaxy_cut=False</em>, <em>label_redshift=False</em>, <em>label_fontsize=24</em>, <em>tick_param_args=&lt;object object&gt;</em>, <em>out_dir=None</em>, <em>fix_invalid=True</em>, <em>line_slope=&lt;object object&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#GenericPlotter.scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.GenericPlotter.scatter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make a 2D scatter plot of the data. Extra arguments are passed to get_masked_data.
+<dd><p>Make a 2D scatter plot of the data. Extra arguments are passed to get_selected_data.
 Args:</p>
 <blockquote>
 <div><p>x_key, y_key (str) : Data keys to plot.

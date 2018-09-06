@@ -98,7 +98,7 @@ class GenericPlotter( object ):
         assert_contains_all_data = True,
         data_kwargs = {},
         *args, **kwargs ):
-        '''Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_masked_data().
+        '''Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_selected_data().
 
         Args:
             data_key (str) :
@@ -176,7 +176,7 @@ class GenericPlotter( object ):
                 If True, make sure that the histogram plots all selected data.
 
             *args, **kwargs :
-                Extra arguments to pass to self.data_object.get_masked_data()
+                Extra arguments to pass to self.data_object.get_selected_data()
         '''
 
         print( "Plotting histogram for {}".format( data_key ) )
@@ -191,7 +191,7 @@ class GenericPlotter( object ):
             data_kwargs = utilities.merge_two_dicts( data_kwargs, kwargs )
 
             if provided_data is None:
-                data = self.data_object.get_masked_data(
+                data = self.data_object.get_selected_data(
                     data_key,
                     sl=sl,
                     *args, **data_kwargs
@@ -209,7 +209,7 @@ class GenericPlotter( object ):
                             kwargs['scale_key']
                         )
                     )
-                weights = self.data_object.get_masked_data( weight_key, sl=sl, *args, **kwargs )
+                weights = self.data_object.get_selected_data( weight_key, sl=sl, *args, **kwargs )
 
             if fix_invalid:
                 if invalid_fix_method is default:
@@ -400,7 +400,7 @@ class GenericPlotter( object ):
         vertical_line_kwargs = { 'linestyle': '--', 'linewidth': 5, 'color': '#337DB8', },
         return_dist = False,
         *args, **kwargs ):
-        '''Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.
+        '''Make a 2D histogram of the data. Extra arguments are passed to get_selected_data.
         Args:
             x_key, y_key (str) : Data keys to plot.
             weight_key (str) : Data key for data to use as a weight. By default, no weight.
@@ -443,8 +443,8 @@ class GenericPlotter( object ):
         data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
 
         # Get data
-        x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
-        y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
+        x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
+        y_data = self.data_object.get_selected_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
 
         if y_div_function is not None:
             y_div_values = y_div_function( x_data )
@@ -462,7 +462,7 @@ class GenericPlotter( object ):
         if weight_key is default:
             weights = None
         else:
-            weights = self.data_object.get_masked_data(
+            weights = self.data_object.get_selected_data(
                 weight_key,
                 sl=sl,
                 *args,
@@ -661,7 +661,7 @@ class GenericPlotter( object ):
         fix_invalid = True,
         line_slope = default,
         *args, **kwargs ):
-        '''Make a 2D scatter plot of the data. Extra arguments are passed to get_masked_data.
+        '''Make a 2D scatter plot of the data. Extra arguments are passed to get_selected_data.
         Args:
             x_key, y_key (str) : Data keys to plot.
             weight_key (str) : Data key for data to use as a weight. By default, no weight.
@@ -695,8 +695,8 @@ class GenericPlotter( object ):
             sl = slices
 
         # Get data
-        x_data = self.data_object.get_masked_data( x_key, sl=sl, *args, **kwargs )
-        y_data = self.data_object.get_masked_data( y_key, sl=sl, *args, **kwargs )
+        x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **kwargs )
+        y_data = self.data_object.get_selected_data( y_key, sl=sl, *args, **kwargs )
 
         # Fix NaNs
         if fix_invalid:
@@ -807,7 +807,7 @@ class GenericPlotter( object ):
 
         y_datas = []
         for y_key in y_keys:
-            y_data = self.data_object.get_masked_data(
+            y_data = self.data_object.get_selected_data(
                 y_key,
                 *args, **kwargs
             ).copy()

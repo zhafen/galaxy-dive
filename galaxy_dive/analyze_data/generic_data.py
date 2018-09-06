@@ -226,10 +226,10 @@ class GenericData( object ):
 
   ########################################################################
 
-  def get_masked_data( self, *args, **kwargs ):
+  def get_selected_data( self, *args, **kwargs ):
     '''Wrapper for getting masked data.'''
 
-    return self.data_masker.get_masked_data( *args, **kwargs )
+    return self.data_masker.get_selected_data( *args, **kwargs )
 
   def mask_data( self, *args, **kwargs ):
     '''Wrapper for masking data.'''
@@ -532,7 +532,7 @@ class DataMasker( object ):
 
   ########################################################################
 
-  def get_masked_data( self,
+  def get_selected_data( self,
     data_key,
     mask = 'total',
     optional_masks = None,

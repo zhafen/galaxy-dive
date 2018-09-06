@@ -717,8 +717,8 @@ class SnapshotData( SimulationData ):
 
         if not hasattr( self, '_v_com' ):
 
-            m_ma = self.get_masked_data( 'M', self.central_mask )
-            v_ma = self.get_masked_data( 'V', self.central_mask )
+            m_ma = self.get_selected_data( 'M', self.central_mask )
+            v_ma = self.get_selected_data( 'V', self.central_mask )
 
             self._v_com = ( v_ma * m_ma ).sum( 1 ) / m_ma.sum()
 
@@ -1230,10 +1230,10 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
-    def get_masked_data_over_time( self, *args, **kwargs ):
+    def get_selected_data_over_time( self, *args, **kwargs ):
         '''Wrapper for geting masked data as a function of time.'''
 
-        return self.data_masker.get_masked_data_over_time( *args, **kwargs )
+        return self.data_masker.get_selected_data_over_time( *args, **kwargs )
 
     ########################################################################
 
@@ -1424,7 +1424,7 @@ class TimeDataMasker( generic_data.DataMasker ):
 
     ########################################################################
 
-    def get_masked_data_over_time(
+    def get_selected_data_over_time(
         self,
         data_key,
         snum,
@@ -1447,7 +1447,7 @@ class TimeDataMasker( generic_data.DataMasker ):
 
         # Make sure we don't try to pass a slice to any keyword arguments
         assert 'sl' not in kwargs, 'Taking slices of the original data' + \
-                ' should not be done when using get_masked_data_over_time'
+                ' should not be done when using get_selected_data_over_time'
 
         # Get the appropriate mask
         if isinstance( mask, np.ndarray ):

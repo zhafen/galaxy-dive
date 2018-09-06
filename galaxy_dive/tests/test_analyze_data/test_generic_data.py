@@ -128,13 +128,13 @@ class TestDataMasker( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data( self ):
+    def test_get_selected_data( self ):
 
         # Setup some masks first.
         self.data_masker.mask_data( 'logDen', -5., -1., )
         self.data_masker.mask_data( 'R', 0., 0.5, )
 
-        actual = self.data_masker.get_masked_data( 'Den' )
+        actual = self.data_masker.get_selected_data( 'Den' )
 
         expected = np.array( [ 1e-4 ] )
 
@@ -142,15 +142,15 @@ class TestDataMasker( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_optional_masks_included( self ):
-        '''Test we can use get_masked_data even when we have optional masks included.
+    def test_get_selected_data_optional_masks_included( self ):
+        '''Test we can use get_selected_data even when we have optional masks included.
         '''
 
         # Setup some masks first.
         self.data_masker.mask_data( 'logDen', -5., -1., optional_mask=True )
         self.data_masker.mask_data( 'R', 0., 0.5, )
 
-        actual = self.data_masker.get_masked_data( 'Den', optional_masks=[ 'logDen', ] )
+        actual = self.data_masker.get_selected_data( 'Den', optional_masks=[ 'logDen', ] )
 
         expected = np.array( [ 1e-4 ] )
 
@@ -158,11 +158,11 @@ class TestDataMasker( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_specified_mask( self ):
+    def test_get_selected_data_specified_mask( self ):
 
         mask = np.array( [ 1, 1, 0, 1 ] ).astype( bool )
 
-        actual = self.data_masker.get_masked_data( 'Den', mask=mask )
+        actual = self.data_masker.get_selected_data( 'Den', mask=mask )
 
         expected = np.array( [ 1e2 ] )
 
@@ -170,12 +170,12 @@ class TestDataMasker( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_multi_dim( self ):
+    def test_get_selected_data_multi_dim( self ):
         '''Test we can get masked data even when we request P.'''
 
         mask = np.array( [ 1, 1, 0, 1 ] ).astype( bool )
 
-        actual = self.data_masker.get_masked_data( 'P', mask=mask )
+        actual = self.data_masker.get_selected_data( 'P', mask=mask )
 
         expected = np.array( [ [ self.data_masker.data_object.data['P'][i,2], ] for i in range(3) ] )
 
@@ -183,7 +183,7 @@ class TestDataMasker( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_multi_dim_weird_shape( self ):
+    def test_get_selected_data_multi_dim_weird_shape( self ):
         '''Test we can get masked data even when we request P.'''
 
         mask = np.array( [ [ 1, 0, ], [ 1, 0 ] ] ).astype( bool )
@@ -191,7 +191,7 @@ class TestDataMasker( unittest.TestCase ):
         pos = np.random.rand( 3, 2, 2, )
         self.data_masker.data_object.data['P'] = pos
 
-        actual = self.data_masker.get_masked_data( 'P', mask=mask )
+        actual = self.data_masker.get_selected_data( 'P', mask=mask )
 
         expected = np.array( [ [ pos[i,0,1], pos[i,1,1] ] for i in range(3) ] )
 

@@ -259,10 +259,10 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData.get_masked_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_masked_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_masked_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_selected_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Wrapper for getting masked data.&#39;&#39;&#39;</span>
 
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GenericData.mask_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.mask_data">[docs]</a>  <span class="k">def</span> <span class="nf">mask_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Wrapper for masking data.&#39;&#39;&#39;</span>
@@ -565,7 +565,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataMasker.get_masked_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.get_masked_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_masked_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="DataMasker.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.get_selected_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
     <span class="n">data_key</span><span class="p">,</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="s1">&#39;total&#39;</span><span class="p">,</span>
     <span class="n">optional_masks</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

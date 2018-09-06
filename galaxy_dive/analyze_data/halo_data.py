@@ -232,9 +232,9 @@ class HaloData( generic_data.GenericData ):
 
     ########################################################################
 
-    def get_masked_data( self, *args, **kwargs ):
+    def get_selected_data( self, *args, **kwargs ):
 
-        return super( HaloData, self ).get_masked_data(
+        return super( HaloData, self ).get_selected_data(
             mask_multidim_data = False,
             *args, **kwargs
         )

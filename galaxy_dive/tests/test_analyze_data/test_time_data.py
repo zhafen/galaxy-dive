@@ -227,7 +227,7 @@ class TestGetData( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_over_time( self ):
+    def test_get_selected_data_over_time( self ):
         '''Make sure we can get data based on its classification at a
         particular time.
         '''
@@ -253,7 +253,7 @@ class TestGetData( unittest.TestCase ):
         self.t_data.data_masker.mask_data( 'T', 4.5, 8.5 )
 
         # Actual calculation
-        actual = self.t_data.get_masked_data_over_time(
+        actual = self.t_data.get_selected_data_over_time(
             'M',
             snum = 550,
         )
@@ -267,7 +267,7 @@ class TestGetData( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_over_time_sample( self ):
+    def test_get_selected_data_over_time_sample( self ):
         '''Make sure we can get data based on its classification at a
         particular time.
         '''
@@ -284,7 +284,7 @@ class TestGetData( unittest.TestCase ):
 
         # Actual calculation
         n_samples = 10
-        first = self.t_data.get_masked_data_over_time(
+        first = self.t_data.get_selected_data_over_time(
             'M',
             snum = 550,
             n_samples = n_samples,
@@ -294,7 +294,7 @@ class TestGetData( unittest.TestCase ):
         self.assertEqual( first.shape, (n_samples, n_snapshots) )
 
         # Our data shouldn't look the same, unless by rare chance.
-        second = self.t_data.get_masked_data_over_time(
+        second = self.t_data.get_selected_data_over_time(
             'M',
             snum = 550,
             n_samples = n_samples,
@@ -303,7 +303,7 @@ class TestGetData( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_over_time_sample_seed( self ):
+    def test_get_selected_data_over_time_sample_seed( self ):
         '''Make sure we can get data based on its classification at a
         particular time.
         '''
@@ -322,7 +322,7 @@ class TestGetData( unittest.TestCase ):
 
         # Actual calculation
         n_samples = 10
-        first = self.t_data.get_masked_data_over_time(
+        first = self.t_data.get_selected_data_over_time(
             'M',
             snum = 550,
             n_samples = n_samples,
@@ -333,7 +333,7 @@ class TestGetData( unittest.TestCase ):
         self.assertEqual( first.shape, (n_samples, n_snapshots) )
 
         # Our data shouldn't look the same, unless by rare chance.
-        second = self.t_data.get_masked_data_over_time(
+        second = self.t_data.get_selected_data_over_time(
             'M',
             snum = 550,
             n_samples = n_samples,
@@ -343,7 +343,7 @@ class TestGetData( unittest.TestCase ):
 
     ########################################################################
 
-    def test_get_masked_data_over_time_particle_ind( self ):
+    def test_get_selected_data_over_time_particle_ind( self ):
         '''Make sure we can get data based on its classification at a
         particular time.
         '''
@@ -362,7 +362,7 @@ class TestGetData( unittest.TestCase ):
 
         # Actual calculation
         n_samples = 10
-        actual = self.t_data.get_masked_data_over_time(
+        actual = self.t_data.get_selected_data_over_time(
             'particle_ind',
             snum = 550,
             n_samples = n_samples,

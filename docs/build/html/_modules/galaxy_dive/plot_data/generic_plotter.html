@@ -131,7 +131,7 @@
         <span class="n">assert_contains_all_data</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">data_kwargs</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_masked_data().</span>
+        <span class="sd">&#39;&#39;&#39;Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_selected_data().</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            data_key (str) :</span>
@@ -209,7 +209,7 @@
 <span class="sd">                If True, make sure that the histogram plots all selected data.</span>
 
 <span class="sd">            *args, **kwargs :</span>
-<span class="sd">                Extra arguments to pass to self.data_object.get_masked_data()</span>
+<span class="sd">                Extra arguments to pass to self.data_object.get_selected_data()</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Plotting histogram for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span> <span class="p">)</span>
@@ -224,7 +224,7 @@
             <span class="n">data_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">merge_two_dicts</span><span class="p">(</span> <span class="n">data_kwargs</span><span class="p">,</span> <span class="n">kwargs</span> <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">provided_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span>
                     <span class="n">data_key</span><span class="p">,</span>
                     <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span>
                     <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span>
@@ -242,7 +242,7 @@
                             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scale_key&#39;</span><span class="p">]</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="n">weight_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">weight_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">fix_invalid</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">invalid_fix_method</span> <span class="ow">is</span> <span class="n">default</span><span class="p">:</span>
@@ -433,7 +433,7 @@
         <span class="n">vertical_line_kwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;linestyle&#39;</span><span class="p">:</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#337DB8&#39;</span><span class="p">,</span> <span class="p">},</span>
         <span class="n">return_dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Make a 2D histogram of the data. Extra arguments are passed to get_masked_data.</span>
+        <span class="sd">&#39;&#39;&#39;Make a 2D histogram of the data. Extra arguments are passed to get_selected_data.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            x_key, y_key (str) : Data keys to plot.</span>
 <span class="sd">            weight_key (str) : Data key for data to use as a weight. By default, no weight.</span>
@@ -476,8 +476,8 @@
         <span class="n">data_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">varying_kwargs</span> <span class="p">)</span>
 
         <span class="c1"># Get data</span>
-        <span class="n">x_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">x_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">y_div_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">y_div_values</span> <span class="o">=</span> <span class="n">y_div_function</span><span class="p">(</span> <span class="n">x_data</span> <span class="p">)</span>
@@ -495,7 +495,7 @@
         <span class="k">if</span> <span class="n">weight_key</span> <span class="ow">is</span> <span class="n">default</span><span class="p">:</span>
             <span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span>
                 <span class="n">weight_key</span><span class="p">,</span>
                 <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span>
@@ -694,7 +694,7 @@
         <span class="n">fix_invalid</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">line_slope</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Make a 2D scatter plot of the data. Extra arguments are passed to get_masked_data.</span>
+        <span class="sd">&#39;&#39;&#39;Make a 2D scatter plot of the data. Extra arguments are passed to get_selected_data.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            x_key, y_key (str) : Data keys to plot.</span>
 <span class="sd">            weight_key (str) : Data key for data to use as a weight. By default, no weight.</span>
@@ -728,8 +728,8 @@
             <span class="n">sl</span> <span class="o">=</span> <span class="n">slices</span>
 
         <span class="c1"># Get data</span>
-        <span class="n">x_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
-        <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+        <span class="n">x_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+        <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
 
         <span class="c1"># Fix NaNs</span>
         <span class="k">if</span> <span class="n">fix_invalid</span><span class="p">:</span>
@@ -840,7 +840,7 @@
 
         <span class="n">y_datas</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">y_key</span> <span class="ow">in</span> <span class="n">y_keys</span><span class="p">:</span>
-            <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_masked_data</span><span class="p">(</span>
+            <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span>
                 <span class="n">y_key</span><span class="p">,</span>
                 <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
             <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
