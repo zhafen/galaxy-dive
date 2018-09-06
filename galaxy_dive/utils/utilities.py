@@ -696,7 +696,8 @@ def save_parameters( instance, f ):
 
     Args:
         instance (object) :
-            Instance that has the attributes that are parameters. Typically stored in instance.stored_parameters.
+            Instance that has the attributes that are parameters.
+            Typically stored in instance.stored_parameters.
 
         f (open h5py file object) :
             File to save the parameters to.
@@ -718,7 +719,12 @@ def save_parameters( instance, f ):
                 param_grp.attrs[parameter_str] = parameter
 
         except TypeError:
-            raise TypeError( "Parameter {} = {} failed to save.".format( parameter_str, parameter ) )
+            raise TypeError(
+                "Parameter {} = {} failed to save.".format(
+                    parameter_str,
+                    parameter
+                    )
+                )
 
     return param_grp
 
