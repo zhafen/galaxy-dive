@@ -11,6 +11,7 @@ Subpackages
     galaxy_dive.galaxy_finder
     galaxy_dive.plot_data
     galaxy_dive.read_data
+    galaxy_dive.tests
     galaxy_dive.trends
     galaxy_dive.utils
 

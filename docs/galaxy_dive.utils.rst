@@ -11,6 +11,7 @@ Submodules
    galaxy_dive.utils.data_constants
    galaxy_dive.utils.data_operations
    galaxy_dive.utils.executable_helpers
+   galaxy_dive.utils.gen_derived_data_doc
    galaxy_dive.utils.hdf5_wrapper
    galaxy_dive.utils.io
    galaxy_dive.utils.mp_utils

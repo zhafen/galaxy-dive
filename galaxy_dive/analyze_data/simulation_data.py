@@ -890,7 +890,8 @@ class SnapshotData( SimulationData ):
     ########################################################################
 
     def calc_abs_phi(self, vector='total gas ang momentum'):
-        '''Calculate the angle (in degrees) from some vector, but don't mirror it around 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).'''
+        '''The angle (in degrees) from some vector, but don't mirror
+        it around 90 degrees (e.g. 135 -> 45 degrees, 180 -> 0 degrees).'''
 
         raise Exception( "TODO: Test this" )
 
@@ -1254,7 +1255,12 @@ class TimeData( SimulationData ):
     ########################################################################
 
     def calc_ang_momentum( self ):
-        '''Calculate the angular momentum.'''
+        '''The angular momentum (in the standard coordinates).
+
+        Modifies:
+            self.data['L'] (array-like):
+                Angular momentum of each resolution element.
+        '''
 
         m_mult = np.array( [ self.get_data('M'), ] * 3 )
 
@@ -1335,7 +1341,13 @@ class TimeData( SimulationData ):
 
         Args:
             normal_vector (str or array-like):
-                Vector that represents the vertical.
+                Vector that represents the vertical. Defaults to using the
+                total stellar angular momentum of the main galaxy.
+
+        Modifies:
+            self.data['AbsPhi'] (array-like):
+                Angle from the vector, in many cases acting as the angle
+                from the disk axis.
         '''
 
         # Get the original Phi
@@ -1394,15 +1406,29 @@ class TimeData( SimulationData ):
     ########################################################################
 
     def calc_metal_mass( self ):
-          
-        self.data['metal_mass'] = self.get_data( 'M' ) * self.get_data( 'Z' ) * self.z_sun
+        '''Calculate the metal mass held by each resolution element.
+
+        Modifies:
+            self.data['enriched_metal_mass'] (array-like):
+                Metal mass from enrichment.
+        '''
+
+        metal_mass = self.get_data( 'M' ) * self.get_data( 'Z' ) * self.z_sun
+
+        self.data['metal_mass'] = metal_mass
 
     ########################################################################
 
     def calc_enriched_metal_mass( self ):
-        '''Calculate the metal mass that comes from enrichment, not counting mass
-        that's at the metallicity floor. Assumes that the there will always be at
-        least one particle in the simulation that's at the metallicity floor.'''
+        '''Calculate the metal mass that comes from enrichment for
+        each resolution element, not counting mass that's at the metallicity
+        floor. Assumes that the there will always be at least one resolution
+        element in the simulation that's at the metallicity floor.
+
+        Modifies:
+            self.data['enriched_metal_mass'] (array-like):
+                Metal mass from enrichment.
+        '''
 
         enrichment_fraction = (
             self.get_data( 'Z' ) - np.nanmin( self.get_data( 'Z' ) )
@@ -1410,7 +1436,9 @@ class TimeData( SimulationData ):
 
         enrichment_fraction *= self.z_sun
 
-        self.data['enriched_metal_mass'] = self.get_data( 'M' ) * enrichment_fraction
+        enriched_metal_mass = self.get_data( 'M' ) * enrichment_fraction
+
+        self.data['enriched_metal_mass'] = enriched_metal_mass
 
 ########################################################################
 ########################################################################
