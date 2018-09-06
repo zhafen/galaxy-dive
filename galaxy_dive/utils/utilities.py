@@ -776,7 +776,7 @@ def gen_derived_data_doc(
     with open( save_filepath, 'a' ) as f:
 
         # Class line
-        f.write( '.. autoclass:: {}\n'.format( object_import_path ) )
+        f.write( '\n.. autoclass:: {}\n'.format( object_import_path ) )
         f.write( '    :show-inheritance:\n\n' )
 
         # Write out derived data methods

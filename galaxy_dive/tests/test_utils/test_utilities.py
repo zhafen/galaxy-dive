@@ -543,7 +543,10 @@ class TestGenerateDerivedDataDoc( unittest.TestCase ):
             expected_header = myfile.readlines()
         # Get the generated data
         expected_generated = [
+            '\n',
             '.. autoclass:: {}\n'.format( object_import_path ),
+            '    :show-inheritance:\n',
+            '\n',
             '    .. automethod:: calc_A\n',
             '    .. automethod:: calc_B\n',
         ]
