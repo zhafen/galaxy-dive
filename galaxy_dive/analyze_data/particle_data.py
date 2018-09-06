@@ -153,20 +153,20 @@ class ParticleData( simulation_data.SnapshotData ):
 
   ########################################################################
 
-  def calc_MetalMass( self ):
+  def calc_metal_mass( self ):
       
-    self.data['MetalMass'] = self.get_data( 'M' ) * self.get_data( 'Z' )
+    self.data['metal_mass'] = self.get_data( 'M' ) * self.get_data( 'Z' )
 
   ########################################################################
 
-  def calc_EnrichedMetalMass( self ):
+  def calc_enriched_metal_mass( self ):
     '''Calculate the metal mass that comes from enrichment, not counting mass
     that's at the metallicity floor. Assumes that the there will always be at
     least one particle in the simulation that's at the metallicity floor.'''
 
     enrichment_fraction = self.get_data( 'Z' ) - self.get_data( 'Z' ).min()
 
-    self.data['EnrichedMetalMass'] = self.get_data( 'M' ) * enrichment_fraction
+    self.data['enriched_metal_mass'] = self.get_data( 'M' ) * enrichment_fraction
 
   ########################################################################
 
