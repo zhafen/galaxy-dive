@@ -6,6 +6,7 @@ import numpy as np
 import numpy.testing as npt
 import os
 import pdb
+import shutil
 import subprocess
 import unittest
 
@@ -511,3 +512,59 @@ class TestStoreParameters( unittest.TestCase ):
         self.assertEqual( ('dog',), o.args )
         self.assertEqual( { 'a' : 1, 'b' : 2, 'c' : 4, 'd' : 5 }, o.kwargs )
         self.assertEqual( [ 'args', 'kwargs', ], o.stored_parameters )
+
+########################################################################
+########################################################################
+
+class TestGenerateDerivedDataDoc( unittest.TestCase ):
+
+    def setUp( self ):
+
+        self.output_filepath = './tests/data/derived_data.rst'
+
+        if os.path.isfile( self.output_filepath ):
+            os.remove( self.output_filepath )
+
+    ########################################################################
+
+    def test_gen_derived_data_doc( self ):
+
+        object_import_path = 'galaxy_dive.tests.test_utils.test_utilities.GenDerivedDataObject'
+
+        # Call the function
+        utilities.gen_derived_data_doc(
+            object_import_path,
+            self.output_filepath,
+        )
+                
+        # Build Expected
+        # Get the header
+        with open ( './utils/derived_data_header.rst', 'r') as myfile:
+            expected_header = myfile.readlines()
+        # Get the generated data
+        expected_generated = [
+            '.. autoclass:: {}\n'.format( object_import_path ),
+            '    .. automethod:: calc_A\n',
+            '    .. automethod:: calc_B\n',
+        ]
+        expected = expected_header + expected_generated
+
+        with open ( self.output_filepath, 'r') as myfile:
+            actual = myfile.readlines()
+
+        self.assertEqual( expected, actual )
+
+# Test Object for TestGenerateDerivedDataDoc
+class GenDerivedDataObject( object ):
+
+    def method_a( self, *args, **kwargs ):
+        '''Method a.'''
+        pass
+
+    def calc_A( self ):
+        '''Calculate A''' 
+        pass
+
+    def calc_B( self ):
+        '''Calculate A''' 
+        pass

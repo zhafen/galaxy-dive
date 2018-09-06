@@ -10,10 +10,12 @@ import collections
 from contextlib import contextmanager
 import errno
 from functools import wraps
+import importlib
 import inspect
 import itertools
 import numpy as np
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -722,6 +724,45 @@ def save_parameters( instance, f ):
 
 ########################################################################
 
+def gen_derived_data_doc(
+    object_import_path,
+    save_filepath,
+    header_file = None,
+):
+    '''Generate a document that lists the methods for calculating derived data
+    quantities.
+    '''
+
+    # Process the path
+    module_path, class_name = os.path.splitext( object_import_path )
+    # Remove the period
+    class_name = class_name[1:]
+
+    # Get the object out
+    module = importlib.import_module( module_path )
+    cl = getattr( module, class_name )
+
+    # Setup the file
+    if header_file is None:
+        header_file = os.path.join(
+            os.path.dirname( __file__ ),
+            'derived_data_header.rst',
+        )
+    shutil.copy( header_file, save_filepath )
+
+    # Write the automatically generated part
+    with open( save_filepath, 'a' ) as f:
+
+        # Class line
+        f.write( '.. autoclass:: {}\n'.format( object_import_path ) )
+
+        # Write out derived data methods
+        for attr in dir( cl ):
+            if attr[:5] == 'calc_':
+                f.write( '    .. automethod:: {}\n'.format( attr ) )
+
+########################################################################
+
 # Make a path to a file
 
 def make_dir( path ):
@@ -755,12 +796,6 @@ def saveToLog( log_save_file ):
     sys.stdout = Tee(open(log_save_file, 'w'), sys.stdout)
 
     return 0
-
-########################################################################
-
-def map_interval_to_interval( values, old_min, old_max, new_min=0, new_max=1, ):
-
-    pass
 
 ########################################################################
 # Tools for dealing with cosmology-specific data files.
