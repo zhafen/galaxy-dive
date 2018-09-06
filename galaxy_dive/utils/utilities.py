@@ -731,6 +731,22 @@ def gen_derived_data_doc(
 ):
     '''Generate a document that lists the methods for calculating derived data
     quantities.
+
+    Args:
+        object_import_path (str):
+            Name of the object to document the derived quantities of.
+
+        save_filepath (str):
+            Where to save the result.
+
+        header_file (str):
+            What to use as the header for the file, that explains what the
+            document contains.
+            Defaults to galaxy_dive/utils/derived_data_header.rst.
+        
+    Modifies:
+        file at save_filepath (.rst file):
+            Saves the output here.
     '''
 
     # Process the path
