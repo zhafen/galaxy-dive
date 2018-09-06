@@ -1,0 +1,455 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.utils.utilities module &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-galaxy_dive.utils.utilities">
+<span id="galaxy-dive-utils-utilities-module"></span><h1>galaxy_dive.utils.utilities module<a class="headerlink" href="#module-galaxy_dive.utils.utilities" title="Permalink to this headline">¶</a></h1>
+<p>General utilities</p>
+<p>&#64;author: Zach Hafen
+&#64;contact: <a class="reference external" href="mailto:zachary&#46;h&#46;hafen&#37;&#52;&#48;gmail&#46;com">zachary<span>&#46;</span>h<span>&#46;</span>hafen<span>&#64;</span>gmail<span>&#46;</span>com</a>
+&#64;status: Development</p>
+<dl class="class">
+<dt id="galaxy_dive.utils.utilities.PartDataLong">
+<em class="property">class </em><code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">PartDataLong</code><span class="sig-paren">(</span><em>sdir</em>, <em>snum</em>, <em>ptype</em>, <em>halo_number=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#PartDataLong"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.PartDataLong" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.PartDataLong.calcRadialDistance">
+<code class="descname">calcRadialDistance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#PartDataLong.calcRadialDistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.PartDataLong.calcRadialDistance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.PartDataLong.changeCoordsCenter">
+<code class="descname">changeCoordsCenter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#PartDataLong.changeCoordsCenter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.PartDataLong.changeCoordsCenter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="galaxy_dive.utils.utilities.SmartDict">
+<em class="property">class </em><code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">SmartDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_abcoll.Mapping</span></code></p>
+<p>Replacement for dictionary that allows easier access to the attributes and methods of the dictionary components.
+For example, if one has a smart dictionary of TestClassA objects, each of which has a TestClassB attribute, which
+in turn have a foo method, then smart_dict.test_class_b.foo(2) would be a dict with foo calculated for each.
+In other words, it would be equivalent to the following code:
+results = {}
+for key in smart_dict.keys():</p>
+<blockquote>
+<div>results[key] = smart_dict[key].test_class_b.foo( 2 )</div></blockquote>
+<p>return results</p>
+<p>NOTE: In Python 3, the parent class probably needs to be switched to collections.abc.Mapping.</p>
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.apply">
+<code class="descname">apply</code><span class="sig-paren">(</span><em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply some function to each item in the smart dictionary, and
+return the results as a SmartDict.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.array">
+<code class="descname">array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a np.ndarray with unique order (sorted keys )</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.call_custom_kwargs">
+<code class="descname">call_custom_kwargs</code><span class="sig-paren">(</span><em>kwargs</em>, <em>default_kwargs={}</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.call_custom_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.call_custom_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform call, but using custom keyword arguments per dictionary tag.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>kwargs (dict) : Custom keyword arguments to pass.
+default_kwargs (dict) : Defaults shared between keyword arguments.</dd>
+<dt>Returns:</dt>
+<dd>results (dict) : Dictionary of results.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.call_iteratively">
+<code class="descname">call_iteratively</code><span class="sig-paren">(</span><em>args_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.call_iteratively"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.call_iteratively" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="galaxy_dive.utils.utilities.SmartDict.from_class_and_args">
+<em class="property">classmethod </em><code class="descname">from_class_and_args</code><span class="sig-paren">(</span><em>contained_cls</em>, <em>args</em>, <em>default_args={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.from_class_and_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.from_class_and_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alternate constructor. Creates a SmartDict of contained_cls objects, with arguments passed to it from
+the dictionary created by defaults and variations.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">contained_cls (type of object/constructor) : What class should the smart dict consist of?
+args (dict/other) : Arguments that should be passed to contained_cls. If not a dict, assumed to be the first</p>
+<blockquote>
+<div>and only argument for the constructor.</div></blockquote>
+<p class="last">default_args : Default arguments to fill in args</p>
+</dd>
+<dt>Returns:</dt>
+<dd>result (SmartDict instance) : The constructed instance.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.inner_item">
+<code class="descname">inner_item</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.inner_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.inner_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>When SmartDict is a dictionary of dicts themselves, this can be used to get an item from those dictionaries.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.inner_keys">
+<code class="descname">inner_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.inner_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.inner_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.keymax">
+<code class="descname">keymax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.keymax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.keymax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.keymin">
+<code class="descname">keymin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.keymin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.keymin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.log10">
+<code class="descname">log10</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.log10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.log10" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for np.log10</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.remove_empty_items">
+<code class="descname">remove_empty_items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.remove_empty_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.remove_empty_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look for empty items and delete them.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.split_by_dict">
+<code class="descname">split_by_dict</code><span class="sig-paren">(</span><em>d</em>, <em>return_list=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.split_by_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.split_by_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Break the smart dictionary into smaller smart dictionaries according
+to their label provided by a dictionary</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>d (dict) :</dt>
+<dd>Dictionary to use to split into smaller dictionaries</dd>
+<dt>return_list (bool) :</dt>
+<dd>If True, return a list of arrays.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.split_by_key_slice">
+<code class="descname">split_by_key_slice</code><span class="sig-paren">(</span><em>sl</em>, <em>str_to_match=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.split_by_key_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.split_by_key_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Break the smart dictionary into smaller smart dictionaries according
+to a subset of the key.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>sl (slice) :</dt>
+<dd>Part of the key to use to make subsets.</dd>
+<dt>str_to_match (str) :</dt>
+<dd>If True, split into broad categories that match this string
+in the given slice or don’t.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.sum_contents">
+<code class="descname">sum_contents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.sum_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.sum_contents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the sum of all the contents inside the Dict.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.utilities.SmartDict.transpose">
+<code class="descname">transpose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.transpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.transpose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="galaxy_dive.utils.utilities.Tee">
+<em class="property">class </em><code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">Tee</code><span class="sig-paren">(</span><em>out1</em>, <em>out2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#Tee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.Tee" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="galaxy_dive.utils.utilities.Tee.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#Tee.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.Tee.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.arrays_to_set">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">arrays_to_set</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#arrays_to_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.arrays_to_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert arr1, arr2, arr3, … to a set, where a single enrty in the set is ( arr1[j], arr2[j], … )</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>n arrays ( multiple np.ndarrays ) : The arrays to convert.</dd>
+<dt>Returns:</dt>
+<dd>result ( set ) : The converted set.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.captured_output">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">captured_output</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#captured_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.captured_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.chunk_list">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">chunk_list</code><span class="sig-paren">(</span><em>l</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#chunk_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.chunk_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Breaks a list l into n chunks, as equally as possible.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>l (list) : List to break into chunks.
+n (int) : Number of chunks to break the list into.</dd>
+<dt>Returns:</dt>
+<dd>chunked_l ( list of lists ) : The list broken into chunks.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.deepgetattr">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">deepgetattr</code><span class="sig-paren">(</span><em>obj</em>, <em>attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#deepgetattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.deepgetattr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recurses through an attribute chain to get the ultimate value.
+Credit to <a class="reference external" href="http://pingfive.typepad.com/blog/2010/04/deep-getattr-python-function.html">http://pingfive.typepad.com/blog/2010/04/deep-getattr-python-function.html</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>obj (object) : Object for which to get the attribute.
+attr (str) : Attribute to get. Can be nested, e.g. obj.foo.bar.dog</dd>
+<dt>Returns:</dt>
+<dd>result (attr object) : The requested attribute.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.dict_from_defaults_and_variations">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">dict_from_defaults_and_variations</code><span class="sig-paren">(</span><em>defaults</em>, <em>variations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#dict_from_defaults_and_variations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.dict_from_defaults_and_variations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dictionary of dictionaries from a default dictionary and variations on it.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">defaults (dict) : Default dictionary. What each individual dictionary should default to.
+variations (dict of dicts) : Each dictionary contains what should be different. The key for each dictionary should</p>
+<blockquote class="last">
+<div>be a label for it.</div></blockquote>
+</dd>
+<dt>Returns:</dt>
+<dd>result (dict of dicts) : The results is basically variations, where each child dict is merged with defaults.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.gen_derived_data_doc">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">gen_derived_data_doc</code><span class="sig-paren">(</span><em>object_import_path</em>, <em>save_filepath</em>, <em>header_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#gen_derived_data_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.gen_derived_data_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a document that lists the methods for calculating derived data
+quantities.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>object_import_path (str):</dt>
+<dd>Name of the object to document the derived quantities of.</dd>
+<dt>save_filepath (str):</dt>
+<dd>Where to save the result.</dd>
+<dt>header_file (str):</dt>
+<dd>What to use as the header for the file, that explains what the
+document contains.
+Defaults to galaxy_dive/utils/derived_data_header.rst.</dd>
+</dl>
+</dd>
+<dt>Modifies:</dt>
+<dd><dl class="first last docutils">
+<dt>file at save_filepath (.rst file):</dt>
+<dd>Saves the output here.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.getHaloDataRedshift">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">getHaloDataRedshift</code><span class="sig-paren">(</span><em>sdir</em>, <em>halo_number</em>, <em>redshift</em>, <em>convert_to_proper=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#getHaloDataRedshift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.getHaloDataRedshift" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.get_code_version">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">get_code_version</code><span class="sig-paren">(</span><em>instance</em>, <em>instance_type='class'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#get_code_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.get_code_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current version (git tag/commit) of the parent code for a class or module</p>
+<p>instance (object) : Instance to get the code for.
+instance_type (str) : ‘class’ if the instance is a class, ‘module’ if the instance is a module</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.get_instance_source_dir">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">get_instance_source_dir</code><span class="sig-paren">(</span><em>instance</em>, <em>instance_type='class'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#get_instance_source_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.get_instance_source_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the directory containing the source code of an instance (class or module).</p>
+<p>instance (object) : Instance to get the code for.
+instance_type (str) : ‘class’ if the instance is a class, ‘module’ if the instance is a module</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.make_dir">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">make_dir</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#make_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.make_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.merge_two_dicts">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">merge_two_dicts</code><span class="sig-paren">(</span><em>dict_a</em>, <em>dict_b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#merge_two_dicts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.merge_two_dicts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges two dictionaries into a shallow copy.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>dict_a (dict) : First dictionary to merge.
+dict_b (dict) : Second dictionary to merge.</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>merged_dict (dict) :</dt>
+<dd>Dictionary including elements from both.
+dict_a’s entries take priority over dict_b.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.print_timer">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">print_timer</code><span class="sig-paren">(</span><em>timer_string='Time taken:'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#print_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.print_timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to time a function.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>timer_string (str, optional) : Printed before printing the time.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.saveToLog">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">saveToLog</code><span class="sig-paren">(</span><em>log_save_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#saveToLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.saveToLog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.save_parameters">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">save_parameters</code><span class="sig-paren">(</span><em>instance</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#save_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.save_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save parameters to a hdf5 file.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>instance (object) :</dt>
+<dd>Instance that has the attributes that are parameters.
+Typically stored in instance.stored_parameters.</dd>
+<dt>f (open h5py file object) :</dt>
+<dd>File to save the parameters to.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>param_grp (h5py group) :</dt>
+<dd>Group containing the parameters as attributes.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.set_to_arrays">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">set_to_arrays</code><span class="sig-paren">(</span><em>set_to_convert</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#set_to_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.set_to_arrays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a set into multiple arrays.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>result ( set ) : The set to convert</dd>
+<dt>Returns:</dt>
+<dd>n arrays ( multiple np.ndarrays ) : The converted arrays</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.store_parameters">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">store_parameters</code><span class="sig-paren">(</span><em>constructor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#store_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.store_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for automatically storing arguments passed to a constructor.
+I.e. any args passed to constructor via test_object = TestObject( <a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs )
+will be stored in test_object, e.g. test_object.args</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>constructor (function) : Constructor to wrap.</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/galaxy_dive.utils.utilities.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/galaxy_dive.utils.utilities.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

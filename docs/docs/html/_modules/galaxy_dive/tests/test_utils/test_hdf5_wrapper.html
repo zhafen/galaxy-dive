@@ -1,0 +1,797 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.tests.test_utils.test_hdf5_wrapper &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.tests.test_utils.test_hdf5_wrapper</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;Testing for hdf5_wrapper.py</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">patch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.testing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.hdf5_wrapper</span> <span class="k">as</span> <span class="nn">hdf5_wrapper</span>
+
+<span class="c1">########################################################################</span>
+
+
+<div class="viewcode-block" id="SaneEqualityArray"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.SaneEqualityArray">[docs]</a><span class="k">class</span> <span class="nc">SaneEqualityArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Numpy array subclass that allows you to test if two arrays are equal.&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">shape</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="sane_eq_array"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.sane_eq_array">[docs]</a><span class="k">def</span> <span class="nf">sane_eq_array</span><span class="p">(</span><span class="n">list_in</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Wrapper for SaneEqualityArray, that takes in a list.&#39;&#39;&#39;</span>
+
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">list_in</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">SaneEqualityArray</span><span class="p">)</span></div>
+
+<span class="c1">########################################################################</span>
+
+
+<div class="viewcode-block" id="TestHDF5Wrapper"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper">[docs]</a><span class="k">class</span> <span class="nc">TestHDF5Wrapper</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.setUp"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;./tests/test.h5&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span> <span class="o">=</span> <span class="s1">&#39;./tests/test_copy.h5&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_object</span> <span class="o">=</span> <span class="n">hdf5_wrapper</span><span class="o">.</span><span class="n">HDF5Wrapper</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_object</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]),</span>
+            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_data_complex</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">8.</span><span class="p">,</span> <span class="o">-</span><span class="mf">7.</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.</span><span class="p">],</span> <span class="p">]),</span>
+            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+            <span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;dog&#39;</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="s1">&#39;rabbit&#39;</span><span class="p">,</span> <span class="s1">&#39;mouse&#39;</span><span class="p">]),</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.tearDown"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span> <span class="s1">&#39;./tests/data/output_data&#39;</span> <span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm -r ./tests/data/output_data&#39;</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_can_create_class"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_can_create_class">[docs]</a>    <span class="k">def</span> <span class="nf">test_can_create_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="kc">False</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_fragile_makes_hdf5_file_blank"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_fragile_makes_hdf5_file_blank">[docs]</a>    <span class="k">def</span> <span class="nf">test_fragile_makes_hdf5_file_blank</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Part of the testing suite that will fail if anything else does.&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+
+        <span class="c1"># Make a file</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_dataset_from_empty"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_dataset_from_empty">[docs]</a>    <span class="k">def</span> <span class="nf">test_dataset_from_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Test that we can make a dataset from nothing.&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_sort_dictionary"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_sort_dictionary">[docs]</a>    <span class="k">def</span> <span class="nf">test_sort_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">sort_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]),</span>
+                                <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">]),</span>
+                                <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">9.</span><span class="p">]),</span>
+                              <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">actual</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">expected</span><span class="p">[</span><span class="n">key</span><span class="p">])</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_insert_data"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_insert_data">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Test that we can add to an existing dataset.&#39;&#39;&#39;</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">)</span>
+
+        <span class="n">data_to_insert</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">4.</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mf">6.</span><span class="p">}</span>
+        <span class="n">index_key</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data_to_insert</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+                                            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]),</span>
+                                            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+                                          <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_insert_data_complex"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_insert_data_complex">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_data_complex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Test that we can add to an existing dataset, for a slightly more complicated dataset.&#39;&#39;&#39;</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data_complex</span><span class="p">)</span>
+
+        <span class="n">data_to_insert</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">]),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mf">6.</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="s1">&#39;grimalkin&#39;</span><span class="p">}</span>
+        <span class="n">index_key</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data_to_insert</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+                                            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">4.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">8.</span><span class="p">,</span> <span class="o">-</span><span class="mf">7.</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.</span><span class="p">],</span> <span class="p">]),</span>
+                                            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+                                            <span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;dog&#39;</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="s1">&#39;grimalkin&#39;</span><span class="p">,</span> <span class="s1">&#39;rabbit&#39;</span><span class="p">,</span> <span class="s1">&#39;mouse&#39;</span><span class="p">]),</span>
+                                          <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span>
+                <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="c1"># Do the testing for when it&#39;s strings instead.</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">animal</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">animal</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_insert_duplicate_data"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_insert_duplicate_data">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_duplicate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Test that adding existing values to a dataset doesn&#39;t do anything..&#39;&#39;&#39;</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">)</span>
+
+        <span class="n">data_to_insert</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">3.</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">3.</span><span class="p">}</span>
+        <span class="n">index_key</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data_to_insert</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+                                            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]),</span>
+                                            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">]),</span>
+                                          <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_insert_data_empty_dataset"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_insert_data_empty_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_data_empty_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Test that we can use insert on an empty dataset.&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+
+        <span class="n">data_to_insert</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">4.</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mf">6.</span><span class="p">}</span>
+        <span class="n">index_key</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data_to_insert</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">2.5</span><span class="p">,</span> <span class="p">]),</span>
+                                            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">4.</span><span class="p">,</span> <span class="p">]),</span>
+                                            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">6.</span><span class="p">,</span> <span class="p">]),</span>
+                                          <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_insert_data_no_file"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_insert_data_no_file">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_data_no_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Test that we can use insert on a file that doesn&#39;t exist yet.&#39;&#39;&#39;</span>
+
+        <span class="c1"># Delete the file</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="n">data_to_insert</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">4.</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mf">6.</span><span class="p">}</span>
+        <span class="n">index_key</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data_to_insert</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">2.5</span><span class="p">,</span> <span class="p">]),</span>
+                                            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">4.</span><span class="p">,</span> <span class="p">]),</span>
+                                            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">6.</span><span class="p">,</span> <span class="p">]),</span>
+                                          <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_insert_data_only_one_row_exists"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_insert_data_only_one_row_exists">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_data_only_one_row_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.</span><span class="p">,</span>
+                                            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">4.</span><span class="p">,</span>
+                                            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>
+                                          <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+
+        <span class="n">data_to_insert</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">1.</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">6.</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="mf">9.</span><span class="p">}</span>
+        <span class="n">index_key</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data_to_insert</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="p">]),</span>
+                                            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="p">]),</span>
+                                            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">9.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="p">]),</span>
+                                          <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_insert_data_column"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_insert_data_column">[docs]</a>    <span class="k">def</span> <span class="nf">test_insert_data_column</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Test that we can insert columns of data with insert data.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="n">test_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="p">],</span>
+            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="p">],</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+
+        <span class="n">data_to_insert</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="p">[</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="p">]</span> <span class="p">}</span>
+        <span class="n">index_key</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">insert_data</span><span class="p">(</span><span class="n">data_to_insert</span><span class="p">,</span> <span class="n">index_key</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">expected_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">]),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="p">]),</span>
+            <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="p">]),</span>
+            <span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="p">]),</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_data</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected_data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_copy_data"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_copy_data">[docs]</a>    <span class="k">def</span> <span class="nf">test_copy_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">copy_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_subsample"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_subsample">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;numpy.random.randint&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_subsample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+
+        <span class="c1"># Make a side effect for the random integer</span>
+        <span class="k">def</span> <span class="nf">side_effect</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="n">mock_randint</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+        <span class="n">subsample_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">subsample_data</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">subsample_hdf5_file</span><span class="p">(</span><span class="mi">2</span><span class="p">,)</span>
+
+        <span class="n">mock_randint</span><span class="o">.</span><span class="n">assert_called_once_with</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">])</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_copy_data_subsample"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_copy_data_subsample">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;numpy.random.randint&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_copy_data_subsample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+
+        <span class="c1"># Make a side effect for the random integer</span>
+        <span class="k">def</span> <span class="nf">side_effect</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="n">mock_randint</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+        <span class="n">subsample_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">subsample_data</span><span class="p">)</span>
+
+        <span class="c1"># Make the copy</span>
+        <span class="n">subsamples</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">copy_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="n">subsamples</span><span class="o">=</span><span class="n">subsamples</span><span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="p">}</span>
+
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">g</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_save_complicated_structure"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_save_complicated_structure">[docs]</a>    <span class="k">def</span> <span class="nf">test_save_complicated_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">group_1</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="n">group_2</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="n">group_3</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Group1&#39;</span><span class="p">:</span> <span class="n">group_1</span><span class="p">,</span>
+            <span class="s1">&#39;Group2&#39;</span><span class="p">:</span> <span class="n">group_2</span><span class="p">,</span>
+            <span class="s1">&#39;Group3&#39;</span><span class="p">:</span> <span class="n">group_3</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Group1&#39;</span><span class="p">,</span> <span class="s1">&#39;Group2&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">f</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_copy_data_subsample_complicated_structure"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_copy_data_subsample_complicated_structure">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;numpy.random.randint&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_copy_data_subsample_complicated_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+
+        <span class="c1"># Make a side effect for the random integer</span>
+        <span class="k">def</span> <span class="nf">side_effect</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="n">mock_randint</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+        <span class="n">group_1</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="n">group_2</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+        <span class="p">}</span>
+        <span class="n">group_3</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">subsample_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Group1&#39;</span><span class="p">:</span> <span class="n">group_1</span><span class="p">,</span>
+            <span class="s1">&#39;Group2&#39;</span><span class="p">:</span> <span class="n">group_2</span><span class="p">,</span>
+            <span class="s1">&#39;Group3&#39;</span><span class="p">:</span> <span class="n">group_3</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">subsample_data</span><span class="p">)</span>
+
+        <span class="c1"># Make the copy</span>
+        <span class="n">subsamples</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">copy_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="n">subsamples</span><span class="o">=</span><span class="n">subsamples</span><span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="p">}</span>
+
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Group1&#39;</span><span class="p">,</span> <span class="s1">&#39;Group2&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">g</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">],</span> <span class="n">expected</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_copy_data_subsample_particle_like_data"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_copy_data_subsample_particle_like_data">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;numpy.random.randint&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_copy_data_subsample_particle_like_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+
+        <span class="c1"># Make a side effect for the random integer</span>
+        <span class="k">def</span> <span class="nf">side_effect</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="n">mock_randint</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+        <span class="n">group_1</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span>  <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span> <span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">group_2</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span>  <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span> <span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">group_3</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">subsample_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Group1&#39;</span><span class="p">:</span> <span class="n">group_1</span><span class="p">,</span>
+            <span class="s1">&#39;Group2&#39;</span><span class="p">:</span> <span class="n">group_2</span><span class="p">,</span>
+            <span class="s1">&#39;Group3&#39;</span><span class="p">:</span> <span class="n">group_3</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">subsample_data</span><span class="p">)</span>
+
+        <span class="c1"># Make the copy</span>
+        <span class="n">subsamples</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">copy_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="n">subsamples</span><span class="o">=</span><span class="n">subsamples</span><span class="p">,</span> <span class="n">particle_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">5.</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">]</span> <span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
+            <span class="p">}</span>
+
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Group1&#39;</span><span class="p">,</span> <span class="s1">&#39;Group2&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">g</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">],</span> <span class="n">expected</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_copy_and_subsample_particle_snapshot"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_copy_and_subsample_particle_snapshot">[docs]</a>    <span class="k">def</span> <span class="nf">test_copy_and_subsample_particle_snapshot</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">filedir</span> <span class="o">=</span> <span class="s1">&#39;./tests/data/sdir/output&#39;</span>
+        <span class="n">snum</span> <span class="o">=</span> <span class="mi">600</span>
+        <span class="n">subsamples</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="n">copy_filedir</span> <span class="o">=</span> <span class="s1">&#39;./tests/data/output_data/&#39;</span>
+
+        <span class="c1"># Set the random seed</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+        <span class="n">hdf5_wrapper</span><span class="o">.</span><span class="n">copy_snapshot</span><span class="p">(</span> <span class="n">filedir</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="n">copy_filedir</span><span class="p">,</span> <span class="n">subsamples</span> <span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">copy_filedir</span><span class="p">,</span> <span class="s1">&#39;snapdir_600/snapshot_600.0.hdf5&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;PartType0&#39;</span><span class="p">][</span><span class="s1">&#39;ParticleIDs&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">50743870</span><span class="p">,</span> <span class="mi">66266902</span><span class="p">])</span>
+        <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">actual</span><span class="p">,</span> <span class="n">expected</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_save_data_group_attrs"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_save_data_group_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">test_save_data_group_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">group_1</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">group_2</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">group_3</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="p">}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Group1&#39;</span><span class="p">:</span> <span class="n">group_1</span><span class="p">,</span>
+            <span class="s1">&#39;Group2&#39;</span><span class="p">:</span> <span class="n">group_2</span><span class="p">,</span>
+            <span class="s1">&#39;Group3&#39;</span><span class="p">:</span> <span class="n">group_3</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Group1&#39;</span><span class="p">,</span> <span class="s1">&#39;Group2&#39;</span><span class="p">,</span> <span class="s1">&#39;Group3&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;attrs&#39;</span><span class="p">:</span>
+                    <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">f</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">assert</span> <span class="n">data</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">==</span> <span class="n">f</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestHDF5Wrapper.test_copy_data_subsample_attrs_included"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestHDF5Wrapper.test_copy_data_subsample_attrs_included">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s1">&#39;numpy.random.randint&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_copy_data_subsample_attrs_included</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_randint</span><span class="p">):</span>
+
+        <span class="c1"># Make a side effect for the random integer</span>
+        <span class="k">def</span> <span class="nf">side_effect</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">number</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+        <span class="n">mock_randint</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">side_effect</span>
+
+        <span class="n">subsample_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Group1&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">},</span>
+            <span class="p">},</span>
+        <span class="s1">&#39;Group2&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;attrs_exist&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="p">}</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Make the original dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">subsample_data</span><span class="p">)</span>
+
+        <span class="c1"># Make the copy</span>
+        <span class="n">subsamples</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_instance</span><span class="o">.</span><span class="n">copy_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="n">subsamples</span><span class="o">=</span><span class="n">subsamples</span><span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]</span> <span class="p">]</span> <span class="p">),</span>
+            <span class="p">}</span>
+
+        <span class="n">g</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">expected</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">g</span><span class="p">[</span><span class="n">group</span><span class="p">][</span><span class="n">key</span><span class="p">])</span>
+
+            <span class="k">assert</span> <span class="n">g</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;attrs_exist&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span> <span class="s1">&#39;rm </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">copy_filename</span><span class="p">)</span> <span class="p">)</span></div></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestCopySnapshot"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestCopySnapshot">[docs]</a><span class="k">class</span> <span class="nc">TestCopySnapshot</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestCopySnapshot.setUp"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestCopySnapshot.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;sdir&#39;</span><span class="p">:</span> <span class="s1">&#39;./tests/data/sdir/output&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;snum&#39;</span><span class="p">:</span> <span class="mi">600</span><span class="p">,</span>
+            <span class="s1">&#39;n_files&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="s1">&#39;copy_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;./tests/data/temp_sdir/output&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;redistribute&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">}</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestCopySnapshot.tearDown"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestCopySnapshot.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span> <span class="s1">&#39;./tests/data/temp_sdir&#39;</span> <span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span> <span class="s1">&#39;./tests/data/temp_sdir&#39;</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestCopySnapshot.test_copy_snapshot_and_redistribute"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_hdf5_wrapper.html#galaxy_dive.tests.test_utils.test_hdf5_wrapper.TestCopySnapshot.test_copy_snapshot_and_redistribute">[docs]</a>    <span class="k">def</span> <span class="nf">test_copy_snapshot_and_redistribute</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="c1"># Set the random seed</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
+
+        <span class="n">hdf5_wrapper</span><span class="o">.</span><span class="n">copy_snapshot</span><span class="p">(</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;copy_dir&#39;</span><span class="p">],</span> <span class="s1">&#39;snapdir_600/snapshot_600.0.hdf5&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span> <span class="p">)</span>
+
+        <span class="n">expected_ids</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;PartType0&#39;</span>  <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">56577266</span><span class="p">,</span>  <span class="mi">2447814</span><span class="p">,</span>  <span class="mi">5836451</span><span class="p">,</span> <span class="mi">48854626</span><span class="p">,</span> <span class="mi">38697472</span><span class="p">,</span> <span class="mi">26844748</span><span class="p">,</span> <span class="mi">12518198</span><span class="p">,</span> <span class="mi">13929795</span><span class="p">]),</span>
+            <span class="s1">&#39;PartType1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mi">96490067</span><span class="p">,</span> <span class="mi">111969149</span><span class="p">,</span>  <span class="mi">82963761</span><span class="p">,</span> <span class="mi">105912179</span><span class="p">,</span> <span class="mi">130202505</span><span class="p">,</span>  <span class="mi">99168777</span><span class="p">,</span> <span class="mi">81451547</span><span class="p">,</span>  <span class="mi">86626678</span><span class="p">]),</span>
+            <span class="s1">&#39;PartType2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">143876937</span><span class="p">,</span> <span class="mi">142690251</span><span class="p">,</span> <span class="mi">141208178</span><span class="p">,</span> <span class="mi">142867765</span><span class="p">,</span> <span class="mi">146105043</span><span class="p">,</span> <span class="mi">144348523</span><span class="p">,</span> <span class="mi">143790176</span><span class="p">,</span> <span class="mi">144671722</span><span class="p">]),</span>
+            <span class="s1">&#39;PartType4&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mi">8240338</span><span class="p">,</span> <span class="mi">33395336</span><span class="p">,</span> <span class="mi">50845628</span><span class="p">,</span> <span class="mi">53558278</span><span class="p">,</span>  <span class="mi">8091731</span><span class="p">,</span> <span class="mi">33163814</span><span class="p">,</span> <span class="mi">33193203</span><span class="p">,</span> <span class="mi">37236498</span><span class="p">]),</span>
+        <span class="p">}</span>
+
+        <span class="n">expected_positions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;PartType0&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">43147.37910547</span><span class="p">,</span>  <span class="mf">40849.73566323</span><span class="p">,</span>  <span class="mf">42018.36946875</span><span class="p">,</span>  <span class="mf">41953.76112891</span><span class="p">,</span>
+                <span class="mf">42250.75959483</span><span class="p">,</span>  <span class="mf">42921.24354077</span><span class="p">,</span>  <span class="mf">41515.60304779</span><span class="p">,</span>  <span class="mf">41709.71414106</span><span class="p">],</span>
+            <span class="p">[</span> <span class="mf">43788.15997097</span><span class="p">,</span>  <span class="mf">43738.97513012</span><span class="p">,</span>  <span class="mf">44166.32677499</span><span class="p">,</span>  <span class="mf">46120.83087771</span><span class="p">,</span>
+                <span class="mf">44294.84369966</span><span class="p">,</span>  <span class="mf">46882.80661966</span><span class="p">,</span>  <span class="mf">44056.62971023</span><span class="p">,</span>  <span class="mf">40841.09006986</span><span class="p">],</span>
+            <span class="p">[</span> <span class="mf">45874.27118392</span><span class="p">,</span>  <span class="mf">45494.31487345</span><span class="p">,</span>  <span class="mf">46320.23228283</span><span class="p">,</span>  <span class="mf">46816.0623442</span> <span class="p">,</span>
+                <span class="mf">46870.14027289</span><span class="p">,</span>  <span class="mf">47536.57624099</span><span class="p">,</span>  <span class="mf">46369.82810828</span><span class="p">,</span>  <span class="mf">45640.13294909</span><span class="p">]]),</span>
+            <span class="s1">&#39;PartType1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">41875.66483633</span><span class="p">,</span>  <span class="mf">41871.32568498</span><span class="p">,</span>  <span class="mf">40495.20591946</span><span class="p">,</span>  <span class="mf">41840.55990359</span><span class="p">,</span>
+                <span class="mf">42598.06746686</span><span class="p">,</span>  <span class="mf">42654.54906594</span><span class="p">,</span>  <span class="mf">41768.28244483</span><span class="p">,</span>  <span class="mf">41861.53839883</span><span class="p">],</span>
+            <span class="p">[</span> <span class="mf">44118.35014121</span><span class="p">,</span>  <span class="mf">44072.60902362</span><span class="p">,</span>  <span class="mf">43457.33636481</span><span class="p">,</span>  <span class="mf">45991.11822595</span><span class="p">,</span>
+                <span class="mf">44444.10578658</span><span class="p">,</span>  <span class="mf">46092.61460387</span><span class="p">,</span>  <span class="mf">44187.48020816</span><span class="p">,</span>  <span class="mf">44126.8824762</span> <span class="p">],</span>
+            <span class="p">[</span> <span class="mf">46261.71664927</span><span class="p">,</span>  <span class="mf">46307.86194507</span><span class="p">,</span>  <span class="mf">45084.47439923</span><span class="p">,</span>  <span class="mf">46928.75842962</span><span class="p">,</span>
+                <span class="mf">46494.5582603</span> <span class="p">,</span>  <span class="mf">46606.12689646</span><span class="p">,</span>  <span class="mf">46387.78823959</span><span class="p">,</span>  <span class="mf">46145.42036851</span><span class="p">]]),</span>
+            <span class="s1">&#39;PartType2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">42718.6585258</span> <span class="p">,</span>  <span class="mf">42702.82772914</span><span class="p">,</span>  <span class="mf">41160.28685959</span><span class="p">,</span>  <span class="mf">42389.72019772</span><span class="p">,</span>
+                <span class="mf">69109.89212334</span><span class="p">,</span>  <span class="mf">40110.83523464</span><span class="p">,</span>  <span class="mf">41484.2452451</span> <span class="p">,</span>  <span class="mf">14234.55600016</span><span class="p">],</span>
+            <span class="p">[</span> <span class="mf">46788.61036456</span><span class="p">,</span>  <span class="mf">46854.27699445</span><span class="p">,</span>  <span class="mf">43801.19749786</span><span class="p">,</span>  <span class="mf">41226.63322432</span><span class="p">,</span>
+                <span class="mf">31753.93759704</span><span class="p">,</span>  <span class="mf">40179.45607042</span><span class="p">,</span>  <span class="mf">42103.70372868</span><span class="p">,</span>  <span class="mf">15006.74252232</span><span class="p">],</span>
+            <span class="p">[</span> <span class="mf">47164.62123673</span><span class="p">,</span>  <span class="mf">47055.86509581</span><span class="p">,</span>  <span class="mf">47683.73835005</span><span class="p">,</span>  <span class="mf">46284.58074773</span><span class="p">,</span>
+                <span class="mf">19872.44520005</span><span class="p">,</span>  <span class="mf">43478.28376903</span><span class="p">,</span>  <span class="mf">44507.59821399</span><span class="p">,</span>  <span class="mf">70046.93697334</span><span class="p">]]),</span>
+            <span class="s1">&#39;PartType4&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span> <span class="mf">41882.74558912</span><span class="p">,</span>  <span class="mf">41884.14086056</span><span class="p">,</span>  <span class="mf">41867.59334168</span><span class="p">,</span>  <span class="mf">41875.93178495</span><span class="p">,</span>
+                <span class="mf">41875.21304509</span><span class="p">,</span>  <span class="mf">41876.46763611</span><span class="p">,</span>  <span class="mf">41874.55928862</span><span class="p">,</span>  <span class="mf">41875.64058087</span><span class="p">],</span>
+            <span class="p">[</span> <span class="mf">44120.2944586</span> <span class="p">,</span>  <span class="mf">44123.60968022</span><span class="p">,</span>  <span class="mf">44116.0175617</span> <span class="p">,</span>  <span class="mf">44122.7025734</span> <span class="p">,</span>
+                <span class="mf">44123.03437806</span><span class="p">,</span>  <span class="mf">44121.16050547</span><span class="p">,</span>  <span class="mf">44124.66589757</span><span class="p">,</span>  <span class="mf">44121.83243625</span><span class="p">],</span>
+            <span class="p">[</span> <span class="mf">46253.94805193</span><span class="p">,</span>  <span class="mf">46252.28734946</span><span class="p">,</span>  <span class="mf">46256.24757957</span><span class="p">,</span>  <span class="mf">46257.53836431</span><span class="p">,</span>
+                <span class="mf">46257.84478371</span><span class="p">,</span>  <span class="mf">46257.60302959</span><span class="p">,</span>  <span class="mf">46258.12604825</span><span class="p">,</span>  <span class="mf">46257.58911288</span><span class="p">]]),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Correct for hubble...</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected_positions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">expected_positions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">0.70199999999999996</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;n_files&#39;</span><span class="p">]</span> <span class="p">):</span>
+            <span class="n">orig_filename</span> <span class="o">=</span> <span class="s1">&#39;snapdir_600/snapshot_600.0.hdf5&#39;</span>
+            <span class="n">orig_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;sdir&#39;</span><span class="p">],</span> <span class="n">orig_filename</span> <span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;snapdir_600/snapshot_600.</span><span class="si">{}</span><span class="s1">.hdf5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span>
+            <span class="n">out_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;copy_dir&#39;</span><span class="p">],</span> <span class="n">filename</span> <span class="p">)</span>
+
+            <span class="n">actual</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">out_filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span> <span class="p">)</span>
+            <span class="n">expected</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">orig_filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span> <span class="p">)</span>
+
+            <span class="c1"># Compare headers</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;NumPart_ThisFile&#39;</span><span class="p">:</span>
+                    <span class="n">expected_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">]</span> <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;NumFilesPerSnapshot&#39;</span><span class="p">:</span>
+                    <span class="n">expected_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;n_files&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">expected_</span> <span class="o">=</span> <span class="n">expected</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="n">actual_</span> <span class="o">=</span> <span class="n">actual</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">expected_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="p">):</span>
+                    <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">expected_</span><span class="p">,</span> <span class="n">actual_</span> <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected_</span><span class="p">,</span> <span class="n">actual_</span> <span class="p">)</span>
+
+            <span class="c1"># Compare values</span>
+            <span class="k">for</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="n">expected_ids</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                <span class="n">expected_id</span> <span class="o">=</span> <span class="n">expected_ids</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">actual_id</span> <span class="o">=</span> <span class="n">actual</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="s1">&#39;ParticleIDs&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">expected_id</span><span class="p">,</span> <span class="n">actual_id</span> <span class="p">)</span>
+
+                <span class="n">expected_pos</span> <span class="o">=</span> <span class="n">expected_positions</span><span class="p">[</span><span class="n">ptype</span><span class="p">][:,</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">actual_pos</span> <span class="o">=</span> <span class="n">actual</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="s1">&#39;Coordinates&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">expected_pos</span><span class="p">,</span> <span class="n">actual_pos</span> <span class="p">)</span></div></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

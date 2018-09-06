@@ -1,0 +1,598 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.analyze_data.simulation_data module &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-galaxy_dive.analyze_data.simulation_data">
+<span id="galaxy-dive-analyze-data-simulation-data-module"></span><h1>galaxy_dive.analyze_data.simulation_data module<a class="headerlink" href="#module-galaxy_dive.analyze_data.simulation_data" title="Permalink to this headline">¶</a></h1>
+<p>Class for analyzing simulation data.</p>
+<p>&#64;author: Zach Hafen
+&#64;contact: <a class="reference external" href="mailto:zachary&#46;h&#46;hafen&#37;&#52;&#48;gmail&#46;com">zachary<span>&#46;</span>h<span>&#46;</span>hafen<span>&#64;</span>gmail<span>&#46;</span>com</a>
+&#64;status: Development</p>
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.simulation_data.</code><code class="descname">SimulationData</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData" title="galaxy_dive.analyze_data.generic_data.GenericData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.generic_data.GenericData</span></code></a></p>
+<p>Class for handling simulation data.</p>
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.add_hubble_flow">
+<code class="descname">add_hubble_flow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.add_hubble_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.add_hubble_flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correct for hubble flow movement.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd>self.data[‘V’] : Accounts for hubble flow, relative to origin</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.base_data_shape">
+<code class="descname">base_data_shape</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.base_data_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.calc_radial_distance">
+<code class="descname">calc_radial_distance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.calc_radial_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.calc_radial_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance from the origin for a given particle.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.center_coords">
+<code class="descname">center_coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.center_coords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.center_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the location of the origin, if the data isn’t already centered.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd>self.data[‘P’] : Shifts the coordinates to the center.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.center_vel_coords">
+<code class="descname">center_vel_coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.center_vel_coords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.center_vel_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get velocity coordinates to center on the main halo.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd>self.data[‘V’] : Makes all velocities relative to self.vel_origin</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>sl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the data from within the class. Only for getting the data. No post-processing or changing the data
+(putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
+hence a whole function for getting the data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Key in the data dictionary for the key we want to get
+sl (slice) : Slice of the data, if requested.</dd>
+<dt>Returns:</dt>
+<dd>data (np.ndarray) : Requested data.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_distance_to_point">
+<code class="descname">get_distance_to_point</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_distance_to_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_distance_to_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is <em>not</em> unit tested.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>point (array-like of shape (3,)) : The point you want to find the distance to for each particle.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_position_data">
+<code class="descname">get_position_data</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_position_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_position_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get position data (assuming the data starts with an ‘R’)</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Key in the data dictionary for the key we want to get</dd>
+<dt>Returns:</dt>
+<dd>data (np.ndarray) : Requested data.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_potential">
+<code class="descname">get_potential</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is <em>not</em> unit tested.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>point (array-like of shape (3,)) : The point you want to find the potential at</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_velocity_data">
+<code class="descname">get_velocity_data</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_velocity_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_velocity_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get position data (assuming the data starts with a ‘V’)</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Key in the data dictionary for the key we want to get</dd>
+<dt>Returns:</dt>
+<dd>data (np.ndarray) : Requested data.</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.halo_data">
+<code class="descname">halo_data</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.halo_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Halo data used.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.handle_data_key_error">
+<code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.handle_data_key_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Key to try and generate data for</dd>
+<dt>Modifies:</dt>
+<dd>self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.hubble_z">
+<code class="descname">hubble_z</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.hubble_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for the hubble function at specified redshift.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.length_scale">
+<code class="descname">length_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.length_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial simulation length scale.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.r_scale">
+<code class="descname">r_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.r_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for scale radius.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.r_vir">
+<code class="descname">r_vir</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.r_vir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for virial radius.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.redshift">
+<code class="descname">redshift</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.redshift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.v_c">
+<code class="descname">v_c</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.v_c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for circular velocity.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.velocity_scale">
+<code class="descname">velocity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.velocity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial simulation velocity scale.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.simulation_data.</code><code class="descname">SnapshotData</code><span class="sig-paren">(</span><em>snum</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#galaxy_dive.analyze_data.simulation_data.SimulationData" title="galaxy_dive.analyze_data.simulation_data.SimulationData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.simulation_data.SimulationData</span></code></a></p>
+<p>Class for analysis of a single snapshot of data.</p>
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_HI_den">
+<code class="descname">calc_HI_den</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_HI_den"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_HI_den" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the HI density in cgs (cm^-3).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_H_den">
+<code class="descname">calc_H_den</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_H_den"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_H_den" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the H density in cgs (cm^-3). Assume the H fraction is ~0.75</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_abs_phi">
+<code class="descname">calc_abs_phi</code><span class="sig-paren">(</span><em>vector='total gas ang momentum'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_abs_phi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_abs_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angle (in degrees) from some vector, but don’t mirror
+it around 90 degrees (e.g. 135 -&gt; 45 degrees, 180 -&gt; 0 degrees).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_ang_momentum">
+<code class="descname">calc_ang_momentum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_ang_momentum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_ang_momentum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angular momentum.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_inds">
+<code class="descname">calc_inds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_inds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_inds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the indices the data are located at, prior to any masks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_mu">
+<code class="descname">calc_mu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_mu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mean molecular weight.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_num_den">
+<code class="descname">calc_num_den</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_num_den"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_num_den" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the number density (it’s just a simple conversion…).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_phi">
+<code class="descname">calc_phi</code><span class="sig-paren">(</span><em>normal_vector='total ang momentum'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_phi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angle (in degrees) from some vector.
+By default the vector is the total angular momentum.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_radial_velocity">
+<code class="descname">calc_radial_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_radial_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_radial_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the radial velocity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_tangential_velocity">
+<code class="descname">calc_tangential_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_tangential_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_tangential_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the radial velocity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_velocity_magnitude">
+<code class="descname">calc_velocity_magnitude</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.calc_velocity_magnitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_velocity_magnitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the radial velocity.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.central_mask">
+<code class="descname">central_mask</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.central_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>This mask is used when, for example, finding the velocity of the
+center of mass.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.dN_halo">
+<code class="descname">dN_halo</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.dN_halo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate dN_halo/dX/dlog10Mh or dN_halo/dz/dlog10Mh. X is absorption path length (see for example Ribaudo+11)</p>
+<dl class="docutils">
+<dt>time_units: ‘abs_length’- dN_halo/dX/dlog10Mh</dt>
+<dd>‘redshift’ - dN_halo/dz/dlog10Mh</dd>
+<dt>R_vir:      None - Default, assumes given.</dt>
+<dd>‘BN’ Calculates R_vir from the mass and redshift</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.dist_to_point">
+<code class="descname">dist_to_point</code><span class="sig-paren">(</span><em>point</em>, <em>units='default'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.dist_to_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.dist_to_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance to a point for all particles.</p>
+<p>point : np array that gives the point</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.retrieve_halo_data">
+<code class="descname">retrieve_halo_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SnapshotData.retrieve_halo_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.retrieve_halo_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.total_ang_momentum">
+<code class="descname">total_ang_momentum</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.total_ang_momentum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the total angular momentum vector.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.SnapshotData.v_com">
+<code class="descname">v_com</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SnapshotData.v_com" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for the velocity of the center of mass.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.simulation_data.</code><code class="descname">TimeData</code><span class="sig-paren">(</span><em>data_masker=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#galaxy_dive.analyze_data.simulation_data.SimulationData" title="galaxy_dive.analyze_data.simulation_data.SimulationData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.simulation_data.SimulationData</span></code></a></p>
+<p>Class for analysis of a time series data, e.g. the worldlines of a number of particles.</p>
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.calc_abs_phi">
+<code class="descname">calc_abs_phi</code><span class="sig-paren">(</span><em>normal_vector='total ang momentum'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_abs_phi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_abs_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angle (in degrees) from some vector, but mirror
+values past 90 degrees (e.g. 135 -&gt; 45 degrees, 180 -&gt; 0 degrees).
+This is useful when there’s symmetry above and below 90.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>normal_vector (str or array-like):</dt>
+<dd>Vector that represents the vertical. Defaults to using the
+total stellar angular momentum of the main galaxy.</dd>
+</dl>
+</dd>
+<dt>Modifies:</dt>
+<dd><dl class="first last docutils">
+<dt>self.data[‘AbsPhi’] (array-like):</dt>
+<dd>Angle from the vector, in many cases acting as the angle
+from the disk axis.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.calc_ang_momentum">
+<code class="descname">calc_ang_momentum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_ang_momentum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_ang_momentum" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angular momentum (in the standard coordinates).</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd><dl class="first last docutils">
+<dt>self.data[‘L’] (array-like):</dt>
+<dd>Angular momentum of each resolution element.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.calc_enriched_metal_mass">
+<code class="descname">calc_enriched_metal_mass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_enriched_metal_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_enriched_metal_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the metal mass that comes from enrichment for
+each resolution element, not counting mass that’s at the metallicity
+floor. Assumes that the there will always be at least one resolution
+element in the simulation that’s at the metallicity floor.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd><dl class="first last docutils">
+<dt>self.data[‘enriched_metal_mass’] (array-like):</dt>
+<dd>Metal mass from enrichment.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.calc_metal_mass">
+<code class="descname">calc_metal_mass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_metal_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_metal_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the metal mass held by each resolution element.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd><dl class="first last docutils">
+<dt>self.data[‘enriched_metal_mass’] (array-like):</dt>
+<dd>Metal mass from enrichment.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.calc_phi">
+<code class="descname">calc_phi</code><span class="sig-paren">(</span><em>normal_vector='total ang momentum'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_phi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angle (in degrees) from some vector.
+By default the vector is the total angular momentum.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>normal_vector (str or array-like):</dt>
+<dd>Vector that represents the vertical.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.calc_radial_velocity">
+<code class="descname">calc_radial_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_radial_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_radial_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance from the origin for a given particle.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.calc_time_as_classification">
+<code class="descname">calc_time_as_classification</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_time_as_classification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_time_as_classification" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.get_processed_data">
+<code class="descname">get_processed_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>sl=None</em>, <em>smooth_data=False</em>, <em>smoothing_window_length=9</em>, <em>smoothing_polyorder=3</em>, <em>a_power=None</em>, <em>scale_key=None</em>, <em>scale_a_power=None</em>, <em>scale_h_power=None</em>, <em>tile_data=False</em>, <em>tile_dim='auto'</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.get_processed_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.get_processed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modified method for getting processed method. For the most part is
+equivalent to calling the method of the parent class, but is also
+capable of scaling the retrieved data by a column from the halo data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">data_key (str) : What to get out?</p>
+<p>sl (slice) : Slice of the data, if requested.</p>
+<p>smooth_data (bool) : If True, smooth the data.</p>
+<dl class="last docutils">
+<dt>smoothing_window_length, smoothing_polyorder (int) :</dt>
+<dd>Arguments for how to smooth the data.</dd>
+<dt>scale_key (str) :</dt>
+<dd>Halo data entry by which to divide the data by.</dd>
+<dt>scale_a_power (float) :</dt>
+<dd>The halo data that we are scaling processed_data by will be
+multiplied by a to this power.
+Useful for data in cosmological units (as is often normal).</dd>
+<dt>scale_h_power (float) :</dt>
+<dd>The halo data that we are scaling processed_data by will be
+multiplied by the hubble parameter to this power.
+Useful for data in cosmological units (as is often normal).</dd>
+<dt>tile_data (bool) :</dt>
+<dd>If True, tile data along a given direction. This is usually for
+data formatting purposes.</dd>
+<dt>tile_dim (str) :</dt>
+<dd><p class="first">If the data is tiled, what dimension of the data should match?
+Options:</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>‘auto’ :</dt>
+<dd>Tiles according to data size.</dd>
+<dt>‘match_snaps’ :</dt>
+<dd>The data is tiled such that the new shape is
+(self.n_snaps, data_size).</dd>
+<dt>‘match_particles’ :</dt>
+<dd>The data is tiled such that the new shape is
+(data_size, self.n_particles).</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs :</dt>
+<dd>Passed to SimulationData.get_processed_data.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>processed_data (array-like) : Requested data array.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.get_selected_data_over_time">
+<code class="descname">get_selected_data_over_time</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.get_selected_data_over_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.get_selected_data_over_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for geting masked data as a function of time.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.handle_data_key_error">
+<code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.handle_data_key_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Key to try and generate data for</dd>
+<dt>Modifies:</dt>
+<dd>self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.hubble_param">
+<code class="descname">hubble_param</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.hubble_param" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.n_particles">
+<code class="descname">n_particles</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.n_particles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of snapshots, i.e. data points on the time axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.n_snaps">
+<code class="descname">n_snaps</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.n_snaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of snapshots, i.e. data points on the time axis.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.retrieve_halo_data">
+<code class="descname">retrieve_halo_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.retrieve_halo_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.retrieve_halo_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeData.snums">
+<code class="descname">snums</code><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.snums" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeDataMasker">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.simulation_data.</code><code class="descname">TimeDataMasker</code><span class="sig-paren">(</span><em>time_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeDataMasker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeDataMasker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker" title="galaxy_dive.analyze_data.generic_data.DataMasker"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.generic_data.DataMasker</span></code></a></p>
+<p>Data masker for worldline data.</p>
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.simulation_data.TimeDataMasker.get_selected_data_over_time">
+<code class="descname">get_selected_data_over_time</code><span class="sig-paren">(</span><em>data_key</em>, <em>snum</em>, <em>mask='total'</em>, <em>optional_masks=None</em>, <em>n_samples=None</em>, <em>seed=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeDataMasker.get_selected_data_over_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeDataMasker.get_selected_data_over_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data over the full time history, based on its mask at
+one time.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">data_key (str): Data to get.</p>
+<p>snum (int): Snapshot to get the data corresponding to.</p>
+<p class="last">mask (</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/galaxy_dive.analyze_data.simulation_data.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/galaxy_dive.analyze_data.simulation_data.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,651 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.tests.test_utils.test_utilities &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.tests.test_utils.test_utilities</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;Testing for utilities.py</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">mock</span> <span class="k">import</span> <span class="n">patch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.testing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pdb</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.utilities</span> <span class="k">as</span> <span class="nn">utilities</span>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDictStartup"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDictStartup">[docs]</a><span class="k">class</span> <span class="nc">TestSmartDictStartup</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestSmartDictStartup.test_default"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDictStartup.test_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_default</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;a&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span>
+
+        <span class="n">smart_dict</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="n">d</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">smart_dict</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="mi">2</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="n">smart_dict</span> <span class="p">),</span> <span class="mi">2</span> <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestSmartDictStartup.test_from_defaults_and_variations"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDictStartup.test_from_defaults_and_variations">[docs]</a>    <span class="k">def</span> <span class="nf">test_from_defaults_and_variations</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">TestClassA</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span>
+            <span class="k">def</span> <span class="nf">return_contents</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;a&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mi">1</span> <span class="p">}</span>
+        <span class="n">variations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="mi">1</span> <span class="p">:</span> <span class="p">{},</span>
+            <span class="mi">2</span> <span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="o">.</span><span class="n">from_class_and_args</span><span class="p">(</span> <span class="n">TestClassA</span><span class="p">,</span> <span class="n">variations</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">result</span><span class="p">,</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">),</span> <span class="mi">2</span> <span class="p">:</span> <span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">),</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_contents</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">expected</span> <span class="o">==</span> <span class="n">actual</span></div></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict">[docs]</a><span class="k">class</span> <span class="nc">TestSmartDict</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_nested"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_nested">[docs]</a>    <span class="k">def</span> <span class="nf">test_nested</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">TestClassA</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">key</span> <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="mi">1234</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">class</span> <span class="nc">TestClassB</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">key</span> <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_class_a</span> <span class="o">=</span> <span class="n">TestClassA</span><span class="p">(</span> <span class="n">key</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">expected2</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">3</span> <span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">TestClassB</span><span class="p">(</span> <span class="n">i</span> <span class="p">)</span>
+            <span class="n">expected</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1234</span>
+            <span class="n">expected2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="n">smart_d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="n">d</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">smart_d</span><span class="o">.</span><span class="n">test_class_a</span><span class="o">.</span><span class="n">foo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">smart_d</span><span class="o">.</span><span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected2</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">smart_d</span><span class="o">.</span><span class="n">test_class_a</span><span class="o">.</span><span class="n">key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected2</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_nested_method"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_nested_method">[docs]</a>    <span class="k">def</span> <span class="nf">test_nested_method</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">TestClassA</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+            <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">x</span> <span class="p">):</span>
+                <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">class</span> <span class="nc">TestClassB</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_class_a</span> <span class="o">=</span> <span class="n">TestClassA</span><span class="p">()</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">3</span> <span class="p">):</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">TestClassB</span><span class="p">()</span>
+            <span class="n">expected</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+
+        <span class="n">smart_d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="n">d</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">smart_d</span><span class="o">.</span><span class="n">test_class_a</span><span class="o">.</span><span class="n">foo</span><span class="p">(</span> <span class="mi">2</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_call_custom_kwargs"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_call_custom_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">test_call_custom_kwargs</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">TestClassA</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+            <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">x</span> <span class="p">):</span>
+                <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">TestClassA</span><span class="p">(),</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">TestClassA</span><span class="p">(),</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;x&#39;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">},</span> <span class="mi">2</span> <span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;x&#39;</span> <span class="p">:</span> <span class="mi">100</span><span class="p">},</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">call_custom_kwargs</span><span class="p">(</span> <span class="n">kwargs</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">10000</span><span class="p">,</span> <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_call_iteratively"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_call_iteratively">[docs]</a>    <span class="k">def</span> <span class="nf">test_call_iteratively</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">TestClassA</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+            <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">x</span> <span class="p">):</span>
+                <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">TestClassA</span><span class="p">(),</span> <span class="mi">2</span> <span class="p">:</span> <span class="n">TestClassA</span><span class="p">(),</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">call_iteratively</span><span class="p">(</span> <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,],</span> <span class="mi">2</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">]</span> <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_multiply"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_multiply">[docs]</a>    <span class="k">def</span> <span class="nf">test_multiply</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="p">}</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d</span><span class="o">*</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_multiply_smart_dict"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_multiply_smart_dict">[docs]</a>    <span class="k">def</span> <span class="nf">test_multiply_smart_dict</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="p">}</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d1</span><span class="o">*</span><span class="n">d2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d2</span><span class="o">*</span><span class="n">d1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_divide"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_divide">[docs]</a>    <span class="k">def</span> <span class="nf">test_divide</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">4</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d</span><span class="o">/</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">4</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_divide_smart_dict"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_divide_smart_dict">[docs]</a>    <span class="k">def</span> <span class="nf">test_divide_smart_dict</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">4</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="p">}</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d1</span><span class="o">/</span><span class="n">d2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_add"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_add">[docs]</a>    <span class="k">def</span> <span class="nf">test_add</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_add_smart_dict"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_add_smart_dict">[docs]</a>    <span class="k">def</span> <span class="nf">test_add_smart_dict</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">4</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="p">}</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">+</span> <span class="n">d2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_subtract"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_subtract">[docs]</a>    <span class="k">def</span> <span class="nf">test_subtract</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_subtract_smart_dict"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_subtract_smart_dict">[docs]</a>    <span class="k">def</span> <span class="nf">test_subtract_smart_dict</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">4</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="p">}</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d1</span> <span class="o">-</span> <span class="n">d2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_sum_contents"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_sum_contents">[docs]</a>    <span class="k">def</span> <span class="nf">test_sum_contents</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="mi">6</span><span class="p">,</span> <span class="n">d1</span><span class="o">.</span><span class="n">sum_contents</span><span class="p">()</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_keymax_and_keymin"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_keymax_and_keymin">[docs]</a>    <span class="k">def</span> <span class="nf">test_keymax_and_keymin</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">d1</span><span class="o">.</span><span class="n">keymax</span><span class="p">()</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">d1</span><span class="o">.</span><span class="n">keymin</span><span class="p">()</span> <span class="p">)</span>
+
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span> <span class="mi">5</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">d1</span><span class="o">.</span><span class="n">keymax</span><span class="p">()</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">d1</span><span class="o">.</span><span class="n">keymin</span><span class="p">()</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_transpose"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_transpose">[docs]</a>    <span class="k">def</span> <span class="nf">test_transpose</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="p">},</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="mi">1</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="p">},</span>
+        <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="p">},</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="p">},</span>
+        <span class="p">}</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">d</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="n">expected</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestSmartDict.test_array"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestSmartDict.test_array">[docs]</a>    <span class="k">def</span> <span class="nf">test_array</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span><span class="p">(</span> <span class="p">{</span>
+            <span class="s1">&#39;a&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;c&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="p">}</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span> <span class="p">])</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">array</span><span class="p">()</span>
+
+        <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestDictFromDefaultsAndVariations"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestDictFromDefaultsAndVariations">[docs]</a><span class="k">class</span> <span class="nc">TestDictFromDefaultsAndVariations</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestDictFromDefaultsAndVariations.test_default"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestDictFromDefaultsAndVariations.test_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_default</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">defaults</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;Melvulu&#39;</span><span class="p">,</span> <span class="p">}</span>
+        <span class="n">variations</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;person a&#39;</span> <span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;other best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;Chellbrat&#39;</span><span class="p">,</span> <span class="p">},</span>
+            <span class="s1">&#39;person b&#39;</span> <span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;A Normal Melville Cat&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;other best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;Chellcat&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">variations</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;person a&#39;</span> <span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;Melvulu&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;other best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;Chellbrat&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s1">&#39;person b&#39;</span> <span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;A Normal Melville Cat&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;other best cat&#39;</span> <span class="p">:</span> <span class="s1">&#39;Chellcat&#39;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">expected</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">expected</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="n">actual</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGetCodeVersion"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetCodeVersion">[docs]</a><span class="k">class</span> <span class="nc">TestGetCodeVersion</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestGetCodeVersion.test_default"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetCodeVersion.test_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_default</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">get_code_version</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGetCodeVersion.test_works_in_otherdir"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetCodeVersion.test_works_in_otherdir">[docs]</a>    <span class="k">def</span> <span class="nf">test_works_in_otherdir</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+        <span class="c1"># Change directories</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="s1">&#39;../&#39;</span> <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">get_code_version</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="c1"># Change back</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="n">cwd</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGetCodeVersion.test_works_for_modules"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetCodeVersion.test_works_for_modules">[docs]</a>    <span class="k">def</span> <span class="nf">test_works_for_modules</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">get_code_version</span><span class="p">(</span> <span class="n">utilities</span><span class="p">,</span> <span class="n">instance_type</span><span class="o">=</span><span class="s1">&#39;module&#39;</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span> <span class="p">[</span> <span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;--always&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGetInstanceSourceDir"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetInstanceSourceDir">[docs]</a><span class="k">class</span> <span class="nc">TestGetInstanceSourceDir</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestGetInstanceSourceDir.test_default"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetInstanceSourceDir.test_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_default</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">get_instance_source_dir</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;tests/test_utils&#39;</span> <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGetInstanceSourceDir.test_works_for_modules"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetInstanceSourceDir.test_works_for_modules">[docs]</a>    <span class="k">def</span> <span class="nf">test_works_for_modules</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">get_instance_source_dir</span><span class="p">(</span> <span class="n">utilities</span><span class="p">,</span> <span class="s1">&#39;module&#39;</span> <span class="p">)</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s1">&#39;utils&#39;</span> <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestChunkList"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestChunkList">[docs]</a><span class="k">class</span> <span class="nc">TestChunkList</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestChunkList.test_default"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestChunkList.test_default">[docs]</a>    <span class="k">def</span> <span class="nf">test_default</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">10</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">(</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span> <span class="p">],</span> <span class="p">[</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">chunk_list</span><span class="p">(</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">expected_</span><span class="p">,</span> <span class="n">actual_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">):</span>
+            <span class="k">assert</span> <span class="n">expected_</span> <span class="o">==</span> <span class="n">actual_</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">10</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">(</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">],</span> <span class="p">[</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span> <span class="p">],</span> <span class="p">[</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">chunk_list</span><span class="p">(</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">expected_</span><span class="p">,</span> <span class="n">actual_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">):</span>
+            <span class="k">assert</span> <span class="n">expected_</span> <span class="o">==</span> <span class="n">actual_</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span> <span class="mi">11</span> <span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">(</span> <span class="p">[</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">],</span> <span class="p">[</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span> <span class="p">],</span> <span class="p">[</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">chunk_list</span><span class="p">(</span> <span class="n">l</span><span class="p">,</span> <span class="n">n</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">expected_</span><span class="p">,</span> <span class="n">actual_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">):</span>
+            <span class="k">assert</span> <span class="n">expected_</span> <span class="o">==</span> <span class="n">actual_</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestArraySetConversion"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestArraySetConversion">[docs]</a><span class="k">class</span> <span class="nc">TestArraySetConversion</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestArraySetConversion.test_arrays_to_set"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestArraySetConversion.test_arrays_to_set">[docs]</a>    <span class="k">def</span> <span class="nf">test_arrays_to_set</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="p">),</span> <span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">),</span> <span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">arrays_to_set</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="mi">3</span> <span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="mi">3</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestArraySetConversion.test_arrays_to_set_long"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestArraySetConversion.test_arrays_to_set_long">[docs]</a>    <span class="k">def</span> <span class="nf">test_arrays_to_set_long</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span> <span class="p">),</span> <span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="p">),</span> <span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">arrays_to_set</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="mi">3</span> <span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="mi">3</span> <span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestArraySetConversion.test_set_to_arrays"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestArraySetConversion.test_set_to_arrays">[docs]</a>    <span class="k">def</span> <span class="nf">test_set_to_arrays</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="p">[</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="p">],</span>
+            <span class="p">[</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="p">],</span>
+            <span class="p">[</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="p">],</span>
+        <span class="p">])</span>
+
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">set_to_arrays</span><span class="p">(</span> <span class="nb">set</span><span class="p">(</span> <span class="p">[</span> <span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">),</span> <span class="p">(</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span> <span class="p">),</span> <span class="p">(</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span> <span class="p">),</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">expected</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">actual</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># To allow for full comparison. We don&#39;t really care what order they&#39;re in, as long as they&#39;re matched.</span>
+        <span class="n">actual</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="n">npt</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestStoreParameters"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestStoreParameters">[docs]</a><span class="k">class</span> <span class="nc">TestStoreParameters</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestStoreParameters.test_basic"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestStoreParameters.test_basic">[docs]</a>    <span class="k">def</span> <span class="nf">test_basic</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+
+            <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span> <span class="p">):</span>
+                <span class="k">pass</span>
+
+        <span class="n">o</span> <span class="o">=</span> <span class="n">Object</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">a</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">b</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="mi">3</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">c</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">[</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span> <span class="p">],</span> <span class="n">o</span><span class="o">.</span><span class="n">stored_parameters</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestStoreParameters.test_kwargs_input"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestStoreParameters.test_kwargs_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_kwargs_input</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+
+            <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+                <span class="k">pass</span>
+
+        <span class="n">o</span> <span class="o">=</span> <span class="n">Object</span><span class="p">(</span> <span class="o">**</span><span class="p">{</span> <span class="s1">&#39;a&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span> <span class="p">:</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">a</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="mi">2</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">b</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="mi">4</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">c</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">{</span><span class="s1">&#39;d&#39;</span> <span class="p">:</span> <span class="mi">5</span><span class="p">},</span> <span class="n">o</span><span class="o">.</span><span class="n">kwargs</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">[</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">,</span> <span class="p">],</span> <span class="n">o</span><span class="o">.</span><span class="n">stored_parameters</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestStoreParameters.test_args_and_kwargs_input"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestStoreParameters.test_args_and_kwargs_input">[docs]</a>    <span class="k">def</span> <span class="nf">test_args_and_kwargs_input</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+
+            <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
+            <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+                <span class="k">pass</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span> <span class="s1">&#39;dog&#39;</span><span class="p">,</span> <span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;a&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span> <span class="p">:</span> <span class="mi">5</span> <span class="p">}</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">Object</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">(</span><span class="s1">&#39;dog&#39;</span><span class="p">,),</span> <span class="n">o</span><span class="o">.</span><span class="n">args</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">{</span> <span class="s1">&#39;a&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span> <span class="p">:</span> <span class="mi">5</span> <span class="p">},</span> <span class="n">o</span><span class="o">.</span><span class="n">kwargs</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="p">[</span> <span class="s1">&#39;args&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">,</span> <span class="p">],</span> <span class="n">o</span><span class="o">.</span><span class="n">stored_parameters</span> <span class="p">)</span></div></div>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGenerateDerivedDataDoc"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGenerateDerivedDataDoc">[docs]</a><span class="k">class</span> <span class="nc">TestGenerateDerivedDataDoc</span><span class="p">(</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="TestGenerateDerivedDataDoc.setUp"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGenerateDerivedDataDoc.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_filepath</span> <span class="o">=</span> <span class="s1">&#39;./tests/data/derived_data.rst&#39;</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filepath</span> <span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filepath</span> <span class="p">)</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGenerateDerivedDataDoc.test_gen_derived_data_doc"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGenerateDerivedDataDoc.test_gen_derived_data_doc">[docs]</a>    <span class="k">def</span> <span class="nf">test_gen_derived_data_doc</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">object_import_path</span> <span class="o">=</span> <span class="s1">&#39;galaxy_dive.tests.test_utils.test_utilities.GenDerivedDataObject&#39;</span>
+
+        <span class="c1"># Call the function</span>
+        <span class="n">utilities</span><span class="o">.</span><span class="n">gen_derived_data_doc</span><span class="p">(</span>
+            <span class="n">object_import_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_filepath</span><span class="p">,</span>
+        <span class="p">)</span>
+                
+        <span class="c1"># Build Expected</span>
+        <span class="c1"># Get the header</span>
+        <span class="k">with</span> <span class="nb">open</span> <span class="p">(</span> <span class="s1">&#39;./utils/derived_data_header.rst&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">myfile</span><span class="p">:</span>
+            <span class="n">expected_header</span> <span class="o">=</span> <span class="n">myfile</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="c1"># Get the generated data</span>
+        <span class="n">expected_generated</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.. autoclass:: </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">object_import_path</span> <span class="p">),</span>
+            <span class="s1">&#39;    :show-inheritance:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;    .. automethod:: calc_A</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;    .. automethod:: calc_B</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">expected_header</span> <span class="o">+</span> <span class="n">expected_generated</span>
+
+        <span class="k">with</span> <span class="nb">open</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">myfile</span><span class="p">:</span>
+            <span class="n">actual</span> <span class="o">=</span> <span class="n">myfile</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span> <span class="n">expected</span><span class="p">,</span> <span class="n">actual</span> <span class="p">)</span></div></div>
+
+<span class="c1"># Test Object for TestGenerateDerivedDataDoc</span>
+<div class="viewcode-block" id="GenDerivedDataObject"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.GenDerivedDataObject">[docs]</a><span class="k">class</span> <span class="nc">GenDerivedDataObject</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+
+<div class="viewcode-block" id="GenDerivedDataObject.method_a"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.GenDerivedDataObject.method_a">[docs]</a>    <span class="k">def</span> <span class="nf">method_a</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Method a.&#39;&#39;&#39;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GenDerivedDataObject.calc_A"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.GenDerivedDataObject.calc_A">[docs]</a>    <span class="k">def</span> <span class="nf">calc_A</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Calculate A&#39;&#39;&#39;</span> 
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="GenDerivedDataObject.calc_B"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.GenDerivedDataObject.calc_B">[docs]</a>    <span class="k">def</span> <span class="nf">calc_B</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Calculate A&#39;&#39;&#39;</span> 
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

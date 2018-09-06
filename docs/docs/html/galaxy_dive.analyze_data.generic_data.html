@@ -1,0 +1,362 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.analyze_data.generic_data module &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-galaxy_dive.analyze_data.generic_data">
+<span id="galaxy-dive-analyze-data-generic-data-module"></span><h1>galaxy_dive.analyze_data.generic_data module<a class="headerlink" href="#module-galaxy_dive.analyze_data.generic_data" title="Permalink to this headline">¶</a></h1>
+<p>Class for analyzing simulation data.</p>
+<p>&#64;author: Zach Hafen
+&#64;contact: <a class="reference external" href="mailto:zachary&#46;h&#46;hafen&#37;&#52;&#48;gmail&#46;com">zachary<span>&#46;</span>h<span>&#46;</span>hafen<span>&#64;</span>gmail<span>&#46;</span>com</a>
+&#64;status: Development</p>
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.generic_data.DataKeyParser">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.generic_data.</code><code class="descname">DataKeyParser</code><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataKeyParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataKeyParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class for parsing data_keys provided to SimulationData.</p>
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataKeyParser.is_fraction_key">
+<code class="descname">is_fraction_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataKeyParser.is_fraction_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_fraction_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the data should be some fraction of its relevant scale.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Data key to check.</dd>
+<dt>Returns:</dt>
+<dd>is_fraction_key (bool) : True if the data should be scaled as a fraction of the relevant scale.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataKeyParser.is_log_key">
+<code class="descname">is_log_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataKeyParser.is_log_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_log_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the data key indicates the data should be put in log scale.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Data key to check.</dd>
+<dt>Returns:</dt>
+<dd>is_log_key (bool) : True if the data should be taken log10 of</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataKeyParser.is_position_key">
+<code class="descname">is_position_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataKeyParser.is_position_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_position_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the data key deals with position primarily.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Data key to check.</dd>
+<dt>Returns:</dt>
+<dd>is_position_key (bool) : True if deals with position.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataKeyParser.is_velocity_key">
+<code class="descname">is_velocity_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataKeyParser.is_velocity_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_velocity_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the data key deals with velocity primarily.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Data key to check.</dd>
+<dt>Returns:</dt>
+<dd>is_velocity_key (bool) : True if deals with velocity.</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.generic_data.DataMasker">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.generic_data.</code><code class="descname">DataMasker</code><span class="sig-paren">(</span><em>data_object</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataMasker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataMasker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataMasker.clear_masks">
+<code class="descname">clear_masks</code><span class="sig-paren">(</span><em>clear_optional_masks=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataMasker.clear_masks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataMasker.clear_masks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the masks in total to nothing.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd>self.masks (lists) : Sets to empty</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataMasker.get_selected_data">
+<code class="descname">get_selected_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>mask='total'</em>, <em>optional_masks=None</em>, <em>sl=None</em>, <em>apply_slice_to_mask=True</em>, <em>fix_invalid=False</em>, <em>compress=True</em>, <em>mask_multidim_data=True</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataMasker.get_selected_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataMasker.get_selected_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the data that doesn’t have some sort of mask applied to it. Use the processed data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Data key to get the data for.
+mask (str or np.array of bools) : Mask to apply. If none, use the total mask.
+optional_masks (list-like) : List of names of optional masks to use (must be found in self.optional_masks).
+sl (slice) : Slice to apply to the data
+apply_slice_to_mask (bool) : Whether or not to apply the same slice you applied to the data to the mask.
+fix_invalid (bool) : Whether or not to also mask invalid data.
+compress (bool) : Whether or not to return compressed data.
+mask_multidim_data (bool) : Whether or not to change the mask to fit multidimensional data.
+<a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs : Passed to get_proceesed_data.</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>data_ma (np.array) <span class="classifier-delimiter">:</span> <span class="classifier">Compressed masked data. Because it’s compressed it may not have the same shape as the</span></dt>
+<dd>original data.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataMasker.get_total_mask">
+<code class="descname">get_total_mask</code><span class="sig-paren">(</span><em>optional_masks=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataMasker.get_total_mask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataMasker.get_total_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the result of combining all masks in the data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>optional_masks (list-like) : List of names of optional masks to use (must be found in self.optional_masks).</dd>
+<dt>Returns:</dt>
+<dd>total_mask (np.array of bools) : Result of all masks.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.DataMasker.mask_data">
+<code class="descname">mask_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>data_min=&lt;object object&gt;</em>, <em>data_max=&lt;object object&gt;</em>, <em>data_value=&lt;object object&gt;</em>, <em>custom_mask=&lt;object object&gt;</em>, <em>return_or_store='store'</em>, <em>optional_mask=False</em>, <em>mask_name=&lt;object object&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#DataMasker.mask_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.DataMasker.mask_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get only the particle data within a certain range. Note that it retrieves the processed data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>data_key (str) :</dt>
+<dd>Data key to base the mask off of.</dd>
+<dt>data_min (float) :</dt>
+<dd>Everything below data_min will be masked.</dd>
+<dt>data_max (float) :</dt>
+<dd>Everything above data_max will be masked.</dd>
+<dt>data_value (float) :</dt>
+<dd>Everything except for data_value will be masked.</dd>
+<dt>custom_mask (bool) :</dt>
+<dd>If provided, take in a custom mask instead, using data_key as the label for the mask.</dd>
+<dt>return_or_store (str) :</dt>
+<dd>Whether to store the mask as part of the masks dictionary, or to return it.</dd>
+<dt>optional_mask (bool) :</dt>
+<dd>If True, store in the dictionary self.optional_masks instead.</dd>
+<dt>mask_name (str) :</dt>
+<dd>What name to associate with this mask? Currently only relevant if optional_mask is True.
+By default uses the data_key as the name.</dd>
+<dt><a href="#id5"><span class="problematic" id="id6">*</span></a>args, <a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs :</dt>
+<dd>Passed to self.data_object.get_processed_data()</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>data_mask (np.array of bools) :</dt>
+<dd>If requested, the mask for data in that range.</dd>
+</dl>
+</dd>
+<dt>Modifies:</dt>
+<dd><dl class="first last docutils">
+<dt>self.masks (list of dicts) :</dt>
+<dd>Appends a dictionary describing the mask.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData">
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.generic_data.</code><code class="descname">GenericData</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Very generic data class, with getting and masking functionality.</p>
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.base_data_shape">
+<code class="descname">base_data_shape</code><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.base_data_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>sl=None</em>, <em>data_storage=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the data from within the class. Only for getting the data. No post-processing or changing the data
+(putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
+hence a whole function for getting the data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Key in the data dictionary for the key we want to get
+sl (slice) : Slice of the data, if requested.</dd>
+<dt>Returns:</dt>
+<dd>data (np.ndarray) : Requested data.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.get_processed_data">
+<code class="descname">get_processed_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>data_method=&lt;object object&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData.get_processed_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.get_processed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get post-processed data. (Accounting for fractions, log-space, etc.).</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : What data to get.
+data_method (str) : What method to use for getting the data itself. Defaults to using self.get_data
+<a href="#id9"><span class="problematic" id="id10">*</span></a>args, <a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs : Passed to get_data()</dd>
+<dt>Returns:</dt>
+<dd>processed_data (np.ndarray) : Requested data, including formatting.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.get_selected_data">
+<code class="descname">get_selected_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData.get_selected_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.get_selected_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for getting masked data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.handle_data_key_error">
+<code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData.handle_data_key_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for attempting to generate data on the fly.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>data_key (str) : Type of data to attempt to generate data for.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.iterate_over_method">
+<code class="descname">iterate_over_method</code><span class="sig-paren">(</span><em>method_str</em>, <em>iter_arg</em>, <em>iter_values</em>, <em>method_args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData.iterate_over_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.iterate_over_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over a specified method, and get the results out.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>method_str (str) :</dt>
+<dd>Which method to use.</dd>
+<dt>iter_arg (str) :</dt>
+<dd>Which argument of the method to iterate over.</dd>
+<dt>iter_values (list of values) :</dt>
+<dd>Which values to change.</dd>
+<dt>method_args (dict) :</dt>
+<dd>Default args to pass to the method</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>results (list) : [ method( <a href="#id13"><span class="problematic" id="id14">**</span></a>used_args ) for used_args in all_variations_of_used_args ]</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.length_scale">
+<code class="descname">length_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.length_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial length scale. By default, is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.mask_data">
+<code class="descname">mask_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData.mask_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.mask_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for masking data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.metallicity_scale">
+<code class="descname">metallicity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.metallicity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial metallicity scale. By default is z_sun
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.shift">
+<code class="descname">shift</code><span class="sig-paren">(</span><em>data</em>, <em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/generic_data.html#GenericData.shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.</p>
+<p>data : data to be shifted
+data_key : Data key for the parameters to be shifted
+Parameters are a subdictionary of self.kwargs
+‘data_key’ : What data key the data is shifted for</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.generic_data.GenericData.velocity_scale">
+<code class="descname">velocity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.generic_data.GenericData.velocity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial velocity scale. By default is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/galaxy_dive.analyze_data.generic_data.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/galaxy_dive.analyze_data.generic_data.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

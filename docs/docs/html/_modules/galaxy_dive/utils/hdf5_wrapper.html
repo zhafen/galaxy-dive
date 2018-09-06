@@ -1,0 +1,545 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.utils.hdf5_wrapper &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.utils.hdf5_wrapper</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;Wrapper for hdf5 objects opened with h5py. Serves various needs not inherent in h5py.&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.utils.utilities</span> <span class="k">as</span> <span class="nn">utilities</span>
+
+<span class="c1">########################################################################</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s1">&#39;Zachary Hafen&#39;</span>
+
+<span class="n">__maintainer__</span> <span class="o">=</span> <span class="s1">&#39;Zachary Hafen&#39;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;zachary.h.hafen@gmail.com&#39;</span>
+<span class="n">__status__</span> <span class="o">=</span> <span class="s1">&#39;Beta&#39;</span>
+
+<span class="c1">########################################################################</span>
+
+<span class="n">default</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HDF5Wrapper"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper">[docs]</a><span class="k">class</span> <span class="nc">HDF5Wrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HDF5Wrapper.save_data"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save data at self.filename.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): The data to be saved.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+
+            <span class="c1"># If it&#39;s a group</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key2</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">key2</span> <span class="o">!=</span> <span class="s1">&#39;attrs&#39;</span><span class="p">:</span>
+                        <span class="n">full_data_key</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key2</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">full_data_key</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">key2</span><span class="p">])</span>
+
+                    <span class="c1"># Include any attributes</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;attrs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;attrs&#39;</span><span class="p">][</span><span class="n">attr_key</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+                <span class="c1"># Handle the case where there&#39;s an empty dataset</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="p">{}:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unexpected TypeError, unable to save.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Catalog which key &#39;Indexes&#39; the dataset, if any.</span>
+        <span class="k">if</span> <span class="n">index_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;index_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_key</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HDF5Wrapper.insert_data"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.insert_data">[docs]</a>    <span class="k">def</span> <span class="nf">insert_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">index_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">insert_columns</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Insert data. Does this by making whole new copy, appending to it,</span>
+<span class="sd">        sorting that by the index, and saving the sorted version.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_data (dict):</span>
+<span class="sd">                The new data to be sorted.</span>
+
+<span class="sd">            index_key (str):</span>
+<span class="sd">                What key to sort the data by. Defaults to None, which will use</span>
+<span class="sd">                the key inherent in the data set, and fail otherwise.</span>
+
+<span class="sd">            insert_columns (bool):</span>
+<span class="sd">                If True, the data in new_data should be included as new columns.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># Make sure we use a consistent index.</span>
+        <span class="k">if</span> <span class="n">index_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;index_key&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">assert</span> <span class="n">index_key</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;index_key&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;index_key&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">index_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;index_key&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;No index_key specified at any point.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Handle an empty data set</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># Load the data into lists</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1"># Append the new data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">insert_columns</span><span class="p">:</span>
+            <span class="c1"># Case where we have rows.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new_data</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+            <span class="c1"># Deal with single floats</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new_data</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+        <span class="c1"># Columns case (using pandas)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Set up DataFrames</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span> <span class="n">data</span> <span class="p">)</span>
+            <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span> <span class="n">new_data</span> <span class="p">)</span>
+
+            <span class="c1"># Merge dataframes and get result out</span>
+            <span class="n">merged_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_new</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">index_key</span> <span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">merged_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span> <span class="s1">&#39;list&#39;</span> <span class="p">)</span>
+
+        <span class="c1"># Sort the data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_dictionary</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index_key</span><span class="p">)</span>
+
+        <span class="c1"># Only include unique values, according to the index</span>
+        <span class="n">unique_index_data</span><span class="p">,</span> <span class="n">unique_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">index_key</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])[</span><span class="n">unique_inds</span><span class="p">]</span>
+
+        <span class="c1"># Delete the old data.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_hdf5_file</span><span class="p">()</span>
+
+        <span class="c1"># Store the data again</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index_key</span><span class="o">=</span><span class="n">index_key</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HDF5Wrapper.sort_dictionary"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.sort_dictionary">[docs]</a>    <span class="k">def</span> <span class="nf">sort_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index_key</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Sort a dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): Dictionary to sort.</span>
+<span class="sd">            index_key (str): Key to sort by.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Sort the data</span>
+        <span class="n">sorted_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">index_key</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])[</span><span class="n">sorted_inds</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HDF5Wrapper.subsample_hdf5_file"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.subsample_hdf5_file">[docs]</a>    <span class="k">def</span> <span class="nf">subsample_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subsamples</span><span class="p">,</span> <span class="n">particle_data</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Create a dictionary containing subsamples of the data.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            subsamples (int): The number of subsamples per axis, for a total of subsamples^n_dims subsamples.</span>
+<span class="sd">            particle_data (bool or int): Whether or not the data contains particle-like data.</span>
+<span class="sd">                If not False, then it&#39;s the number of files the snapshot is spread across</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">def</span> <span class="nf">subsample_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+
+            <span class="n">subsampled_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">dataset</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">subsampled_data</span>
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="c1"># Get the first value for easy reference</span>
+                <span class="n">first_value</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c1"># Get the shape of the subsample</span>
+                <span class="n">n_dims</span> <span class="o">=</span> <span class="n">first_value</span><span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span>
+                <span class="n">subsample_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">subsamples</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dims</span><span class="p">)])</span>
+                <span class="n">n_subsamples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">subsample_shape</span><span class="p">)</span>
+
+
+                <span class="c1"># Subsample indices</span>
+                <span class="k">if</span> <span class="n">particle_data</span><span class="p">:</span>
+                    <span class="n">n_particles</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span> <span class="n">first_value</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+                    <span class="n">subsample_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_particles</span><span class="p">,</span> <span class="n">subsamples</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">subsample_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">first_value</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">n_subsamples</span><span class="p">)</span>
+
+                <span class="c1"># Do the subsampling</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+
+                    <span class="c1"># Subsample when using particle data</span>
+                    <span class="k">if</span> <span class="n">particle_data</span><span class="p">:</span>
+
+                        <span class="n">n_additional_dims</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">n_particles</span>
+
+                        <span class="k">if</span> <span class="n">n_additional_dims</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+                            <span class="c1"># Subsample the data</span>
+                            <span class="n">subsampled_data_for_key</span> <span class="o">=</span> <span class="p">[]</span>
+                            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_additional_dims</span><span class="p">):</span>
+                                <span class="n">subsampled_data_for_key</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">dataset</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">][:,</span><span class="n">i</span><span class="p">][</span> <span class="n">subsample_inds</span> <span class="p">]</span> <span class="p">)</span>
+
+                            <span class="c1"># Format the returned data</span>
+                            <span class="n">subsampled_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">subsampled_data_for_key</span> <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+
+                            <span class="n">subsampled_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">][</span> <span class="n">subsample_inds</span> <span class="p">]</span>
+
+                    <span class="c1"># Standard scenario</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">values</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">subsample_inds</span><span class="p">]</span>
+                        <span class="n">subsampled_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">subsample_shape</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">subsampled_data</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+        <span class="n">subsampled_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Subsample differently if we have a number of groups</span>
+        <span class="n">first_value</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">first_value</span><span class="p">)</span> <span class="o">==</span> <span class="n">h5py</span><span class="o">.</span><span class="n">_hl</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">Group</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">subsampled_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">subsample_dataset</span><span class="p">(</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+                <span class="c1"># Include attributes</span>
+                <span class="n">group_attrs</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                    <span class="c1"># When copying particle data, manually change some of the attrs.</span>
+                    <span class="k">if</span> <span class="n">attr_key</span> <span class="o">==</span> <span class="s1">&#39;NumPart_ThisFile&#39;</span><span class="p">:</span>
+                        <span class="c1"># Don&#39;t overwrite when 0 particles</span>
+                        <span class="n">nonzero_numpart</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+                        <span class="n">group_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">nonzero_numpart</span><span class="p">,</span> <span class="n">subsamples</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="n">attr_key</span> <span class="o">==</span> <span class="s1">&#39;NumPart_Total&#39;</span><span class="p">:</span>
+                        <span class="c1"># Don&#39;t overwrite when 0 particles</span>
+                        <span class="n">nonzero_numpart</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+                        <span class="n">group_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">nonzero_numpart</span><span class="p">,</span> <span class="n">particle_data</span><span class="o">*</span><span class="n">subsamples</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+                    <span class="k">elif</span> <span class="n">attr_key</span> <span class="o">==</span> <span class="s1">&#39;NumFilesPerSnapshot&#39;</span><span class="p">:</span>
+                        <span class="n">group_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_data</span>
+
+
+                    <span class="c1"># Standard case</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">group_attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span>
+
+                <span class="n">subsampled_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;attrs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_attrs</span>
+
+
+        <span class="c1"># Standard subsampling</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subsampled_data</span> <span class="o">=</span> <span class="n">subsample_dataset</span><span class="p">(</span> <span class="n">f</span> <span class="p">)</span>
+
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">subsampled_data</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HDF5Wrapper.copy_hdf5_file"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.copy_hdf5_file">[docs]</a>    <span class="k">def</span> <span class="nf">copy_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_filename</span><span class="p">,</span> <span class="n">subsamples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">particle_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Copy the hdf5 file into a new file. May not copy all attributes successfully?</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            copy_filename (str): Where the file should be copied to.</span>
+<span class="sd">            subsamples (int): If chosen, number of subsamples per axis. Defaults to no subsampling.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Open files</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Copy the contents</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">subsamples</span><span class="p">:</span>
+
+            <span class="n">g</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">copy_filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">subsamples</span><span class="p">:</span>
+
+            <span class="n">subsampled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample_hdf5_file</span><span class="p">(</span> <span class="n">subsamples</span><span class="p">,</span> <span class="n">particle_data</span><span class="o">=</span><span class="n">particle_data</span> <span class="p">)</span>
+
+            <span class="c1"># Save the data</span>
+            <span class="n">g_h5_wrapper</span> <span class="o">=</span> <span class="n">HDF5Wrapper</span><span class="p">(</span> <span class="n">copy_filename</span> <span class="p">)</span>
+            <span class="n">g_h5_wrapper</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span> <span class="n">subsampled_data</span> <span class="p">)</span>
+
+            <span class="n">g</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">copy_filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">attr_key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">attr_key</span><span class="p">]</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">g</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HDF5Wrapper.clear_hdf5_file"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.clear_hdf5_file">[docs]</a>    <span class="k">def</span> <span class="nf">clear_hdf5_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;WARNING: Clears the entire hdf5 file of any useful data.&#39;&#39;&#39;</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="copy_snapshot"><a class="viewcode-back" href="../../../galaxy_dive.utils.hdf5_wrapper.html#galaxy_dive.utils.hdf5_wrapper.copy_snapshot">[docs]</a><span class="k">def</span> <span class="nf">copy_snapshot</span><span class="p">(</span> <span class="n">sdir</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="n">copy_dir</span><span class="p">,</span> <span class="n">subsamples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">redistribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_files</span><span class="o">=</span><span class="n">default</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Copy a gadget/gizmo snapshot, and subsample it if you choose to.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sdir (str) :</span>
+<span class="sd">            Snapshot directory to copy from.</span>
+
+<span class="sd">        snum (int) :</span>
+<span class="sd">            Which snapshot to copy over.</span>
+
+<span class="sd">        copy_dir (str) :</span>
+<span class="sd">            Where you want to save the copied snapshot.</span>
+
+<span class="sd">        subsamples (bool or int) :</span>
+<span class="sd">            If not False, the number of particles you will have in your subsampled snapshot,</span>
+<span class="sd">            per file part.</span>
+
+<span class="sd">        redistribute (bool) :</span>
+<span class="sd">            If True, redistribute the particles evenly among the snapshots.</span>
+
+<span class="sd">        n_files (str or int) :</span>
+<span class="sd">            If not default, the number of pieces you want your copied snapshot broken into</span>
+<span class="sd">            (must be less than the number of pieces in the original snapshot if subsampling).</span>
+<span class="sd">            In general, should really only be used when subsampling or redistributing.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">snapdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">sdir</span><span class="p">,</span> <span class="s1">&#39;snapdir_</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="n">copy_snapdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">copy_dir</span><span class="p">,</span> <span class="s1">&#39;snapdir_</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1"># Make sure the path exists</span>
+    <span class="n">utilities</span><span class="o">.</span><span class="n">make_dir</span><span class="p">(</span> <span class="n">copy_snapdir</span> <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">subsamples</span> <span class="ow">and</span> <span class="n">redistribute</span><span class="p">),</span> <span class="s2">&quot;Cannot both subsample and redistribute&quot;</span>
+
+    <span class="n">n_files_orig</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span> <span class="n">snapdir</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_files</span> <span class="ow">is</span> <span class="n">default</span><span class="p">:</span>
+        <span class="n">n_files</span> <span class="o">=</span> <span class="n">n_files_orig</span>
+
+    <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;Starting copying...&#39;</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">redistribute</span><span class="p">:</span>
+
+        <span class="n">orig_file_basename</span> <span class="o">=</span> <span class="s1">&#39;snapshot_</span><span class="si">{:03}</span><span class="s1">.0.hdf5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span>
+        <span class="n">orig_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">snapdir</span><span class="p">,</span> <span class="n">orig_file_basename</span> <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;Loading all data...&#39;</span> <span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">n_files_orig</span> <span class="p">):</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Loading file </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">i</span> <span class="p">))</span>
+
+            <span class="n">file_basename</span> <span class="o">=</span> <span class="s1">&#39;snapshot_</span><span class="si">{:03}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.hdf5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span><span class="p">,</span> <span class="n">i</span> <span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">snapdir</span><span class="p">,</span> <span class="n">file_basename</span> <span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span> <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+                <span class="n">ptypes</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span>
+                <span class="k">del</span> <span class="n">ptypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span> <span class="s1">&#39;Header&#39;</span> <span class="ow">in</span> <span class="n">ptypes</span> <span class="p">),</span> <span class="s2">&quot;Deleted wrong key...&quot;</span>
+
+                <span class="k">for</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="n">ptypes</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+                    <span class="n">pdata</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">ptype</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pdata</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+                        <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">pdata</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;Concatenating and splitting data...&#39;</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;  Concatenating </span><span class="si">{}</span><span class="s1"> data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">ptype</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                <span class="c1"># Pull into a single snapshot</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span> <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array_split</span><span class="p">(</span> <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">n_files</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span> <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;Storing data...&#39;</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">n_files</span> <span class="p">):</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Copying </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_files</span> <span class="p">))</span>
+
+            <span class="n">file_basename</span> <span class="o">=</span> <span class="s1">&#39;snapshot_</span><span class="si">{:03}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.hdf5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span><span class="p">,</span> <span class="n">i</span> <span class="p">)</span>
+            <span class="n">copy_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">copy_snapdir</span><span class="p">,</span> <span class="n">file_basename</span> <span class="p">)</span>
+
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span> <span class="n">filename</span><span class="p">,</span> <span class="n">copy_filename</span> <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span> <span class="s1">&#39;  Storing </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_files</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">copy_filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span> <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+                <span class="n">n_particles_file</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;NumPart_ThisFile&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="n">ptypes</span><span class="p">:</span>
+
+                    <span class="n">n_particles_file</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ptype</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="s1">&#39;Masses&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                        <span class="k">del</span> <span class="n">f</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+                        <span class="n">f</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">ptype</span><span class="p">][</span><span class="n">key</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="k">del</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;NumPart_ThisFile&#39;</span><span class="p">]</span>
+                    <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;NumPart_ThisFile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">n_particles_file</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="p">)</span>
+
+                <span class="k">del</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;NumFilesPerSnapshot&#39;</span><span class="p">]</span>
+                <span class="n">f</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;NumFilesPerSnapshot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span> <span class="n">n_files</span> <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">n_files</span> <span class="p">):</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  Copying </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_files</span> <span class="p">))</span>
+
+            <span class="n">file_basename</span> <span class="o">=</span> <span class="s1">&#39;snapshot_</span><span class="si">{:03}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.hdf5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">snum</span><span class="p">,</span> <span class="n">i</span> <span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">snapdir</span><span class="p">,</span> <span class="n">file_basename</span> <span class="p">)</span>
+            <span class="n">copy_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">copy_snapdir</span><span class="p">,</span> <span class="n">file_basename</span> <span class="p">)</span>
+
+            <span class="c1"># Actually make the copy</span>
+            <span class="n">h5_wrapper</span> <span class="o">=</span> <span class="n">HDF5Wrapper</span><span class="p">(</span> <span class="n">filename</span> <span class="p">)</span>
+            <span class="n">h5_wrapper</span><span class="o">.</span><span class="n">copy_hdf5_file</span><span class="p">(</span> <span class="n">copy_filename</span><span class="p">,</span> <span class="n">subsamples</span><span class="o">=</span><span class="n">subsamples</span><span class="p">,</span> <span class="n">particle_data</span><span class="o">=</span><span class="n">n_files</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done!&#39;</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Zachary Hafen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
