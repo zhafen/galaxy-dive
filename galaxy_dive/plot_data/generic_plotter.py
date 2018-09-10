@@ -390,8 +390,9 @@ class GenericPlotter( object ):
         label_redshift = False,
         label_fontsize = 24,
         tick_param_args = None,
-        save_file = None,
         out_dir = None,
+        save_file = None,
+        close_plot_after_saving = True,
         fix_invalid = True,
         line_slope = None,
         cdf = False,
@@ -401,6 +402,7 @@ class GenericPlotter( object ):
         return_dist = False,
         *args, **kwargs ):
         '''Make a 2D histogram of the data. Extra arguments are passed to get_selected_data.
+
         Args:
             x_key, y_key (str) : Data keys to plot.
             weight_key (str) : Data key for data to use as a weight. By None, no weight.
@@ -632,7 +634,8 @@ class GenericPlotter( object ):
 
             gen_plot.save_fig( out_dir, save_file, fig=fig, dpi=75 )
 
-            plt.close()
+            if close_plot_after_saving:
+                plt.close()
 
         # Return?
         if return_dist:
