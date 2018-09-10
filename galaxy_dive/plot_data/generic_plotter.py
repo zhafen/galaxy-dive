@@ -94,7 +94,8 @@ class GenericPlotter( object ):
         assert_contains_all_data = True,
         data_kwargs = {},
         *args, **kwargs ):
-        '''Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_selected_data().
+        '''Make a histogram of the data. Extra arguments are passed to
+        self.data_object.get_selected_data.
 
         Args:
             data_key (str) :
@@ -107,7 +108,7 @@ class GenericPlotter( object ):
                 How to slices the data.
 
             ax (axis) :
-                What axis to use. By None creates a figure and places the axis on it.
+                What axis to use. By default creates a figure and places the axis on it.
 
             fix_invalid (bool) :
                 Throw away invalid values?
@@ -308,7 +309,9 @@ class GenericPlotter( object ):
 )
 
         # Plot label
-        if plot_label is None:
+        if ( self.label is None ) and ( plot_label is None ):
+            pass
+        elif plot_label is None:
             plt_label = ax.annotate(
                 s = self.label,
                 xy = (0.,1.0),
@@ -359,6 +362,7 @@ class GenericPlotter( object ):
 
     def histogram2d( self,
         x_key, y_key,
+        x_data = None, y_data = None,
         weight_key = None,
         x_data_args = {}, y_data_args = {},
         weight_data_args = {},
@@ -420,7 +424,7 @@ class GenericPlotter( object ):
             label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.
             label_redshift (bool) : If True, add a label indicating the redshift.
             label_fontsize (int) : Fontsize for the labels.
-            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don't change inherent Nones.
+            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don't change inherent defaults.
             out_dir (str) : If given, where to save the file.
             fix_invalid (bool) : Fix invalid values.
             line_slope (float) : If given, draw a line with the given slope.
@@ -436,11 +440,13 @@ class GenericPlotter( object ):
             'y': y_data_args,
             'weight': weight_data_args
         }
-        data_kwargs = utilities.dict_from_Nones_and_variations( kwargs, varying_kwargs )
+        data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
 
         # Get data
-        x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
-        y_data = self.data_object.get_selected_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
+        if x_data is None:
+            x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
+        if y_data is None:
+            y_data = self.data_object.get_selected_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
 
         if y_div_function is not None:
             y_div_values = y_div_function( x_data )
@@ -679,7 +685,7 @@ class GenericPlotter( object ):
             label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.
             label_redshift (bool) : If True, add a label indicating the redshift.
             label_fontsize (int) : Fontsize for the labels.
-            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don't change inherent Nones.
+            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don't change inherent defaults.
             out_dir (str) : If given, where to save the file.
             fix_invalid (bool) : Fix invalid values.
             line_slope (float) : If given, draw a line with the given slope.
@@ -933,7 +939,7 @@ class GenericPlotter( object ):
             fig = plt.figure( figsize=figsize, facecolor='white', )
             ax = plt.gca()
 
-        all_plotting_kwargs = utilities.dict_from_Nones_and_variations( kwargs, variations )
+        all_plotting_kwargs = utilities.dict_from_defaults_and_variations( kwargs, variations )
 
         axis_plotting_method = getattr( self, axis_plotting_method_str )
         for key, plotting_kwargs in all_plotting_kwargs.items():
@@ -958,7 +964,7 @@ class GenericPlotter( object ):
 
     def panel_plot( self,
         panel_plotting_method_str,
-        Nones,
+        defaults,
         variations,
         slices = None,
         n_rows = 2,
@@ -979,7 +985,7 @@ class GenericPlotter( object ):
 
         Args:
             panel_plotting_method_str (str) : What type of plot to make.
-            Nones (dict) : Default arguments to pass to panel_plotting_method.
+            defaults (dict) : Default arguments to pass to panel_plotting_method.
             variations (dict of dicts) : Differences in plotting arguments per subplot.
             slices (slice) : What slices to select. By None, this doesn't pass any slices argument to panel_plotting_method
             plot_label (str or dict) : What to label the plot with. By None, uses self.label.
@@ -1000,9 +1006,9 @@ class GenericPlotter( object ):
         fig.subplots_adjust( **subplot_spacing_args )
 
         if slices is not None:
-            Nones['slices'] = slices
+            defaults['slices'] = slices
 
-        plotting_kwargs = utilities.dict_from_Nones_and_variations( Nones, variations )
+        plotting_kwargs = utilities.dict_from_defaults_and_variations( defaults, variations )
 
         # Setup axes
         gs = gridspec.GridSpec(n_rows, n_columns)
@@ -1063,7 +1069,7 @@ class GenericPlotter( object ):
         if label_galaxy_cut:
             info_label = r'$r_{ \rm cut } = ' + '{:.3g}'.format( self.data_object.galids.parameters['galaxy_cut'] ) + 'r_{ s}$'
         if label_redshift:
-            ind = Nones['slices']
+            ind = defaults['slices']
             info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[ind] ) + '$'+ info_label
         if label_galaxy_cut or label_redshift:
             label_ax = plt.subplot( gs[0,n_columns-1,] )
@@ -1151,12 +1157,12 @@ class PlotterSet( utilities.SmartDict ):
     '''Container for multiple plotters that is an enhanced dictionary.
     '''
 
-    def __init__( self, data_object_cls, plotter_object_cls, Nones, variations ):
+    def __init__( self, data_object_cls, plotter_object_cls, defaults, variations ):
         '''
         Args:
             data_object_cls (object) : Class for the data object.
             plotter_object_cls (object) : Class for the plotter object.
-            Nones (dict) : Set of None arguments for loading worldline data.
+            defaults (dict) : Set of None arguments for loading worldline data.
             variations (dict of dicts) : Labels and differences in arguments to be passed to Worldlines
         '''
 
@@ -1164,7 +1170,7 @@ class PlotterSet( utilities.SmartDict ):
         storage = {}
         for key in variations.keys():
 
-            kwargs = dict( Nones )
+            kwargs = dict( defaults )
             for var_key in variations[key].keys():
                 kwargs[var_key] = variations[key][var_key]
 
