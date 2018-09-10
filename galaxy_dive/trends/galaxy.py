@@ -9,10 +9,12 @@
 import math
 import numpy as np
 import os
+import pandas as pd
 import scipy.interpolate as interp
 from scipy.optimize import newton
 import sys
 
+import galaxy_dive.config as gd_config
 import galaxy_dive.utils.constants as constants
 import galaxy_dive.utils.utilities as utilities
 
@@ -290,6 +292,38 @@ def galaxy_available_metals(
         y = 0.0479
 
     return y * m_star ** alpha
+
+########################################################################
+
+def halo_metal_budget(
+    data = 'MzMstar_Ma2016.csv',
+    data_dir = gd_config.DATA_DIR,
+):
+    '''Plot the halo metal budget, i.e. the mass of metals in the halo divided
+    by the estimate of the mass of available metals produced by the galaxy.
+
+    Args:
+        data (str) :
+            Filename of the data to use.
+            'MsMstar_Ma2016.csv' contains values from the FIRE-1 sims.
+
+        data_dir (str) :
+            Location of the data file.
+
+    Retuns:
+        m_star (array-like) :
+            Stellar mass values
+
+        met_budget (array-like) :
+            Budget for a given stellar mass
+    '''
+
+    # Load the data
+    data_filepath = os.path.join( data_dir, data )
+    df = pd.read_csv( data_filepath )
+
+    # Return the data
+    return df['Mstar'].values, df['MetalBudget'].values
 
 ########################################################################
 
