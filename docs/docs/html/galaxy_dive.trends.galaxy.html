@@ -120,6 +120,32 @@ by Peeples&amp;Somerville2013</dd>
 </dd></dl>
 
 <dl class="function">
+<dt id="galaxy_dive.trends.galaxy.halo_metal_budget">
+<code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">halo_metal_budget</code><span class="sig-paren">(</span><em>data='MzMstar_Ma2016.csv'</em>, <em>data_dir='/home1/03057/zhafen/repos/galaxy-dive/galaxy_dive/data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#halo_metal_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.halo_metal_budget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the halo metal budget, i.e. the mass of metals in the halo divided
+by the estimate of the mass of available metals produced by the galaxy.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>data (str) :</dt>
+<dd>Filename of the data to use.
+‘MsMstar_Ma2016.csv’ contains values from the FIRE-1 sims.</dd>
+<dt>data_dir (str) :</dt>
+<dd>Location of the data file.</dd>
+</dl>
+</dd>
+<dt>Retuns:</dt>
+<dd><dl class="first last docutils">
+<dt>m_star (array-like) :</dt>
+<dd>Stellar mass values</dd>
+<dt>met_budget (array-like) :</dt>
+<dd>Budget for a given stellar mass</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="galaxy_dive.trends.galaxy.ism_dust_mass">
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">ism_dust_mass</code><span class="sig-paren">(</span><em>m_star</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#ism_dust_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.ism_dust_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>ISM dust mass, compiled by Peeples+2014, using data from Skibba+2011 and

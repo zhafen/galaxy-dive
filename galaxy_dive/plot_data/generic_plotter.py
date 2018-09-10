@@ -28,10 +28,6 @@ import plotting as gen_plot
 import pu_colormaps as pu_cm
 
 ########################################################################
-
-default = object()
-
-########################################################################
 ########################################################################
 
 class GenericPlotter( object ):
@@ -66,12 +62,12 @@ class GenericPlotter( object ):
         data_key,
         provided_data = None,
         provided_hist = None,
-        weight_key = default,
+        weight_key = None,
         slices = None,
-        ax = default,
+        ax = None,
         fix_invalid = False,
         mask_zeros = False,
-        invalid_fix_method = default,
+        invalid_fix_method = None,
         bins = 32,
         normed = True,
         norm_type = 'probability',
@@ -84,11 +80,11 @@ class GenericPlotter( object ):
         linestyle = '-',
         linewidth = 3.5,
         alpha = 1.,
-        x_range = default, y_range = default,
-        x_label = default, y_label = default,
+        x_range = None, y_range = None,
+        x_label = None, y_label = None,
         add_x_label = True, add_y_label = True,
-        plot_label = default,
-        line_label = default,
+        plot_label = None,
+        line_label = None,
         label_fontsize = 24,
         x_scale = 'linear', y_scale = 'linear',
         cdf = False,
@@ -105,19 +101,19 @@ class GenericPlotter( object ):
                 Data key to plot.
 
             weight_key (str) :
-                Data key for data to use as a weight. By default, no weight.
+                Data key for data to use as a weight. By None, no weight.
 
             slices (int or tuple of slices) :
                 How to slices the data.
 
             ax (axis) :
-                What axis to use. By default creates a figure and places the axis on it.
+                What axis to use. By None creates a figure and places the axis on it.
 
             fix_invalid (bool) :
                 Throw away invalid values?
 
             invalid_fix_method (float or int) :
-                How to handle invalid values. By default throw them away. Providing a value to this argument instead replaces
+                How to handle invalid values. By None throw them away. Providing a value to this argument instead replaces
                 them with that value.
 
             bins (int or array-like) :
@@ -149,7 +145,7 @@ class GenericPlotter( object ):
                 Include axes labels?
 
             plot_label (str or dict) :
-                What to label the plot with. By default, uses self.label.
+                What to label the plot with. By None, uses self.label.
 
             line_label (str) :
                 What label to give the line.
@@ -199,7 +195,7 @@ class GenericPlotter( object ):
             else:
                 data = provided_data.copy()
 
-            if weight_key is default:
+            if weight_key is None:
                 weights = None
             else:
 
@@ -212,7 +208,7 @@ class GenericPlotter( object ):
                 weights = self.data_object.get_selected_data( weight_key, sl=sl, *args, **kwargs )
 
             if fix_invalid:
-                if invalid_fix_method is default:
+                if invalid_fix_method is None:
                     data = np.ma.fix_invalid( data ).compressed()
                 else:
                     data = np.ma.fix_invalid( data )
@@ -265,13 +261,13 @@ class GenericPlotter( object ):
             )
 
 
-        if ax is default:
+        if ax is None:
             fig = plt.figure( figsize=(11,5), facecolor='white', )
             ax = plt.gca()
-        if line_label is default:
+        if line_label is None:
             line_label = self.label
 
-        if color is default:
+        if color is None:
             color = self.color
 
         # Inserting a 0 at the beginning allows plotting a numpy histogram with a step plot
@@ -312,7 +308,7 @@ class GenericPlotter( object ):
 )
 
         # Plot label
-        if plot_label is default:
+        if plot_label is None:
             plt_label = ax.annotate(
                 s = self.label,
                 xy = (0.,1.0),
@@ -337,20 +333,20 @@ class GenericPlotter( object ):
 
         # Add axis labels
         if add_x_label:
-            if x_label is default:
+            if x_label is None:
                 x_label = data_key
             ax.set_xlabel( x_label, fontsize=label_fontsize )
         if add_y_label:
-            if y_label is default:
+            if y_label is None:
                 if not cdf:
                     y_label = r'Normalized Histogram'
                 else:
                     y_label = r'CDF'
             ax.set_ylabel( y_label, fontsize=label_fontsize )
 
-        if x_range is not default:
+        if x_range is not None:
             ax.set_xlim( x_range )
-        if y_range is not default:
+        if y_range is not None:
             ax.set_ylim( y_range )
 
         ax.set_xscale( x_scale )
@@ -363,12 +359,12 @@ class GenericPlotter( object ):
 
     def histogram2d( self,
         x_key, y_key,
-        weight_key = default,
+        weight_key = None,
         x_data_args = {}, y_data_args = {},
         weight_data_args = {},
         slices = None,
-        ax = default,
-        x_range = default, y_range = default,
+        ax = None,
+        x_range = None, y_range = None,
         x_scale = 'linear', y_scale = 'linear', z_scale = 'log',
         n_bins = 128,
         average = False,
@@ -381,19 +377,19 @@ class GenericPlotter( object ):
         zorder = 0,
         add_colorbar = True,
         cmap = pu_cm.magma,
-        colorbar_args = default,
-        x_label = default, y_label = default,
+        colorbar_args = None,
+        x_label = None, y_label = None,
         add_x_label = True, add_y_label = True,
-        plot_label = default,
+        plot_label = None,
         outline_plot_label = False,
         label_galaxy_cut = False,
         label_redshift = False,
         label_fontsize = 24,
-        tick_param_args = default,
-        save_file = default,
+        tick_param_args = None,
+        save_file = None,
         out_dir = None,
         fix_invalid = True,
-        line_slope = default,
+        line_slope = None,
         cdf = False,
         horizontal_line = None, vertical_line = None,
         horizontal_line_kwargs = { 'linestyle': '--', 'linewidth': 5, 'color': '#337DB8', },
@@ -403,11 +399,11 @@ class GenericPlotter( object ):
         '''Make a 2D histogram of the data. Extra arguments are passed to get_selected_data.
         Args:
             x_key, y_key (str) : Data keys to plot.
-            weight_key (str) : Data key for data to use as a weight. By default, no weight.
+            weight_key (str) : Data key for data to use as a weight. By None, no weight.
             x_data_args, y_data_args (dicts) : Keyword arguments to be passed only to x or y.
             slices (int or tuple of slices) : How to slices the data.
-            ax (axis) : What axis to use. By default creates a figure and places the axis on it.
-            x_range, y_range ( (float, float) ) : Histogram edges. If default, all data is enclosed. If list, set manually.
+            ax (axis) : What axis to use. By None creates a figure and places the axis on it.
+            x_range, y_range ( (float, float) ) : Histogram edges. If None, all data is enclosed. If list, set manually.
                 If float, is +- x_range*length scale at that snapshot.
             n_bins (int) : Number of bins in the histogram.
             vmin, vmax (float) : Limits for the colorbar.
@@ -415,16 +411,16 @@ class GenericPlotter( object ):
             plot_halos (bool) : Whether or not to plot merger tree halos on top of the histogram.
                 Only makes sense for when dealing with positions.
             add_colorbar (bool) : If True, add a colorbar to colorbar_args
-            colorbar_args (axis) : What axis to add the colorbar to. By default, is ax.
+            colorbar_args (axis) : What axis to add the colorbar to. By None, is ax.
             x_label, ylabel (str) : Axes labels.
             add_x_label, add_y_label (bool) : Include axes labels?
-            plot_label (str or dict) : What to label the plot with. By default, uses self.label.
+            plot_label (str or dict) : What to label the plot with. By None, uses self.label.
                 Can also pass a dict of full args.
             outline_plot_label (bool) : If True, add an outline around the plot label.
             label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.
             label_redshift (bool) : If True, add a label indicating the redshift.
             label_fontsize (int) : Fontsize for the labels.
-            tick_param_args (args) : Arguments to pass to ax.tick_params. By default, don't change inherent defaults.
+            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don't change inherent Nones.
             out_dir (str) : If given, where to save the file.
             fix_invalid (bool) : Fix invalid values.
             line_slope (float) : If given, draw a line with the given slope.
@@ -440,7 +436,7 @@ class GenericPlotter( object ):
             'y': y_data_args,
             'weight': weight_data_args
         }
-        data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
+        data_kwargs = utilities.dict_from_Nones_and_variations( kwargs, varying_kwargs )
 
         # Get data
         x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
@@ -459,7 +455,7 @@ class GenericPlotter( object ):
             x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
             y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
 
-        if weight_key is default:
+        if weight_key is None:
             weights = None
         else:
             weights = self.data_object.get_selected_data(
@@ -472,11 +468,11 @@ class GenericPlotter( object ):
             if fix_invalid:
                 weights = np.ma.masked_array( weights, mask=mask ).compressed()
 
-        if x_range is default:
+        if x_range is None:
             x_range = [ x_data.min(), x_data.max() ]
         elif isinstance( x_range, float ):
             x_range = np.array( [ -x_range, x_range ])*self.data_object.length_scale[slices]
-        if y_range is default:
+        if y_range is None:
             y_range = [ y_data.min(), y_data.max() ]
         elif isinstance( y_range, float ):
             y_range = np.array( [ -y_range, y_range ])*self.data_object.length_scale[slices]
@@ -515,7 +511,7 @@ class GenericPlotter( object ):
             )
 
         # Plot
-        if ax is default:
+        if ax is None:
             fig = plt.figure( figsize=(10,9), facecolor='white' )
             ax = plt.gca()
 
@@ -542,7 +538,7 @@ class GenericPlotter( object ):
 
         # Add a colorbar
         if add_colorbar:
-            if colorbar_args is default:
+            if colorbar_args is None:
                 colorbar_args = ax
                 cbar = gen_plot.add_colorbar( colorbar_args, im, method='ax' )
             else:
@@ -551,7 +547,7 @@ class GenericPlotter( object ):
             cbar.ax.tick_params( labelsize=20 )
 
         # Plot Line for easier visual interpretation
-        if line_slope is not default:
+        if line_slope is not None:
             line_x = np.array( [ x_data.min(), x_data.max() ] )
             line_y = line_slope*line_x
             ax.plot( line_x, line_y, linewidth=3, linestyle='dashed', )
@@ -565,7 +561,7 @@ class GenericPlotter( object ):
 
         # Plot label
         if plot_label is not None:
-            if plot_label is default:
+            if plot_label is None:
                 plt_label = ax.annotate(
                     s = self.label,
                     xy = (0.,1.0),
@@ -603,11 +599,11 @@ class GenericPlotter( object ):
 
         # Add axis labels
         if add_x_label:
-            if x_label is default:
+            if x_label is None:
                 x_label = x_key
             ax.set_xlabel( x_label, fontsize=label_fontsize )
         if add_y_label:
-            if y_label is default:
+            if y_label is None:
                 y_label = y_key
             ax.set_ylabel( y_label, fontsize=label_fontsize )
 
@@ -620,12 +616,12 @@ class GenericPlotter( object ):
         ax.set_yscale( y_scale )
 
         # Set tick parameters
-        if tick_param_args is not default:
+        if tick_param_args is not None:
             ax.tick_params( **tick_param_args )
 
         # Save the file
         if out_dir is not None:
-            if save_file is default:
+            if save_file is None:
                 save_file = '{}_{:03d}.png'.format( self.label, self.data_object.ptracks.snum[slices] )
 
             gen_plot.save_fig( out_dir, save_file, fig=fig, dpi=75 )
@@ -643,47 +639,47 @@ class GenericPlotter( object ):
         x_key, y_key,
         slices = None,
         n_subsample = None,
-        ax = default,
+        ax = None,
         marker_size = 100,
         color = 'k',
         marker = '.',
         zorder = -100,
-        x_range = default, y_range = default,
-        x_label = default, y_label = default,
+        x_range = None, y_range = None,
+        x_label = None, y_label = None,
         add_x_label = True, add_y_label = True,
-        plot_label = default,
+        plot_label = None,
         outline_plot_label = False,
         label_galaxy_cut = False,
         label_redshift = False,
         label_fontsize = 24,
-        tick_param_args = default,
+        tick_param_args = None,
         out_dir = None,
         fix_invalid = True,
-        line_slope = default,
+        line_slope = None,
         *args, **kwargs ):
         '''Make a 2D scatter plot of the data. Extra arguments are passed to get_selected_data.
         Args:
             x_key, y_key (str) : Data keys to plot.
-            weight_key (str) : Data key for data to use as a weight. By default, no weight.
+            weight_key (str) : Data key for data to use as a weight. By None, no weight.
             slices (int or tuple of slices) : How to slices the data.
-            ax (axis) : What axis to use. By default creates a figure and places the axis on it.
-            x_range, y_range ( (float, float) ) : Histogram edges. If default, all data is enclosed. If list, set manually.
+            ax (axis) : What axis to use. By None creates a figure and places the axis on it.
+            x_range, y_range ( (float, float) ) : Histogram edges. If None, all data is enclosed. If list, set manually.
                 If float, is +- x_range*length scale at that snapshot.
             n_bins (int) : Number of bins in the histogram.
             vmin, vmax (float) : Limits for the colorbar.
             plot_halos (bool) : Whether or not to plot merger tree halos on top of the histogram.
                 Only makes sense for when dealing with positions.
             add_colorbar (bool) : If True, add a colorbar to colorbar_args
-            colorbar_args (axis) : What axis to add the colorbar to. By default, is ax.
+            colorbar_args (axis) : What axis to add the colorbar to. By None, is ax.
             x_label, ylabel (str) : Axes labels.
             add_x_label, add_y_label (bool) : Include axes labels?
-            plot_label (str or dict) : What to label the plot with. By default, uses self.label.
+            plot_label (str or dict) : What to label the plot with. By None, uses self.label.
                 Can also pass a dict of full args.
             outline_plot_label (bool) : If True, add an outline around the plot label.
             label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.
             label_redshift (bool) : If True, add a label indicating the redshift.
             label_fontsize (int) : Fontsize for the labels.
-            tick_param_args (args) : Arguments to pass to ax.tick_params. By default, don't change inherent defaults.
+            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don't change inherent Nones.
             out_dir (str) : If given, where to save the file.
             fix_invalid (bool) : Fix invalid values.
             line_slope (float) : If given, draw a line with the given slope.
@@ -714,17 +710,17 @@ class GenericPlotter( object ):
             x_data = x_data[sampled_inds]
             y_data = y_data[sampled_inds]
 
-        if x_range is default:
+        if x_range is None:
             x_range = [ x_data.min(), x_data.max() ]
         elif isinstance( x_range, float ):
             x_range = np.array( [ -x_range, x_range ])*self.data_object.ptracks.length_scale.iloc[slices]
-        if y_range is default:
+        if y_range is None:
             y_range = [ y_data.min(), y_data.max() ]
         elif isinstance( y_range, float ):
             y_range = np.array( [ -y_range, y_range ])*self.data_object.ptracks.length_scale.iloc[slices]
 
         # Plot
-        if ax is default:
+        if ax is None:
             fig = plt.figure( figsize=(10,9), facecolor='white' )
             ax = plt.gca()
 
@@ -734,13 +730,13 @@ class GenericPlotter( object ):
         s.set_zorder( zorder )
 
         # Halo Plot
-        if line_slope is not default:
+        if line_slope is not None:
             line_x = np.array( [ x_data.min(), x_data.max() ] )
             line_y = line_slope*line_x
             ax.plot( line_x, line_y, linewidth=3, linestyle='dashed', )
 
         # Plot label
-        if plot_label is default:
+        if plot_label is None:
             plt_label = ax.annotate( s=self.label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
         elif isinstance( plot_label, str ):
             plt_label = ax.annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
@@ -765,11 +761,11 @@ class GenericPlotter( object ):
 
         # Add axis labels
         if add_x_label:
-            if x_label is default:
+            if x_label is None:
                 x_label = x_key
             ax.set_xlabel( x_label, fontsize=label_fontsize )
         if add_y_label:
-            if y_label is default:
+            if y_label is None:
                 y_label = y_key
             ax.set_ylabel( y_label, fontsize=label_fontsize )
 
@@ -778,7 +774,7 @@ class GenericPlotter( object ):
         ax.set_ylim( y_range )
 
         # Set tick parameters
-        if tick_param_args is not default:
+        if tick_param_args is not None:
             ax.tick_params( **tick_param_args )
 
         # Save the file
@@ -795,11 +791,11 @@ class GenericPlotter( object ):
         x_key,
         y_keys,
         colors,
-        ax = default,
+        ax = None,
         *args, **kwargs
     ):
         
-        if ax is default:
+        if ax is None:
             plt.figure( figsize=(11, 5), facecolor='white' )
             ax = plt.gca()
 
@@ -857,28 +853,28 @@ class GenericPlotter( object ):
     ########################################################################
 
     def plot_time_dependent_data( self,
-        ax = default,
-        x_range = [ 0., np.log10(8.) ], y_range = default,
+        ax = None,
+        x_range = [ 0., np.log10(8.) ], y_range = None,
         y_scale = 'log',
-        x_label = default, y_label = default,
+        x_label = None, y_label = None,
         ):
         '''Make a plot like the top panel of Fig. 3 in Angles-Alcazar+17
 
         Args:
             ax (axis object) :
-                What axis to put the plot on. By default, create a new one on a separate figure.
+                What axis to put the plot on. By None, create a new one on a separate figure.
 
             x_range, y_range (list-like) :
                 [ x_min, x_max ] or [ y_min, y_max ] for the displayed range.
 
             x_label, y_label (str) :
-                Labels for axis. By default, redshift and f(M_star), respectively.
+                Labels for axis. By None, redshift and f(M_star), respectively.
 
             plot_dividing_line (bool) :
                 Whether or not to plot a line at the edge between stacked regions.
         '''
 
-        if ax is default:
+        if ax is None:
             fig = plt.figure( figsize=(11,5), facecolor='white' )
             ax = plt.gca()
 
@@ -898,10 +894,10 @@ class GenericPlotter( object ):
                 label = p_constants.CLASSIFICATION_LABELS[key],
             )
 
-        if x_range is not default:
+        if x_range is not None:
             ax.set_xlim( x_range )
 
-        if y_range is not default:
+        if y_range is not None:
             ax.set_ylim( y_range )
 
         ax.set_yscale( y_scale )
@@ -925,7 +921,7 @@ class GenericPlotter( object ):
         self,
         axis_plotting_method_str,
         variations,
-        ax = default,
+        ax = None,
         figsize = (11, 5),
         out_dir = None,
         add_line_label = False,
@@ -933,11 +929,11 @@ class GenericPlotter( object ):
         *args, **kwargs
     ):
 
-        if ax is default:
+        if ax is None:
             fig = plt.figure( figsize=figsize, facecolor='white', )
             ax = plt.gca()
 
-        all_plotting_kwargs = utilities.dict_from_defaults_and_variations( kwargs, variations )
+        all_plotting_kwargs = utilities.dict_from_Nones_and_variations( kwargs, variations )
 
         axis_plotting_method = getattr( self, axis_plotting_method_str )
         for key, plotting_kwargs in all_plotting_kwargs.items():
@@ -962,14 +958,14 @@ class GenericPlotter( object ):
 
     def panel_plot( self,
         panel_plotting_method_str,
-        defaults,
+        Nones,
         variations,
-        slices = default,
+        slices = None,
         n_rows = 2,
         n_columns = 2,
         plot_locations = [ (0,0), (0,1), (1,0), (1,1) ],
         figsize = (10,9),
-        plot_label = default,
+        plot_label = None,
         outline_plot_label = False,
         label_galaxy_cut = False,
         label_redshift = True,
@@ -983,10 +979,10 @@ class GenericPlotter( object ):
 
         Args:
             panel_plotting_method_str (str) : What type of plot to make.
-            defaults (dict) : Default arguments to pass to panel_plotting_method.
+            Nones (dict) : Default arguments to pass to panel_plotting_method.
             variations (dict of dicts) : Differences in plotting arguments per subplot.
-            slices (slice) : What slices to select. By default, this doesn't pass any slices argument to panel_plotting_method
-            plot_label (str or dict) : What to label the plot with. By default, uses self.label.
+            slices (slice) : What slices to select. By None, this doesn't pass any slices argument to panel_plotting_method
+            plot_label (str or dict) : What to label the plot with. By None, uses self.label.
                 Can also pass a dict of full args.
             outline_plot_label (bool) : If True, add an outline around the plot label.
             label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.
@@ -1003,10 +999,10 @@ class GenericPlotter( object ):
 
         fig.subplots_adjust( **subplot_spacing_args )
 
-        if slices is not default:
-            defaults['slices'] = slices
+        if slices is not None:
+            Nones['slices'] = slices
 
-        plotting_kwargs = utilities.dict_from_defaults_and_variations( defaults, variations )
+        plotting_kwargs = utilities.dict_from_Nones_and_variations( Nones, variations )
 
         # Setup axes
         gs = gridspec.GridSpec(n_rows, n_columns)
@@ -1048,7 +1044,7 @@ class GenericPlotter( object ):
 
         # Main axes labels
         # Plot label
-        if plot_label is default:
+        if plot_label is None:
             plt_label = axs[0].annotate( s=self.label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
         elif isinstance( plot_label, str ):
             plt_label = axs[0].annotate( s=plot_label, xy=(0.,1.0225), xycoords='axes fraction', fontsize=label_fontsize,  )
@@ -1067,7 +1063,7 @@ class GenericPlotter( object ):
         if label_galaxy_cut:
             info_label = r'$r_{ \rm cut } = ' + '{:.3g}'.format( self.data_object.galids.parameters['galaxy_cut'] ) + 'r_{ s}$'
         if label_redshift:
-            ind = defaults['slices']
+            ind = Nones['slices']
             info_label = r'$z=' + '{:.3f}'.format( self.data_object.ptracks.redshift.iloc[ind] ) + '$'+ info_label
         if label_galaxy_cut or label_redshift:
             label_ax = plt.subplot( gs[0,n_columns-1,] )
@@ -1155,12 +1151,12 @@ class PlotterSet( utilities.SmartDict ):
     '''Container for multiple plotters that is an enhanced dictionary.
     '''
 
-    def __init__( self, data_object_cls, plotter_object_cls, defaults, variations ):
+    def __init__( self, data_object_cls, plotter_object_cls, Nones, variations ):
         '''
         Args:
             data_object_cls (object) : Class for the data object.
             plotter_object_cls (object) : Class for the plotter object.
-            defaults (dict) : Set of default arguments for loading worldline data.
+            Nones (dict) : Set of None arguments for loading worldline data.
             variations (dict of dicts) : Labels and differences in arguments to be passed to Worldlines
         '''
 
@@ -1168,7 +1164,7 @@ class PlotterSet( utilities.SmartDict ):
         storage = {}
         for key in variations.keys():
 
-            kwargs = dict( defaults )
+            kwargs = dict( Nones )
             for var_key in variations[key].keys():
                 kwargs[var_key] = variations[key][var_key]
 

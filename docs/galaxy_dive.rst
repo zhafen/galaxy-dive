@@ -15,6 +15,13 @@ Subpackages
     galaxy_dive.trends
     galaxy_dive.utils
 
+Submodules
+----------
+
+.. toctree::
+
+   galaxy_dive.config
+
 Module contents
 ---------------
 
