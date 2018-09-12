@@ -356,6 +356,12 @@ class TestHaloUpdater( unittest.TestCase ):
             include_v_circ = False,
         )
 
+        # Make sure we have the right path
+        assert (
+            self.ahf_updater.halos_path == 
+            './tests/data/analysis_dir/snap600Rpep..z0.000.AHF_halos'
+        )
+
         # Load halos_add
         self.ahf_updater.data_reader.get_halos_add( 600 )
 

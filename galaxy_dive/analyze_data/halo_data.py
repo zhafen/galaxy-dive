@@ -97,6 +97,14 @@ class HaloData( generic_data.GenericData ):
         return self.data_reader.mtree_halos
 
     ########################################################################
+
+    @property
+    def halos_path( self ):
+        '''Location of the last loaded halo file.'''
+        
+        return self.data_reader.halos_path
+
+    ########################################################################
     # Data Retrieval
     ########################################################################
 
