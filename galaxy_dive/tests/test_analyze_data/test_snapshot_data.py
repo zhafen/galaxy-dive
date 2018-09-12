@@ -415,7 +415,7 @@ class TestProperties( unittest.TestCase ):
     def test_r_scale( self ):
 
         # By hand
-        expected = 25.718158280533068
+        expected = 25.25698
 
         actual = self.g_data.r_scale
 

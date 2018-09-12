@@ -337,7 +337,7 @@ class TestHaloUpdater( unittest.TestCase ):
         self.ahf_updater.get_mtree_halos( index='snum', )
         self.ahf_updater.get_analytic_concentration( data_sdir )
 
-        c_vir_z0_expected = 10.66567139
+        c_vir_z0_expected = 10.828446
         c_vir_z0_actual = self.ahf_updater.mtree_halos[0]['cAnalytic'][600]
 
         npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual, rtol=1e-3 )
@@ -360,7 +360,7 @@ class TestHaloUpdater( unittest.TestCase ):
         self.ahf_updater.data_reader.get_halos_add( 600 )
 
         # Check that we calculated the concentration correctly.
-        c_vir_z0_expected = 10.66567139
+        c_vir_z0_expected = 10.828446
         c_vir_z0_actual = self.ahf_updater.halos_add['cAnalytic'][0]
         npt.assert_allclose( c_vir_z0_expected, c_vir_z0_actual, rtol=1e-3 )
 
