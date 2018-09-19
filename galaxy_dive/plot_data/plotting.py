@@ -28,6 +28,7 @@ def box_plot(
     y_datas,
     ax = None,
     color = 'k',
+    y_mean_statistic = np.mean,
     x_scale = 'log',
     y_scale = 'log',
     y_floor = None,
@@ -40,6 +41,8 @@ def box_plot(
     plot_boxes = True,
     skip_single_points = True,
     linewidth = 4,
+    line_x_min = None,
+    line_x_max = None,
 ):
 
     if ax is None:
@@ -73,7 +76,7 @@ def box_plot(
             y_data = np.log10( y_data )
 
         x_mean = x_data.mean()
-        y_mean = y_data.mean()
+        y_mean = y_mean_statistic( y_data )
 
         x_err = x_data.std()
         y_err = y_data.std()
@@ -141,11 +144,53 @@ def box_plot(
             ax.add_patch( rect )
 
     sorted_inds = np.argsort( means['x'] )
+    sorted_xs = np.array( means['x'] )[sorted_inds]
+    sorted_ys = np.array( means['y'] )[sorted_inds]
+
+    # Extend the lines if requested
+    if ( line_x_min is not None ) or ( line_x_max is not None ):
+        if x_scale == 'log':
+            line_xs = list( np.log10( sorted_xs ) )
+            if line_x_min is not None:
+                line_x_min = np.log10( line_x_min )
+            if line_x_max is not None:
+                line_x_max = np.log10( line_x_max )
+        else:
+            line_xs = list( sorted_xs )
+        if y_scale == 'log':
+            line_ys = list( np.log10( sorted_ys ) )
+        else:
+            line_ys = list( sorted_ys )
+    if line_x_min is not None:
+        slope_start = (
+            ( line_ys[1] - line_ys[0] ) /
+            ( line_xs[1] - line_xs[0] )
+        )
+        line_y_min = line_ys[0] - slope_start * ( line_xs[0] - line_x_min )
+            
+        line_xs.insert( 0, line_x_min )
+        line_ys.insert( 0, line_y_min )
+    if line_x_max is not None:
+        slope_end = (
+            ( line_ys[-1] - line_ys[-2] ) /
+            ( line_xs[-1] - line_xs[-2] )
+        )
+        line_y_max = line_ys[-1] + slope_end * ( line_x_max - line_xs[-1] )
+            
+        line_xs.append( line_x_max )
+        line_ys.append( line_y_max )
+    if ( line_x_min is not None ) or ( line_x_max is not None ):
+        if x_scale == 'log':
+            line_xs = 10.**( np.array( line_xs ) )
+        if y_scale == 'log':
+            line_ys = 10.**( np.array( line_ys ) )
+        sorted_xs = line_xs
+        sorted_ys = line_ys
 
     # Plot everything else
     ax.plot(
-        np.array( means['x'] )[sorted_inds],
-        np.array( means['y'] )[sorted_inds],
+        sorted_xs,
+        sorted_ys,
         linewidth = linewidth,
         color = color,
         zorder = line_zorder - zorder_offset,

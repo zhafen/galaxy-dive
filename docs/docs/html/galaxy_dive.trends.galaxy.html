@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.trends.galaxy module &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -15,15 +15,20 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -40,13 +45,24 @@
 <dt id="galaxy_dive.trends.galaxy.circular_velocity">
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">circular_velocity</code><span class="sig-paren">(</span><em>r_vir</em>, <em>m_vir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#circular_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.circular_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the circular velocity of a halo in km/s.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>r_vir (float or array-like) : The virial radius in pkpc.
-m_vir (float or array-like) : The halo mass in Msun.</dd>
-<dt>Returns:</dt>
-<dd>v_c : Circular velocity of the halo in km/s, indexed the same way that ahf_reader.mtree_halos[i] is.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>r_vir</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – The virial radius in pkpc.</li>
+<li><strong>m_vir</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – The halo mass in Msun.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Circular velocity of the halo in km/s, indexed the same way that ahf_reader.mtree_halos[i] is.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">v_c</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -55,20 +71,18 @@ m_vir (float or array-like) : The halo mass in Msun.</dd>
 <dd><p>Mass of cold gas in galaxies, as given by a compilation of data by
 Peeples+2014, consisting of data from McGaugh2005,2012, Leroy+2008,
 and Saintonge+2011.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>f_g (dict of np.ndarrays) :</dt>
-<dd>Cold gas fraction.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – Mass of the target galaxy at z=0 in units of Msun.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Cold gas fraction.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">f_g (dict of np.ndarrays)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -77,46 +91,53 @@ and Saintonge+2011.</p>
 <dd><p>Available metals in a galaxy, assuming a power law of the form
 y * m_star ** alpha . y is basically the yield, and alpha should usually
 be close to 1.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-<dt>alpha, y (float or str) :</dt>
-<dd>‘Peeples14’ uses a fit to digitized data from Peeples+14.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>galaxy_available_metals (same as m_star): Results</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – Mass of the target galaxy at z=0 in units of Msun.</li>
+<li><strong>y</strong> (<em>alpha</em><em>,</em>) – ‘Peeples14’ uses a fit to digitized data from Peeples+14.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Results</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">galaxy_available_metals (same as m_star)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.trends.galaxy.galaxy_metal_mass">
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">galaxy_metal_mass</code><span class="sig-paren">(</span><em>m_star, z_sun=0.02, apply_stellar_z_correction=True, cold_gas_correction_factor=None, use_powerlaw_median_for_cold_gas=False, mass_sources=['stars', 'ISM', 'dust']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#galaxy_metal_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.galaxy_metal_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mass of metals in galaxies, as assembled by Peeples+2014.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-<dt>z_sun (float) :</dt>
-<dd>Solar metallicity. Some (e.g. Peeples+14) use the Caffau+2011
-value of 0.0153, while others use the Asplund+2010 value of 0.014.</dd>
-<dt>apply_stellar_z_correction (bool) :</dt>
-<dd>If True, apply the correction from B-band weighted stellar
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – Mass of the target galaxy at z=0 in units of Msun.</li>
+<li><strong>z_sun</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Solar metallicity. Some (e.g. Peeples+14) use the Caffau+2011
+value of 0.0153, while others use the Asplund+2010 value of 0.014.</li>
+<li><strong>apply_stellar_z_correction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, apply the correction from B-band weighted stellar
 metallicities to mass-weighted stellar metallicities calculated
-by Peeples&amp;Somerville2013</dd>
-</dl>
-<p class="last">cold_gas_correction</p>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>m_z (dict of dicts) :</dt>
-<dd>Means and percentages for each category, and the total.</dd>
-</dl>
-</dd>
-</dl>
+by Peeples&amp;Somerville2013</li>
+<li><strong>cold_gas_correction</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Means and percentages for each category, and the total.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">m_z (dict of dicts)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -124,16 +145,20 @@ by Peeples&amp;Somerville2013</dd>
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">halo_metal_budget</code><span class="sig-paren">(</span><em>data='MzMstar_Ma2016.csv'</em>, <em>data_dir='/home1/03057/zhafen/repos/galaxy-dive/galaxy_dive/data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#halo_metal_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.halo_metal_budget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the halo metal budget, i.e. the mass of metals in the halo divided
 by the estimate of the mass of available metals produced by the galaxy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Filename of the data to use.
+‘MsMstar_Ma2016.csv’ contains values from the FIRE-1 sims.</li>
+<li><strong>data_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Location of the data file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>data (str) :</dt>
-<dd>Filename of the data to use.
-‘MsMstar_Ma2016.csv’ contains values from the FIRE-1 sims.</dd>
-<dt>data_dir (str) :</dt>
-<dd>Location of the data file.</dd>
-</dl>
-</dd>
 <dt>Retuns:</dt>
 <dd><dl class="first last docutils">
 <dt>m_star (array-like) :</dt>
@@ -150,20 +175,18 @@ by the estimate of the mass of available metals produced by the galaxy.</p>
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">ism_dust_mass</code><span class="sig-paren">(</span><em>m_star</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#ism_dust_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.ism_dust_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>ISM dust mass, compiled by Peeples+2014, using data from Skibba+2011 and
 Draine+2007.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>ism_dust_mass (same as m_star):</dt>
-<dd>Units of Msun.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – Mass of the target galaxy at z=0 in units of Msun.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Units of Msun.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ism_dust_mass (same as m_star)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -180,89 +203,93 @@ between the oxygen mass and the stellar mass.</p>
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">ism_oxygen_mass_frac</code><span class="sig-paren">(</span><em>m_star</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#ism_oxygen_mass_frac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.ism_oxygen_mass_frac" title="Permalink to this definition">¶</a></dt>
 <dd><p>Observations of Oxygen mass in the ISM compiled by Peeples+14.
 Data is from Kewley&amp;Ellison2008.
-Args:</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-</dl>
-</div></blockquote>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>m_o (np.ndarray): log(O/H) + 12</dd>
-</dl>
+:param m_star: Mass of the target galaxy at z=0 in units of Msun.
+:type m_star: float or array-like</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">log(O/H) + 12</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">m_o (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.trends.galaxy.smhm_m_halo">
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">smhm_m_halo</code><span class="sig-paren">(</span><em>log_m_star</em>, <em>z</em>, <em>paramfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#smhm_m_halo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.smhm_m_halo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adapted from Behroozi+2018 (UniverseMachine EDR) by S.Wellons 7/11/18</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>log_m_star (float or array-like):</dt>
-<dd>log10 of the stellar mass in units of Msun.</dd>
-<dt>z (float) :</dt>
-<dd>Redshift.</dd>
-<dt>paramfile (str):</dt>
-<dd>What data to use.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>log_m_halo (same as log_m_star) :</dt>
-<dd>log10 of the halo mass in Msun</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>log_m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – log10 of the stellar mass in units of Msun.</li>
+<li><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Redshift.</li>
+<li><strong>paramfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to use.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">log10 of the halo mass in Msun</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">log_m_halo (same as log_m_star)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.trends.galaxy.smhm_m_star">
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">smhm_m_star</code><span class="sig-paren">(</span><em>log_m_halo</em>, <em>z</em>, <em>paramfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#smhm_m_star"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.smhm_m_star" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adapted from Behroozi+2018 (UniverseMachine EDR) by S.Wellons 7/11/18</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>log_m_halo (same as log_m_star) :</dt>
-<dd>log10 of the halo mass in Msun</dd>
-<dt>z (float) :</dt>
-<dd>Redshift.</dd>
-<dt>paramfile (str):</dt>
-<dd>What data to use.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>log_m_star (float or array-like):</dt>
-<dd>log10 of the stellar mass in units of Msun.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>log_m_halo</strong> (<em>same as log_m_star</em>) – log10 of the halo mass in Msun</li>
+<li><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Redshift.</li>
+<li><strong>paramfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to use.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">log10 of the stellar mass in units of Msun.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">log_m_star (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a> or array-like)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.trends.galaxy.smhm_slope">
 <code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">smhm_slope</code><span class="sig-paren">(</span><em>log_m_halo</em>, <em>z</em>, <em>paramfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#smhm_slope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.smhm_slope" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adapted from Behroozi+2018 (UniverseMachine EDR) by S.Wellons 7/11/18</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>log_m_halo (same as log_m_star) :</dt>
-<dd>log10 of the halo mass in Msun</dd>
-<dt>z (float) :</dt>
-<dd>Redshift.</dd>
-<dt>paramfile (str):</dt>
-<dd>What data to use.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>slope (float or array-like):</dt>
-<dd>Returns dlogMstar/dlogMhalo</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>log_m_halo</strong> (<em>same as log_m_star</em>) – log10 of the halo mass in Msun</li>
+<li><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Redshift.</li>
+<li><strong>paramfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to use.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Returns dlogMstar/dlogMhalo</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">slope (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a> or array-like)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -272,22 +299,24 @@ Args:</p>
 z=0 stellar mass of m_star.
 This is taken from Peeple+2014, who use the star formation histories of
 Leitner+2012.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-<dt>y_z_ii (float) :</dt>
-<dd>Nucleosynthetic yield of all heavy</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>sneii_metal_budget (same as m_star):</dt>
-<dd>Units of Msun.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – Mass of the target galaxy at z=0 in units of Msun.</li>
+<li><strong>y_z_ii</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Nucleosynthetic yield of all heavy</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Units of Msun.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sneii_metal_budget (same as m_star)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -298,19 +327,27 @@ Leitner+2012.</p>
 <dd>Gallazzi+2005 with a correction to the B-band weighted stellar
 metallicities by Peeples&amp;Somerville2013
 (and put together in S3.1 of Peeples+14).</dd>
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-<dt>apply_correction (bool) :</dt>
-<dd>If True, apply the correction from B-band weighted stellar
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – Mass of the target galaxy at z=0 in units of Msun.</li>
+<li><strong>apply_correction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, apply the correction from B-band weighted stellar
 metallicities to mass-weighted stellar metallicities calculated
-by Peeples&amp;Somerville2013</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>z (dict of np.ndarrays): Mass metallicity relation percentiles</dd>
-</dl>
+by Peeples&amp;Somerville2013</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Mass metallicity relation percentiles</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">z (dict of np.ndarrays)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -320,13 +357,7 @@ by Peeples&amp;Somerville2013</dd>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -350,20 +381,21 @@ by Peeples&amp;Somerville2013</dd>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/galaxy_dive.trends.galaxy.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>

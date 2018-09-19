@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.utils.data_operations module &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -15,15 +15,20 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -41,55 +46,81 @@
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">align_axes</code><span class="sig-paren">(</span><em>arr</em>, <em>new_z_axis</em>, <em>point=array([0.</em>, <em>0.</em>, <em>0.])</em>, <em>align_frame=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#align_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.align_axes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rotate a series of 3d coordinates s.t. the new z axis is aligned with
 the input vector new_z_axis</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>arr (ndarray):</dt>
-<dd>The coordinates to be rotated. Dimensions must be (n_coords, 3).</dd>
-<dt>new_z_axis (vector arr):</dt>
-<dd>The vector along which the new z axis will be aligned.</dd>
-<dt>point (vector arr):</dt>
-<dd>The point to rotate around. If none, defaults to the origin.</dd>
-<dt>align_frame (bool):</dt>
-<dd>If True, the coordinates are aligned along new_z_axis, but
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<em>ndarray</em>) – The coordinates to be rotated. Dimensions must be (n_coords, 3).</li>
+<li><strong>new_z_axis</strong> (<em>vector arr</em>) – The vector along which the new z axis will be aligned.</li>
+<li><strong>point</strong> (<em>vector arr</em>) – The point to rotate around. If none, defaults to the origin.</li>
+<li><strong>align_frame</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, the coordinates are aligned along new_z_axis, but
 the data keep their same coordinates as before. I.e. we rotate our
 perspective s.t. new_z_axis is the new z axis.
 If False, we rotate the data instead, and keep the coordinates
 the same. I.e. we rotate the data z-axis to be aligned with
 new_z_axis, but we still view the data from the original
 perspective.
-This just changes the sign of the angle of rotation.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>rotated_arr (ndarray): The rotated array.</dd>
-</dl>
+This just changes the sign of the angle of rotation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The rotated array.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">rotated_arr (ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.data_operations.apply_floor">
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">apply_floor</code><span class="sig-paren">(</span><em>arr</em>, <em>floor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#apply_floor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.apply_floor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raises all values in the array below the floor to the floor value.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>arr (np.arr): Array to raise the values of.
-floor (float): Floor value that will act as the minimum.</dd>
-<dt>Returns:</dt>
-<dd>floored_arr (np.arr): Array with all values below floor set to floor.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<em>np.arr</em>) – Array to raise the values of.</li>
+<li><strong>floor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Floor value that will act as the minimum.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Array with all values below floor set to floor.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">floored_arr (np.arr)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.data_operations.block_mean">
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">block_mean</code><span class="sig-paren">(</span><em>arr</em>, <em>fact</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#block_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.block_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Downsample an array</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>arr (np.arr): Array to downsample.
-fact (float): Factor by which to downsample.</dd>
-<dt>Returns:</dt>
-<dd>res (np.arr): Downsampled array.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<em>np.arr</em>) – Array to downsample.</li>
+<li><strong>fact</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Factor by which to downsample.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Downsampled array.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">res (np.arr)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -97,18 +128,28 @@ fact (float): Factor by which to downsample.</dd>
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">cartesian</code><span class="sig-paren">(</span><em>arrays</em>, <em>out=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#cartesian"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.cartesian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a cartesian product of input arrays.
 Produced on Stack Overflow: <a class="reference external" href="http://stackoverflow.com/a/1235363/6651313">http://stackoverflow.com/a/1235363/6651313</a></p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>arrays (list of array-like): 1-D arrays to form the cartesian product of.
-out (ndarray): Array to place the cartesian product in.</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arrays</strong> (<em>list of array-like</em>) – 1-D arrays to form the cartesian product of.</li>
+<li><strong>out</strong> (<em>ndarray</em>) – Array to place the cartesian product in.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
 <dt>out (ndarray) 2-D array of shape (M, len(arrays)) containing cartesian products</dt>
-<dd>formed of input arrays.</dd>
-</dl>
+<dd><p class="first last">formed of input arrays.</p>
 </dd>
-<dt>Examples:</dt>
-<dd><div class="first last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian</span><span class="p">(([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian</span><span class="p">(([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]))</span>
 <span class="go">array([[1, 4, 6],</span>
 <span class="go">              [1, 4, 7],</span>
 <span class="go">              [1, 5, 6],</span>
@@ -123,105 +164,131 @@ out (ndarray): Array to place the cartesian product in.</dd>
 <span class="go">              [3, 5, 7]])</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.data_operations.contiguous_regions">
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">contiguous_regions</code><span class="sig-paren">(</span><em>condition</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#contiguous_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.contiguous_regions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds contiguous True regions of the boolean array “condition”. Returns
-a 2D array where the first column is the start index of the region and the
-second column is the end index.</p>
-<p>Taken from <a class="reference external" href="https://stackoverflow.com/a/4495197">https://stackoverflow.com/a/4495197</a></p>
+<dd><p>Finds contiguous True regions of the boolean array “condition”.
+Taken from <a class="reference external" href="https://stackoverflow.com/a/4495197">https://stackoverflow.com/a/4495197</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>condition</strong> (<em>boolean array-like</em>) – Input array.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The first column is the start index of the region and the
+second column is the end index.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">2D array-like</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.data_operations.cumsum2d">
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">cumsum2d</code><span class="sig-paren">(</span><em>arr, axes=[0, 1], directions=[1, 1]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#cumsum2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.cumsum2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the cumulative sum of an array.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>arr (array-like) :</dt>
-<dd>Array to get the sum of.</dd>
-<dt>axes (list) :</dt>
-<dd>What axes to sum over.</dd>
-<dt>directions (list) :</dt>
-<dd><dl class="first last docutils">
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<em>array-like</em>) – Array to get the sum of.</li>
+<li><strong>axes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – What axes to sum over.</li>
+<li><strong>directions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – <dl class="docutils">
 <dt>What direction to sum along.</dt>
 <dd>1 -&gt; standard direction
 -1 -&gt; reverse direction</dd>
 </dl>
-</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>summed_arr (np.ndarray) :</dt>
-<dd>The i,j element of summed_arr is the sum of arr[:i+1,:j+1]</dd>
-</dl>
-</dd>
-</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The i,j element of summed_arr is the sum of arr[:i+1,:j+1]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">summed_arr (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.data_operations.merge_dict">
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">merge_dict</code><span class="sig-paren">(</span><em>dict1</em>, <em>dict2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#merge_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.merge_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge two dictionaries, with dict2’s keyword overridding dict1’s keywords when there are duplicates</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dict1 (dict): First dictionary.
-dict2 (dict): Second dictionary.</dd>
-<dt>Returns:</dt>
-<dd>merged_dict (dict): Merged dictionary.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dict1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – First dictionary.</li>
+<li><strong>dict2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Second dictionary.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Merged dictionary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">merged_dict (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.data_operations.rotate_coordinates">
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">rotate_coordinates</code><span class="sig-paren">(</span><em>arr</em>, <em>angle</em>, <em>axis</em>, <em>point=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#rotate_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.rotate_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Rotate a series of 3d coordinates clockwise looking down an axis.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>arr (ndarray):</dt>
-<dd>The coordinates to be rotated. Dimensions must be (n_coords, 3).</dd>
-<dt>angle (float):</dt>
-<dd>The angle by which to rotate. Positive means clockwise.</dd>
-<dt>axis (vector arr):</dt>
-<dd>The axis to rotate around.</dd>
-<dt>point (vector arr):</dt>
-<dd>The point to rotate around. If none, defaults to the origin.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>rotated_arr (ndarray): The rotated array.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<em>ndarray</em>) – The coordinates to be rotated. Dimensions must be (n_coords, 3).</li>
+<li><strong>angle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The angle by which to rotate. Positive means clockwise.</li>
+<li><strong>axis</strong> (<em>vector arr</em>) – The axis to rotate around.</li>
+<li><strong>point</strong> (<em>vector arr</em>) – The point to rotate around. If none, defaults to the origin.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The rotated array.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">rotated_arr (ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.data_operations.smooth">
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">smooth</code><span class="sig-paren">(</span><em>x</em>, <em>window_len=11</em>, <em>window='flat'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#smooth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.smooth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple moving-window signal smoothing (from scipy cookbook)</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>x (1D np.ndarray) :</dt>
-<dd>array to smooth</dd>
-<dt>wind_len (int) :</dt>
-<dd>Number of elements over which to smooth.</dd>
-<dt>window (str) :</dt>
-<dd>Type of window.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>smoothed_arr (1D np.ndarray) :</dt>
-<dd>Smoothed version of arr.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>1D np.ndarray</em>) – array to smooth</li>
+<li><strong>wind_len</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of elements over which to smooth.</li>
+<li><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Type of window.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed version of arr.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">smoothed_arr (1D np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -229,24 +296,25 @@ dict2 (dict): Second dictionary.</dd>
 <code class="descclassname">galaxy_dive.utils.data_operations.</code><code class="descname">smooth_arr</code><span class="sig-paren">(</span><em>arr</em>, <em>width=20</em>, <em>std=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/data_operations.html#smooth_arr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.data_operations.smooth_arr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a gaussian filter to an array.
 Credit to Cameron Hummels for the nice simple code I’m using.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>arr (1D np.ndarray) :</dt>
-<dd>array to smooth</dd>
-<dt>width (int) :</dt>
-<dd>Number of elements over which to smooth.</dd>
-<dt>std (int) :</dt>
-<dd>Sigma of the guassian for which to smooth.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>smoothed_arr (1D np.ndarray) :</dt>
-<dd>Smoothed version of arr.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arr</strong> (<em>1D np.ndarray</em>) – array to smooth</li>
+<li><strong>width</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of elements over which to smooth.</li>
+<li><strong>std</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Sigma of the guassian for which to smooth.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Smoothed version of arr.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">smoothed_arr (1D np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -256,13 +324,7 @@ Credit to Cameron Hummels for the nice simple code I’m using.</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -286,20 +348,21 @@ Credit to Cameron Hummels for the nice simple code I’m using.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/galaxy_dive.utils.data_operations.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>

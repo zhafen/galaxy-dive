@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.utils.utilities module &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -15,15 +15,20 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -83,13 +88,24 @@ return the results as a SmartDict.</p>
 <dt id="galaxy_dive.utils.utilities.SmartDict.call_custom_kwargs">
 <code class="descname">call_custom_kwargs</code><span class="sig-paren">(</span><em>kwargs</em>, <em>default_kwargs={}</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.call_custom_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.call_custom_kwargs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform call, but using custom keyword arguments per dictionary tag.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>kwargs (dict) : Custom keyword arguments to pass.
-default_kwargs (dict) : Defaults shared between keyword arguments.</dd>
-<dt>Returns:</dt>
-<dd>results (dict) : Dictionary of results.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Custom keyword arguments to pass.</li>
+<li><strong>default_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Defaults shared between keyword arguments.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary of results.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">results (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -102,17 +118,26 @@ default_kwargs (dict) : Defaults shared between keyword arguments.</dd>
 <em class="property">classmethod </em><code class="descname">from_class_and_args</code><span class="sig-paren">(</span><em>contained_cls</em>, <em>args</em>, <em>default_args={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.from_class_and_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.from_class_and_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alternate constructor. Creates a SmartDict of contained_cls objects, with arguments passed to it from
 the dictionary created by defaults and variations.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">contained_cls (type of object/constructor) : What class should the smart dict consist of?
-args (dict/other) : Arguments that should be passed to contained_cls. If not a dict, assumed to be the first</p>
-<blockquote>
-<div>and only argument for the constructor.</div></blockquote>
-<p class="last">default_args : Default arguments to fill in args</p>
-</dd>
-<dt>Returns:</dt>
-<dd>result (SmartDict instance) : The constructed instance.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>contained_cls</strong> (<em>type of object/constructor</em>) – What class should the smart dict consist of?</li>
+<li><strong>args</strong> (<em>dict/other</em>) – Arguments that should be passed to contained_cls. If not a dict, assumed to be the first
+and only argument for the constructor.</li>
+<li><strong>default_args</strong> – Default arguments to fill in args</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The constructed instance.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result (SmartDict instance)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -153,16 +178,18 @@ args (dict/other) : Arguments that should be passed to contained_cls. If not a d
 <code class="descname">split_by_dict</code><span class="sig-paren">(</span><em>d</em>, <em>return_list=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.split_by_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.split_by_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Break the smart dictionary into smaller smart dictionaries according
 to their label provided by a dictionary</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>d (dict) :</dt>
-<dd>Dictionary to use to split into smaller dictionaries</dd>
-<dt>return_list (bool) :</dt>
-<dd>If True, return a list of arrays.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary to use to split into smaller dictionaries</li>
+<li><strong>return_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, return a list of arrays.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -170,17 +197,19 @@ to their label provided by a dictionary</p>
 <code class="descname">split_by_key_slice</code><span class="sig-paren">(</span><em>sl</em>, <em>str_to_match=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.split_by_key_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.split_by_key_slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Break the smart dictionary into smaller smart dictionaries according
 to a subset of the key.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>sl (slice) :</dt>
-<dd>Part of the key to use to make subsets.</dd>
-<dt>str_to_match (str) :</dt>
-<dd>If True, split into broad categories that match this string
-in the given slice or don’t.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.7)"><em>slice</em></a>) – Part of the key to use to make subsets.</li>
+<li><strong>str_to_match</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If True, split into broad categories that match this string
+in the given slice or don’t.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -210,12 +239,18 @@ in the given slice or don’t.</dd>
 <dt id="galaxy_dive.utils.utilities.arrays_to_set">
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">arrays_to_set</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#arrays_to_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.arrays_to_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert arr1, arr2, arr3, … to a set, where a single enrty in the set is ( arr1[j], arr2[j], … )</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>n arrays ( multiple np.ndarrays ) : The arrays to convert.</dd>
-<dt>Returns:</dt>
-<dd>result ( set ) : The converted set.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>arrays</strong> (<em>n</em>) – The arrays to convert.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The converted set.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">result ( <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.7)">set</a> )</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -227,13 +262,24 @@ in the given slice or don’t.</dd>
 <dt id="galaxy_dive.utils.utilities.chunk_list">
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">chunk_list</code><span class="sig-paren">(</span><em>l</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#chunk_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.chunk_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Breaks a list l into n chunks, as equally as possible.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>l (list) : List to break into chunks.
-n (int) : Number of chunks to break the list into.</dd>
-<dt>Returns:</dt>
-<dd>chunked_l ( list of lists ) : The list broken into chunks.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List to break into chunks.</li>
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of chunks to break the list into.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The list broken into chunks.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">chunked_l ( list of lists )</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -241,29 +287,49 @@ n (int) : Number of chunks to break the list into.</dd>
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">deepgetattr</code><span class="sig-paren">(</span><em>obj</em>, <em>attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#deepgetattr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.deepgetattr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recurses through an attribute chain to get the ultimate value.
 Credit to <a class="reference external" href="http://pingfive.typepad.com/blog/2010/04/deep-getattr-python-function.html">http://pingfive.typepad.com/blog/2010/04/deep-getattr-python-function.html</a></p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>obj (object) : Object for which to get the attribute.
-attr (str) : Attribute to get. Can be nested, e.g. obj.foo.bar.dog</dd>
-<dt>Returns:</dt>
-<dd>result (attr object) : The requested attribute.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – Object for which to get the attribute.</li>
+<li><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Attribute to get. Can be nested, e.g. obj.foo.bar.dog</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The requested attribute.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result (attr object)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.utilities.dict_from_defaults_and_variations">
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">dict_from_defaults_and_variations</code><span class="sig-paren">(</span><em>defaults</em>, <em>variations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#dict_from_defaults_and_variations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.dict_from_defaults_and_variations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a dictionary of dictionaries from a default dictionary and variations on it.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">defaults (dict) : Default dictionary. What each individual dictionary should default to.
-variations (dict of dicts) : Each dictionary contains what should be different. The key for each dictionary should</p>
-<blockquote class="last">
-<div>be a label for it.</div></blockquote>
-</dd>
-<dt>Returns:</dt>
-<dd>result (dict of dicts) : The results is basically variations, where each child dict is merged with defaults.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>defaults</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Default dictionary. What each individual dictionary should default to.</li>
+<li><strong>variations</strong> (<em>dict of dicts</em>) – Each dictionary contains what should be different. The key for each dictionary should
+be a label for it.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The results is basically variations, where each child dict is merged with defaults.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result (dict of dicts)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -271,19 +337,22 @@ variations (dict of dicts) : Each dictionary contains what should be different. 
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">gen_derived_data_doc</code><span class="sig-paren">(</span><em>object_import_path</em>, <em>save_filepath</em>, <em>header_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#gen_derived_data_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.gen_derived_data_doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a document that lists the methods for calculating derived data
 quantities.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>object_import_path (str):</dt>
-<dd>Name of the object to document the derived quantities of.</dd>
-<dt>save_filepath (str):</dt>
-<dd>Where to save the result.</dd>
-<dt>header_file (str):</dt>
-<dd>What to use as the header for the file, that explains what the
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>object_import_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of the object to document the derived quantities of.</li>
+<li><strong>save_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Where to save the result.</li>
+<li><strong>header_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What to use as the header for the file, that explains what the
 document contains.
-Defaults to galaxy_dive/utils/derived_data_header.rst.</dd>
-</dl>
-</dd>
+Defaults to galaxy_dive/utils/derived_data_header.rst.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
 <dt>Modifies:</dt>
 <dd><dl class="first last docutils">
 <dt>file at save_filepath (.rst file):</dt>
@@ -323,28 +392,39 @@ instance_type (str) : ‘class’ if the instance is a class, ‘module’ if th
 <dt id="galaxy_dive.utils.utilities.merge_two_dicts">
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">merge_two_dicts</code><span class="sig-paren">(</span><em>dict_a</em>, <em>dict_b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#merge_two_dicts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.merge_two_dicts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merges two dictionaries into a shallow copy.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dict_a (dict) : First dictionary to merge.
-dict_b (dict) : Second dictionary to merge.</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>merged_dict (dict) :</dt>
-<dd>Dictionary including elements from both.
-dict_a’s entries take priority over dict_b.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dict_a</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – First dictionary to merge.</li>
+<li><strong>dict_b</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Second dictionary to merge.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary including elements from both.
+dict_a’s entries take priority over dict_b.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">merged_dict (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.utilities.print_timer">
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">print_timer</code><span class="sig-paren">(</span><em>timer_string='Time taken:'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#print_timer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.print_timer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to time a function.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>timer_string (str, optional) : Printed before printing the time.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timer_string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Printed before printing the time.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -356,35 +436,43 @@ dict_a’s entries take priority over dict_b.</dd>
 <dt id="galaxy_dive.utils.utilities.save_parameters">
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">save_parameters</code><span class="sig-paren">(</span><em>instance</em>, <em>f</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#save_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.save_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save parameters to a hdf5 file.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>instance (object) :</dt>
-<dd>Instance that has the attributes that are parameters.
-Typically stored in instance.stored_parameters.</dd>
-<dt>f (open h5py file object) :</dt>
-<dd>File to save the parameters to.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>param_grp (h5py group) :</dt>
-<dd>Group containing the parameters as attributes.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>instance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><em>object</em></a>) – Instance that has the attributes that are parameters.
+Typically stored in instance.stored_parameters.</li>
+<li><strong>f</strong> (<em>open h5py file object</em>) – File to save the parameters to.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Group containing the parameters as attributes.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">param_grp (h5py group)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.utilities.set_to_arrays">
 <code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">set_to_arrays</code><span class="sig-paren">(</span><em>set_to_convert</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#set_to_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.set_to_arrays" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a set into multiple arrays.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>result ( set ) : The set to convert</dd>
-<dt>Returns:</dt>
-<dd>n arrays ( multiple np.ndarrays ) : The converted arrays</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>result</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.7)"><em>set</em></a>) – The set to convert</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The converted arrays</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">n arrays ( multiple np.ndarrays )</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -393,10 +481,14 @@ Typically stored in instance.stored_parameters.</dd>
 <dd><p>Decorator for automatically storing arguments passed to a constructor.
 I.e. any args passed to constructor via test_object = TestObject( <a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs )
 will be stored in test_object, e.g. test_object.args</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>constructor (function) : Constructor to wrap.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>constructor</strong> (<em>function</em>) – Constructor to wrap.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -406,13 +498,7 @@ will be stored in test_object, e.g. test_object.args</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -436,20 +522,21 @@ will be stored in test_object, e.g. test_object.args</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/galaxy_dive.utils.utilities.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>

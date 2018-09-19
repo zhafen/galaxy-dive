@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.plot_data.generic_plotter &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
@@ -15,15 +15,21 @@
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
-   
-  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -127,7 +133,8 @@
         <span class="n">assert_contains_all_data</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">data_kwargs</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Make a 2D histogram of the data. Extra arguments are passed to self.data_object.get_selected_data().</span>
+        <span class="sd">&#39;&#39;&#39;Make a histogram of the data. Extra arguments are passed to</span>
+<span class="sd">        self.data_object.get_selected_data.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            data_key (str) :</span>
@@ -140,7 +147,7 @@
 <span class="sd">                How to slices the data.</span>
 
 <span class="sd">            ax (axis) :</span>
-<span class="sd">                What axis to use. By None creates a figure and places the axis on it.</span>
+<span class="sd">                What axis to use. By default creates a figure and places the axis on it.</span>
 
 <span class="sd">            fix_invalid (bool) :</span>
 <span class="sd">                Throw away invalid values?</span>
@@ -341,7 +348,9 @@
 <span class="p">)</span>
 
         <span class="c1"># Plot label</span>
-        <span class="k">if</span> <span class="n">plot_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span> <span class="n">plot_label</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">plot_label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plt_label</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
                 <span class="n">xy</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.0</span><span class="p">),</span>
@@ -392,6 +401,7 @@
 
 <div class="viewcode-block" id="GenericPlotter.histogram2d"><a class="viewcode-back" href="../../../galaxy_dive.plot_data.generic_plotter.html#galaxy_dive.plot_data.generic_plotter.GenericPlotter.histogram2d">[docs]</a>    <span class="k">def</span> <span class="nf">histogram2d</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
         <span class="n">x_key</span><span class="p">,</span> <span class="n">y_key</span><span class="p">,</span>
+        <span class="n">x_data</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y_data</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weight_key</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">x_data_args</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">y_data_args</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">weight_data_args</span> <span class="o">=</span> <span class="p">{},</span>
@@ -419,8 +429,9 @@
         <span class="n">label_redshift</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">label_fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">,</span>
         <span class="n">tick_param_args</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">save_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">out_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">save_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">close_plot_after_saving</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">fix_invalid</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">line_slope</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cdf</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -430,6 +441,7 @@
         <span class="n">return_dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Make a 2D histogram of the data. Extra arguments are passed to get_selected_data.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            x_key, y_key (str) : Data keys to plot.</span>
 <span class="sd">            weight_key (str) : Data key for data to use as a weight. By None, no weight.</span>
@@ -453,7 +465,7 @@
 <span class="sd">            label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.</span>
 <span class="sd">            label_redshift (bool) : If True, add a label indicating the redshift.</span>
 <span class="sd">            label_fontsize (int) : Fontsize for the labels.</span>
-<span class="sd">            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don&#39;t change inherent Nones.</span>
+<span class="sd">            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don&#39;t change inherent defaults.</span>
 <span class="sd">            out_dir (str) : If given, where to save the file.</span>
 <span class="sd">            fix_invalid (bool) : Fix invalid values.</span>
 <span class="sd">            line_slope (float) : If given, draw a line with the given slope.</span>
@@ -469,11 +481,13 @@
             <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">y_data_args</span><span class="p">,</span>
             <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">weight_data_args</span>
         <span class="p">}</span>
-        <span class="n">data_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_Nones_and_variations</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">varying_kwargs</span> <span class="p">)</span>
+        <span class="n">data_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">varying_kwargs</span> <span class="p">)</span>
 
         <span class="c1"># Get data</span>
-        <span class="n">x_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">x_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">x_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">y_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="n">y_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">y_div_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">y_div_values</span> <span class="o">=</span> <span class="n">y_div_function</span><span class="p">(</span> <span class="n">x_data</span> <span class="p">)</span>
@@ -659,7 +673,8 @@
 
             <span class="n">gen_plot</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">save_file</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">75</span> <span class="p">)</span>
 
-            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">close_plot_after_saving</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="c1"># Return?</span>
         <span class="k">if</span> <span class="n">return_dist</span><span class="p">:</span>
@@ -712,7 +727,7 @@
 <span class="sd">            label_galaxy_cut (bool) : If true, add a label that indicates how the galaxy was defined.</span>
 <span class="sd">            label_redshift (bool) : If True, add a label indicating the redshift.</span>
 <span class="sd">            label_fontsize (int) : Fontsize for the labels.</span>
-<span class="sd">            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don&#39;t change inherent Nones.</span>
+<span class="sd">            tick_param_args (args) : Arguments to pass to ax.tick_params. By None, don&#39;t change inherent defaults.</span>
 <span class="sd">            out_dir (str) : If given, where to save the file.</span>
 <span class="sd">            fix_invalid (bool) : Fix invalid values.</span>
 <span class="sd">            line_slope (float) : If given, draw a line with the given slope.</span>
@@ -966,7 +981,7 @@
             <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="p">)</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
-        <span class="n">all_plotting_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_Nones_and_variations</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">variations</span> <span class="p">)</span>
+        <span class="n">all_plotting_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">variations</span> <span class="p">)</span>
 
         <span class="n">axis_plotting_method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">axis_plotting_method_str</span> <span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">plotting_kwargs</span> <span class="ow">in</span> <span class="n">all_plotting_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -991,7 +1006,7 @@
 
 <div class="viewcode-block" id="GenericPlotter.panel_plot"><a class="viewcode-back" href="../../../galaxy_dive.plot_data.generic_plotter.html#galaxy_dive.plot_data.generic_plotter.GenericPlotter.panel_plot">[docs]</a>    <span class="k">def</span> <span class="nf">panel_plot</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
         <span class="n">panel_plotting_method_str</span><span class="p">,</span>
-        <span class="n">Nones</span><span class="p">,</span>
+        <span class="n">defaults</span><span class="p">,</span>
         <span class="n">variations</span><span class="p">,</span>
         <span class="n">slices</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_rows</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -1012,7 +1027,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            panel_plotting_method_str (str) : What type of plot to make.</span>
-<span class="sd">            Nones (dict) : Default arguments to pass to panel_plotting_method.</span>
+<span class="sd">            defaults (dict) : Default arguments to pass to panel_plotting_method.</span>
 <span class="sd">            variations (dict of dicts) : Differences in plotting arguments per subplot.</span>
 <span class="sd">            slices (slice) : What slices to select. By None, this doesn&#39;t pass any slices argument to panel_plotting_method</span>
 <span class="sd">            plot_label (str or dict) : What to label the plot with. By None, uses self.label.</span>
@@ -1033,9 +1048,9 @@
         <span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span> <span class="o">**</span><span class="n">subplot_spacing_args</span> <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">slices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">Nones</span><span class="p">[</span><span class="s1">&#39;slices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slices</span>
+            <span class="n">defaults</span><span class="p">[</span><span class="s1">&#39;slices&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">slices</span>
 
-        <span class="n">plotting_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_Nones_and_variations</span><span class="p">(</span> <span class="n">Nones</span><span class="p">,</span> <span class="n">variations</span> <span class="p">)</span>
+        <span class="n">plotting_kwargs</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">variations</span> <span class="p">)</span>
 
         <span class="c1"># Setup axes</span>
         <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">n_columns</span><span class="p">)</span>
@@ -1096,7 +1111,7 @@
         <span class="k">if</span> <span class="n">label_galaxy_cut</span><span class="p">:</span>
             <span class="n">info_label</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;$r_{ \rm cut } = &#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:.3g}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">galids</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;galaxy_cut&#39;</span><span class="p">]</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;r_{ s}$&#39;</span>
         <span class="k">if</span> <span class="n">label_redshift</span><span class="p">:</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="n">Nones</span><span class="p">[</span><span class="s1">&#39;slices&#39;</span><span class="p">]</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">[</span><span class="s1">&#39;slices&#39;</span><span class="p">]</span>
             <span class="n">info_label</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;$z=&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_object</span><span class="o">.</span><span class="n">ptracks</span><span class="o">.</span><span class="n">redshift</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;$&#39;</span><span class="o">+</span> <span class="n">info_label</span>
         <span class="k">if</span> <span class="n">label_galaxy_cut</span> <span class="ow">or</span> <span class="n">label_redshift</span><span class="p">:</span>
             <span class="n">label_ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span> <span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">n_columns</span><span class="o">-</span><span class="mi">1</span><span class="p">,]</span> <span class="p">)</span>
@@ -1184,12 +1199,12 @@
     <span class="sd">&#39;&#39;&#39;Container for multiple plotters that is an enhanced dictionary.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_object_cls</span><span class="p">,</span> <span class="n">plotter_object_cls</span><span class="p">,</span> <span class="n">Nones</span><span class="p">,</span> <span class="n">variations</span> <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_object_cls</span><span class="p">,</span> <span class="n">plotter_object_cls</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">variations</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            data_object_cls (object) : Class for the data object.</span>
 <span class="sd">            plotter_object_cls (object) : Class for the plotter object.</span>
-<span class="sd">            Nones (dict) : Set of None arguments for loading worldline data.</span>
+<span class="sd">            defaults (dict) : Set of None arguments for loading worldline data.</span>
 <span class="sd">            variations (dict of dicts) : Labels and differences in arguments to be passed to Worldlines</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
@@ -1197,7 +1212,7 @@
         <span class="n">storage</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">variations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
-            <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="n">Nones</span> <span class="p">)</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="n">defaults</span> <span class="p">)</span>
             <span class="k">for</span> <span class="n">var_key</span> <span class="ow">in</span> <span class="n">variations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="n">var_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">variations</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">var_key</span><span class="p">]</span>
 
@@ -1212,15 +1227,7 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../../index.html">Documentation overview</a><ul>
-  <li><a href="../../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -1237,17 +1244,22 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>

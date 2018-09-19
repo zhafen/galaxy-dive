@@ -226,12 +226,18 @@ def align_axes(
 
 
 def contiguous_regions( condition ):
-    """Finds contiguous True regions of the boolean array "condition". Returns
-    a 2D array where the first column is the start index of the region and the
-    second column is the end index.
-
+    '''Finds contiguous True regions of the boolean array "condition".
     Taken from https://stackoverflow.com/a/4495197
-    """
+
+    Args:
+        condition (boolean array-like):
+            Input array.
+
+    Returns:
+        2D array-like:
+            The first column is the start index of the region and the
+            second column is the end index.
+    '''
 
     # Find the indicies of changes in "condition"
     d = np.diff(condition)

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.utils.hdf5_wrapper module &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -15,15 +15,20 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -47,11 +52,18 @@
 <dt id="galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.copy_hdf5_file">
 <code class="descname">copy_hdf5_file</code><span class="sig-paren">(</span><em>copy_filename</em>, <em>subsamples=False</em>, <em>particle_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/hdf5_wrapper.html#HDF5Wrapper.copy_hdf5_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.copy_hdf5_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy the hdf5 file into a new file. May not copy all attributes successfully?</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>copy_filename (str): Where the file should be copied to.
-subsamples (int): If chosen, number of subsamples per axis. Defaults to no subsampling.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>copy_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Where the file should be copied to.</li>
+<li><strong>subsamples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – If chosen, number of subsamples per axis. Defaults to no subsampling.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -59,54 +71,71 @@ subsamples (int): If chosen, number of subsamples per axis. Defaults to no subsa
 <code class="descname">insert_data</code><span class="sig-paren">(</span><em>new_data</em>, <em>index_key=None</em>, <em>insert_columns=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/hdf5_wrapper.html#HDF5Wrapper.insert_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.insert_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert data. Does this by making whole new copy, appending to it,
 sorting that by the index, and saving the sorted version.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>new_data (dict):</dt>
-<dd>The new data to be sorted.</dd>
-<dt>index_key (str):</dt>
-<dd>What key to sort the data by. Defaults to None, which will use
-the key inherent in the data set, and fail otherwise.</dd>
-<dt>insert_columns (bool):</dt>
-<dd>If True, the data in new_data should be included as new columns.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>new_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – The new data to be sorted.</li>
+<li><strong>index_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What key to sort the data by. Defaults to None, which will use
+the key inherent in the data set, and fail otherwise.</li>
+<li><strong>insert_columns</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, the data in new_data should be included as new columns.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.save_data">
 <code class="descname">save_data</code><span class="sig-paren">(</span><em>data</em>, <em>index_key=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/hdf5_wrapper.html#HDF5Wrapper.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.save_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save data at self.filename.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>data (dict): The data to be saved.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – The data to be saved.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.sort_dictionary">
 <code class="descname">sort_dictionary</code><span class="sig-paren">(</span><em>data</em>, <em>index_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/hdf5_wrapper.html#HDF5Wrapper.sort_dictionary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.sort_dictionary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort a dictionary.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>data (dict): Dictionary to sort.
-index_key (str): Key to sort by.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary to sort.</li>
+<li><strong>index_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key to sort by.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.subsample_hdf5_file">
 <code class="descname">subsample_hdf5_file</code><span class="sig-paren">(</span><em>subsamples</em>, <em>particle_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/hdf5_wrapper.html#HDF5Wrapper.subsample_hdf5_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.hdf5_wrapper.HDF5Wrapper.subsample_hdf5_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a dictionary containing subsamples of the data.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">subsamples (int): The number of subsamples per axis, for a total of subsamples^n_dims subsamples.
-particle_data (bool or int): Whether or not the data contains particle-like data.</p>
-<blockquote class="last">
-<div>If not False, then it’s the number of files the snapshot is spread across</div></blockquote>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>subsamples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – The number of subsamples per axis, for a total of subsamples^n_dims subsamples.</li>
+<li><strong>particle_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Whether or not the data contains particle-like data.
+If not False, then it’s the number of files the snapshot is spread across</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -115,27 +144,25 @@ particle_data (bool or int): Whether or not the data contains particle-like data
 <dt id="galaxy_dive.utils.hdf5_wrapper.copy_snapshot">
 <code class="descclassname">galaxy_dive.utils.hdf5_wrapper.</code><code class="descname">copy_snapshot</code><span class="sig-paren">(</span><em>sdir</em>, <em>snum</em>, <em>copy_dir</em>, <em>subsamples=False</em>, <em>redistribute=False</em>, <em>n_files=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/hdf5_wrapper.html#copy_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.hdf5_wrapper.copy_snapshot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy a gadget/gizmo snapshot, and subsample it if you choose to.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>sdir (str) :</dt>
-<dd>Snapshot directory to copy from.</dd>
-<dt>snum (int) :</dt>
-<dd>Which snapshot to copy over.</dd>
-<dt>copy_dir (str) :</dt>
-<dd>Where you want to save the copied snapshot.</dd>
-<dt>subsamples (bool or int) :</dt>
-<dd>If not False, the number of particles you will have in your subsampled snapshot,
-per file part.</dd>
-<dt>redistribute (bool) :</dt>
-<dd>If True, redistribute the particles evenly among the snapshots.</dd>
-<dt>n_files (str or int) :</dt>
-<dd>If not default, the number of pieces you want your copied snapshot broken into
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sdir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Snapshot directory to copy from.</li>
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Which snapshot to copy over.</li>
+<li><strong>copy_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Where you want to save the copied snapshot.</li>
+<li><strong>subsamples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – If not False, the number of particles you will have in your subsampled snapshot,
+per file part.</li>
+<li><strong>redistribute</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, redistribute the particles evenly among the snapshots.</li>
+<li><strong>n_files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – If not default, the number of pieces you want your copied snapshot broken into
 (must be less than the number of pieces in the original snapshot if subsampling).
-In general, should really only be used when subsampling or redistributing.</dd>
-</dl>
-</dd>
-</dl>
+In general, should really only be used when subsampling or redistributing.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -145,13 +172,7 @@ In general, should really only be used when subsampling or redistributing.</dd>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -175,20 +196,21 @@ In general, should really only be used when subsampling or redistributing.</dd>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/galaxy_dive.utils.hdf5_wrapper.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.utils.astro module &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -15,15 +15,20 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -40,27 +45,49 @@
 <dt id="galaxy_dive.utils.astro.age_of_universe">
 <code class="descclassname">galaxy_dive.utils.astro.</code><code class="descname">age_of_universe</code><span class="sig-paren">(</span><em>redshift</em>, <em>h=0.71</em>, <em>omega_matter=0.27</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/astro.html#age_of_universe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.astro.age_of_universe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the exact solution to the age of universe (for a flat universe) to a given redshift</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>redshift (float): The input redshift.
-h (float): The hubble parameter.
-omega_matter (float): Cosmological mass fraction of matter.</dd>
-<dt>Returns:</dt>
-<dd>t (float): Age of the universe in Gyr</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>redshift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The input redshift.</li>
+<li><strong>h</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The hubble parameter.</li>
+<li><strong>omega_matter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Cosmological mass fraction of matter.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Age of the universe in Gyr</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">t (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.astro.circular_velocity">
 <code class="descclassname">galaxy_dive.utils.astro.</code><code class="descname">circular_velocity</code><span class="sig-paren">(</span><em>r_vir</em>, <em>m_vir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/astro.html#circular_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.astro.circular_velocity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the circular velocity of a halo in km/s.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>r_vir (float or array-like) : The virial radius in pkpc.
-m_vir (float or array-like) : The halo mass in Msun.</dd>
-<dt>Returns:</dt>
-<dd>v_c : Circular velocity of the halo in km/s, indexed the same way that ahf_reader.mtree_halos[i] is.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>r_vir</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – The virial radius in pkpc.</li>
+<li><strong>m_vir</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – The halo mass in Msun.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Circular velocity of the halo in km/s, indexed the same way that ahf_reader.mtree_halos[i] is.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">v_c</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -70,38 +97,51 @@ m_vir (float or array-like) : The halo mass in Msun.</dd>
 z=0 stellar mass of m_star.
 This is taken from Peeple+2014, who use the star formation histories of
 Leitner+2012.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>m_star (float or array-like) :</dt>
-<dd>Mass of the target galaxy at z=0 in units of Msun.</dd>
-<dt>y_z_ii (float) :</dt>
-<dd>Nucleosynthetic yield of all heavy</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd><dl class="first last docutils">
-<dt>sneii_metal_budget (same as m_star):</dt>
-<dd>Units of Msun.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>m_star</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>array-like</em>) – Mass of the target galaxy at z=0 in units of Msun.</li>
+<li><strong>y_z_ii</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Nucleosynthetic yield of all heavy</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Units of Msun.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sneii_metal_budget (same as m_star)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.astro.hubble_parameter">
 <code class="descclassname">galaxy_dive.utils.astro.</code><code class="descname">hubble_parameter</code><span class="sig-paren">(</span><em>redshift</em>, <em>h=0.702</em>, <em>omega_matter=0.272</em>, <em>omega_lambda=0.728</em>, <em>units='km/s/Mpc'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/astro.html#hubble_parameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.astro.hubble_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return Hubble factor in 1/sec for a given redshift.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>redshift (float): The input redshift.
-h (float): The hubble parameter.
-omega_matter (float): Cosmological mass fraction of matter.
-omega_lambda (float): Cosmological mass fraction of dark energy.
-units (str): The units the hubble parameter should be returned in.</dd>
-<dt>Returns:</dt>
-<dd>hubble_a (float): Hubble factor in specified units</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>redshift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The input redshift.</li>
+<li><strong>h</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The hubble parameter.</li>
+<li><strong>omega_matter</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Cosmological mass fraction of matter.</li>
+<li><strong>omega_lambda</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Cosmological mass fraction of dark energy.</li>
+<li><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The units the hubble parameter should be returned in.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Hubble factor in specified units</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">hubble_a (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -111,13 +151,7 @@ units (str): The units the hubble parameter should be returned in.</dd>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -141,20 +175,21 @@ units (str): The units the hubble parameter should be returned in.</dd>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/galaxy_dive.utils.astro.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>

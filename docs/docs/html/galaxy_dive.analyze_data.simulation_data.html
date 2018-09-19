@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.analyze_data.simulation_data module &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -15,15 +15,20 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -89,57 +94,88 @@
 <dd><p>Get the data from within the class. Only for getting the data. No post-processing or changing the data
 (putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
 hence a whole function for getting the data.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>data_key (str) : Key in the data dictionary for the key we want to get
-sl (slice) : Slice of the data, if requested.</dd>
-<dt>Returns:</dt>
-<dd>data (np.ndarray) : Requested data.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key in the data dictionary for the key we want to get</li>
+<li><strong>sl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.7)"><em>slice</em></a>) – Slice of the data, if requested.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_distance_to_point">
 <code class="descname">get_distance_to_point</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_distance_to_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_distance_to_point" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is <em>not</em> unit tested.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>point (array-like of shape (3,)) : The point you want to find the distance to for each particle.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>point</strong> (<em>array-like of shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The point you want to find the distance to for each particle.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_position_data">
 <code class="descname">get_position_data</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_position_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_position_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get position data (assuming the data starts with an ‘R’)</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>data_key (str) : Key in the data dictionary for the key we want to get</dd>
-<dt>Returns:</dt>
-<dd>data (np.ndarray) : Requested data.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key in the data dictionary for the key we want to get</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Requested data.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">data (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_potential">
 <code class="descname">get_potential</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_potential" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is <em>not</em> unit tested.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>point (array-like of shape (3,)) : The point you want to find the potential at</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>point</strong> (<em>array-like of shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The point you want to find the potential at</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.get_velocity_data">
 <code class="descname">get_velocity_data</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.get_velocity_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.get_velocity_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get position data (assuming the data starts with a ‘V’)</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>data_key (str) : Key in the data dictionary for the key we want to get</dd>
-<dt>Returns:</dt>
-<dd>data (np.ndarray) : Requested data.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key in the data dictionary for the key we want to get</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Requested data.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">data (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
@@ -152,9 +188,15 @@ sl (slice) : Slice of the data, if requested.</dd>
 <dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.handle_data_key_error">
 <code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.handle_data_key_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key to try and generate data for</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd>data_key (str) : Key to try and generate data for</dd>
 <dt>Modifies:</dt>
 <dd>self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so</dd>
 </dl>
@@ -333,14 +375,16 @@ center of mass.</p>
 <dd><p>Calculate the angle (in degrees) from some vector, but mirror
 values past 90 degrees (e.g. 135 -&gt; 45 degrees, 180 -&gt; 0 degrees).
 This is useful when there’s symmetry above and below 90.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>normal_vector</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>array-like</em>) – Vector that represents the vertical. Defaults to using the
+total stellar angular momentum of the main galaxy.</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>normal_vector (str or array-like):</dt>
-<dd>Vector that represents the vertical. Defaults to using the
-total stellar angular momentum of the main galaxy.</dd>
-</dl>
-</dd>
 <dt>Modifies:</dt>
 <dd><dl class="first last docutils">
 <dt>self.data[‘AbsPhi’] (array-like):</dt>
@@ -401,14 +445,14 @@ element in the simulation that’s at the metallicity floor.</p>
 <code class="descname">calc_phi</code><span class="sig-paren">(</span><em>normal_vector='total ang momentum'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.calc_phi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.calc_phi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the angle (in degrees) from some vector.
 By default the vector is the total angular momentum.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>normal_vector (str or array-like):</dt>
-<dd>Vector that represents the vertical.</dd>
-</dl>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>normal_vector</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>array-like</em>) – Vector that represents the vertical.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -428,50 +472,52 @@ By default the vector is the total angular momentum.</p>
 <dd><p>Modified method for getting processed method. For the most part is
 equivalent to calling the method of the parent class, but is also
 capable of scaling the retrieved data by a column from the halo data.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">data_key (str) : What to get out?</p>
-<p>sl (slice) : Slice of the data, if requested.</p>
-<p>smooth_data (bool) : If True, smooth the data.</p>
-<dl class="last docutils">
-<dt>smoothing_window_length, smoothing_polyorder (int) :</dt>
-<dd>Arguments for how to smooth the data.</dd>
-<dt>scale_key (str) :</dt>
-<dd>Halo data entry by which to divide the data by.</dd>
-<dt>scale_a_power (float) :</dt>
-<dd>The halo data that we are scaling processed_data by will be
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What to get out?</li>
+<li><strong>sl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.7)"><em>slice</em></a>) – Slice of the data, if requested.</li>
+<li><strong>smooth_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, smooth the data.</li>
+<li><strong>smoothing_polyorder</strong> (<em>smoothing_window_length</em><em>,</em>) – Arguments for how to smooth the data.</li>
+<li><strong>scale_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Halo data entry by which to divide the data by.</li>
+<li><strong>scale_a_power</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The halo data that we are scaling processed_data by will be
 multiplied by a to this power.
-Useful for data in cosmological units (as is often normal).</dd>
-<dt>scale_h_power (float) :</dt>
-<dd>The halo data that we are scaling processed_data by will be
+Useful for data in cosmological units (as is often normal).</li>
+<li><strong>scale_h_power</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – The halo data that we are scaling processed_data by will be
 multiplied by the hubble parameter to this power.
-Useful for data in cosmological units (as is often normal).</dd>
-<dt>tile_data (bool) :</dt>
-<dd>If True, tile data along a given direction. This is usually for
-data formatting purposes.</dd>
-<dt>tile_dim (str) :</dt>
-<dd><p class="first">If the data is tiled, what dimension of the data should match?
+Useful for data in cosmological units (as is often normal).</li>
+<li><strong>tile_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, tile data along a given direction. This is usually for
+data formatting purposes.</li>
+<li><strong>tile_dim</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>If the data is tiled, what dimension of the data should match?
 Options:</p>
-<blockquote class="last">
+<blockquote>
 <div><dl class="docutils">
-<dt>‘auto’ :</dt>
+<dt>’auto’ :</dt>
 <dd>Tiles according to data size.</dd>
-<dt>‘match_snaps’ :</dt>
+<dt>’match_snaps’ :</dt>
 <dd>The data is tiled such that the new shape is
 (self.n_snaps, data_size).</dd>
-<dt>‘match_particles’ :</dt>
+<dt>’match_particles’ :</dt>
 <dd>The data is tiled such that the new shape is
 (data_size, self.n_particles).</dd>
 </dl>
 </div></blockquote>
-</dd>
-<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>args, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs :</dt>
-<dd>Passed to SimulationData.get_processed_data.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>processed_data (array-like) : Requested data array.</dd>
-</dl>
+</li>
+<li><strong>**kwargs</strong> (<em>*args</em><em>,</em>) – <p>Passed to SimulationData.get_processed_data.</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data array.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">processed_data (array-like)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -484,9 +530,15 @@ Options:</p>
 <dt id="galaxy_dive.analyze_data.simulation_data.TimeData.handle_data_key_error">
 <code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeData.handle_data_key_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeData.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key to try and generate data for</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd>data_key (str) : Key to try and generate data for</dd>
 <dt>Modifies:</dt>
 <dd>self.data[data_key] (np.array) : If it finds a function to generate the data, it will do so</dd>
 </dl>
@@ -531,13 +583,19 @@ Options:</p>
 <code class="descname">get_selected_data_over_time</code><span class="sig-paren">(</span><em>data_key</em>, <em>snum</em>, <em>mask='total'</em>, <em>optional_masks=None</em>, <em>n_samples=None</em>, <em>seed=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#TimeDataMasker.get_selected_data_over_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.TimeDataMasker.get_selected_data_over_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get data over the full time history, based on its mask at
 one time.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">data_key (str): Data to get.</p>
-<p>snum (int): Snapshot to get the data corresponding to.</p>
-<p class="last">mask (</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data to get.</li>
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Snapshot to get the data corresponding to.</li>
+<li><strong>(</strong> (<em>mask</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -549,13 +607,7 @@ one time.</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -579,20 +631,21 @@ one time.</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/galaxy_dive.analyze_data.simulation_data.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>

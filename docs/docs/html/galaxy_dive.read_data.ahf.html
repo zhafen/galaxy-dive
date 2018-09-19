@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>galaxy_dive.read_data.ahf module &#8212; galaxy-dive 0.8.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -15,15 +15,20 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="search" title="Search" href="search.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
@@ -46,38 +51,68 @@ Note! All positions are in comoving coordinates, and everything has 1/h’s spri
 <dt id="galaxy_dive.read_data.ahf.AHFReader.check_files_exist">
 <code class="descname">check_files_exist</code><span class="sig-paren">(</span><em>snum_start</em>, <em>snum_end</em>, <em>snum_step</em>, <em>file_str='AHF_halos'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.check_files_exist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.check_files_exist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that AHF was successfully run for all files in the given range.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>snum_start (int) : Starting snapshot.
-snum_end (int) : Ending snapshot.
-snum_step (int) : Step between snapshots.</dd>
-<dt>Returns:</dt>
-<dd>files_exist (bool) : If True, all files in the given range exist.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>snum_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Starting snapshot.</li>
+<li><strong>snum_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Ending snapshot.</li>
+<li><strong>snum_step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Step between snapshots.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">If True, all files in the given range exist.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">files_exist (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.read_data.ahf.AHFReader.get_filepath">
 <code class="descname">get_filepath</code><span class="sig-paren">(</span><em>snum</em>, <em>ahf_file_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.get_filepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.get_filepath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the filepath for a specified type of AHF file.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>snum (int): Snapshot number to load.
-ahf_file_type (str): Can be AHF_halos or AHF_mtree_idx.</dd>
-<dt>Returns:</dt>
-<dd>ahf_filepath (str): The filepath to the specified file.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Snapshot number to load.</li>
+<li><strong>ahf_file_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Can be AHF_halos or AHF_mtree_idx.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The filepath to the specified file.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ahf_filepath (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.read_data.ahf.AHFReader.get_halos">
 <code class="descname">get_halos</code><span class="sig-paren">(</span><em>snum</em>, <em>force_reload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.get_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.get_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get <a href="#id1"><span class="problematic" id="id2">*</span></a>.AHF_halos file for a particular snapshot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Snapshot number to load.</li>
+<li><strong>force_reload</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Force reloading, even if there’s already an halos file loaded.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">snum (int): Snapshot number to load.</p>
-<p class="last">force_reload (bool): Force reloading, even if there’s already an halos file loaded.</p>
-</dd>
 <dt>Modifies:</dt>
 <dd>self.halos (pd.DataFrame): Dataframe containing the requested data.</dd>
 </dl>
@@ -87,11 +122,19 @@ ahf_file_type (str): Can be AHF_halos or AHF_mtree_idx.</dd>
 <dt id="galaxy_dive.read_data.ahf.AHFReader.get_halos_add">
 <code class="descname">get_halos_add</code><span class="sig-paren">(</span><em>snum</em>, <em>force_reload=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.get_halos_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.get_halos_add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get <a href="#id3"><span class="problematic" id="id4">*</span></a>.AHF_halos_add file for a particular snapshot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Snapshot number to load.</li>
+<li><strong>force_reload</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Force reloading, even if there’s already an halos file loaded.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">snum (int): Snapshot number to load.</p>
-<p class="last">force_reload (bool): Force reloading, even if there’s already an halos file loaded.</p>
-</dd>
 <dt>Modifies:</dt>
 <dd>self.halos_add (pd.DataFrame): Dataframe containing the requested data.</dd>
 </dl>
@@ -101,49 +144,59 @@ ahf_file_type (str): Can be AHF_halos or AHF_mtree_idx.</dd>
 <dt id="galaxy_dive.read_data.ahf.AHFReader.get_mtree_halo_quantity">
 <code class="descname">get_mtree_halo_quantity</code><span class="sig-paren">(</span><em>quantity</em>, <em>indice</em>, <em>index=None</em>, <em>tag=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.get_mtree_halo_quantity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.get_mtree_halo_quantity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a desired quantity for all merger tree halos at a particular snapshot.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">quantity (str): mtree_halo key to load in the dataset
-indice (int): Indice of the quantity to load, as indicated by the index.
-index (str or int) : What type of index to use. Defaults to None, which raises an exception.</p>
-<blockquote>
-<div>You <em>must</em> choose an index, to avoid easy mistakes. See get_mtree_halos() for a full description.</div></blockquote>
-<dl class="last docutils">
-<dt>tag (str) <span class="classifier-delimiter">:</span> <span class="classifier">Additional identifying tag for the files, e.g. ‘smooth’, means this function will look for</span></dt>
-<dd>‘halo_00000_smooth.dat’, etc.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>mtree_halo_quantity (np.array): The ith index is the requested quantity for ith MT halo.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>quantity</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – mtree_halo key to load in the dataset</li>
+<li><strong>indice</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Indice of the quantity to load, as indicated by the index.</li>
+<li><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What type of index to use. Defaults to None, which raises an exception.
+You <em>must</em> choose an index, to avoid easy mistakes. See get_mtree_halos() for a full description.</li>
+<li><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Additional identifying tag for the files, e.g. ‘smooth’, means this function will look for
+‘halo_00000_smooth.dat’, etc.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The ith index is the requested quantity for ith MT halo.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">mtree_halo_quantity (np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="galaxy_dive.read_data.ahf.AHFReader.get_mtree_halos">
 <code class="descname">get_mtree_halos</code><span class="sig-paren">(</span><em>index=None</em>, <em>tag=None</em>, <em>adjust_default_labels=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.get_mtree_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.get_mtree_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get halo files (e.g. halo_00000.dat) in a dictionary of pandas DataFrames.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first last docutils">
-<dt>index (str or int) :</dt>
-<dd><p class="first">What type of index to use. Defaults to None, which raises an exception. You <em>must</em> choose
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – <p>What type of index to use. Defaults to None, which raises an exception. You <em>must</em> choose
 an index, to avoid easy mistakes. Options are…
 ‘snum’ : Indexes by snapshot number, starting at 600 and counting down. Only viable with snapshot steps of 1!!</p>
 <blockquote>
 <div>Identical to passing the integer 600. (See below.)</div></blockquote>
-<p>‘range’ : Index by an increasing range.
+<p>’range’ : Index by an increasing range.
 int : If an integer, then this integer should be the final snapshot number for the simulation.</p>
-<blockquote class="last">
+<blockquote>
 <div>In this case, indexes by snapshot number, starting at the final snapshot number and counting down.
 Only viable with snapshot steps of 1!!</div></blockquote>
-</dd>
-<dt>tag (str) :</dt>
-<dd>Additional identifying tag for the files, e.g. ‘smooth’, means this function will look for
-‘halo_00000_smooth.dat’, etc.</dd>
-<dt>adjust_default_label (bool) :</dt>
-<dd>Whether or not to adjust the column headings, etc. Defaults to True if tag is None.</dd>
-</dl>
-</dd>
+</li>
+<li><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Additional identifying tag for the files, e.g. ‘smooth’, means this function will look for
+‘halo_00000_smooth.dat’, etc.</li>
+<li><strong>adjust_default_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not to adjust the column headings, etc. Defaults to True if tag is None.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
 <dt>Modifies:</dt>
 <dd><dl class="first last docutils">
 <dt>self.mtree_halos (dict of pd.DataFrames) :</dt>
@@ -164,9 +217,15 @@ is that dataframe’s Merger Tree Halo ID</dd>
 <dt id="galaxy_dive.read_data.ahf.AHFReader.get_mtree_idx">
 <code class="descname">get_mtree_idx</code><span class="sig-paren">(</span><em>snum</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.get_mtree_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.get_mtree_idx" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get <a href="#id5"><span class="problematic" id="id6">*</span></a>.AHF_mtree_idx file for a particular snapshot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Snapshot number to load.</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Args:</dt>
-<dd>snum (int): Snapshot number to load.</dd>
 <dt>Modifies:</dt>
 <dd>self.ahf_mtree_idx (pd.DataFrame): Dataframe containing the requested data.</dd>
 </dl>
@@ -176,23 +235,30 @@ is that dataframe’s Merger Tree Halo ID</dd>
 <dt id="galaxy_dive.read_data.ahf.AHFReader.get_pos_or_vel">
 <code class="descname">get_pos_or_vel</code><span class="sig-paren">(</span><em>pos_or_vel</em>, <em>halo_id</em>, <em>inds</em>, <em>type_of_halo_id='merger_tree'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/read_data/ahf.html#AHFReader.get_pos_or_vel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.read_data.ahf.AHFReader.get_pos_or_vel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the position or velocity of a mt halo (three dimensional).</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">pos_or_vel (str): Get position (‘pos’) or velocity (‘vel’).
-halo_id (int): Merger tree halo ID for the position or velocity you want.
-inds (int or np.array of ints): Indices you want the position or velocity for.</p>
-<blockquote>
-<div>If type_of_halo_id == ‘merger_tree’, uses same index as mtree_halos.
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pos_or_vel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Get position (‘pos’) or velocity (‘vel’).</li>
+<li><strong>halo_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Merger tree halo ID for the position or velocity you want.</li>
+<li><strong>inds</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><em>np.array of ints</em>) – Indices you want the position or velocity for.
+If type_of_halo_id == ‘merger_tree’, uses same index as mtree_halos.
 Elif type_of_halo_id == ‘halos’, can only be a single int,
-which should be the snapshot number.</div></blockquote>
-<dl class="last docutils">
-<dt>type_of_halo_id (str): ‘merger_tree’ if the halo id is a merger tree halo id.</dt>
-<dd>‘halos’ if the halo id is a <a href="#id7"><span class="problematic" id="id8">*</span></a>.AHF_halos halo id.</dd>
-</dl>
-</dd>
-<dt>Returns:</dt>
-<dd>p_or_v ( [len(inds), 3] np.array ): Position or velocity for the specified inds.</dd>
-</dl>
+which should be the snapshot number.</li>
+<li><strong>type_of_halo_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – ‘merger_tree’ if the halo id is a merger tree halo id.
+‘halos’ if the halo id is a <a href="#id7"><span class="problematic" id="id8">*</span></a>.AHF_halos halo id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Position or velocity for the specified inds.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">p_or_v ( [len(inds), 3] np.array )</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -204,13 +270,7 @@ which should be the snapshot number.</div></blockquote>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
+        <div class="sphinxsidebarwrapper">
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -234,20 +294,21 @@ which should be the snapshot number.</div></blockquote>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2018, Zachary Hafen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/galaxy_dive.read_data.ahf.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+    </div>
   </body>
 </html>
