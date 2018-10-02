@@ -9,6 +9,7 @@
 # Base python imports
 import numpy as np
 import os
+import scipy.stats
 import scipy.signal as signal
 import warnings
 
@@ -640,6 +641,121 @@ class GenericPlotter( object ):
         # Return?
         if return_dist:
             return hist2d, x_edges, y_edges
+
+    ########################################################################
+
+    def median_and_interval(
+        self,
+        x_key, y_key,
+        lower_percentile = 16,
+        upper_percentile = 84,
+        plot_interval = True,
+        x_data_args = {}, y_data_args = {},
+        ax = None,
+        slices = None,
+        fix_invalid = False,
+        bins = 64,
+        linewidth = 3,
+        color = 'k',
+        label = None,
+        zorder = 100,
+        alpha = 0.5,
+        add_plot_label = True,
+        return_values = False,
+        *args, **kwargs
+    ):
+
+        if isinstance( slices, int ):
+            sl = ( slice(None), slices )
+        else:
+            sl = slices
+
+        varying_kwargs = {
+            'x': x_data_args,
+            'y': y_data_args,
+        }
+        data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
+
+        # Get data
+        x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
+        y_data = self.data_object.get_selected_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
+
+        # Fix NaNs
+        if fix_invalid:
+            x_mask = np.ma.fix_invalid( x_data ).mask
+            y_mask = np.ma.fix_invalid( y_data ).mask
+            mask = np.ma.mask_or( x_mask, y_mask )
+
+            x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
+            y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
+
+        # Calculate the median
+        med, bin_edges, binnumber = scipy.stats.binned_statistic(
+            x = x_data,
+            values = y_data,
+            statistic = 'median',
+            bins = bins,
+        )
+
+        # Calculate the percentiles
+        def get_lower_percentile( data ):
+            return np.percentile( data, lower_percentile )
+        def get_upper_percentile( data ):
+            return np.percentile( data, upper_percentile )
+        low_p, bin_edges, binnumber = scipy.stats.binned_statistic(
+            x = x_data,
+            values = y_data,
+            statistic = get_lower_percentile,
+            bins = bins,
+        )
+        high_p, bin_edges, binnumber = scipy.stats.binned_statistic(
+            x = x_data,
+            values = y_data,
+            statistic = get_upper_percentile,
+            bins = bins,
+        )
+
+        # Get plotting axis
+        if ax is None:
+            fig = plt.figure( figsize=(10,9), facecolor='white' )
+            ax = plt.gca()
+
+        # X Values fo rplot
+        x_values = bin_edges[:-1] + 0.5 * ( bin_edges[1] - bin_edges[0] )
+
+        # Plot median
+        ax.plot(
+            x_values,
+            med,
+            linewidth = linewidth,
+            color = color,
+            zorder = zorder,
+            label = label,
+        )
+
+        # Plot interval
+        if plot_interval:
+            ax.fill_between(
+                x_values,
+                low_p,
+                high_p,
+                color = color,
+                alpha = alpha,
+            )
+
+        # Add plot label
+        if add_plot_label:
+            if self.label is not None:
+                plt_label = ax.annotate(
+                    s = self.label,
+                    xy = (0.,1.0),
+                    va = 'bottom',
+                    xycoords = 'axes fraction',
+                    fontsize = 22,
+                 )
+
+        if return_values:
+            return med, low_p, high_p, bin_edges
 
     ########################################################################
 
