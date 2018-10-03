@@ -647,6 +647,7 @@ class GenericPlotter( object ):
     def median_and_interval(
         self,
         x_key, y_key,
+        x_data = None, y_data = None,
         lower_percentile = 16,
         upper_percentile = 84,
         plot_interval = True,
@@ -660,7 +661,14 @@ class GenericPlotter( object ):
         label = None,
         zorder = 100,
         alpha = 0.5,
+        plot_label = None,
         add_plot_label = True,
+        plot_label_kwargs = {
+            'xy': (0.,1.0),
+            'va': 'bottom',
+            'xycoords': 'axes fraction',
+            'fontsize': 22,
+        },
         return_values = False,
         *args, **kwargs
     ):
@@ -677,8 +685,10 @@ class GenericPlotter( object ):
         data_kwargs = utilities.dict_from_defaults_and_variations( kwargs, varying_kwargs )
 
         # Get data
-        x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
-        y_data = self.data_object.get_selected_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
+        if x_data is None:
+            x_data = self.data_object.get_selected_data( x_key, sl=sl, *args, **data_kwargs['x'] ).copy()
+        if y_data is None:
+            y_data = self.data_object.get_selected_data( y_key, sl=sl, *args, **data_kwargs['y'] ).copy()
 
         # Fix NaNs
         if fix_invalid:
@@ -745,13 +755,12 @@ class GenericPlotter( object ):
 
         # Add plot label
         if add_plot_label:
-            if self.label is not None:
+            if plot_label is None:
+                plot_label = self.label
+            if plot_label is not None:
                 plt_label = ax.annotate(
-                    s = self.label,
-                    xy = (0.,1.0),
-                    va = 'bottom',
-                    xycoords = 'axes fraction',
-                    fontsize = 22,
+                    s = plot_label,
+                    **plot_label_kwargs
                  )
 
         if return_values:
