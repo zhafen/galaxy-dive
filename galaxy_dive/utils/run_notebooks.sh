@@ -13,10 +13,10 @@
 #SBATCH --mail-type=end
 #SBATCH --account=TG-AST140023
 
-# nbs_to_run=$( *.ipynb )
-nbs_to_run=(mass_budget.ipynb)
+nbs_to_run=(*.ipynb)
+# nbs_to_run=(mass_budget.ipynb)
 
-for nb in $nbs_to_run;
+for nb in ${nbs_to_run[@]};
 do
     # This doesn't work with Python2.7 (assumed default, so switch to Python 3)
     module unload python

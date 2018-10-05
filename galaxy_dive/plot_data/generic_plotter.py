@@ -84,6 +84,7 @@ class GenericPlotter( object ):
         x_range = None, y_range = None,
         x_label = None, y_label = None,
         add_x_label = True, add_y_label = True,
+        add_plot_label = True,
         plot_label = None,
         line_label = None,
         label_fontsize = 24,
@@ -310,30 +311,29 @@ class GenericPlotter( object ):
 )
 
         # Plot label
-        if ( self.label is None ) and ( plot_label is None ):
-            pass
-        elif plot_label is None:
-            plt_label = ax.annotate(
-                s = self.label,
-                xy = (0.,1.0),
-                va = 'bottom',
-                xycoords = 'axes fraction',
-                fontsize = label_fontsize,
-             )
-        elif isinstance( plot_label, str ):
-            plt_label = ax.annotate(
-                s = plot_label,
-                xy = (0.,1.0),
-                va = 'bottom',
-                xycoords = 'axes fraction',
-                fontsize = label_fontsize,
-             )
-        elif isinstance( plot_label, dict ):
-            plt_label = ax.annotate( **plot_label )
-        elif plot_label is None:
-            pass
-        else:
-            raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
+        if add_plot_label:
+            if plot_label is None:
+                plt_label = ax.annotate(
+                    s = self.label,
+                    xy = (0.,1.0),
+                    va = 'bottom',
+                    xycoords = 'axes fraction',
+                    fontsize = label_fontsize,
+                 )
+            elif isinstance( plot_label, str ):
+                plt_label = ax.annotate(
+                    s = plot_label,
+                    xy = (0.,1.0),
+                    va = 'bottom',
+                    xycoords = 'axes fraction',
+                    fontsize = label_fontsize,
+                 )
+            elif isinstance( plot_label, dict ):
+                plt_label = ax.annotate( **plot_label )
+            elif plot_label is None:
+                pass
+            else:
+                raise Exception( 'Unrecognized plot_label arguments, {}'.format( plot_label ) )
 
         # Add axis labels
         if add_x_label:
@@ -644,10 +644,12 @@ class GenericPlotter( object ):
 
     ########################################################################
 
-    def median_and_interval(
+    def statistic_and_interval(
         self,
         x_key, y_key,
         x_data = None, y_data = None,
+        weights = None,
+        statistic = 'median',
         lower_percentile = 16,
         upper_percentile = 84,
         plot_interval = True,
@@ -699,13 +701,37 @@ class GenericPlotter( object ):
             x_data = np.ma.masked_array( x_data, mask=mask ).compressed()
             y_data = np.ma.masked_array( y_data, mask=mask ).compressed()
 
-        # Calculate the median
-        med, bin_edges, binnumber = scipy.stats.binned_statistic(
-            x = x_data,
-            values = y_data,
-            statistic = 'median',
-            bins = bins,
-        )
+        # Calculate the statistic
+        if statistic == 'weighted_mean':
+
+            assert weights is not None, "Need to provide weights."
+
+            weighted_sum, bin_edges, binnumber = scipy.stats.binned_statistic(
+                x = x_data,
+                values = y_data * weights,
+                statistic = 'sum',
+                bins = bins,
+            )
+            weights_sum, bin_edges, binnumber = scipy.stats.binned_statistic(
+                x = x_data,
+                values = weights,
+                statistic = 'sum',
+                bins = bins,
+            )
+
+            stat = weighted_sum / weights_sum
+
+        else:
+
+            assert weights is None, "weights only works with weighted_mean"
+
+            # Usual statistic
+            stat, bin_edges, binnumber = scipy.stats.binned_statistic(
+                x = x_data,
+                values = y_data,
+                statistic = statistic,
+                bins = bins,
+            )
 
         # Calculate the percentiles
         def get_lower_percentile( data ):
@@ -733,10 +759,10 @@ class GenericPlotter( object ):
         # X Values fo rplot
         x_values = bin_edges[:-1] + 0.5 * ( bin_edges[1] - bin_edges[0] )
 
-        # Plot median
+        # Plot statistic
         ax.plot(
             x_values,
-            med,
+            stat,
             linewidth = linewidth,
             color = color,
             zorder = zorder,
@@ -764,7 +790,7 @@ class GenericPlotter( object ):
                  )
 
         if return_values:
-            return med, low_p, high_p, bin_edges
+            return stat, low_p, high_p, bin_edges
 
     ########################################################################
 

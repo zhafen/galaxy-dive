@@ -41,6 +41,7 @@ def box_plot(
     plot_boxes = True,
     skip_single_points = True,
     linewidth = 4,
+    linestyle = '-',
     line_x_min = None,
     line_x_max = None,
 ):
@@ -127,6 +128,7 @@ def box_plot(
                 fill = False,
                 edgecolor = color,
                 linewidth = linewidth,
+                linestyle = linestyle,
                 zorder = box_zorder - zorder_offset,
             )                
             ax.add_patch( rect )
@@ -192,6 +194,7 @@ def box_plot(
         sorted_xs,
         sorted_ys,
         linewidth = linewidth,
+        linestyle = linestyle,
         color = color,
         zorder = line_zorder - zorder_offset,
     )
