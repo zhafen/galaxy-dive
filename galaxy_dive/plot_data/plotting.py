@@ -15,6 +15,7 @@ import subprocess
 import matplotlib.pyplot as plt
 import matplotlib.colors as plt_colors
 import matplotlib.patches
+import matplotlib.ticker 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import galaxy_dive.utils.data_operations as data_ops
@@ -575,3 +576,24 @@ def fill_between_steps( ax, x, y1, y2=0, step_where='pre', **kwargs ):
 
         # now to the plotting part:
         return ax.fill_between(xx, yy1, y2=yy2, **kwargs)
+
+########################################################################
+
+def custom_log_formatter( x, ): 
+    '''Better tick labels for log axes, as coded up by Alex Gurvich, who was
+    deeply inspired by Jonathan Stern.
+
+    To use, do, for example,
+    >>> my_log_ticker = matplotlib.ticker.FuncFormatter(my_log_formatter)
+    >>> ax.yaxis.set_major_formatter(my_log_ticker)
+
+    Args:
+        x (list-like): List of tick values.
+
+    Returns:
+        Tick Formatter
+    '''
+    if x in [1e-2,1e-1,1,10,100]: 
+        return r"$%g$"%x 
+    else: 
+        return matplotlib.ticker.LogFormatterMathtext()(x) 
