@@ -86,7 +86,7 @@ on the bottom axis.</p>
 
 <dl class="function">
 <dt id="galaxy_dive.plot_data.plotting.box_plot">
-<code class="descclassname">galaxy_dive.plot_data.plotting.</code><code class="descname">box_plot</code><span class="sig-paren">(</span><em>x_datas</em>, <em>y_datas</em>, <em>ax=None</em>, <em>color='k'</em>, <em>y_mean_statistic=&lt;function mean&gt;</em>, <em>x_scale='log'</em>, <em>y_scale='log'</em>, <em>y_floor=None</em>, <em>box_upper_limit=None</em>, <em>box_lower_limit=None</em>, <em>box_zorder=50</em>, <em>blank_zorder=30</em>, <em>line_zorder=10</em>, <em>zorder_offset=0</em>, <em>plot_boxes=True</em>, <em>skip_single_points=True</em>, <em>linewidth=4</em>, <em>line_x_min=None</em>, <em>line_x_max=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/plotting.html#box_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.plotting.box_plot" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">galaxy_dive.plot_data.plotting.</code><code class="descname">box_plot</code><span class="sig-paren">(</span><em>x_datas</em>, <em>y_datas</em>, <em>ax=None</em>, <em>color='k'</em>, <em>y_mean_statistic=&lt;function mean&gt;</em>, <em>x_scale='log'</em>, <em>y_scale='log'</em>, <em>y_floor=None</em>, <em>box_upper_limit=None</em>, <em>box_lower_limit=None</em>, <em>box_zorder=50</em>, <em>blank_zorder=30</em>, <em>line_zorder=10</em>, <em>zorder_offset=0</em>, <em>plot_boxes=True</em>, <em>skip_single_points=True</em>, <em>linewidth=4</em>, <em>linestyle='-'</em>, <em>line_x_min=None</em>, <em>line_x_max=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/plotting.html#box_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.plotting.box_plot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -108,6 +108,26 @@ on the bottom axis.</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">num_rows (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>)</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.plot_data.plotting.custom_log_formatter">
+<code class="descclassname">galaxy_dive.plot_data.plotting.</code><code class="descname">custom_log_formatter</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/plotting.html#custom_log_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.plotting.custom_log_formatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Better tick labels for log axes, as coded up by Alex Gurvich, who was
+deeply inspired by Jonathan Stern.</p>
+<p>To use, do, for example,
+&gt;&gt;&gt; my_log_ticker = matplotlib.ticker.FuncFormatter(my_log_formatter)
+&gt;&gt;&gt; ax.yaxis.set_major_formatter(my_log_ticker)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>list-like</em>) – List of tick values.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tick Formatter</td>
 </tr>
 </tbody>
 </table>

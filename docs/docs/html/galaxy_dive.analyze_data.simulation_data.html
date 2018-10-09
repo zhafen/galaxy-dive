@@ -46,6 +46,62 @@
 <em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.simulation_data.</code><code class="descname">SimulationData</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData" title="galaxy_dive.analyze_data.generic_data.GenericData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.generic_data.GenericData</span></code></a></p>
 <p>Class for handling simulation data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory the simulation is contained in.</li>
+<li><strong>halo_data_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory simulation analysis is contained in. Defaults to data_dir</li>
+<li><strong>ahf_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What to index the snapshots by.
+Should be the last snapshot in the simulation <em>if</em>
+AHF was run backwards from the last snapshot.
+Required to put in manually to avoid easy mistakes.</li>
+<li><strong>averaging_frac</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – There are some averaged quantities (e.g. COM velocity, total
+angular momentum) that we consider. This is the fraction of
+length_scale_used within which we calculate these.</li>
+<li><strong>length_scale_used</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What length scale to use for the simulation. Will be used to put lengths in fractions.</li>
+<li><strong>z_sun</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Used mass fraction for solar metallicity.
+Options…
+‘r_scale’ : Scale radius.
+‘R_vir’ : Virial radius.</li>
+<li><strong>halo_data_retrieved</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not we retrieved relevant values from the AHF halo data.</li>
+<li><strong>centered</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not the coordinates are centered on the galaxy of choice at the start.</li>
+<li><strong>vel_centered</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not the velocities are relative to the galaxy of choice at the start.</li>
+<li><strong>hubble_corrected</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not the velocities have had the Hubble flow added
+(velocities must be centered).</li>
+<li><strong>ahf_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Identifying tag for the ahf merger tree halo files,
+looks for ahf files of type ‘halo_00000_{}.dat’.format( tag ).</li>
+<li><strong>main_halo_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What is the halo ID of the main galaxy in the simulation?</li>
+<li><strong>center_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>np.array</em>) – <p>How to center the coordinates. Options…
+‘halo’ (default) :</p>
+<blockquote>
+<div>Centers the dataset on the main halo (main_halo_id) using AHF halo data.</div></blockquote>
+<dl class="docutils">
+<dt>np.array :</dt>
+<dd>Array of coordinates on which to center the data</dd>
+</dl>
+</li>
+<li><strong>vel_center_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>np.array of size 3</em>) – <p>How to center the velocity coordinates, i.e. what the
+velocity is relative to. Options are…
+‘halo’ (default) :</p>
+<blockquote>
+<div>Sets velocity relative to the main halo (main_halo_id)
+using AHF halo data.</div></blockquote>
+<dl class="docutils">
+<dt>np.array of size 3 :</dt>
+<dd>Centers the dataset on this coordinate.</dd>
+</dl>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last"><strong>function_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary of args used to specify an arbitrary function with which to generate data.</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.simulation_data.SimulationData.add_hubble_flow">
 <code class="descname">add_hubble_flow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData.add_hubble_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData.add_hubble_flow" title="Permalink to this definition">¶</a></dt>
