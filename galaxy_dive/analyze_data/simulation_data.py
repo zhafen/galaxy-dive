@@ -35,7 +35,8 @@ class SimulationData( generic_data.GenericData ):
              Directory the simulation is contained in.
 
         halo_data_dir (str) :
-             Directory simulation analysis is contained in. Defaults to data_dir
+             Directory simulation halo catalogs are contained in.
+            Defaults to data_dir
 
         ahf_index (str) :
              What to index the snapshots by.
@@ -49,22 +50,22 @@ class SimulationData( generic_data.GenericData ):
             length_scale_used within which we calculate these.
 
         length_scale_used (str) :
-             What length scale to use for the simulation. Will be used to put lengths in fractions.
+             What length scale to use for the simulation.
+             Will be used to put lengths in fractions.
 
         z_sun (float) :
             Used mass fraction for solar metallicity.
-            Options...
-            'r_scale' : Scale radius.
-            'R_vir' : Virial radius.
 
         halo_data_retrieved (bool) :
             Whether or not we retrieved relevant values from the AHF halo data.
 
         centered (bool):
-            Whether or not the coordinates are centered on the galaxy of choice at the start.
+            Whether or not the coordinates are centered on the galaxy of
+            choice at the start.
 
         vel_centered (bool) :
-            Whether or not the velocities are relative to the galaxy of choice at the start.
+            Whether or not the velocities are relative to the galaxy of
+            choice at the start.
 
         hubble_corrected (bool) :
             Whether or not the velocities have had the Hubble flow added
@@ -78,23 +79,27 @@ class SimulationData( generic_data.GenericData ):
              What is the halo ID of the main galaxy in the simulation?
 
         center_method (str or np.array) :
-            How to center the coordinates. Options...
-            'halo' (default) :
-                 Centers the dataset on the main halo (main_halo_id) using AHF halo data.
-            np.array :
-                 Array of coordinates on which to center the data
+            How to center the coordinates. Options are...
+
+            'halo' (default) : Centers the dataset on the main halo
+                (main_halo_id) using AHF halo data.
+
+            np.array : Array of coordinates on which to center the data
 
         vel_center_method (str or np.array of size 3) :
             How to center the velocity coordinates, i.e. what the
             velocity is relative to. Options are...
-            'halo' (default) :
-                Sets velocity relative to the main halo (main_halo_id)
-                using AHF halo data.
+
+            'halo' (default) : Sets velocity relative to the main halo
+                (main_halo_id) using AHF halo data.
+
             np.array of size 3 :
                 Centers the dataset on this coordinate.
 
     Keyword Args:
-        function_args (dict): Dictionary of args used to specify an arbitrary function with which to generate data.
+        function_args (dict):
+            Dictionary of args used to specify an arbitrary function with
+            which to generate data.
     '''
 
     @utilities.store_parameters

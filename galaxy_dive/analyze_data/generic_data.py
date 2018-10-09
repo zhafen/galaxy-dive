@@ -25,7 +25,14 @@ default = object()
 ########################################################################
 
 class GenericData( object ):
-  '''Very generic data class, with getting and masking functionality.'''
+  '''Very generic data class, with getting and masking functionality.
+
+    Args:
+      key_parser (object) : KeyParser instance to use to interpret data keys.
+      data_masker (object) : DataMasker instance to use to filter and mask data.
+      verbose (bool) : Print out additional information.
+      z_sun (float) : Used mass fraction for solar metallicity.
+    '''
 
   @utilities.store_parameters
   def __init__( self,
@@ -34,14 +41,6 @@ class GenericData( object ):
     verbose = False,
     z_sun = constants.Z_MASSFRAC_SUN,
     **kwargs ):
-    '''Initialize.
-
-    Args:
-      key_parser (object) : KeyParser instance to use to interpret data keys.
-      data_masker (object) : DataMasker instance to use to filter and mask data.
-      verbose (bool) : Print out additional information.
-      z_sun (float) : Used mass fraction for solar metallicity.
-    '''
 
     # For storing and creating masks to pass the data
     if data_masker is None:

@@ -64,7 +64,14 @@
 <span class="c1">########################################################################</span>
 
 <div class="viewcode-block" id="GenericData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData">[docs]</a><span class="k">class</span> <span class="nc">GenericData</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
-  <span class="sd">&#39;&#39;&#39;Very generic data class, with getting and masking functionality.&#39;&#39;&#39;</span>
+  <span class="sd">&#39;&#39;&#39;Very generic data class, with getting and masking functionality.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      key_parser (object) : KeyParser instance to use to interpret data keys.</span>
+<span class="sd">      data_masker (object) : DataMasker instance to use to filter and mask data.</span>
+<span class="sd">      verbose (bool) : Print out additional information.</span>
+<span class="sd">      z_sun (float) : Used mass fraction for solar metallicity.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
   <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
   <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
@@ -73,14 +80,6 @@
     <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">z_sun</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">Z_MASSFRAC_SUN</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Initialize.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">      key_parser (object) : KeyParser instance to use to interpret data keys.</span>
-<span class="sd">      data_masker (object) : DataMasker instance to use to filter and mask data.</span>
-<span class="sd">      verbose (bool) : Print out additional information.</span>
-<span class="sd">      z_sun (float) : Used mass fraction for solar metallicity.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="c1"># For storing and creating masks to pass the data</span>
     <span class="k">if</span> <span class="n">data_masker</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

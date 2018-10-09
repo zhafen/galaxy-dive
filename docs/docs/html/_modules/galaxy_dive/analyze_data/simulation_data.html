@@ -74,7 +74,8 @@
 <span class="sd">             Directory the simulation is contained in.</span>
 
 <span class="sd">        halo_data_dir (str) :</span>
-<span class="sd">             Directory simulation analysis is contained in. Defaults to data_dir</span>
+<span class="sd">             Directory simulation halo catalogs are contained in.</span>
+<span class="sd">            Defaults to data_dir</span>
 
 <span class="sd">        ahf_index (str) :</span>
 <span class="sd">             What to index the snapshots by.</span>
@@ -88,22 +89,22 @@
 <span class="sd">            length_scale_used within which we calculate these.</span>
 
 <span class="sd">        length_scale_used (str) :</span>
-<span class="sd">             What length scale to use for the simulation. Will be used to put lengths in fractions.</span>
+<span class="sd">             What length scale to use for the simulation.</span>
+<span class="sd">             Will be used to put lengths in fractions.</span>
 
 <span class="sd">        z_sun (float) :</span>
 <span class="sd">            Used mass fraction for solar metallicity.</span>
-<span class="sd">            Options...</span>
-<span class="sd">            &#39;r_scale&#39; : Scale radius.</span>
-<span class="sd">            &#39;R_vir&#39; : Virial radius.</span>
 
 <span class="sd">        halo_data_retrieved (bool) :</span>
 <span class="sd">            Whether or not we retrieved relevant values from the AHF halo data.</span>
 
 <span class="sd">        centered (bool):</span>
-<span class="sd">            Whether or not the coordinates are centered on the galaxy of choice at the start.</span>
+<span class="sd">            Whether or not the coordinates are centered on the galaxy of</span>
+<span class="sd">            choice at the start.</span>
 
 <span class="sd">        vel_centered (bool) :</span>
-<span class="sd">            Whether or not the velocities are relative to the galaxy of choice at the start.</span>
+<span class="sd">            Whether or not the velocities are relative to the galaxy of</span>
+<span class="sd">            choice at the start.</span>
 
 <span class="sd">        hubble_corrected (bool) :</span>
 <span class="sd">            Whether or not the velocities have had the Hubble flow added</span>
@@ -117,23 +118,27 @@
 <span class="sd">             What is the halo ID of the main galaxy in the simulation?</span>
 
 <span class="sd">        center_method (str or np.array) :</span>
-<span class="sd">            How to center the coordinates. Options...</span>
-<span class="sd">            &#39;halo&#39; (default) :</span>
-<span class="sd">                 Centers the dataset on the main halo (main_halo_id) using AHF halo data.</span>
-<span class="sd">            np.array :</span>
-<span class="sd">                 Array of coordinates on which to center the data</span>
+<span class="sd">            How to center the coordinates. Options are...</span>
+
+<span class="sd">            &#39;halo&#39; (default) : Centers the dataset on the main halo</span>
+<span class="sd">                (main_halo_id) using AHF halo data.</span>
+
+<span class="sd">            np.array : Array of coordinates on which to center the data</span>
 
 <span class="sd">        vel_center_method (str or np.array of size 3) :</span>
 <span class="sd">            How to center the velocity coordinates, i.e. what the</span>
 <span class="sd">            velocity is relative to. Options are...</span>
-<span class="sd">            &#39;halo&#39; (default) :</span>
-<span class="sd">                Sets velocity relative to the main halo (main_halo_id)</span>
-<span class="sd">                using AHF halo data.</span>
+
+<span class="sd">            &#39;halo&#39; (default) : Sets velocity relative to the main halo</span>
+<span class="sd">                (main_halo_id) using AHF halo data.</span>
+
 <span class="sd">            np.array of size 3 :</span>
 <span class="sd">                Centers the dataset on this coordinate.</span>
 
 <span class="sd">    Keyword Args:</span>
-<span class="sd">        function_args (dict): Dictionary of args used to specify an arbitrary function with which to generate data.</span>
+<span class="sd">        function_args (dict):</span>
+<span class="sd">            Dictionary of args used to specify an arbitrary function with</span>
+<span class="sd">            which to generate data.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
