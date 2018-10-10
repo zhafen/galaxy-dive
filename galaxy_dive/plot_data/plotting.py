@@ -579,21 +579,28 @@ def fill_between_steps( ax, x, y1, y2=0, step_where='pre', **kwargs ):
 
 ########################################################################
 
-def custom_log_formatter( x, ): 
+def custom_log_formatter( x, y ): 
     '''Better tick labels for log axes, as coded up by Alex Gurvich, who was
     deeply inspired by Jonathan Stern.
 
     To use, do, for example,
-    >>> my_log_ticker = matplotlib.ticker.FuncFormatter(my_log_formatter)
+    >>> my_log_ticker = matplotlib.ticker.FuncFormatter(custom_log_formatter)
     >>> ax.yaxis.set_major_formatter(my_log_ticker)
 
     Args:
         x (list-like): List of tick values.
 
+        y (mystery):
+            Without including a second argument this formatter breaks. I
+            haven't looked into why.
+
     Returns:
         Tick Formatter
     '''
+
     if x in [1e-2,1e-1,1,10,100]: 
+        return r"$%g$"%x 
+    elif ( x <= 1. ) & ( x>= 0.1 ):
         return r"$%g$"%x 
     else: 
         return matplotlib.ticker.LogFormatterMathtext()(x) 
