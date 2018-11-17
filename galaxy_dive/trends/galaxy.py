@@ -298,6 +298,7 @@ def galaxy_available_metals(
 def halo_metal_budget(
     data = 'MzMstar_Ma2016.csv',
     data_dir = gd_config.DATA_DIR,
+    log_mstar = False,
 ):
     '''Plot the halo metal budget, i.e. the mass of metals in the halo divided
     by the estimate of the mass of available metals produced by the galaxy.
@@ -310,6 +311,9 @@ def halo_metal_budget(
         data_dir (str) :
             Location of the data file.
 
+        log_mstar (boolean) :
+            If True, the data .csv file has Mstar in log-space.
+
     Retuns:
         m_star (array-like) :
             Stellar mass values
@@ -321,6 +325,9 @@ def halo_metal_budget(
     # Load the data
     data_filepath = os.path.join( data_dir, data )
     df = pd.read_csv( data_filepath )
+
+    if log_mstar:
+        df['Mstar'] = 10.**df['Mstar']
 
     # Return the data
     return df['Mstar'].values, df['MetalBudget'].values
