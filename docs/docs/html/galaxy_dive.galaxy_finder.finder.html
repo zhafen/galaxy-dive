@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>galaxy_dive.galaxy_finder.finder module &#8212; galaxy-dive 0.8.1 documentation</title>
+    <title>galaxy_dive.galaxy_linker.linker module &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -35,27 +35,27 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-galaxy_dive.galaxy_finder.finder">
-<span id="galaxy-dive-galaxy-finder-finder-module"></span><h1>galaxy_dive.galaxy_finder.finder module<a class="headerlink" href="#module-galaxy_dive.galaxy_finder.finder" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-galaxy_dive.galaxy_linker.linker">
+<span id="galaxy-dive-galaxy-finder-finder-module"></span><h1>galaxy_dive.galaxy_linker.linker module<a class="headerlink" href="#module-galaxy_dive.galaxy_linker.linker" title="Permalink to this headline">¶</a></h1>
 <p>Means to associate particles with galaxies and halos at any given time.</p>
 <p>&#64;author: Zach Hafen
 &#64;contact: <a class="reference external" href="mailto:zachary&#46;h&#46;hafen&#37;&#52;&#48;gmail&#46;com">zachary<span>&#46;</span>h<span>&#46;</span>hafen<span>&#64;</span>gmail<span>&#46;</span>com</a>
 &#64;status: Development</p>
 <dl class="class">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder">
-<em class="property">class </em><code class="descclassname">galaxy_dive.galaxy_finder.finder.</code><code class="descname">GalaxyFinder</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder">
+<em class="property">class </em><code class="descclassname">galaxy_dive.galaxy_linker.linker.</code><code class="descname">GalaxyFinder</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Find the association with galaxies and halos for a given set of particles
 at a given redshift.</p>
 <dl class="attribute">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.ahf_halos_length_scale_pkpc">
-<code class="descname">ahf_halos_length_scale_pkpc</code><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.ahf_halos_length_scale_pkpc" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.ahf_halos_length_scale_pkpc">
+<code class="descname">ahf_halos_length_scale_pkpc</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.ahf_halos_length_scale_pkpc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Actual values of the length scale used, e.g. Rvir.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.cumulative_mass_valid_halos">
-<code class="descname">cumulative_mass_valid_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.cumulative_mass_valid_halos" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.cumulative_mass_valid_halos">
+<code class="descname">cumulative_mass_valid_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.cumulative_mass_valid_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the cumulative mass, going outwards from the center of each valid <a href="#id1"><span class="problematic" id="id2">*</span></a>AHF_halos halo.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -74,8 +74,8 @@ at a given redshift.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos">
-<code class="descname">dist_to_all_valid_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.dist_to_all_valid_halos">
+<code class="descname">dist_to_all_valid_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.dist_to_all_valid_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>Returns</em> –</p>
 <dl class="docutils">
 <dt>dist_to_all_valid_halos (np.ndarray) :</dt>
@@ -85,8 +85,8 @@ halos containing a galaxy (in pkpc).</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos_fn">
-<code class="descname">dist_to_all_valid_halos_fn</code><span class="sig-paren">(</span><em>particle_positions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.dist_to_all_valid_halos_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos_fn" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.dist_to_all_valid_halos_fn">
+<code class="descname">dist_to_all_valid_halos_fn</code><span class="sig-paren">(</span><em>particle_positions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.dist_to_all_valid_halos_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.dist_to_all_valid_halos_fn" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -103,8 +103,8 @@ halos containing a galaxy (in pkpc).</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_containing_halos">
-<code class="descname">find_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.find_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_containing_halos" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_containing_halos">
+<code class="descname">find_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.find_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_containing_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find which halos our particles are inside of some radial cut of.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -125,8 +125,8 @@ halos containing a galaxy (in pkpc).</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_d_gal">
-<code class="descname">find_d_gal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.find_d_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_d_gal" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_d_gal">
+<code class="descname">find_d_gal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.find_d_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_d_gal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the distance to the center of the closest halo that contains a
 galaxy.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -143,8 +143,8 @@ pkpc to the center of the nearest galaxy.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_d_other_gal">
-<code class="descname">find_d_other_gal</code><span class="sig-paren">(</span><em>scaled=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.find_d_other_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_d_other_gal" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_d_other_gal">
+<code class="descname">find_d_other_gal</code><span class="sig-paren">(</span><em>scaled=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.find_d_other_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_d_other_gal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the distance to the center of the closest halo that contains a
 galaxy, other than the main galaxy.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -163,8 +163,8 @@ center of the nearest galaxy, besides the main galaxy.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_halo_id">
-<code class="descname">find_halo_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em>, <em>type_of_halo_id='halo_id'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.find_halo_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_halo_id" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_halo_id">
+<code class="descname">find_halo_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em>, <em>type_of_halo_id='halo_id'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.find_halo_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_halo_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the smallest halos our particles are inside of some radial cut
 of (we define this as the halo ID). In the case of using MT halo ID,
 we actually find the most massive our particles are inside some
@@ -201,8 +201,8 @@ radial_cut_fraction*length_scale .</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_host_id">
-<code class="descname">find_host_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.find_host_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_host_id" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_host_id">
+<code class="descname">find_host_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.find_host_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_host_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the host halos our particles are inside of some radial cut of.
 This is the host ID at a given snapshot, and is not the same as the merger tree halo ID.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -226,8 +226,8 @@ If it’s -2, then that particle is not part of any halo, within radial_cut_frac
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_ids">
-<code class="descname">find_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.find_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_ids" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_ids">
+<code class="descname">find_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.find_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find relevant halo and galaxy IDs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -268,8 +268,8 @@ part of.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_mt_containing_halos">
-<code class="descname">find_mt_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.find_mt_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_mt_containing_halos" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_mt_containing_halos">
+<code class="descname">find_mt_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.find_mt_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_mt_containing_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find which MergerTrace halos our particles are inside of some
 radial cut of.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -294,8 +294,8 @@ via the MergerTrace ID.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.get_mass_radius">
-<code class="descname">get_mass_radius</code><span class="sig-paren">(</span><em>mass_fraction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.get_mass_radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.get_mass_radius" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.get_mass_radius">
+<code class="descname">get_mass_radius</code><span class="sig-paren">(</span><em>mass_fraction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.get_mass_radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.get_mass_radius" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the radius at which mass_fraction*mass_inside_galaxy_cut is exceeded.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -313,8 +313,8 @@ mass_fraction*mass_inside_galaxy_cut is exceeded.</td>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.mass_inside_all_halos">
-<code class="descname">mass_inside_all_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.mass_inside_all_halos" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.mass_inside_all_halos">
+<code class="descname">mass_inside_all_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.mass_inside_all_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>Returns</em> –</p>
 <dl class="docutils">
 <dt>mass_inside_galaxy_cut (np.ndarray) :</dt>
@@ -323,8 +323,8 @@ mass_fraction*mass_inside_galaxy_cut is exceeded.</td>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.mass_inside_galaxy_cut">
-<code class="descname">mass_inside_galaxy_cut</code><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.mass_inside_galaxy_cut" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.mass_inside_galaxy_cut">
+<code class="descname">mass_inside_galaxy_cut</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.mass_inside_galaxy_cut" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>Returns</em> –</p>
 <dl class="docutils">
 <dt>mass_inside_galaxy_cut (np.ndarray) :</dt>
@@ -333,8 +333,8 @@ mass_fraction*mass_inside_galaxy_cut is exceeded.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.summed_quantity_inside_galaxy">
-<code class="descname">summed_quantity_inside_galaxy</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>fill_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.summed_quantity_inside_galaxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.summed_quantity_inside_galaxy" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.summed_quantity_inside_galaxy">
+<code class="descname">summed_quantity_inside_galaxy</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>fill_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.summed_quantity_inside_galaxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.summed_quantity_inside_galaxy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).
 :param particle_quantities: Quantities to sum.
 :type particle_quantities: np.ndarray
@@ -351,8 +351,8 @@ mass_fraction*mass_inside_galaxy_cut is exceeded.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.summed_quantity_inside_galaxy_valid_halos">
-<code class="descname">summed_quantity_inside_galaxy_valid_halos</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>fill_value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.summed_quantity_inside_galaxy_valid_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.summed_quantity_inside_galaxy_valid_halos" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.summed_quantity_inside_galaxy_valid_halos">
+<code class="descname">summed_quantity_inside_galaxy_valid_halos</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>fill_value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.summed_quantity_inside_galaxy_valid_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.summed_quantity_inside_galaxy_valid_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),
 for halos that are “valid” (i.e. usually meeting some minimum criteria).</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -373,8 +373,8 @@ for halos that are “valid” (i.e. usually meeting some minimum criteria).</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.valid_halo_inds">
-<code class="descname">valid_halo_inds</code><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.valid_halo_inds" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.valid_halo_inds">
+<code class="descname">valid_halo_inds</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.valid_halo_inds" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>Returns</em> –</p>
 <dl class="docutils">
 <dt>valid_halo_inds (np.ndarray) :</dt>
@@ -384,8 +384,8 @@ for containing a galaxy.</dd>
 </dd></dl>
 
 <dl class="method">
-<dt id="galaxy_dive.galaxy_finder.finder.GalaxyFinder.weighted_summed_quantity_inside_galaxy">
-<code class="descname">weighted_summed_quantity_inside_galaxy</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>particle_weights</em>, <em>fill_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_finder/finder.html#GalaxyFinder.weighted_summed_quantity_inside_galaxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_finder.finder.GalaxyFinder.weighted_summed_quantity_inside_galaxy" title="Permalink to this definition">¶</a></dt>
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyFinder.weighted_summed_quantity_inside_galaxy">
+<code class="descname">weighted_summed_quantity_inside_galaxy</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>particle_weights</em>, <em>fill_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker.linker.html#GalaxyFinder.weighted_summed_quantity_inside_galaxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyFinder.weighted_summed_quantity_inside_galaxy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),
 weighted by particle_weights.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -419,7 +419,7 @@ weighted by particle_weights.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/galaxy_dive.galaxy_finder.finder.rst.txt"
+      <li><a href="_sources/galaxy_dive.galaxy_linker.linker.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>

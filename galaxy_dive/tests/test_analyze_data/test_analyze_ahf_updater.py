@@ -17,7 +17,7 @@ import unittest
 import galaxy_dive.analyze_data.ahf_updater as ahf_updater
 import galaxy_dive.read_data.ahf as read_ahf
 import galaxy_dive.analyze_data.particle_data as particle_data
-import galaxy_dive.galaxy_finder.finder as gal_finder
+import galaxy_dive.galaxy_linker.linker as gal_linker
 
 data_dir = './tests/data/analysis_dir'
 data_dir2 = './tests/data/analysis_dir2'
@@ -399,8 +399,8 @@ class TestMassRadii( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.get_mass_radius', )
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.get_mass_radius', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.__init__', )
     def test_get_mass_radii( self, mock_init, mock_get_mass_radius ):
 
         mock_init.side_effect = [ None, ]
@@ -493,7 +493,7 @@ class TestEnclosedMass( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.__init__', )
     @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.redshift', )
     @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.__init__', )
     def test_get_enclosed_mass( self, mock_init, mock_redshift, mock_init_finder, ):
@@ -512,7 +512,7 @@ class TestEnclosedMass( unittest.TestCase ):
         with patch.object( particle_data.ParticleData, 'data', new_callable=PropertyMock, create=True ) as mock_data, \
             patch.object( particle_data.ParticleData, 'data_attrs', new_callable=PropertyMock, \
                                         create=True ) as mock_d_attrs, \
-            patch.object( gal_finder.GalaxyFinder, 'mass_inside_all_halos', new_callable=PropertyMock, \
+            patch.object( gal_linker.GalaxyFinder, 'mass_inside_all_halos', new_callable=PropertyMock, \
                                         create=True ) as mock_mass_inside_all_halos:
 
 
@@ -535,8 +535,8 @@ class TestEnclosedMass( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_containing_halos', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.__init__', )
     @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.__init__', )
     def test_get_enclosed_mass_no_particles_ptype( self, mock_init, mock_init_finder, mock_find_containing_halos ):
         '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
@@ -616,8 +616,8 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.weighted_summed_quantity_inside_galaxy', )
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.weighted_summed_quantity_inside_galaxy', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.__init__', )
     def test_get_average_x_velocity( self, mock_init_finder, mock_weighted_summed ):
         '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?
         Only two of the halos contain galaxies.
@@ -666,8 +666,8 @@ class TestAverageInsideGalaxy( unittest.TestCase ):
 
     ########################################################################
 
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_containing_halos', )
-    @patch( 'galaxy_dive.galaxy_finder.finder.GalaxyFinder.__init__', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_containing_halos', )
+    @patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.__init__', )
     @patch( 'galaxy_dive.analyze_data.particle_data.ParticleData.__init__', )
     def test_get_average_x_velocity_no_particles_ptype( self, mock_init, mock_init_finder, mock_find_containing_halos ):
         '''Given a galaxy with four dark matter particles, and 3 halos, can we get the mass inside each of the halos?

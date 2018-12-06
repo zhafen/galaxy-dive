@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>galaxy_dive.galaxy_finder.finder &#8212; galaxy-dive 0.8.1 documentation</title>
+    <title>galaxy_dive.galaxy_linker.linker &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
@@ -36,7 +36,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for galaxy_dive.galaxy_finder.finder</h1><div class="highlight"><pre>
+  <h1>Source code for galaxy_dive.galaxy_linker.linker</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="sd">&#39;&#39;&#39;Means to associate particles with galaxies and halos at any given time.</span>
 
@@ -58,7 +58,7 @@
 <span class="c1">########################################################################</span>
 
 
-<div class="viewcode-block" id="GalaxyFinder"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder">[docs]</a><span class="k">class</span> <span class="nc">GalaxyFinder</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder">[docs]</a><span class="k">class</span> <span class="nc">GalaxyFinder</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Find the association with galaxies and halos for a given set of particles</span>
 <span class="sd">    at a given redshift.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -246,7 +246,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dist_to_all_valid_halos</span>
 
-<div class="viewcode-block" id="GalaxyFinder.dist_to_all_valid_halos_fn"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.dist_to_all_valid_halos_fn">[docs]</a>    <span class="k">def</span> <span class="nf">dist_to_all_valid_halos_fn</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_positions</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.dist_to_all_valid_halos_fn"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.dist_to_all_valid_halos_fn">[docs]</a>    <span class="k">def</span> <span class="nf">dist_to_all_valid_halos_fn</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_positions</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            particle_positions (np.ndarray) :</span>
@@ -308,7 +308,7 @@
     <span class="c1"># ID Finding Routines</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.find_ids"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_ids">[docs]</a>    <span class="k">def</span> <span class="nf">find_ids</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.find_ids"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_ids">[docs]</a>    <span class="k">def</span> <span class="nf">find_ids</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find relevant halo and galaxy IDs.</span>
 
 <span class="sd">        Returns:</span>
@@ -392,7 +392,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.find_d_gal"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_d_gal">[docs]</a>    <span class="k">def</span> <span class="nf">find_d_gal</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.find_d_gal"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_d_gal">[docs]</a>    <span class="k">def</span> <span class="nf">find_d_gal</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find the distance to the center of the closest halo that contains a</span>
 <span class="sd">        galaxy.</span>
 
@@ -409,7 +409,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.find_d_other_gal"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_d_other_gal">[docs]</a>    <span class="k">def</span> <span class="nf">find_d_other_gal</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.find_d_other_gal"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_d_other_gal">[docs]</a>    <span class="k">def</span> <span class="nf">find_d_other_gal</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find the distance to the center of the closest halo that contains a</span>
 <span class="sd">        galaxy, other than the main galaxy.</span>
 
@@ -495,7 +495,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.find_host_id"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_host_id">[docs]</a>    <span class="k">def</span> <span class="nf">find_host_id</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.find_host_id"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_host_id">[docs]</a>    <span class="k">def</span> <span class="nf">find_host_id</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find the host halos our particles are inside of some radial cut of.</span>
 <span class="sd">        This is the host ID at a given snapshot, and is not the same as the merger tree halo ID.</span>
 
@@ -534,7 +534,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.find_halo_id"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_halo_id">[docs]</a>    <span class="k">def</span> <span class="nf">find_halo_id</span><span class="p">(</span>
+<div class="viewcode-block" id="GalaxyFinder.find_halo_id"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_halo_id">[docs]</a>    <span class="k">def</span> <span class="nf">find_halo_id</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">radial_cut_fraction</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span>
         <span class="n">type_of_halo_id</span> <span class="o">=</span> <span class="s1">&#39;halo_id&#39;</span><span class="p">,</span>
@@ -625,7 +625,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.find_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_containing_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.find_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_containing_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find which halos our particles are inside of some radial cut of.</span>
 
 <span class="sd">        Args:</span>
@@ -650,7 +650,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.find_mt_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.find_mt_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_mt_containing_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.find_mt_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.find_mt_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_mt_containing_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find which MergerTrace halos our particles are inside of some</span>
 <span class="sd">        radial cut of.</span>
 
@@ -803,7 +803,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.get_mass_radius"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.get_mass_radius">[docs]</a>    <span class="k">def</span> <span class="nf">get_mass_radius</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">mass_fraction</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.get_mass_radius"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.get_mass_radius">[docs]</a>    <span class="k">def</span> <span class="nf">get_mass_radius</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">mass_fraction</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get the radius at which mass_fraction*mass_inside_galaxy_cut is exceeded.</span>
 
 <span class="sd">        Args:</span>
@@ -838,7 +838,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.summed_quantity_inside_galaxy_valid_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.summed_quantity_inside_galaxy_valid_halos">[docs]</a>    <span class="k">def</span> <span class="nf">summed_quantity_inside_galaxy_valid_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_quantities</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">0.</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.summed_quantity_inside_galaxy_valid_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.summed_quantity_inside_galaxy_valid_halos">[docs]</a>    <span class="k">def</span> <span class="nf">summed_quantity_inside_galaxy_valid_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_quantities</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mf">0.</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),</span>
 <span class="sd">        for halos that are &quot;valid&quot; (i.e. usually meeting some minimum criteria).</span>
 
@@ -923,7 +923,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.summed_quantity_inside_galaxy"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.summed_quantity_inside_galaxy">[docs]</a>    <span class="k">def</span> <span class="nf">summed_quantity_inside_galaxy</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_quantities</span><span class="p">,</span> <span class="n">fill_value</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.summed_quantity_inside_galaxy"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.summed_quantity_inside_galaxy">[docs]</a>    <span class="k">def</span> <span class="nf">summed_quantity_inside_galaxy</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_quantities</span><span class="p">,</span> <span class="n">fill_value</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).</span>
 <span class="sd">        Args:</span>
 <span class="sd">            particle_quantities (np.ndarray) :</span>
@@ -952,7 +952,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyFinder.weighted_summed_quantity_inside_galaxy"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_finder.finder.html#galaxy_dive.galaxy_finder.finder.GalaxyFinder.weighted_summed_quantity_inside_galaxy">[docs]</a>    <span class="k">def</span> <span class="nf">weighted_summed_quantity_inside_galaxy</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_quantities</span><span class="p">,</span> <span class="n">particle_weights</span><span class="p">,</span> <span class="n">fill_value</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyFinder.weighted_summed_quantity_inside_galaxy"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyFinder.weighted_summed_quantity_inside_galaxy">[docs]</a>    <span class="k">def</span> <span class="nf">weighted_summed_quantity_inside_galaxy</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">particle_quantities</span><span class="p">,</span> <span class="n">particle_weights</span><span class="p">,</span> <span class="n">fill_value</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),</span>
 <span class="sd">        weighted by particle_weights.</span>
 

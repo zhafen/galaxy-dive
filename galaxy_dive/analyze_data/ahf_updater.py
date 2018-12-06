@@ -12,7 +12,7 @@ import numpy as np
 import os
 import pandas as pd
 
-import galaxy_dive.galaxy_finder.finder as galaxy_finder
+import galaxy_dive.galaxy_linker.linker as galaxy_linker
 import galaxy_dive.analyze_data.halo_data as halo_data
 import galaxy_dive.read_data.metafile as read_metafile
 import galaxy_dive.utils.astro as astro_utils
@@ -178,7 +178,7 @@ class HaloUpdater( halo_data.HaloData ):
             return [ np.array( [ np.nan, ]*self.halos.index.size ), ]*len( mass_fractions )
 
         # Find the mass radii
-        galaxy_finder_kwargs = {
+        galaxy_linker_kwargs = {
             'particle_positions' : particle_positions,
             'particle_masses' : s_data.data['M'],
             'snum' : self.halos_snum,
@@ -188,9 +188,9 @@ class HaloUpdater( halo_data.HaloData ):
             'length_scale' : length_scale,
             'halo_data' : self,
         }
-        gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
+        gal_linker = galaxy_linker.GalaxyFinder( **galaxy_linker_kwargs )
         
-        mass_radii = [ gal_finder.get_mass_radius( mass_fraction ) for mass_fraction in mass_fractions ]
+        mass_radii = [ gal_linker.get_mass_radius( mass_fraction ) for mass_fraction in mass_fractions ]
             
         return mass_radii
 
@@ -236,7 +236,7 @@ class HaloUpdater( halo_data.HaloData ):
             return np.array( [ 0., ]*self.halos.index.size )
 
         # Find the mass radii
-        galaxy_finder_kwargs = {
+        galaxy_linker_kwargs = {
             'particle_positions' : particle_positions,
             'particle_masses' : s_data.data['M']*constants.UNITMASS_IN_MSUN,
             'snum' : self.halos_snum,
@@ -246,9 +246,9 @@ class HaloUpdater( halo_data.HaloData ):
             'length_scale' : length_scale,
             'halo_data' : self,
         }
-        gal_finder = galaxy_finder.GalaxyFinder( **galaxy_finder_kwargs )
+        gal_linker = galaxy_linker.GalaxyFinder( **galaxy_linker_kwargs )
 
-        mass_inside_all_halos = gal_finder.mass_inside_all_halos
+        mass_inside_all_halos = gal_linker.mass_inside_all_halos
         
         # Make sure to put hubble constant back in so we have consistent units.
         mass_inside_all_halos *= s_data.data_attrs['hubble']
@@ -316,7 +316,7 @@ class HaloUpdater( halo_data.HaloData ):
             return np.array( [ fill_value, ]*self.halos.index.size )
 
         # Find the mass radii
-        galaxy_finder_kwargs = {
+        galaxy_linker_kwargs = {
             'particle_positions' : particle_positions,
             'snum' : self.halos_snum,
             'redshift' : s_data.redshift,
@@ -325,9 +325,9 @@ class HaloUpdater( halo_data.HaloData ):
             'length_scale' : length_scale,
             'halo_data' : self,
         }
-        gal_finder = galaxy_finder.GalaxyFinder( low_memory_mode=False, **galaxy_finder_kwargs )
+        gal_linker = galaxy_linker.GalaxyFinder( low_memory_mode=False, **galaxy_linker_kwargs )
 
-        average_quantity_inside_galaxy = gal_finder.weighted_summed_quantity_inside_galaxy(
+        average_quantity_inside_galaxy = gal_linker.weighted_summed_quantity_inside_galaxy(
             s_data.get_data( data_key ),
             s_data.get_data( weight_data_key ),
             fill_value,

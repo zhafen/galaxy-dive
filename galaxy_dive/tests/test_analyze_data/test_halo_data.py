@@ -17,7 +17,7 @@ import unittest
 
 import galaxy_dive.analyze_data.halo_data as halo_data
 import galaxy_dive.analyze_data.particle_data as particle_data
-import galaxy_dive.galaxy_finder.finder as gal_finder
+import galaxy_dive.galaxy_linker.linker as gal_linker
 import galaxy_dive.utils.utilities as utilities
 
 sdir = './tests/data/analysis_dir'
