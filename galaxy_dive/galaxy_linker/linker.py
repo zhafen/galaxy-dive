@@ -19,7 +19,7 @@ import galaxy_dive.utils.utilities as utilities
 ########################################################################
 
 
-class GalaxyFinder( object ):
+class GalaxyLinker( object ):
     '''Find the association with galaxies and halos for a given set of particles
     at a given redshift.
     '''

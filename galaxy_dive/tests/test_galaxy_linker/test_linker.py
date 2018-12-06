@@ -53,7 +53,7 @@ slow = pytest.mark.skipif(
 ########################################################################
 
 
-class TestGalaxyFinder( unittest.TestCase ):
+class TestGalaxyLinker( unittest.TestCase ):
 
     def setUp( self ):
 
@@ -69,7 +69,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         # Make the necessary kwargs
         self.kwargs = gal_linker_kwargs
 
-        self.galaxy_linker = general_galaxy_linker.GalaxyFinder(
+        self.galaxy_linker = general_galaxy_linker.GalaxyLinker(
             halo_coords, **self.kwargs )
 
         # Get the necessary reader.
@@ -432,7 +432,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         }
 
         # Do the actual calculation
-        galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, **self.kwargs )
+        galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **self.kwargs )
         actual = galaxy_linker.find_ids()
 
         for key in expected.keys():
@@ -472,7 +472,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         ]
 
         # Do the actual calculation
-        galaxy_linker = general_galaxy_linker.GalaxyFinder(
+        galaxy_linker = general_galaxy_linker.GalaxyLinker(
             particle_positions,
             **kwargs
         )
@@ -514,7 +514,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         }
 
         # Do the actual calculation
-        galaxy_linker = general_galaxy_linker.GalaxyFinder(
+        galaxy_linker = general_galaxy_linker.GalaxyLinker(
             particle_positions,
             **used_kwargs
         )
@@ -549,7 +549,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         snap0_kwargs['snum'] = 0
 
         # Do the actual calculation
-        galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, **snap0_kwargs )
+        galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **snap0_kwargs )
         actual = galaxy_linker.find_ids()
 
         for key in expected.keys():
@@ -581,7 +581,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         snap0_kwargs['snum'] = 1
 
         # Do the actual calculation
-        galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, **snap0_kwargs )
+        galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **snap0_kwargs )
         actual = galaxy_linker.find_ids()
 
         for key in expected.keys():
@@ -619,7 +619,7 @@ class TestGalaxyFinder( unittest.TestCase ):
         halo_data.data_reader.get_mtree_halos( 600, tag='smooth' )
 
         # Do the actual calculation
-        galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, halo_data=halo_data, **self.kwargs )
+        galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, halo_data=halo_data, **self.kwargs )
         actual = galaxy_linker.find_ids()
 
         for key in expected.keys():
@@ -848,7 +848,7 @@ class TestGalaxyFinder( unittest.TestCase ):
 ########################################################################
 
 
-class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
+class TestGalaxyLinkerMinimumStellarMass( unittest.TestCase ):
     '''Test that we're properly applying a minimum stellar mass for a halo to be counted as containing a galaxy.'''
 
     def setUp( self ):
@@ -886,7 +886,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
         # Make the necessary kwargs
         self.kwargs = gal_linker_kwargs_min_mstar
 
-        self.galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, **self.kwargs )
+        self.galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **self.kwargs )
 
         # Get the necessary reader.
         self.galaxy_linker.halo_data.data_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
@@ -923,7 +923,7 @@ class TestGalaxyFinderMinimumStellarMass( unittest.TestCase ):
 ########################################################################
 ########################################################################
 
-class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
+class TestGalaxyLinkerMinimumNumStars( unittest.TestCase ):
     '''Test that we're properly applying a minimum number of stars for a halo to be counted as containing a galaxy.'''
 
     def setUp( self ):
@@ -960,7 +960,7 @@ class TestGalaxyFinderMinimumNumStars( unittest.TestCase ):
         # Make the necessary kwargs
         self.kwargs = gal_linker_kwargs_min_nstar
 
-        self.galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, **self.kwargs )
+        self.galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **self.kwargs )
 
         # Get the necessary reader.
         self.galaxy_linker.halo_data.data_reader = read_ahf.AHFReader( self.kwargs['halo_data_dir'] )
@@ -1011,7 +1011,7 @@ class TestFindMassRadii( unittest.TestCase ):
             [ 0., 0., 0., ],
         ]) # These shouldn't ever be used directly, since we're relying on the results of previous functions.
 
-        self.galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, **self.kwargs )
+        self.galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **self.kwargs )
 
     ########################################################################
 
@@ -1185,7 +1185,7 @@ class TestSummedQuantityInsideGalaxy( unittest.TestCase ):
             [ 0., 0., 0., ],
         ]) # These shouldn't ever be used directly, since we're relying on the results of previous functions.
 
-        self.galaxy_linker = general_galaxy_linker.GalaxyFinder( particle_positions, **self.kwargs )
+        self.galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **self.kwargs )
 
     ########################################################################
 
@@ -1230,7 +1230,7 @@ class TestSummedQuantityInsideGalaxy( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_dive.galaxy_linker.linker.GalaxyFinder.dist_to_all_valid_halos_fn' )
+    @mock.patch( 'galaxy_dive.galaxy_linker.linker.GalaxyLinker.dist_to_all_valid_halos_fn' )
     def test_summed_quantity_inside_galaxy_low_memory_mode( self, mock_dist_all_valid ):
         '''Test that we can get the summed quantity inside the galaxy, but reduce the memory consumption
         (at the cost of speed) by doing getting the sum for less galaxies at a given time.

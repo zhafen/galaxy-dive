@@ -188,7 +188,7 @@ class HaloUpdater( halo_data.HaloData ):
             'length_scale' : length_scale,
             'halo_data' : self,
         }
-        gal_linker = galaxy_linker.GalaxyFinder( **galaxy_linker_kwargs )
+        gal_linker = galaxy_linker.GalaxyLinker( **galaxy_linker_kwargs )
         
         mass_radii = [ gal_linker.get_mass_radius( mass_fraction ) for mass_fraction in mass_fractions ]
             
@@ -246,7 +246,7 @@ class HaloUpdater( halo_data.HaloData ):
             'length_scale' : length_scale,
             'halo_data' : self,
         }
-        gal_linker = galaxy_linker.GalaxyFinder( **galaxy_linker_kwargs )
+        gal_linker = galaxy_linker.GalaxyLinker( **galaxy_linker_kwargs )
 
         mass_inside_all_halos = gal_linker.mass_inside_all_halos
         
@@ -325,7 +325,7 @@ class HaloUpdater( halo_data.HaloData ):
             'length_scale' : length_scale,
             'halo_data' : self,
         }
-        gal_linker = galaxy_linker.GalaxyFinder( low_memory_mode=False, **galaxy_linker_kwargs )
+        gal_linker = galaxy_linker.GalaxyLinker( low_memory_mode=False, **galaxy_linker_kwargs )
 
         average_quantity_inside_galaxy = gal_linker.weighted_summed_quantity_inside_galaxy(
             s_data.get_data( data_key ),

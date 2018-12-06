@@ -227,7 +227,7 @@
             <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="n">length_scale</span><span class="p">,</span>
             <span class="s1">&#39;halo_data&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">gal_linker</span> <span class="o">=</span> <span class="n">galaxy_linker</span><span class="o">.</span><span class="n">GalaxyFinder</span><span class="p">(</span> <span class="o">**</span><span class="n">galaxy_linker_kwargs</span> <span class="p">)</span>
+        <span class="n">gal_linker</span> <span class="o">=</span> <span class="n">galaxy_linker</span><span class="o">.</span><span class="n">GalaxyLinker</span><span class="p">(</span> <span class="o">**</span><span class="n">galaxy_linker_kwargs</span> <span class="p">)</span>
         
         <span class="n">mass_radii</span> <span class="o">=</span> <span class="p">[</span> <span class="n">gal_linker</span><span class="o">.</span><span class="n">get_mass_radius</span><span class="p">(</span> <span class="n">mass_fraction</span> <span class="p">)</span> <span class="k">for</span> <span class="n">mass_fraction</span> <span class="ow">in</span> <span class="n">mass_fractions</span> <span class="p">]</span>
             
@@ -285,7 +285,7 @@
             <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="n">length_scale</span><span class="p">,</span>
             <span class="s1">&#39;halo_data&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">gal_linker</span> <span class="o">=</span> <span class="n">galaxy_linker</span><span class="o">.</span><span class="n">GalaxyFinder</span><span class="p">(</span> <span class="o">**</span><span class="n">galaxy_linker_kwargs</span> <span class="p">)</span>
+        <span class="n">gal_linker</span> <span class="o">=</span> <span class="n">galaxy_linker</span><span class="o">.</span><span class="n">GalaxyLinker</span><span class="p">(</span> <span class="o">**</span><span class="n">galaxy_linker_kwargs</span> <span class="p">)</span>
 
         <span class="n">mass_inside_all_halos</span> <span class="o">=</span> <span class="n">gal_linker</span><span class="o">.</span><span class="n">mass_inside_all_halos</span>
         
@@ -364,7 +364,7 @@
             <span class="s1">&#39;length_scale&#39;</span> <span class="p">:</span> <span class="n">length_scale</span><span class="p">,</span>
             <span class="s1">&#39;halo_data&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">gal_linker</span> <span class="o">=</span> <span class="n">galaxy_linker</span><span class="o">.</span><span class="n">GalaxyFinder</span><span class="p">(</span> <span class="n">low_memory_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">galaxy_linker_kwargs</span> <span class="p">)</span>
+        <span class="n">gal_linker</span> <span class="o">=</span> <span class="n">galaxy_linker</span><span class="o">.</span><span class="n">GalaxyLinker</span><span class="p">(</span> <span class="n">low_memory_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">galaxy_linker_kwargs</span> <span class="p">)</span>
 
         <span class="n">average_quantity_inside_galaxy</span> <span class="o">=</span> <span class="n">gal_linker</span><span class="o">.</span><span class="n">weighted_summed_quantity_inside_galaxy</span><span class="p">(</span>
             <span class="n">s_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">),</span>
