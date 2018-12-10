@@ -6,12 +6,17 @@
 @status: Development
 '''
 
-import copy_reg
 import multiprocessing as mp
 import os
 import pdb
 import sys
 from types import MethodType
+
+# Python 2/3 compatible copyreg
+try:
+    import copy_reg
+except:
+    import copyreg as copy_reg
 
 import galaxy_dive.utils.utilities as utilities
 

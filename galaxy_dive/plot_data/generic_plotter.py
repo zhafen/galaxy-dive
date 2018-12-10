@@ -25,8 +25,8 @@ import matplotlib.transforms as transforms
 import galaxy_dive.utils.mp_utils as mp_utils
 import galaxy_dive.utils.utilities as utilities
 
-import plotting as gen_plot
-import pu_colormaps as pu_cm
+import galaxy_dive.plot_data.plotting as gen_plot
+import galaxy_dive.plot_data.pu_colormaps as pu_cm
 
 ########################################################################
 ########################################################################
