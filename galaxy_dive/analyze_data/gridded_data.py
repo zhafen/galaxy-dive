@@ -143,7 +143,7 @@ class GriddedData( simulation_data.SnapshotData ):
     '''Calculate the positions of gridcells.'''
 
     # Get how the spacing on one side
-    Nx = self.data.values()[0].shape[0]
+    Nx = list( self.data.values() )[0].shape[0]
     gridsize = self.data_attrs['gridsize']
     pos_coords = np.linspace(-gridsize/2., gridsize/2., Nx)
 
