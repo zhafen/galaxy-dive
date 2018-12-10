@@ -12,6 +12,7 @@ import os
 import scipy.stats
 import scipy.signal as signal
 import warnings
+import verdict
 
 import matplotlib
 matplotlib.use('PDF')
@@ -1309,7 +1310,7 @@ class GenericPlotter( object ):
 ########################################################################
 ########################################################################
 
-class PlotterSet( utilities.SmartDict ):
+class PlotterSet( verdict.Dict ):
     '''Container for multiple plotters that is an enhanced dictionary.
     '''
 
