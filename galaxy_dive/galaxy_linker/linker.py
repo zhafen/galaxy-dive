@@ -656,6 +656,9 @@ class GalaxyLinker( object ):
             # Usual case
             if has_minimum_value:
 
+                #DEBUG
+                import pdb; pdb.set_trace()
+
                 # Get the halo position
                 halo_pos_comov = np.array([
                     mtree_halo['Xc'][ self.snum ],

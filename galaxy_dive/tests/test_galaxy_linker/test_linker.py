@@ -432,12 +432,39 @@ class TestGalaxyLinker( unittest.TestCase ):
         }
 
         # Do the actual calculation
-        galaxy_linker = general_galaxy_linker.GalaxyLinker( particle_positions, **self.kwargs )
+        galaxy_linker = general_galaxy_linker.GalaxyLinker(
+            particle_positions,
+            **self.kwargs
+        )
         actual = galaxy_linker.find_ids()
+
+        # DEBUG
+        # key = 'mt_gal_id'
+        # print( 'key = {}, expected = {}, actual = {}'.format(
+        #         key,
+        #         expected[key],
+        #         actual[key],
+        #     )
+        # )
+        # key = 'mt_halo_id'
+        # print( 'key = {}, expected = {}, actual = {}'.format(
+        #         key,
+        #         expected[key],
+        #         actual[key],
+        #     )
+        # )
 
         for key in expected.keys():
             print(key)
-            npt.assert_allclose( expected[key], actual[key], atol=1e-10 )
+            try:
+                npt.assert_allclose( expected[key], actual[key], atol=1e-10 )
+            except AssertionError:
+                raise AssertionError( 'key = {}, expected = {}, actual = {}'.format(
+                        key,
+                        expected[key],
+                        actual[key],
+                    )
+                )
 
     ########################################################################
 
