@@ -209,7 +209,10 @@ class TestStoreParameters( unittest.TestCase ):
         self.assertEqual( 2, o.b )
         self.assertEqual( 4, o.c )
         self.assertEqual( {'d' : 5}, o.kwargs )
-        self.assertEqual( [ 'a', 'b', 'c', 'kwargs', ], o.stored_parameters )
+        self.assertEqual(
+            sorted( [ 'a', 'b', 'c', 'kwargs', ] ),
+            sorted( o.stored_parameters )
+        )
 
     ########################################################################
 

@@ -263,7 +263,7 @@ def store_parameters( constructor ):
         for parameter in parameters_to_store.keys():
             setattr( self, parameter, parameters_to_store[parameter] )
 
-        self.stored_parameters = parameters_to_store.keys()
+        self.stored_parameters = list( parameters_to_store.keys() )
 
         result = constructor( self, *args, **kwargs )
 
@@ -301,8 +301,8 @@ def save_parameters( instance, f ):
         except TypeError:
             raise TypeError(
                 "Parameter {} = {} failed to save.".format(
-                    parameter_str,
-                    parameter
+                        parameter_str,
+                        parameter
                     )
                 )
 
