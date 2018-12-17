@@ -249,8 +249,10 @@ class TestGetData( unittest.TestCase ):
             600, 550, 500, 450, 400,
         ])
 
+        # Ignore this warning, because we want it to show up.
+        with np.errstate(divide='ignore',invalid='ignore'):
         # Mask some data
-        self.t_data.data_masker.mask_data( 'T', 4.5, 8.5 )
+            self.t_data.data_masker.mask_data( 'T', 4.5, 8.5 )
 
         # Actual calculation
         actual = self.t_data.get_selected_data_over_time(
@@ -439,7 +441,9 @@ class TestCalc( unittest.TestCase ):
             vel_offset = 1. * i * np.ones( shape=self.t_data.halo_coords.shape )
             self.t_data.data['V'][:,i] = self.t_data.halo_velocity + vel_offset
 
-        self.t_data.calc_radial_velocity()
+        # Don't report divide by zero warnings, because I want those to happen
+        with np.errstate(divide='ignore',invalid='ignore'):
+            self.t_data.calc_radial_velocity()
 
         assert self.t_data.data['Vr'].shape == ( 5, 4 )
 
