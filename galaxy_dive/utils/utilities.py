@@ -10,12 +10,14 @@ import collections
 from contextlib import contextmanager
 import errno
 from functools import wraps
+import h5py
 import importlib
 import inspect
 import itertools
 import numpy as np
 import os
 import shutil
+import six
 import subprocess
 import sys
 import time
@@ -299,12 +301,20 @@ def save_parameters( instance, f ):
                 param_grp.attrs[parameter_str] = parameter
 
         except TypeError:
-            raise TypeError(
-                "Parameter {} = {} failed to save.".format(
-                        parameter_str,
-                        parameter
-                    )
+            try:
+                # Workaround for h5py poorly handling np string arrays.
+                parameter = np.array(
+                    parameter,
+                    dtype = h5py.special_dtype( vlen=six.text_type ),
                 )
+                param_grp.attrs[parameter_str] = parameter
+            except TypeError:
+                raise TypeError(
+                    "Parameter {} = {} failed to save.".format(
+                            parameter_str,
+                            parameter
+                        )
+                    )
 
     return param_grp
 
