@@ -112,21 +112,21 @@ class TestChunkList( unittest.TestCase ):
 
         n = 2
         l = range( 10 )
-        expected = ( [ 0, 1, 2, 3, 4 ], [ 5, 6, 7, 8, 9 ] )
+        expected = ( range(0,5), range(5,10) )
         actual = utilities.chunk_list( l, n )
         for expected_, actual_ in zip( expected, actual ):
             assert expected_ == actual_
 
         n = 3
         l = range( 10 )
-        expected = ( [ 0, 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] )
+        expected = ( range(0,4), range(4,7), range(7,10) )
         actual = utilities.chunk_list( l, n )
         for expected_, actual_ in zip( expected, actual ):
             assert expected_ == actual_
 
         n = 3
         l = range( 11 )
-        expected = ( [ 0, 1, 2, 3 ], [ 4, 5, 6, 7 ], [ 8, 9, 10 ] )
+        expected = ( range(0,4), range(4,8), range(8,11) )
         actual = utilities.chunk_list( l, n )
         for expected_, actual_ in zip( expected, actual ):
             assert expected_ == actual_
