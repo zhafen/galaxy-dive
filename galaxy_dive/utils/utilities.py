@@ -155,7 +155,9 @@ def chunk_list( l, n ):
             end_ind += 1
             remainder_to_distribute -= 1
 
-        chunked_l.append( l[ start_ind : end_ind ] )
+        chunk = list( l[ start_ind : end_ind ] )
+
+        chunked_l.append( chunk )
 
         start_ind = end_ind
 
