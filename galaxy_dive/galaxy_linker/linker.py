@@ -634,7 +634,7 @@ class GalaxyLinker( object ):
         )
 
         part_of_halo = []
-        for halo_id in self.halo_data.data_reader.mtree_halos.keys():
+        for halo_id in sorted( self.halo_data.data_reader.mtree_halos.keys() ):
             mtree_halo = self.halo_data.data_reader.mtree_halos[ halo_id ]
 
             # Only try to get the data if we're in the range we actually have
@@ -655,9 +655,6 @@ class GalaxyLinker( object ):
 
             # Usual case
             if has_minimum_value:
-
-                #DEBUG
-                import pdb; pdb.set_trace()
 
                 # Get the halo position
                 halo_pos_comov = np.array([
