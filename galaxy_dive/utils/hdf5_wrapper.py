@@ -6,6 +6,7 @@ import h5py
 import numpy as np
 import os
 import pandas as pd
+import six
 import shutil
 
 import galaxy_dive.utils.utilities as utilities
@@ -64,7 +65,13 @@ class HDF5Wrapper(object):
                     if data[key][0] == {}:
                         continue
                     else:
-                        raise Exception('Unexpected TypeError, unable to save.')
+
+                        # Workaround for hdf5 and np.arrays
+                        data = np.array(
+                            data[key],
+                            dtype=h5py.special_dtype( vlen=six.text_type ),
+                        )
+                        self.f.create_dataset( key, data=data )
 
         # Catalog which key 'Indexes' the dataset, if any.
         if index_key is not None:
@@ -197,7 +204,7 @@ class HDF5Wrapper(object):
             else:
 
                 # Get the first value for easy reference
-                first_value = dataset.values()[0]
+                first_value = list( dataset.values() )[0]
 
                 # Get the shape of the subsample
                 n_dims = first_value[...].ndim
@@ -218,7 +225,7 @@ class HDF5Wrapper(object):
                     # Subsample when using particle data
                     if particle_data:
 
-                        n_additional_dims = dataset[key].size / n_particles
+                        n_additional_dims = dataset[key].size // n_particles
 
                         if n_additional_dims > 1:
 
@@ -246,7 +253,7 @@ class HDF5Wrapper(object):
         subsampled_data = {}
 
         # Subsample differently if we have a number of groups
-        first_value = f.values()[0]
+        first_value = list( f.values() )[0]
         if type(first_value) == h5py._hl.group.Group:
             for key in f.keys():
                 subsampled_data[key] = subsample_dataset( f[key] )
@@ -393,7 +400,7 @@ def copy_snapshot( sdir, snum, copy_dir, subsamples=False, redistribute=False, n
 
             with h5py.File( filename, 'r' ) as f:
 
-                ptypes = copy.copy( f.keys() )
+                ptypes = copy.copy( list( f.keys() ) )
                 del ptypes[0]
 
                 assert not ( 'Header' in ptypes ), "Deleted wrong key..."
