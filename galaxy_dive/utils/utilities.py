@@ -320,6 +320,30 @@ def save_parameters( instance, f ):
 
 ########################################################################
 
+def check_and_decode_bytes( x, coding='utf-8' ):
+    '''Check if an object is a bytes object, if so decode it into a string.
+
+    Args:
+        x (str or bytes):
+            Object to check.
+
+        coding (str):
+            What coding to use for decoding bytes objects.
+
+    Returns:
+        str:
+            The original string or the decoded x.
+    '''
+
+    if isinstance( x, bytes ):
+        x_out = x.decode( coding )
+    else:
+        x_out = copy.deepcopy( x )
+
+    return x_out
+
+########################################################################
+
 def gen_derived_data_doc(
     object_import_path,
     save_filepath,
