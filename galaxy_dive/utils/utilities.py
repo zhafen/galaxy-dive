@@ -7,6 +7,7 @@
 '''
 
 import collections
+import copy
 from contextlib import contextmanager
 import errno
 from functools import wraps
