@@ -67,11 +67,11 @@ class HDF5Wrapper(object):
                     else:
 
                         # Workaround for hdf5 and np.arrays
-                        data = np.array(
+                        arr = np.array(
                             data[key],
                             dtype=h5py.special_dtype( vlen=six.text_type ),
                         )
-                        self.f.create_dataset( key, data=data )
+                        self.f.create_dataset( key, data=arr )
 
         # Catalog which key 'Indexes' the dataset, if any.
         if index_key is not None:
