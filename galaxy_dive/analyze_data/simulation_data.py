@@ -1473,8 +1473,6 @@ class TimeDataMasker( generic_data.DataMasker ):
             data_key (str): Data to get.
             
             snum (int): Snapshot to get the data corresponding to.
-
-            mask (
         '''
 
         # Make sure we don't try to pass a slice to any keyword arguments
@@ -1486,12 +1484,11 @@ class TimeDataMasker( generic_data.DataMasker ):
             used_mask = mask
         elif isinstance( mask, bool ) or isinstance( mask, np.bool_ ):
             if not mask:
-                return self.data_object.get_processed_data(
-                    data_key,
-                    *args, **kwargs
-                )
-            
-            raise Exception( "All data is masked." )
+                used_mask = np.zeros(
+                    self.data_object.base_data_shape
+                ).astype( bool )
+            else:
+                raise Exception( "All data is masked." )
         elif mask == 'total':
             used_mask = self.get_total_mask( optional_masks=optional_masks )
         else:

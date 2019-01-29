@@ -316,7 +316,8 @@ class GalaxyLinker( object ):
         )
         halo_id_broken = returning_a_halo_id and diff_length_scale
         assert not halo_id_broken, "Cannot currently return a halo ID when" + \
-            " using a different length scale"
+            " using a different length scale. This is because halo ID and" + \
+            " gal ID use the same length scale, but halo ID assumes it's Rvir."
 
         # Actually get the data
         for id_type in self.ids_to_return:
@@ -502,7 +503,7 @@ class GalaxyLinker( object ):
     ):
         '''Find the smallest halos our particles are inside of some radial cut
         of (we define this as the halo ID). In the case of using MT halo ID,
-        we actually find the most massive our particles are inside some
+        we actually find the most massive halo our particles are inside some
         radial cut of.
 
         Args:

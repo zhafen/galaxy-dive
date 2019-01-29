@@ -536,7 +536,6 @@ class TestGalaxyLinker( unittest.TestCase ):
 
         expected = {
             'd_gal': np.array( [ 0., 0., 0., ] ),
-            # 'halo_id': np.array( [ 6811, 7339, 9498 ] ),
             'gal_id': np.array( [ 6811, 7339, 9498 ] ),
         }
 

@@ -55,8 +55,6 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
     if (ptype<0): return {'k':-1};
     if (ptype>5): return {'k':-1};
 
-    #print("just past ptype check")
-
     fname,fname_base,fname_ext = check_if_filename_exists(sdir,snum,\
         snapshot_name=snapshot_name,extension=extension,four_char=four_char)
     if(fname=='NULL'): 
