@@ -26,8 +26,24 @@ def cooling_time(
     from a look-up table.
 
     Args:
-        r (value or array-like):
+        r (float or array-like):
             Radii (in pkpc) at which to look up the cooling time.
+
+        z (float or array-like):
+            Redshifts at which to look up the cooling time.
+
+        physics (str):
+            What simulation variant to use (e.g. 'core' or 'metal_diffusion').
+
+        data_dir (str):
+            Directory containing the data.
+
+        filename (str):
+            Filename for lookup table.
+
+    Returns:
+        value or array-like (same shape as r and z):
+            Interpolated values of t_cool from look-up table.
     '''
 
     assert sim_name[:3] == 'm12', \
