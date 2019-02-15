@@ -1503,10 +1503,17 @@ class TimeDataMasker( generic_data.DataMasker ):
 
         # If we want to get the particle ind, we do something different
         if data_key == 'particle_ind':
+
+            n_particles_mask = sl.sum()
+
             if n_samples is None:
-                n_particles_selected = sl.sum()
+                n_particles_selected = n_particles_mask
             else:
                 n_particles_selected = n_samples
+
+            if n_samples >= n_particles_mask:
+                print( "n_samples > n_particles_selected, not sampling." )
+                n_particles_selected = n_particles_mask
 
             return np.tile(
                 np.arange( n_particles_selected ),
@@ -1527,14 +1534,14 @@ class TimeDataMasker( generic_data.DataMasker ):
             if seed is not None:
                 np.random.seed( seed )
 
-            n_selected_particles = masked_data.shape[0]
-            if n_samples >= n_selected_particles:
-                print( "n_samples > n_selected_particles, not sampling." )
+            n_particles_selected = masked_data.shape[0]
+            if n_samples >= n_particles_selected:
+                print( "n_samples > n_particles_selected, not sampling." )
                 return masked_data
 
             try:
                 sampled_inds = np.random.choice(
-                    np.arange( n_selected_particles ),
+                    np.arange( n_particles_selected ),
                     n_samples,
                     replace = False,
                 )
