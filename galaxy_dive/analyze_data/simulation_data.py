@@ -1539,16 +1539,12 @@ class TimeDataMasker( generic_data.DataMasker ):
                 print( "n_samples > n_particles_selected, not sampling." )
                 return masked_data
 
-            try:
-                sampled_inds = np.random.choice(
-                    np.arange( n_particles_selected ),
-                    n_samples,
-                    replace = False,
-                )
-                masked_data = masked_data[sampled_inds,:]
-            except:
-                #DEBUG
-                import pdb; pdb.set_trace()
+            sampled_inds = np.random.choice(
+                np.arange( n_particles_selected ),
+                n_samples,
+                replace = False,
+            )
+            masked_data = masked_data[sampled_inds,:]
 
         return masked_data
 

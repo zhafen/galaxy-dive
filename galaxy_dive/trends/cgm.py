@@ -56,6 +56,9 @@ def cooling_time(
     # Translate the keys from bytes...
     keys = data['key'].astype( str )
 
+    # Make sure the sim name exists in the sim
+    assert sim_name[3] in keys[:,0]
+
     # Identify the relevant simulation snapshots
     matches_sim = keys[:,0] == sim_name[3]
     matches_physics = keys[:,1] == physics
