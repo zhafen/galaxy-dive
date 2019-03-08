@@ -9,11 +9,10 @@
     <title>galaxy_dive.plot_data.generic_plotter module &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -43,7 +42,7 @@
 &#64;status: Development</p>
 <dl class="class">
 <dt id="galaxy_dive.plot_data.generic_plotter.GenericPlotter">
-<em class="property">class </em><code class="descclassname">galaxy_dive.plot_data.generic_plotter.</code><code class="descname">GenericPlotter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#GenericPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.GenericPlotter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">galaxy_dive.plot_data.generic_plotter.</code><code class="descname">GenericPlotter</code><span class="sig-paren">(</span><em>data_object</em>, <em>label=None</em>, <em>color='black'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#GenericPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.GenericPlotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="galaxy_dive.plot_data.generic_plotter.GenericPlotter.histogram">
@@ -262,7 +261,7 @@ Can also pass a dict of full args.</li>
 
 <dl class="method">
 <dt id="galaxy_dive.plot_data.generic_plotter.GenericPlotter.statistic_and_interval">
-<code class="descname">statistic_and_interval</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_key</em>, <em>x_data=None</em>, <em>y_data=None</em>, <em>weights=None</em>, <em>statistic='median'</em>, <em>lower_percentile=16</em>, <em>upper_percentile=84</em>, <em>plot_interval=True</em>, <em>x_data_args={}</em>, <em>y_data_args={}</em>, <em>ax=None</em>, <em>slices=None</em>, <em>fix_invalid=False</em>, <em>bins=64</em>, <em>linewidth=3</em>, <em>color='k'</em>, <em>label=None</em>, <em>zorder=100</em>, <em>alpha=0.5</em>, <em>plot_label=None</em>, <em>add_plot_label=True</em>, <em>plot_label_kwargs={'fontsize': 22</em>, <em>'va': 'bottom'</em>, <em>'xy': (0.0</em>, <em>1.0)</em>, <em>'xycoords': 'axes fraction'}</em>, <em>return_values=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#GenericPlotter.statistic_and_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.GenericPlotter.statistic_and_interval" title="Permalink to this definition">¶</a></dt>
+<code class="descname">statistic_and_interval</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_key</em>, <em>x_data=None</em>, <em>y_data=None</em>, <em>weights=None</em>, <em>statistic='median'</em>, <em>lower_percentile=16</em>, <em>upper_percentile=84</em>, <em>plot_interval=True</em>, <em>x_data_args={}</em>, <em>y_data_args={}</em>, <em>ax=None</em>, <em>slices=None</em>, <em>fix_invalid=False</em>, <em>bins=64</em>, <em>linewidth=3</em>, <em>linestyle='-'</em>, <em>color='k'</em>, <em>label=None</em>, <em>zorder=100</em>, <em>alpha=0.5</em>, <em>plot_label=None</em>, <em>add_plot_label=True</em>, <em>plot_label_kwargs={'fontsize': 22</em>, <em>'va': 'bottom'</em>, <em>'xy': (0.0</em>, <em>1.0)</em>, <em>'xycoords': 'axes fraction'}</em>, <em>return_values=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#GenericPlotter.statistic_and_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.GenericPlotter.statistic_and_interval" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -270,7 +269,7 @@ Can also pass a dict of full args.</li>
 <dl class="class">
 <dt id="galaxy_dive.plot_data.generic_plotter.PlotterSet">
 <em class="property">class </em><code class="descclassname">galaxy_dive.plot_data.generic_plotter.</code><code class="descname">PlotterSet</code><span class="sig-paren">(</span><em>data_object_cls</em>, <em>plotter_object_cls</em>, <em>defaults</em>, <em>variations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/generic_plotter.html#PlotterSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.generic_plotter.PlotterSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="galaxy_dive.utils.utilities.html#galaxy_dive.utils.utilities.SmartDict" title="galaxy_dive.utils.utilities.SmartDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.utils.utilities.SmartDict</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">verdict.Dict</span></code></p>
 <p>Container for multiple plotters that is an enhanced dictionary.</p>
 </dd></dl>
 
@@ -319,7 +318,7 @@ Can also pass a dict of full args.</li>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

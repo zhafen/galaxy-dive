@@ -9,11 +9,10 @@
     <title>galaxy_dive.galaxy_linker.linker &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -355,7 +354,8 @@
         <span class="p">)</span>
         <span class="n">halo_id_broken</span> <span class="o">=</span> <span class="n">returning_a_halo_id</span> <span class="ow">and</span> <span class="n">diff_length_scale</span>
         <span class="k">assert</span> <span class="ow">not</span> <span class="n">halo_id_broken</span><span class="p">,</span> <span class="s2">&quot;Cannot currently return a halo ID when&quot;</span> <span class="o">+</span> \
-            <span class="s2">&quot; using a different length scale&quot;</span>
+            <span class="s2">&quot; using a different length scale. This is because halo ID and&quot;</span> <span class="o">+</span> \
+            <span class="s2">&quot; gal ID use the same length scale, but halo ID assumes it&#39;s Rvir.&quot;</span>
 
         <span class="c1"># Actually get the data</span>
         <span class="k">for</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_return</span><span class="p">:</span>
@@ -541,7 +541,7 @@
     <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find the smallest halos our particles are inside of some radial cut</span>
 <span class="sd">        of (we define this as the halo ID). In the case of using MT halo ID,</span>
-<span class="sd">        we actually find the most massive our particles are inside some</span>
+<span class="sd">        we actually find the most massive halo our particles are inside some</span>
 <span class="sd">        radial cut of.</span>
 
 <span class="sd">        Args:</span>
@@ -673,7 +673,7 @@
         <span class="p">)</span>
 
         <span class="n">part_of_halo</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">halo_id</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">):</span>
             <span class="n">mtree_halo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">mtree_halos</span><span class="p">[</span> <span class="n">halo_id</span> <span class="p">]</span>
 
             <span class="c1"># Only try to get the data if we&#39;re in the range we actually have</span>
@@ -1034,7 +1034,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

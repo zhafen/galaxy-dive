@@ -9,11 +9,10 @@
     <title>galaxy_dive.plot_data.plotting module &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -115,19 +114,25 @@ on the bottom axis.</p>
 
 <dl class="function">
 <dt id="galaxy_dive.plot_data.plotting.custom_log_formatter">
-<code class="descclassname">galaxy_dive.plot_data.plotting.</code><code class="descname">custom_log_formatter</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/plotting.html#custom_log_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.plotting.custom_log_formatter" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">galaxy_dive.plot_data.plotting.</code><code class="descname">custom_log_formatter</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/plotting.html#custom_log_formatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.plotting.custom_log_formatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Better tick labels for log axes, as coded up by Alex Gurvich, who was
 deeply inspired by Jonathan Stern.</p>
 <p>To use, do, for example,
-&gt;&gt;&gt; my_log_ticker = matplotlib.ticker.FuncFormatter(my_log_formatter)
+&gt;&gt;&gt; my_log_ticker = matplotlib.ticker.FuncFormatter(custom_log_formatter)
 &gt;&gt;&gt; ax.yaxis.set_major_formatter(my_log_ticker)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> (<em>list-like</em>) – List of tick values.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<em>list-like</em>) – List of tick values.</li>
+<li><strong>y</strong> (<em>mystery</em>) – Without including a second argument this formatter breaks. I
+haven’t looked into why.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tick Formatter</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Tick Formatter</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -356,7 +361,7 @@ vertical_index (int): Vertical index of the plot.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

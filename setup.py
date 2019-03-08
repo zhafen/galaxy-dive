@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='galaxy_dive',
-    version='0.9.0',
+    version='0.9.1',
     description='A general analysis suite for hydrodynamic galaxy simulations.',
     url='https://github.com/zhafen/galaxy-dive',
     author='Zach Hafen',
@@ -26,7 +26,7 @@ setuptools.setup(
         'matplotlib>=2.0.2',
         'h5py>=2.7.0',
         'scipy>=1.2.0',
-        'verdict>=1.0',
+        'verdict>=1.1.3',
     ],
     include_package_data=True,
 )

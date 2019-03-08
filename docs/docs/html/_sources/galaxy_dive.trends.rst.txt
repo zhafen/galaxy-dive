@@ -6,6 +6,7 @@ Submodules
 
 .. toctree::
 
+   galaxy_dive.trends.cgm
    galaxy_dive.trends.galaxy
    galaxy_dive.trends.um_smhm
 

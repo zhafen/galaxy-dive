@@ -9,11 +9,10 @@
     <title>galaxy_dive.trends.galaxy &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -337,6 +336,7 @@
 <div class="viewcode-block" id="halo_metal_budget"><a class="viewcode-back" href="../../../galaxy_dive.trends.galaxy.html#galaxy_dive.trends.galaxy.halo_metal_budget">[docs]</a><span class="k">def</span> <span class="nf">halo_metal_budget</span><span class="p">(</span>
     <span class="n">data</span> <span class="o">=</span> <span class="s1">&#39;MzMstar_Ma2016.csv&#39;</span><span class="p">,</span>
     <span class="n">data_dir</span> <span class="o">=</span> <span class="n">gd_config</span><span class="o">.</span><span class="n">DATA_DIR</span><span class="p">,</span>
+    <span class="n">log_mstar</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Plot the halo metal budget, i.e. the mass of metals in the halo divided</span>
 <span class="sd">    by the estimate of the mass of available metals produced by the galaxy.</span>
@@ -349,6 +349,9 @@
 <span class="sd">        data_dir (str) :</span>
 <span class="sd">            Location of the data file.</span>
 
+<span class="sd">        log_mstar (boolean) :</span>
+<span class="sd">            If True, the data .csv file has Mstar in log-space.</span>
+
 <span class="sd">    Retuns:</span>
 <span class="sd">        m_star (array-like) :</span>
 <span class="sd">            Stellar mass values</span>
@@ -360,6 +363,9 @@
     <span class="c1"># Load the data</span>
     <span class="n">data_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">data</span> <span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span> <span class="n">data_filepath</span> <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">log_mstar</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Mstar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.</span><span class="o">**</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Mstar&#39;</span><span class="p">]</span>
 
     <span class="c1"># Return the data</span>
     <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Mstar&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;MetalBudget&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
@@ -734,7 +740,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

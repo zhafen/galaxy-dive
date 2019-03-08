@@ -421,14 +421,20 @@ class TestGalaxyLinker( unittest.TestCase ):
             ])
         particle_positions *= 1./(1. + self.redshift)/self.hubble
 
+        # Move one just off to the side to help with testing
+        particle_positions[0] += 5.
+
+        self.kwargs['ids_to_return'].append( '0.00000001_Rvir' )
+
         expected = {
-            'd_gal': np.array( [ 0., 0., 0., ] ),
+            'd_gal': np.array( [ 5.*np.sqrt( 3 ), 0., 0., ] ),
             'host_halo_id': np.array( [-1, 1, 3610] ),
             'halo_id': np.array( [0, 10, 3783] ),
             'host_gal_id': np.array( [-1, 1, 3610] ),
             'gal_id': np.array( [0, 10, 3783] ),
             'mt_gal_id': np.array( [0, -2, -2] ),
             'mt_halo_id': np.array( [0, 1, 0] ),
+            '0.00000001_Rvir': np.array( [-2, 10, 3783] ),
         }
 
         # Do the actual calculation
@@ -437,22 +443,6 @@ class TestGalaxyLinker( unittest.TestCase ):
             **self.kwargs
         )
         actual = galaxy_linker.find_ids()
-
-        # DEBUG
-        # key = 'mt_gal_id'
-        # print( 'key = {}, expected = {}, actual = {}'.format(
-        #         key,
-        #         expected[key],
-        #         actual[key],
-        #     )
-        # )
-        # key = 'mt_halo_id'
-        # print( 'key = {}, expected = {}, actual = {}'.format(
-        #         key,
-        #         expected[key],
-        #         actual[key],
-        #     )
-        # )
 
         for key in expected.keys():
             print(key)
@@ -945,6 +935,23 @@ class TestGalaxyLinkerMinimumStellarMass( unittest.TestCase ):
         expected[ 0, 0 ] = True # Should only be in the galaxy with sufficient stellar gas.
 
         npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
+    def test_find_ids_custom( self ):
+
+        self.galaxy_linker.ids_to_return = [
+            'gal_id',
+            'halo_id',
+            '0.1_Rvir',
+            '1.0_Rvir',
+            '5_r_scale',
+        ]
+
+        results = self.galaxy_linker.find_ids()
+
+        npt.assert_allclose( results['gal_id'], results['0.1_Rvir'] )
+        npt.assert_allclose( results['halo_id'], results['1.0_Rvir'] )
 
 ########################################################################
 ########################################################################

@@ -1,0 +1,165 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.trends.cgm &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for galaxy_dive.trends.cgm</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;Compilation of observed and derived astrophysical trends for CGMs.</span>
+
+<span class="sd">@author: Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">interp</span>
+
+<span class="kn">import</span> <span class="nn">galaxy_dive.config</span> <span class="k">as</span> <span class="nn">gd_config</span>
+
+<span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="cooling_time"><a class="viewcode-back" href="../../../galaxy_dive.trends.cgm.html#galaxy_dive.trends.cgm.cooling_time">[docs]</a><span class="k">def</span> <span class="nf">cooling_time</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">z</span><span class="p">,</span>
+    <span class="n">sim_name</span><span class="p">,</span>
+    <span class="n">physics</span><span class="p">,</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">gd_config</span><span class="o">.</span><span class="n">DATA_DIR</span><span class="p">,</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;Rovertcool_res7100.npz&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Extract the pre-calculated cooling time for a given snapshot</span>
+<span class="sd">    from a look-up table.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (float or array-like):</span>
+<span class="sd">            Radii (in pkpc) at which to look up the cooling time.</span>
+
+<span class="sd">        z (float or array-like):</span>
+<span class="sd">            Redshifts at which to look up the cooling time.</span>
+
+<span class="sd">        physics (str):</span>
+<span class="sd">            What simulation variant to use (e.g. &#39;core&#39; or &#39;metal_diffusion&#39;).</span>
+
+<span class="sd">        data_dir (str):</span>
+<span class="sd">            Directory containing the data.</span>
+
+<span class="sd">        filename (str):</span>
+<span class="sd">            Filename for lookup table.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        value or array-like (same shape as r and z):</span>
+<span class="sd">            Interpolated values of t_cool from look-up table.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">assert</span> <span class="n">sim_name</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;m12&#39;</span><span class="p">,</span> \
+        <span class="s1">&#39;Cooling time currently only calculated for m12 halos&#39;</span>
+
+    <span class="c1"># Load up the file</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">filename</span> <span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span> <span class="n">filepath</span> <span class="p">)</span>
+
+    <span class="c1"># Translate the keys from bytes...</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="nb">str</span> <span class="p">)</span>
+
+    <span class="c1"># Make sure the sim name exists in the sim</span>
+    <span class="k">assert</span> <span class="n">sim_name</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Identify the relevant simulation snapshots</span>
+    <span class="n">matches_sim</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">sim_name</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">matches_physics</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">physics</span>
+    <span class="n">valid_snapshots</span> <span class="o">=</span> <span class="n">matches_sim</span> <span class="o">&amp;</span> <span class="n">matches_physics</span>
+
+    <span class="c1"># Get the redshifts stored in the file</span>
+    <span class="n">unsorted_redshifts</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[:,</span><span class="mi">2</span><span class="p">][</span><span class="n">valid_snapshots</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="nb">float</span> <span class="p">)</span>
+    <span class="n">radii</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Rs&#39;</span><span class="p">][</span><span class="n">valid_snapshots</span><span class="p">]</span>
+    <span class="n">t_cools</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;tcools&#39;</span><span class="p">][</span><span class="n">valid_snapshots</span><span class="p">]</span>
+
+    <span class="c1"># Sort, tile, and mask</span>
+    <span class="n">sort_inds</span> <span class="o">=</span> <span class="n">unsorted_redshifts</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+    <span class="n">redshift</span> <span class="o">=</span> <span class="n">unsorted_redshifts</span><span class="p">[</span><span class="n">sort_inds</span><span class="p">]</span>
+    <span class="n">redshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span> <span class="n">redshift</span><span class="p">,</span> <span class="p">(</span> <span class="n">radii</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+    <span class="n">radii</span> <span class="o">=</span> <span class="n">radii</span><span class="p">[</span><span class="n">sort_inds</span><span class="p">]</span>
+    <span class="n">t_cools</span> <span class="o">=</span> <span class="n">t_cools</span><span class="p">[</span><span class="n">sort_inds</span><span class="p">]</span>
+
+    <span class="c1"># Interpolate</span>
+    <span class="k">return</span> <span class="n">interp</span><span class="o">.</span><span class="n">griddata</span><span class="p">(</span>
+        <span class="p">(</span> <span class="n">redshift</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">radii</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="p">),</span>
+        <span class="n">t_cools</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>
+        <span class="p">(</span> <span class="n">z</span><span class="p">,</span> <span class="n">r</span> <span class="p">),</span>
+    <span class="p">)</span></div>
+    
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
+    </div>
+  </body>
+</html>

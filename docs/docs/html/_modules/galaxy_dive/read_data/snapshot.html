@@ -9,11 +9,10 @@
     <title>galaxy_dive.read_data.snapshot &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -93,8 +92,6 @@
     
     <span class="k">if</span> <span class="p">(</span><span class="n">ptype</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">):</span> <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">};</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">ptype</span><span class="o">&gt;</span><span class="mi">5</span><span class="p">):</span> <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;k&#39;</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">};</span>
-
-    <span class="c1">#print(&quot;just past ptype check&quot;)</span>
 
     <span class="n">fname</span><span class="p">,</span><span class="n">fname_base</span><span class="p">,</span><span class="n">fname_ext</span> <span class="o">=</span> <span class="n">check_if_filename_exists</span><span class="p">(</span><span class="n">sdir</span><span class="p">,</span><span class="n">snum</span><span class="p">,</span>\
         <span class="n">snapshot_name</span><span class="o">=</span><span class="n">snapshot_name</span><span class="p">,</span><span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span><span class="n">four_char</span><span class="o">=</span><span class="n">four_char</span><span class="p">)</span>
@@ -604,7 +601,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

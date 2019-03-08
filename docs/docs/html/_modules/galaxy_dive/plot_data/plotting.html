@@ -9,11 +9,10 @@
     <title>galaxy_dive.plot_data.plotting &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -618,21 +617,28 @@
 
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="custom_log_formatter"><a class="viewcode-back" href="../../../galaxy_dive.plot_data.plotting.html#galaxy_dive.plot_data.plotting.custom_log_formatter">[docs]</a><span class="k">def</span> <span class="nf">custom_log_formatter</span><span class="p">(</span> <span class="n">x</span><span class="p">,</span> <span class="p">):</span> 
+<div class="viewcode-block" id="custom_log_formatter"><a class="viewcode-back" href="../../../galaxy_dive.plot_data.plotting.html#galaxy_dive.plot_data.plotting.custom_log_formatter">[docs]</a><span class="k">def</span> <span class="nf">custom_log_formatter</span><span class="p">(</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="p">):</span> 
     <span class="sd">&#39;&#39;&#39;Better tick labels for log axes, as coded up by Alex Gurvich, who was</span>
 <span class="sd">    deeply inspired by Jonathan Stern.</span>
 
 <span class="sd">    To use, do, for example,</span>
-<span class="sd">    &gt;&gt;&gt; my_log_ticker = matplotlib.ticker.FuncFormatter(my_log_formatter)</span>
+<span class="sd">    &gt;&gt;&gt; my_log_ticker = matplotlib.ticker.FuncFormatter(custom_log_formatter)</span>
 <span class="sd">    &gt;&gt;&gt; ax.yaxis.set_major_formatter(my_log_ticker)</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (list-like): List of tick values.</span>
 
+<span class="sd">        y (mystery):</span>
+<span class="sd">            Without including a second argument this formatter breaks. I</span>
+<span class="sd">            haven&#39;t looked into why.</span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        Tick Formatter</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+
     <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">1e-2</span><span class="p">,</span><span class="mf">1e-1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">]:</span> 
+        <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$</span><span class="si">%g</span><span class="s2">$&quot;</span><span class="o">%</span><span class="n">x</span> 
+    <span class="k">elif</span> <span class="p">(</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mf">1.</span> <span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span> <span class="n">x</span><span class="o">&gt;=</span> <span class="mf">0.1</span> <span class="p">):</span>
         <span class="k">return</span> <span class="sa">r</span><span class="s2">&quot;$</span><span class="si">%g</span><span class="s2">$&quot;</span><span class="o">%</span><span class="n">x</span> 
     <span class="k">else</span><span class="p">:</span> 
         <span class="k">return</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">LogFormatterMathtext</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span> </div>
@@ -674,7 +680,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

@@ -1,0 +1,486 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>galaxy_dive.galaxy_linker.linker module &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-galaxy_dive.galaxy_linker.linker">
+<span id="galaxy-dive-galaxy-linker-linker-module"></span><h1>galaxy_dive.galaxy_linker.linker module<a class="headerlink" href="#module-galaxy_dive.galaxy_linker.linker" title="Permalink to this headline">¶</a></h1>
+<p>Means to associate particles with galaxies and halos at any given time.</p>
+<p>&#64;author: Zach Hafen
+&#64;contact: <a class="reference external" href="mailto:zachary&#46;h&#46;hafen&#37;&#52;&#48;gmail&#46;com">zachary<span>&#46;</span>h<span>&#46;</span>hafen<span>&#64;</span>gmail<span>&#46;</span>com</a>
+&#64;status: Development</p>
+<dl class="class">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker">
+<em class="property">class </em><code class="descclassname">galaxy_dive.galaxy_linker.linker.</code><code class="descname">GalaxyLinker</code><span class="sig-paren">(</span><em>particle_positions</em>, <em>redshift</em>, <em>snum</em>, <em>hubble</em>, <em>galaxy_cut</em>, <em>length_scale</em>, <em>mt_length_scale=None</em>, <em>halo_length_scale='Rvir'</em>, <em>particle_masses=None</em>, <em>minimum_criteria='n_star'</em>, <em>minimum_value=10</em>, <em>ids_to_return=None</em>, <em>halo_data=None</em>, <em>halo_finder='AHF'</em>, <em>halo_data_dir=None</em>, <em>halo_file_tag=None</em>, <em>mtree_halos_index=None</em>, <em>main_mt_halo_id=None</em>, <em>low_memory_mode=True</em>, <em>memory_mode_divisions=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Find the association with galaxies and halos for a given set of particles
+at a given redshift.</p>
+<dl class="attribute">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.ahf_halos_length_scale_pkpc">
+<code class="descname">ahf_halos_length_scale_pkpc</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.ahf_halos_length_scale_pkpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Actual values of the length scale used, e.g. Rvir.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.cumulative_mass_valid_halos">
+<code class="descname">cumulative_mass_valid_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.cumulative_mass_valid_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the cumulative mass, going outwards from the center of each valid <a href="#id1"><span class="problematic" id="id2">*</span></a>AHF_halos halo.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>Shape (n_particles, n_halos)</dt>
+<dd>Index (i,j) is the cumulative mass in halo j at the location of particle i.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">cumulative_mass (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.dist_to_all_valid_halos">
+<code class="descname">dist_to_all_valid_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.dist_to_all_valid_halos" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Distance between self.particle_positions and all <a href="#id3"><span class="problematic" id="id4">*</span></a>.AHF_halos
+halos containing a galaxy (in pkpc).</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Returns</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body">dist_to_all_valid_halos (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.dist_to_all_valid_halos_fn">
+<code class="descname">dist_to_all_valid_halos_fn</code><span class="sig-paren">(</span><em>particle_positions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.dist_to_all_valid_halos_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.dist_to_all_valid_halos_fn" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>particle_positions</strong> (<em>np.ndarray</em>) – Location of particles to find the distance for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Distance between the particle positions and all <a href="#id5"><span class="problematic" id="id6">*</span></a>.AHF_halos
+halos containing a galaxy (in pkpc).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dist_to_all_valid_halos (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_containing_halos">
+<code class="descname">find_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_containing_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find which halos our particles are inside of some radial cut of.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>radial_cut_fraction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – A particle is in a halo if it’s in radial_cut_fraction*length_scale from the center.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>Shape (n_particles, n_halos).</dt>
+<dd>If index [i, j] is True, then particle i is inside radial_cut_fraction*length_scale of the jth halo.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">part_of_halo (np.array of bools)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_gal">
+<code class="descname">find_d_gal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_d_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_gal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the distance to the center of the closest halo that contains a
+galaxy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">For particle i, d_gal[i] is the distance in
+pkpc to the center of the nearest galaxy.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">d_gal (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_other_gal">
+<code class="descname">find_d_other_gal</code><span class="sig-paren">(</span><em>scaled=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_d_other_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_other_gal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the distance to the center of the closest halo that contains a
+galaxy, other than the main galaxy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scaled</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, scale d_other_gal by length_scale</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">For particle i, d_other_gal[i] is the distance in pkpc to the
+center of the nearest galaxy, besides the main galaxy.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">d_other_gal (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_halo_id">
+<code class="descname">find_halo_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em>, <em>type_of_halo_id='halo_id'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_halo_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_halo_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the smallest halos our particles are inside of some radial cut
+of (we define this as the halo ID). In the case of using MT halo ID,
+we actually find the most massive halo our particles are inside some
+radial cut of.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>radial_cut_fraction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – A particle is in a halo if it’s in radial_cut_fraction*length_scale from the center.</li>
+<li><strong>type_of_halo_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If ‘halo_id’ then this is the halo_id at a given snapshot.
+If ‘mt_halo_id’ then this is the halo_id according to the
+merger tree.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>Shape ( n_particles, ).</dt>
+<dd><p class="first last">The ID of the least massive substructure the particle’s part of.
+In the case of using the ‘mt_halo_id’, this is the ID of the
+most massive merger tree halo the particle’s part of. If it’s
+-2, then that particle is not part of any halo, within
+radial_cut_fraction*length_scale .</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">halo_id (np.array of ints)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_host_id">
+<code class="descname">find_host_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_host_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_host_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the host halos our particles are inside of some radial cut of.
+This is the host ID at a given snapshot, and is not the same as the merger tree halo ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>radial_cut_fraction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – A particle is in a halo if it’s in radial_cut_fraction*length_scale from the center.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>Shape ( n_particles, ).</dt>
+<dd>The ID of the least massive substructure the particle’s part of.
+If it’s -1, then the halo ID is the host ID.
+If it’s -2, then that particle is not part of any halo, within radial_cut_fraction*length_scale .</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">host_halo (np.array of ints)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_ids">
+<code class="descname">find_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find relevant halo and galaxy IDs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Keys are…
+:param halo_id: ID of the least-massive halo the particle is part of.
+:type halo_id: np.array of ints
+:param host_halo_id: ID of the host halo the particle is part of.
+:type host_halo_id: np.array of ints
+:param gal_id: ID of the smallest galaxy the particle is part of.
+:type gal_id: np.array of ints
+:param host_gal_id: ID of the host galaxy the particle is part of.
+:type host_gal_id: np.array of ints
+:param mt_halo_id: Merger tree ID of the least-massive halo the particle is<blockquote>
+<div>part of.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">type mt_halo_id:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">np.array of ints</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param mt_gal_id:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">Merger tree ID of the smallest galaxy the particle is
+part of.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">type mt_gal_id:</th><td class="field-body">np.array of ints</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">galaxy_and_halo_ids (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_mt_containing_halos">
+<code class="descname">find_mt_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_mt_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_mt_containing_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find which MergerTrace halos our particles are inside of some
+radial cut of.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>radial_cut_fraction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – A particle is in a halo if it’s in
+radial_cut_fraction*length_scale from the center.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>Shape (n_particles, n_halos).</dt>
+<dd>If index [i, j] is True, then particle i is inside
+radial_cut_fraction*length_scale of the jth halo, defined
+via the MergerTrace ID.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">part_of_halo (np.array of bools)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.get_mass_radius">
+<code class="descname">get_mass_radius</code><span class="sig-paren">(</span><em>mass_fraction</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.get_mass_radius"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.get_mass_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the radius at which mass_fraction*mass_inside_galaxy_cut is exceeded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mass_fraction</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Mass fraction to consider.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The ith index is the distance from the center of halo i to the center of the last particle before
+mass_fraction*mass_inside_galaxy_cut is exceeded.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">mass_radius (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.mass_inside_all_halos">
+<code class="descname">mass_inside_all_halos</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.mass_inside_all_halos" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Mass inside the galaxy_cut*length_scale for all <a href="#id7"><span class="problematic" id="id8">*</span></a>.AHF_halos halos.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Returns</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body">mass_inside_galaxy_cut (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.mass_inside_galaxy_cut">
+<code class="descname">mass_inside_galaxy_cut</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.mass_inside_galaxy_cut" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Mass inside the galaxy_cut*length_scale for <a href="#id9"><span class="problematic" id="id10">*</span></a>.AHF_halos halos that containing a galaxy.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Returns</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body">mass_inside_galaxy_cut (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.summed_quantity_inside_galaxy">
+<code class="descname">summed_quantity_inside_galaxy</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>fill_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.summed_quantity_inside_galaxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.summed_quantity_inside_galaxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements).
+:param particle_quantities: Quantities to sum.
+:type particle_quantities: np.ndarray
+:param fill_value: When there are are no particles in a galaxy, what value should be used?
+:type fill_value: float</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">summed_quantity_inside_galaxy (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.summed_quantity_inside_galaxy_valid_halos">
+<code class="descname">summed_quantity_inside_galaxy_valid_halos</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>fill_value=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.summed_quantity_inside_galaxy_valid_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.summed_quantity_inside_galaxy_valid_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),
+for halos that are “valid” (i.e. usually meeting some minimum criteria).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>particle_quantities</strong> (<em>np.ndarray</em>) – Quantities to sum.</li>
+<li><strong>fill_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – When there are are no particles in a galaxy, what value should be used?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">summed_quantity_inside_galaxy_valid (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.valid_halo_inds">
+<code class="descname">valid_halo_inds</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.valid_halo_inds" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Indices of <a href="#id11"><span class="problematic" id="id12">*</span></a>AHF_halos halos that satisfy our minimum criteria
+for containing a galaxy.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Returns</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body">valid_halo_inds (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.weighted_summed_quantity_inside_galaxy">
+<code class="descname">weighted_summed_quantity_inside_galaxy</code><span class="sig-paren">(</span><em>particle_quantities</em>, <em>particle_weights</em>, <em>fill_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.weighted_summed_quantity_inside_galaxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.weighted_summed_quantity_inside_galaxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get sum( particles_quantities ) for each galaxy (i.e. for particles fulfilling the galaxy cut requirements),
+weighted by particle_weights.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>particle_quantities</strong> (<em>np.ndarray</em>) – Quantities to tile.</li>
+<li><strong>particle_weights</strong> (<em>np.ndarray</em>) – Weights to apply.</li>
+<li><strong>fill_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – When there are are no particles in a galaxy, what value should be used?</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">summed_quantity_inside_galaxy (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/galaxy_dive.galaxy_linker.linker.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
+    </div>
+  </body>
+</html>

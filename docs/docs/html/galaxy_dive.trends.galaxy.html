@@ -9,11 +9,10 @@
     <title>galaxy_dive.trends.galaxy module &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -142,7 +141,7 @@ by Peeples&amp;Somerville2013</li>
 
 <dl class="function">
 <dt id="galaxy_dive.trends.galaxy.halo_metal_budget">
-<code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">halo_metal_budget</code><span class="sig-paren">(</span><em>data='MzMstar_Ma2016.csv'</em>, <em>data_dir='/home1/03057/zhafen/repos/galaxy-dive/galaxy_dive/data'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#halo_metal_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.halo_metal_budget" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">galaxy_dive.trends.galaxy.</code><code class="descname">halo_metal_budget</code><span class="sig-paren">(</span><em>data='MzMstar_Ma2016.csv'</em>, <em>data_dir='/home1/03057/zhafen/repos/galaxy-dive/galaxy_dive/data'</em>, <em>log_mstar=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/trends/galaxy.html#halo_metal_budget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.trends.galaxy.halo_metal_budget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the halo metal budget, i.e. the mass of metals in the halo divided
 by the estimate of the mass of available metals produced by the galaxy.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -153,6 +152,7 @@ by the estimate of the mass of available metals produced by the galaxy.</p>
 <li><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Filename of the data to use.
 ‘MsMstar_Ma2016.csv’ contains values from the FIRE-1 sims.</li>
 <li><strong>data_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Location of the data file.</li>
+<li><strong>log_mstar</strong> (<em>boolean</em>) – If True, the data .csv file has Mstar in log-space.</li>
 </ul>
 </td>
 </tr>
@@ -395,7 +395,7 @@ by Peeples&amp;Somerville2013</li>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

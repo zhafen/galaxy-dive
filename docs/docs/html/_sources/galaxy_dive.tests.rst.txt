@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    galaxy_dive.tests.test_trends
     galaxy_dive.tests.test_utils
 
 Submodules

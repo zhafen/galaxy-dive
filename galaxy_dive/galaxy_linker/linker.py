@@ -192,6 +192,29 @@ class GalaxyLinker( object ):
     ########################################################################
 
     @property
+    def valid_halo_pos( self ):
+        '''
+        Returns:
+            valid_halo_pos (np.ndarray) :
+               Positions in proper kpc of positions we would like to link to.
+        '''
+
+        if not hasattr( self, '_valid_halo_pos' ):
+
+            # Get the halo positions
+            halo_pos_comov = np.array([
+                self.halo_data.get_data( 'X', self.snum, units='kpc' ),
+                self.halo_data.get_data( 'Y', self.snum, units='kpc' ),
+                self.halo_data.get_data( 'Z', self.snum, units='kpc' ),
+            ]).transpose()
+            halo_pos = halo_pos_comov / ( 1. + self.redshift ) / self.hubble
+            self._valid_halo_pos = halo_pos[self.valid_halo_inds]
+
+        return self._valid_halo_pos
+
+    ########################################################################
+
+    @property
     def dist_to_all_valid_halos( self ):
         '''
         Returns:
@@ -219,20 +242,11 @@ class GalaxyLinker( object ):
                 halos containing a galaxy (in pkpc).
         '''
 
-        # Get the halo positions
-        halo_pos_comov = np.array([
-            self.halo_data.get_data( 'X', self.snum, units='kpc' ),
-            self.halo_data.get_data( 'Y', self.snum, units='kpc' ),
-            self.halo_data.get_data( 'Z', self.snum, units='kpc' ),
-        ]).transpose()
-        halo_pos = halo_pos_comov / ( 1. + self.redshift ) / self.hubble
-        halo_pos_selected = halo_pos[self.valid_halo_inds]
-
         # Get the distances
         # Output is ordered such that dist[:,0] is the distance to the center of
         # halo 0 for each particle
         return scipy.spatial.distance.cdist(
-            particle_positions, halo_pos_selected )
+            particle_positions, self.valid_halo_pos )
 
     ########################################################################
 
@@ -347,8 +361,13 @@ class GalaxyLinker( object ):
             elif id_type == 'd_other_gal_scaled':
                 galaxy_and_halo_ids['d_other_gal_scaled'] = \
                     self.find_d_other_gal( scaled=True )
+            # Custom scales
             else:
-                raise Exception( "Unrecognized id_type, {}".format( id_type ) )
+                galaxy_cut, length_scale = id_type.split( '_', 1 )
+                galaxy_cut = float( galaxy_cut )
+
+                galaxy_and_halo_ids[id_type] = \
+                    self.find_halo_id( galaxy_cut, length_scale=length_scale )
 
         return galaxy_and_halo_ids
 
@@ -500,6 +519,7 @@ class GalaxyLinker( object ):
         self,
         radial_cut_fraction = 1.,
         type_of_halo_id = 'halo_id',
+        length_scale = None,
     ):
         '''Find the smallest halos our particles are inside of some radial cut
         of (we define this as the halo ID). In the case of using MT halo ID,
@@ -562,7 +582,8 @@ class GalaxyLinker( object ):
 
         # Get the cut
         part_of_halo = find_containing_halos_fn(
-            radial_cut_fraction = radial_cut_fraction
+            radial_cut_fraction = radial_cut_fraction,
+            length_scale = length_scale,
         )
 
         # Mask the data
@@ -587,7 +608,7 @@ class GalaxyLinker( object ):
 
     ########################################################################
 
-    def find_containing_halos( self, radial_cut_fraction=1. ):
+    def find_containing_halos( self, radial_cut_fraction=1., length_scale=None, ):
         '''Find which halos our particles are inside of some radial cut of.
 
         Args:
@@ -598,21 +619,50 @@ class GalaxyLinker( object ):
                 If index [i, j] is True, then particle i is inside radial_cut_fraction*length_scale of the jth halo.
         '''
 
+        if length_scale is None:
+            length_scale = self.length_scale
+
+        # Get the relevant length scale
+        if length_scale == 'r_scale':
+            # Get the scale radius
+            r_vir = self.halo_data.get_data(
+                self.halo_length_scale,
+                self.snum,
+                units = 'kpc',
+            )
+            length_scale_arr = r_vir / self.halo_data.get_data(
+                'cAnalytic',
+                self.snum,
+                )
+        else:
+            length_scale_arr = self.halo_data.get_data(
+                length_scale,
+                self.snum,
+                units = 'kpc',
+            )
+
+        halos_length_scale_pkpc = \
+            length_scale_arr / ( 1. + self.redshift ) / self.hubble
+
         # Get the radial cut
-        radial_cut = radial_cut_fraction*self.ahf_halos_length_scale_pkpc[self.valid_halo_inds]
+        radial_cut = radial_cut_fraction*halos_length_scale_pkpc[self.valid_halo_inds]
 
         # Find the halos that our particles are part of (provided they passed the minimum cut)
         part_of_halo_success = self.dist_to_all_valid_halos < radial_cut[np.newaxis,:]
 
         # Get the full array out
-        part_of_halo = np.zeros( (self.n_particles, self.ahf_halos_length_scale_pkpc.size) ).astype( bool )
+        part_of_halo = np.zeros( (self.n_particles, halos_length_scale_pkpc.size) ).astype( bool )
         part_of_halo[:,self.valid_halo_inds] = part_of_halo_success
 
         return part_of_halo
 
     ########################################################################
 
-    def find_mt_containing_halos( self, radial_cut_fraction=1. ):
+    def find_mt_containing_halos(
+        self,
+        radial_cut_fraction = 1.,
+        length_scale = None,
+    ):
         '''Find which MergerTrace halos our particles are inside of some
         radial cut of.
 
@@ -627,6 +677,10 @@ class GalaxyLinker( object ):
                 radial_cut_fraction*length_scale of the jth halo, defined
                 via the MergerTrace ID.
         '''
+
+        assert length_scale is None, \
+            "find_mt_containing_halos has not yet been updated to accept" + \
+            " a length_scale as an argument like find_containing_halos."
 
         # Load up the merger tree data
         self.halo_data.data_reader.get_mtree_halos(

@@ -9,11 +9,10 @@
     <title>galaxy_dive.utils.utilities module &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -58,177 +57,10 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="galaxy_dive.utils.utilities.SmartDict">
-<em class="property">class </em><code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">SmartDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_abcoll.Mapping</span></code></p>
-<p>Replacement for dictionary that allows easier access to the attributes and methods of the dictionary components.
-For example, if one has a smart dictionary of TestClassA objects, each of which has a TestClassB attribute, which
-in turn have a foo method, then smart_dict.test_class_b.foo(2) would be a dict with foo calculated for each.
-In other words, it would be equivalent to the following code:
-results = {}
-for key in smart_dict.keys():</p>
-<blockquote>
-<div>results[key] = smart_dict[key].test_class_b.foo( 2 )</div></blockquote>
-<p>return results</p>
-<p>NOTE: In Python 3, the parent class probably needs to be switched to collections.abc.Mapping.</p>
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.apply">
-<code class="descname">apply</code><span class="sig-paren">(</span><em>fn</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply some function to each item in the smart dictionary, and
-return the results as a SmartDict.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.array">
-<code class="descname">array</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.array" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a np.ndarray with unique order (sorted keys )</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.call_custom_kwargs">
-<code class="descname">call_custom_kwargs</code><span class="sig-paren">(</span><em>kwargs</em>, <em>default_kwargs={}</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.call_custom_kwargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.call_custom_kwargs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform call, but using custom keyword arguments per dictionary tag.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Custom keyword arguments to pass.</li>
-<li><strong>default_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Defaults shared between keyword arguments.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary of results.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">results (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a>)</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.call_iteratively">
-<code class="descname">call_iteratively</code><span class="sig-paren">(</span><em>args_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.call_iteratively"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.call_iteratively" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
-<dt id="galaxy_dive.utils.utilities.SmartDict.from_class_and_args">
-<em class="property">classmethod </em><code class="descname">from_class_and_args</code><span class="sig-paren">(</span><em>contained_cls</em>, <em>args</em>, <em>default_args={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.from_class_and_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.from_class_and_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alternate constructor. Creates a SmartDict of contained_cls objects, with arguments passed to it from
-the dictionary created by defaults and variations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>contained_cls</strong> (<em>type of object/constructor</em>) – What class should the smart dict consist of?</li>
-<li><strong>args</strong> (<em>dict/other</em>) – Arguments that should be passed to contained_cls. If not a dict, assumed to be the first
-and only argument for the constructor.</li>
-<li><strong>default_args</strong> – Default arguments to fill in args</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The constructed instance.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result (SmartDict instance)</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.inner_item">
-<code class="descname">inner_item</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.inner_item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.inner_item" title="Permalink to this definition">¶</a></dt>
-<dd><p>When SmartDict is a dictionary of dicts themselves, this can be used to get an item from those dictionaries.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.inner_keys">
-<code class="descname">inner_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.inner_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.inner_keys" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.keymax">
-<code class="descname">keymax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.keymax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.keymax" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.keymin">
-<code class="descname">keymin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.keymin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.keymin" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.log10">
-<code class="descname">log10</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.log10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.log10" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrapper for np.log10</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.remove_empty_items">
-<code class="descname">remove_empty_items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.remove_empty_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.remove_empty_items" title="Permalink to this definition">¶</a></dt>
-<dd><p>Look for empty items and delete them.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.split_by_dict">
-<code class="descname">split_by_dict</code><span class="sig-paren">(</span><em>d</em>, <em>return_list=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.split_by_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.split_by_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Break the smart dictionary into smaller smart dictionaries according
-to their label provided by a dictionary</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Dictionary to use to split into smaller dictionaries</li>
-<li><strong>return_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, return a list of arrays.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.split_by_key_slice">
-<code class="descname">split_by_key_slice</code><span class="sig-paren">(</span><em>sl</em>, <em>str_to_match=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.split_by_key_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.split_by_key_slice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Break the smart dictionary into smaller smart dictionaries according
-to a subset of the key.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.7)"><em>slice</em></a>) – Part of the key to use to make subsets.</li>
-<li><strong>str_to_match</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If True, split into broad categories that match this string
-in the given slice or don’t.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.sum_contents">
-<code class="descname">sum_contents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.sum_contents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.sum_contents" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the sum of all the contents inside the Dict.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="galaxy_dive.utils.utilities.SmartDict.transpose">
-<code class="descname">transpose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#SmartDict.transpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.SmartDict.transpose" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="galaxy_dive.utils.utilities.Tee">
 <em class="property">class </em><code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">Tee</code><span class="sig-paren">(</span><em>out1</em>, <em>out2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#Tee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.Tee" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
 <dt id="galaxy_dive.utils.utilities.Tee.write">
 <code class="descname">write</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#Tee.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.Tee.write" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -255,8 +87,32 @@ in the given slice or don’t.</li>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.utilities.captured_output">
-<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">captured_output</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#captured_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.captured_output" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">captured_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#captured_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.captured_output" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="galaxy_dive.utils.utilities.check_and_decode_bytes">
+<code class="descclassname">galaxy_dive.utils.utilities.</code><code class="descname">check_and_decode_bytes</code><span class="sig-paren">(</span><em>x</em>, <em>coding='utf-8'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/utilities.html#check_and_decode_bytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.utilities.check_and_decode_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if an object is a bytes object, if so decode it into a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.7)"><em>bytes</em></a>) – Object to check.</li>
+<li><strong>coding</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What coding to use for decoding bytes objects.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The original string or the decoded x.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="galaxy_dive.utils.utilities.chunk_list">
@@ -536,7 +392,7 @@ will be stored in test_object, e.g. test_object.args</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

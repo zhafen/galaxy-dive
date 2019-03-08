@@ -9,11 +9,10 @@
     <title>galaxy_dive.analyze_data.simulation_data module &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -43,7 +42,7 @@
 &#64;status: Development</p>
 <dl class="class">
 <dt id="galaxy_dive.analyze_data.simulation_data.SimulationData">
-<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.simulation_data.</code><code class="descname">SimulationData</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.simulation_data.</code><code class="descname">SimulationData</code><span class="sig-paren">(</span><em>data_dir=None</em>, <em>halo_data_dir=None</em>, <em>ahf_index=None</em>, <em>averaging_frac=5.0</em>, <em>length_scale_used='Rstar0.5'</em>, <em>z_sun=0.02</em>, <em>halo_data_retrieved=False</em>, <em>centered=False</em>, <em>vel_centered=False</em>, <em>hubble_corrected=False</em>, <em>ahf_tag='smooth'</em>, <em>main_halo_id=0</em>, <em>center_method='halo'</em>, <em>vel_center_method='halo'</em>, <em>store_ahf_reader=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/simulation_data.html#SimulationData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.simulation_data.SimulationData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData" title="galaxy_dive.analyze_data.generic_data.GenericData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.generic_data.GenericData</span></code></a></p>
 <p>Class for handling simulation data.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -644,7 +643,6 @@ one time.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data to get.</li>
 <li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Snapshot to get the data corresponding to.</li>
-<li><strong>(</strong> (<em>mask</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -699,7 +697,7 @@ one time.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>

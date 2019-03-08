@@ -9,11 +9,10 @@
     <title>galaxy_dive.plot_data.generic_plotter &#8212; galaxy-dive 0.8.1 documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -51,6 +50,7 @@
 <span class="kn">import</span> <span class="nn">scipy.stats</span>
 <span class="kn">import</span> <span class="nn">scipy.signal</span> <span class="k">as</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">verdict</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;PDF&#39;</span><span class="p">)</span>
@@ -64,8 +64,8 @@
 <span class="kn">import</span> <span class="nn">galaxy_dive.utils.mp_utils</span> <span class="k">as</span> <span class="nn">mp_utils</span>
 <span class="kn">import</span> <span class="nn">galaxy_dive.utils.utilities</span> <span class="k">as</span> <span class="nn">utilities</span>
 
-<span class="kn">import</span> <span class="nn">plotting</span> <span class="k">as</span> <span class="nn">gen_plot</span>
-<span class="kn">import</span> <span class="nn">pu_colormaps</span> <span class="k">as</span> <span class="nn">pu_cm</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.plot_data.plotting</span> <span class="k">as</span> <span class="nn">gen_plot</span>
+<span class="kn">import</span> <span class="nn">galaxy_dive.plot_data.pu_colormaps</span> <span class="k">as</span> <span class="nn">pu_cm</span>
 
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
@@ -698,6 +698,7 @@
         <span class="n">fix_invalid</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
         <span class="n">linewidth</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">linestyle</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span>
         <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span>
         <span class="n">label</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">zorder</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
@@ -803,6 +804,7 @@
             <span class="n">x_values</span><span class="p">,</span>
             <span class="n">stat</span><span class="p">,</span>
             <span class="n">linewidth</span> <span class="o">=</span> <span class="n">linewidth</span><span class="p">,</span>
+            <span class="n">linestyle</span> <span class="o">=</span> <span class="n">linestyle</span><span class="p">,</span>
             <span class="n">color</span> <span class="o">=</span> <span class="n">color</span><span class="p">,</span>
             <span class="n">zorder</span> <span class="o">=</span> <span class="n">zorder</span><span class="p">,</span>
             <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="p">,</span>
@@ -1346,7 +1348,7 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="PlotterSet"><a class="viewcode-back" href="../../../galaxy_dive.plot_data.generic_plotter.html#galaxy_dive.plot_data.generic_plotter.PlotterSet">[docs]</a><span class="k">class</span> <span class="nc">PlotterSet</span><span class="p">(</span> <span class="n">utilities</span><span class="o">.</span><span class="n">SmartDict</span> <span class="p">):</span>
+<div class="viewcode-block" id="PlotterSet"><a class="viewcode-back" href="../../../galaxy_dive.plot_data.generic_plotter.html#galaxy_dive.plot_data.generic_plotter.PlotterSet">[docs]</a><span class="k">class</span> <span class="nc">PlotterSet</span><span class="p">(</span> <span class="n">verdict</span><span class="o">.</span><span class="n">Dict</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Container for multiple plotters that is an enhanced dictionary.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
@@ -1410,7 +1412,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, Zachary Hafen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
     </div>
   </body>
 </html>
