@@ -108,7 +108,7 @@ class SimulationData( generic_data.GenericData ):
         data_dir = None,
         halo_data_dir = None,
         ahf_index = None,
-        averaging_frac = 5.,
+        averaging_frac = 4.,
         length_scale_used = 'Rstar0.5',
         z_sun = constants.Z_MASSFRAC_SUN,
         halo_data_retrieved = False,
@@ -639,6 +639,46 @@ class SimulationData( generic_data.GenericData ):
             self.get_data( 'Rz' )**2.
         )
 
+        return self.data['R']
+
+    ########################################################################
+
+    def calc_rho_xy( self ):
+        '''Calculate impact parameter in the xy-plane.
+        '''
+
+        self.data['rho_xy'] = np.sqrt(
+            self.get_data( 'Rx' )**2. + \
+            self.get_data( 'Ry' )**2.
+        )
+
+        return self.data['rho_xy']
+
+    ########################################################################
+
+    def calc_rho_xz( self ):
+        '''Calculate impact parameter in the xz-plane.
+        '''
+
+        self.data['rho_xz'] = np.sqrt(
+            self.get_data( 'Rx' )**2. + \
+            self.get_data( 'Rz' )**2.
+        )
+
+        return self.data['rho_xz']
+
+    ########################################################################
+
+    def calc_rho_yz( self ):
+        '''Calculate impact parameter in the yz-plane.
+        '''
+
+        self.data['rho_yz'] = np.sqrt(
+            self.get_data( 'Ry' )**2. + \
+            self.get_data( 'Rz' )**2.
+        )
+
+        return self.data['rho_yz']
 
 ########################################################################
 ########################################################################
