@@ -39,6 +39,8 @@ class GalaxyLinker( object ):
         minimum_criteria = 'n_star',
         minimum_value = 10,
         ids_to_return = None,
+        ids_with_supplementary_data = [],
+        supplementary_data_keys = [],
         halo_data = None,
         halo_finder = 'AHF',
         halo_data_dir = None,
@@ -97,6 +99,14 @@ class GalaxyLinker( object ):
 
             ids_to_return (list of strs, optional) :
                 The types of id you want to get out.
+
+            ids_with_supplementary_data (list of strs, optional) :
+                What types of IDs should include supplementary data pulled
+                from the halo files.
+
+            supplementary_data_keys (list of strs, optional) :
+                What data keys in the halo files should be accessed and
+                included as part of supplementary data.
 
             halo_data (HaloData object, optional) :
                 An instance of an object that retrieves halo data
@@ -337,21 +347,21 @@ class GalaxyLinker( object ):
         for id_type in self.ids_to_return:
 
             if id_type == 'halo_id':
-                galaxy_and_halo_ids['halo_id'] = self.find_halo_id()
+                galaxy_and_halo_ids['halo_id'] = self.find_halo_id( supplementary_data=(id_type in self.ids_with_supplementary_data) )
             elif id_type == 'host_halo_id':
                 galaxy_and_halo_ids['host_halo_id'] = self.find_host_id()
             elif id_type == 'gal_id':
                 galaxy_and_halo_ids['gal_id'] = \
-                    self.find_halo_id( self.galaxy_cut )
+                    self.find_halo_id( self.galaxy_cut, supplementary_data=(id_type in self.ids_with_supplementary_data)  )
             elif id_type == 'host_gal_id':
                 galaxy_and_halo_ids['host_gal_id'] = \
-                    self.find_host_id( self.galaxy_cut )
+                    self.find_host_id( self.galaxy_cut, )
             elif id_type == 'mt_halo_id':
                 galaxy_and_halo_ids['mt_halo_id'] = \
-                    self.find_halo_id( type_of_halo_id='mt_halo_id' )
+                    self.find_halo_id( type_of_halo_id='mt_halo_id', supplementary_data=(id_type in self.ids_with_supplementary_data)  )
             elif id_type == 'mt_gal_id':
                 galaxy_and_halo_ids['mt_gal_id'] = self.find_halo_id(
-                    self.galaxy_cut, type_of_halo_id='mt_halo_id' )
+                    self.galaxy_cut, type_of_halo_id='mt_halo_id',  )
             elif id_type == 'd_gal':
                 galaxy_and_halo_ids['d_gal'] = \
                     self.find_d_gal()
@@ -368,6 +378,16 @@ class GalaxyLinker( object ):
 
                 galaxy_and_halo_ids[id_type] = \
                     self.find_halo_id( galaxy_cut, length_scale=length_scale )
+
+        # Check for supplementary data and store it in a proper format
+        galaxy_and_halo_ids_orig = copy.deepcopy( galaxy_and_halo_ids )
+        for key, item in galaxy_and_halo_ids_orig.items():
+            if isinstance( item, tuple ):
+                arr, s_data = item
+                galaxy_and_halo_ids[key] = arr
+                for s_key, s_item in s_data.items():
+                    stored_key = '{}_{}'.format( key, s_key )
+                    galaxy_and_halo_ids[stored_key] = s_item
 
         return galaxy_and_halo_ids
 
@@ -520,6 +540,7 @@ class GalaxyLinker( object ):
         radial_cut_fraction = 1.,
         type_of_halo_id = 'halo_id',
         length_scale = None,
+        supplementary_data = False,
     ):
         '''Find the smallest halos our particles are inside of some radial cut
         of (we define this as the halo ID). In the case of using MT halo ID,
@@ -534,6 +555,13 @@ class GalaxyLinker( object ):
                 If 'halo_id' then this is the halo_id at a given snapshot.
                 If 'mt_halo_id' then this is the halo_id according to the
                 merger tree.
+
+            length_scale (str):
+                If using a custom length scale for the halo ID, what scale?
+
+            supplementary_data (bool):
+                If True, also return supplementary data according to the keys
+                in self.supplementary_data_keys
 
         Returns:
             halo_id (np.array of ints): Shape ( n_particles, ).
@@ -600,19 +628,19 @@ class GalaxyLinker( object ):
             halo_id = all_halo_ids[halo_inds]
 
             # When including supplementary data
-            if type_of_halo_id in self.ids_with_supplementary_data:
+            if supplementary_data:
                 supplementary_data = {}
                 for data_key in self.supplementary_data_keys:
                     full_data = self.halo_data.get_data( data_key, self.snum )
 
-                    # DEBUG
                     # Make sure it's a numpy array (instead of a unyt array)
+                    full_data = np.array( full_data )
 
                     supplementary_data[data_key] = full_data[halo_inds]
 
         elif type_of_halo_id == 'mt_halo_id':
 
-            if type_of_halo_id in self.ids_with_supplementary_data:
+            if supplementary_data:
                 raise Exception( "Supplementary data not yet compatible with MT halo IDs." )
 
             halo_inds = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
@@ -631,7 +659,7 @@ class GalaxyLinker( object ):
             )
 
         # Return
-        if type_of_halo_id not in self.ids_with_supplementary_data:
+        if not supplementary_data:
             return halo_id
         else:
             return halo_id, supplementary_data

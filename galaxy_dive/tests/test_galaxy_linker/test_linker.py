@@ -424,19 +424,18 @@ class TestGalaxyLinker( unittest.TestCase ):
         self.galaxy_linker.particle_positions *= 1./(1. + self.redshift)/self.hubble
 
         self.galaxy_linker.n_particles = 4
-        self.galaxy_linker.ids_with_supplementary_data = [ 'halo_id' ]
         self.galaxy_linker.supplementary_data_keys = [ 'Xc', 'Yc', 'Zc' ]
 
         expected_id, expected = (
             np.array( [0, 6962, 7, 3783] ),
             {
-                'Xc': np.array([ 29414.96458784, 31926.42103071, 29467.07226789, 29459.32290246, ]) * unyt.kpc,
-                'Yc': np.array([ 30856.75007114, 51444.46756529, 30788.6179313 , 30768.32556725, ]) * unyt.kpc,
-                'Zc': np.array([ 32325.90901812, 1970.1967437, 32371.38749237, 32357.26078864, ]) * unyt.kpc,
+                'Xc': np.array([ 29414.96458784, 31926.42103071, 29467.07226789, 29459.32290246, ]),
+                'Yc': np.array([ 30856.75007114, 51444.46756529, 30788.6179313 , 30768.32556725, ]),
+                'Zc': np.array([ 32325.90901812, 1970.1967437, 32371.38749237, 32357.26078864, ]),
             },
         )
 
-        actual_id, actual = self.galaxy_linker.find_halo_id()
+        actual_id, actual = self.galaxy_linker.find_halo_id( supplementary_data=True )
 
         assert len( expected.keys() ) == len( actual.keys() )
         for key in expected.keys():
@@ -457,7 +456,11 @@ class TestGalaxyLinker( unittest.TestCase ):
         # Move one just off to the side to help with testing
         particle_positions[0] += 5.
 
-        self.kwargs['ids_to_return'].append( '0.00000001_Rvir' )
+        used_kwargs = copy.deepcopy( self.kwargs )
+
+        used_kwargs['ids_to_return'].append( '0.00000001_Rvir' )
+        used_kwargs['ids_with_supplementary_data'] = [ 'gal_id' ]
+        used_kwargs['supplementary_data_keys'] = [ 'Xc', 'Yc', 'Zc' ]
 
         expected = {
             'd_gal': np.array( [ 5.*np.sqrt( 3 ), 0., 0., ] ),
@@ -468,17 +471,19 @@ class TestGalaxyLinker( unittest.TestCase ):
             'mt_gal_id': np.array( [0, -2, -2] ),
             'mt_halo_id': np.array( [0, 1, 0] ),
             '0.00000001_Rvir': np.array( [-2, 10, 3783] ),
+            'gal_id_Xc': np.array([ 29414.96458784, 30068.5541178, 29459.32290246, ]),
+            'gal_id_Yc': np.array([ 30856.75007114, 32596.72758226, 30768.32556725, ]),
+            'gal_id_Zc': np.array([ 32325.90901812, 32928.1115097, 32357.26078864, ]),
         }
 
         # Do the actual calculation
         galaxy_linker = general_galaxy_linker.GalaxyLinker(
             particle_positions,
-            **self.kwargs
+            **used_kwargs
         )
         actual = galaxy_linker.find_ids()
 
         for key in expected.keys():
-            print(key)
             try:
                 npt.assert_allclose( expected[key], actual[key], atol=1e-10 )
             except AssertionError:
