@@ -346,25 +346,27 @@ class GalaxyLinker( object ):
         # Actually get the data
         for id_type in self.ids_to_return:
 
+            supplementary_data = id_type in self.ids_with_supplementary_data
+
             if id_type == 'halo_id':
-                galaxy_and_halo_ids['halo_id'] = self.find_halo_id( supplementary_data=(id_type in self.ids_with_supplementary_data) )
+                galaxy_and_halo_ids['halo_id'] = self.find_halo_id( supplementary_data=supplementary_data )
             elif id_type == 'host_halo_id':
                 galaxy_and_halo_ids['host_halo_id'] = self.find_host_id()
             elif id_type == 'gal_id':
                 galaxy_and_halo_ids['gal_id'] = \
-                    self.find_halo_id( self.galaxy_cut, supplementary_data=(id_type in self.ids_with_supplementary_data)  )
+                    self.find_halo_id( self.galaxy_cut, supplementary_data=supplementary_data  )
             elif id_type == 'host_gal_id':
                 galaxy_and_halo_ids['host_gal_id'] = \
                     self.find_host_id( self.galaxy_cut, )
             elif id_type == 'mt_halo_id':
                 galaxy_and_halo_ids['mt_halo_id'] = \
-                    self.find_halo_id( type_of_halo_id='mt_halo_id', supplementary_data=(id_type in self.ids_with_supplementary_data)  )
+                    self.find_halo_id( type_of_halo_id='mt_halo_id', supplementary_data=supplementary_data  )
             elif id_type == 'mt_gal_id':
                 galaxy_and_halo_ids['mt_gal_id'] = self.find_halo_id(
                     self.galaxy_cut, type_of_halo_id='mt_halo_id',  )
             elif id_type == 'd_gal':
                 galaxy_and_halo_ids['d_gal'] = \
-                    self.find_d_gal()
+                    self.find_d_gal( supplementary_data=supplementary_data )
             elif id_type == 'd_other_gal':
                 galaxy_and_halo_ids['d_other_gal'] = \
                     self.find_d_other_gal()
@@ -393,9 +395,13 @@ class GalaxyLinker( object ):
 
     ########################################################################
 
-    def find_d_gal( self ):
+    def find_d_gal( self, supplementary_data=False ):
         '''Find the distance to the center of the closest halo that contains a
         galaxy.
+
+        Args:
+            supplementary_data (bool) :
+                If True, extract additional data about the closest galaxy
 
         Returns:
             d_gal (np.ndarray) : For particle i, d_gal[i] is the distance in
@@ -406,7 +412,26 @@ class GalaxyLinker( object ):
         if self.halo_data.get_n_halos( self.snum ) == 0:
              return -2. * np.ones( (self.n_particles,) )
 
-        return np.min( self.dist_to_all_valid_halos, axis=1 )
+        min_inds = np.argmin( self.dist_to_all_valid_halos, axis=1 )
+        first_col_inds = np.arange( len( self.dist_to_all_valid_halos ) )
+        d_gal = self.dist_to_all_valid_halos[first_col_inds,min_inds]
+
+        if not supplementary_data:
+            return d_gal
+
+        # When including supplementary_data
+        s_data = {}
+        for key in self.supplementary_data_keys:
+
+            # Handle when no halos exist.
+            if self.halo_data.get_n_halos( self.snum ) == 0:
+                 s_data[key] = -2. * np.ones( (self.n_particles,) )
+
+            raw_data = np.array( self.halo_data.get_data( key, self.snum, ) )
+            valid_data = raw_data[self.valid_halo_inds]
+            s_data[key] = valid_data[min_inds]
+
+        return d_gal, s_data
 
     ########################################################################
 

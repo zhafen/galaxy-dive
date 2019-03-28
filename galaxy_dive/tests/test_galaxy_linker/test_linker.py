@@ -459,7 +459,7 @@ class TestGalaxyLinker( unittest.TestCase ):
         used_kwargs = copy.deepcopy( self.kwargs )
 
         used_kwargs['ids_to_return'].append( '0.00000001_Rvir' )
-        used_kwargs['ids_with_supplementary_data'] = [ 'gal_id' ]
+        used_kwargs['ids_with_supplementary_data'] = [ 'gal_id', 'd_gal' ]
         used_kwargs['supplementary_data_keys'] = [ 'Xc', 'Yc', 'Zc' ]
 
         expected = {
@@ -474,6 +474,9 @@ class TestGalaxyLinker( unittest.TestCase ):
             'gal_id_Xc': np.array([ 29414.96458784, 30068.5541178, 29459.32290246, ]),
             'gal_id_Yc': np.array([ 30856.75007114, 32596.72758226, 30768.32556725, ]),
             'gal_id_Zc': np.array([ 32325.90901812, 32928.1115097, 32357.26078864, ]),
+            'd_gal_Xc': np.array([ 29414.96458784, 30068.5541178, 29459.32290246, ]),
+            'd_gal_Yc': np.array([ 30856.75007114, 32596.72758226, 30768.32556725, ]),
+            'd_gal_Zc': np.array([ 32325.90901812, 32928.1115097, 32357.26078864, ]),
         }
 
         # Do the actual calculation
