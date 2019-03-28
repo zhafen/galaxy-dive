@@ -592,10 +592,29 @@ class GalaxyLinker( object ):
 
         # Take the extremum of the masked data
         if type_of_halo_id == 'halo_id':
+
             halo_inds = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
+
+            # Get the halo ID
             all_halo_ids = self.halo_data.get_data( 'ID', self.snum )
             halo_id = all_halo_ids[halo_inds]
+
+            # When including supplementary data
+            if type_of_halo_id in self.ids_with_supplementary_data:
+                supplementary_data = {}
+                for data_key in self.supplementary_data_keys:
+                    full_data = self.halo_data.get_data( data_key, self.snum )
+
+                    # DEBUG
+                    # Make sure it's a numpy array (instead of a unyt array)
+
+                    supplementary_data[data_key] = full_data[halo_inds]
+
         elif type_of_halo_id == 'mt_halo_id':
+
+            if type_of_halo_id in self.ids_with_supplementary_data:
+                raise Exception( "Supplementary data not yet compatible with MT halo IDs." )
+
             halo_inds = arg_extremum_fn( tiled_m_vir_ma, axis=1 )
             halo_ids = np.array( sorted( self.halo_data.data_reader.mtree_halos.keys() ) )
             halo_id = halo_ids[halo_inds]
@@ -604,7 +623,18 @@ class GalaxyLinker( object ):
         mask = extremum_fn( tiled_m_vir_ma, axis=1 ).mask
         halo_id = np.ma.filled( np.ma.masked_array(halo_id, mask=mask), fill_value=-2 )
 
-        return halo_id
+        # Do the same for the supplementary data
+        if type_of_halo_id in self.ids_with_supplementary_data:
+            supplementary_data[data_key] = np.ma.filled(
+                np.ma.masked_array( supplementary_data[data_key], mask=mask ),
+                fill_value = -2
+            )
+
+        # Return
+        if type_of_halo_id not in self.ids_with_supplementary_data:
+            return halo_id
+        else:
+            return halo_id, supplementary_data
 
     ########################################################################
 

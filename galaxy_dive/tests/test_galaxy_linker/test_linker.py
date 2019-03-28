@@ -12,6 +12,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 import unittest
+import unyt
 
 import galaxy_dive.read_data.ahf as read_ahf
 import galaxy_dive.analyze_data.halo_data as analyze_halos
@@ -35,7 +36,7 @@ gal_linker_kwargs = {
     'galaxy_cut': 0.1,
     'ids_to_return': [ 'halo_id', 'host_halo_id', 'gal_id', 'host_gal_id',
                        'mt_halo_id', 'mt_gal_id', 'd_gal',
-                       'd_other_gal_scaled', ],
+                       'd_other_gal_scaled', '0.1_Rvir',  ],
     'minimum_criteria': 'n_star',
     'minimum_value': 0,
 
@@ -412,6 +413,38 @@ class TestGalaxyLinker( unittest.TestCase ):
 
     ########################################################################
 
+    def test_extract_additional_keys( self ):
+
+        self.galaxy_linker.particle_positions = np.array([
+            [ 29414.96458784,  30856.75007114,  32325.90901812],
+            [ 31926.42103071,  51444.46756529,   1970.1967437 ],
+            [ 29467.07226789,  30788.6179313 ,  32371.38749237],
+            [ 29459.32290246,  30768.32556725,  32357.26078864], # Halo 3783, host halo 3610
+            ])
+        self.galaxy_linker.particle_positions *= 1./(1. + self.redshift)/self.hubble
+
+        self.galaxy_linker.n_particles = 4
+        self.galaxy_linker.ids_with_supplementary_data = [ 'halo_id' ]
+        self.galaxy_linker.supplementary_data_keys = [ 'Xc', 'Yc', 'Zc' ]
+
+        expected_id, expected = (
+            np.array( [0, 6962, 7, 3783] ),
+            {
+                'Xc': np.array([ 29414.96458784, 31926.42103071, 29467.07226789, 29459.32290246, ]) * unyt.kpc,
+                'Yc': np.array([ 30856.75007114, 51444.46756529, 30788.6179313 , 30768.32556725, ]) * unyt.kpc,
+                'Zc': np.array([ 32325.90901812, 1970.1967437, 32371.38749237, 32357.26078864, ]) * unyt.kpc,
+            },
+        )
+
+        actual_id, actual = self.galaxy_linker.find_halo_id()
+
+        assert len( expected.keys() ) == len( actual.keys() )
+        for key in expected.keys():
+            npt.assert_allclose( expected[key], actual[key] )
+        npt.assert_allclose( expected_id, actual_id )
+
+    ########################################################################
+
     def test_find_ids( self ):
 
         particle_positions = np.array([
@@ -590,6 +623,7 @@ class TestGalaxyLinker( unittest.TestCase ):
             'gal_id': np.array( [-2, -2, -2] ),
             'mt_gal_id': np.array( [-2, -2, -2] ),
             'mt_halo_id': np.array( [-2, -2, -2] ),
+            '0.1_Rvir': np.array( [-2, -2, -2] ),
         }
 
         # Setup the input parameters
