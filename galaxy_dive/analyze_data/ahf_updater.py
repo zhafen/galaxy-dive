@@ -494,11 +494,12 @@ class HaloUpdater( halo_data.HaloData ):
                 columns_to_add.sort()
 
                 # Now get the values to add
-                full_ahf_row = self.halos.loc[halo_id:halo_id] 
-                ahf_row = full_ahf_row[columns_to_add]
+                if self.halos.index.size != 0:
+                    full_ahf_row = self.halos.loc[halo_id:halo_id] 
+                    ahf_row = full_ahf_row[columns_to_add]
 
-                # Check for edge case, where there isn't an AHF row with specified halo number
-                if ahf_row.size == 0:
+                # Check for edge case, where there isn't an AHF row with specified halo number or there are no more halos
+                if ( self.halos.index.size == 0 ) or ( ahf_row.size == 0 ):
                     
                     # Borrow a previous row for formatting
                     ahf_row = copy.copy( ahf_frames[-1] )
