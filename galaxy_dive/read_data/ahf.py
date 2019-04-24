@@ -41,6 +41,9 @@ class AHFReader( object ):
             'X' : 'Xc',
             'Y' : 'Yc',
             'Z' : 'Zc',
+            'Vx' : 'VXc',
+            'Vy' : 'VYc',
+            'Vz' : 'VZc',
         }
 
         # Data units
@@ -49,6 +52,9 @@ class AHFReader( object ):
             'Xc' : unyt.kpc,
             'Yc' : unyt.kpc,
             'Zc' : unyt.kpc,
+            'VXc' : unyt.km / unyt.s,
+            'VYc' : unyt.km / unyt.s,
+            'VZc' : unyt.km / unyt.s,
             'Rvir' : unyt.kpc,
             'Rstar0.5' : unyt.kpc,
             'Rstar0.9' : unyt.kpc,
