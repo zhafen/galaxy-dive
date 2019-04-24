@@ -273,6 +273,38 @@ class AHFReader( object ):
         self.ahf_mtree_idx = pd.read_csv( ahf_mtree_idx_path, delim_whitespace=True, names=['HaloID(1)', 'HaloID(2)'], skiprows=1  )
 
     ########################################################################
+
+    def get_profiles( self, snum ):
+        '''Get *.AHF_mtree_idx file for a particular snapshot.
+
+        Args:
+            snum (int): Snapshot number to load.
+
+        Modifies:
+            self.ahf_mtree_idx (pd.DataFrame): Dataframe containing the requested data.
+        '''
+
+        # If the data's already loaded, don't load it again.
+        if hasattr( self, 'profiles' ):
+            return self.profiles
+
+        # Load the data
+        profiles_path = self.get_filepath( snum, 'AHF_profiles' )
+        self.profiles = pd.read_csv(
+            profiles_path,
+            sep = '\t', 
+        )
+
+        # Delete a column that shows up as a result of formatting
+        del self.profiles['Unnamed: 27']
+
+        # Remove the annoying parenthesis at the end of each label.
+        self.profiles.columns = [ label.split('(')[0] for label in list( self.profiles ) ]
+
+        # Remove the # at the beginning of the first column
+        self.profiles.rename( columns={'#r': 'r'}, inplace=True )
+
+    ########################################################################
     # Utilities
     ########################################################################
 
