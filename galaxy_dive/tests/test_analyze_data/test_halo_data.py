@@ -95,6 +95,22 @@ class TestHaloData( unittest.TestCase ):
         expected = 12.95/(1. + 13.206278 )
         npt.assert_allclose( expected, actual )
 
+    ########################################################################
+
+    def test_get_profile_data( self ):
+
+        actual = self.halo_data.get_profile_data(
+            'M_in_r',
+            600,
+            r = self.halo_data.get_mt_data(
+                'Rvir',
+                snums = [ 600 ],
+            ),
+        )
+        expected = self.halo_data.get_mt_data( 'Mvir', snums=[ 600 ], )
+
+        npt.assert_allclose( expected, actual, rtol=0.1 )
+
 ########################################################################
 ########################################################################
 

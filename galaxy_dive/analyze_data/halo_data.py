@@ -12,6 +12,7 @@ import numpy as np
 import os
 import pandas as pd
 import unyt
+import scipy.interpolate
 
 import galaxy_dive.read_data.ahf as read_ahf
 import galaxy_dive.read_data.rockstar as read_rockstar
@@ -76,6 +77,8 @@ class HaloData( generic_data.GenericData ):
             'mtree_halo_filepaths',
             'index', 
             'tag',
+            'profiles',
+            'profile_id_mapping',
         ]
 
         if attr in data_reader_used_attrs:
@@ -150,7 +153,14 @@ class HaloData( generic_data.GenericData ):
 
     ########################################################################
 
-    def get_mt_data( self, data_key, mt_halo_id=0, snums=None, a_power=None, return_values_only=True ):
+    def get_mt_data(
+        self,
+        data_key,
+        mt_halo_id = 0,
+        snums = None,
+        a_power = None,
+        return_values_only = True,
+    ):
         '''Get halo data for a specific merger tree.
 
         Args:
@@ -177,6 +187,74 @@ class HaloData( generic_data.GenericData ):
           mt_data = mt_data.values
 
         return mt_data
+
+    ########################################################################
+
+    def get_profile_data(
+        self,
+        data_key,
+        snum,
+        r,
+        mt_halo_id = 0,
+        a_power = None,
+    ):
+        '''Get halo data for a specific merger tree.
+
+        Args:
+            data_key (str):
+                What data to get.
+
+            snum (int):
+                What snapshot to open.
+
+            r (float or arr of floats):
+                What radii (in comoving kpc/h) to get data at.
+
+            mt_halo_id (int):
+                What merger tree halo ID to select.
+
+            a_power (float):
+                If given, multiply the result by the scale factor
+                1/(1 + redshift) to this power.
+
+        Returns:
+            data (np.ndarray) : Requested data.
+        '''
+
+        # Cast as an array for easier manipulation
+        r = np.array( r )
+
+        # Set up the base result
+        data = np.full( r.size, np.nan )
+
+        # Load the necessary data
+        self.data_reader.get_profiles( snum )
+
+        # Get the profile for the right halo
+        start_ind = self.profile_id_mapping[mt_halo_id]
+        end_ind = self.profile_id_mapping[mt_halo_id+1]
+        halo_profile = self.profiles.loc[start_ind:end_ind-1]
+
+        # Find the valid regime
+        halo_r_min = np.abs( np.min( halo_profile['r'] ) )
+        halo_r_max = np.max( halo_profile['r'] )
+        r_not_too_small = r > halo_r_min
+        r_not_too_large = r < halo_r_max
+        valid = r_not_too_small & r_not_too_large
+
+        # Get the results out
+        interp_fn = scipy.interpolate.interp1d(
+            halo_profile['r'].values,
+            halo_profile[data_key].values,
+        )
+        data[valid] = interp_fn( r[valid] )
+
+        # For converting coordinates
+        if a_power is not None:
+            z = self.get_mt_data( 'redshift', mt_halo_id, snums=snum )
+            data *= ( 1. + z )**-a_power
+
+        return data
 
     ########################################################################
 
