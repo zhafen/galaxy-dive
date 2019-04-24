@@ -7,6 +7,7 @@
 '''
 
 import glob
+import numba
 import numpy as np
 import os
 import pandas as pd
@@ -303,6 +304,32 @@ class AHFReader( object ):
 
         # Remove the # at the beginning of the first column
         self.profiles.rename( columns={'#r': 'r'}, inplace=True )
+
+        # Get the mapping for where the halo IDs are in the profile data
+        @numba.jit( 'i8[:](f8[:])', nopython=True )
+        def profile_mapping( r ):
+            
+            ind_mapping = [ 0, ]
+            for i, r_i in enumerate( r ):
+
+                # Skip first loop
+                if i==0:
+                    continue
+
+                # Record when the values start over
+                if r_i <  r[i-1]:
+                    ind_mapping.append( i )
+
+                # Last index
+                if i == r.size - 1:
+                    ind_mapping.append( i+1 )
+
+            return np.array( ind_mapping )
+
+        # Run the function
+        self.profile_id_mapping = profile_mapping(
+            np.abs( self.profiles['r'].values )
+        )
 
     ########################################################################
     # Utilities
