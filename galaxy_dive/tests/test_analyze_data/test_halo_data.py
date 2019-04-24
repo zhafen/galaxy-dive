@@ -99,6 +99,7 @@ class TestHaloData( unittest.TestCase ):
 
     def test_get_profile_data( self ):
 
+        # We should get the virial mass when at the virial radius
         actual = self.halo_data.get_profile_data(
             'M_in_r',
             600,
@@ -108,8 +109,24 @@ class TestHaloData( unittest.TestCase ):
             ),
         )
         expected = self.halo_data.get_mt_data( 'Mvir', snums=[ 600 ], )
-
         npt.assert_allclose( expected, actual, rtol=0.1 )
+
+        # We shouldn't get anything reasonable when too small or too large
+        actual = self.halo_data.get_profile_data(
+            'M_in_r',
+            600,
+            r = np.array([ 0., np.inf ]),
+        )
+        expected = np.full( 2, np.nan )
+        npt.assert_allclose( expected, actual, )
+
+        # And this shouldn't fail for the highest halo stored too
+        actual = self.halo_data.get_profile_data(
+            'M_in_r',
+            600,
+            mt_halo_id = 3,
+            r = 50.,
+        )
 
 ########################################################################
 ########################################################################
