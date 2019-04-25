@@ -15,6 +15,7 @@ import pdb
 import pytest
 import unittest
 
+import galaxy_dive.read_data.ahf as read_ahf
 import galaxy_dive.analyze_data.halo_data as halo_data
 import galaxy_dive.analyze_data.particle_data as particle_data
 import galaxy_dive.galaxy_linker.linker as gal_linker
@@ -127,6 +128,39 @@ class TestHaloData( unittest.TestCase ):
             mt_halo_id = 3,
             r = 50.,
         )
+
+    ########################################################################
+
+    def test_get_enclosed_mass( self ):
+
+        # Somehow the files got mixed up, so we're changing the analysis dir
+        # to one with matching files
+        self.halo_data.data_dir = './tests/data/analysis_dir6'
+        self.halo_data.data_reader = read_ahf.AHFReader( self.halo_data.data_dir )
+
+        # Setup inputs
+        radius = self.halo_data.get_mt_data(
+            'Rvir',
+            snums = [ 550 ],
+            a_power = 1.,
+        ) / .702
+        positions = np.array([
+            [ 1., 0, 0, ],
+            [ 1./np.sqrt(3), 1./np.sqrt(3), 1./np.sqrt(3) ],
+            [ 0., 0., 1., ],
+            [ 0., 0., 0., ],
+        ]) * radius
+        # Position of halo ID at this redshift
+        positions += np.array([39184.23739265, 41173.71952049, 43151.66589124])
+
+        actual = self.halo_data.get_enclosed_mass(
+            positions = positions,
+            snum = 550,
+            hubble_param = .702,
+        )
+        m_vir = self.halo_data.get_mt_data( 'Mvir', snums=[ 550 ], )[0] / .702
+        expected = np.array([ m_vir, m_vir, m_vir, np.nan ])
+        npt.assert_allclose( expected, actual, rtol=0.1 )
 
 ########################################################################
 ########################################################################

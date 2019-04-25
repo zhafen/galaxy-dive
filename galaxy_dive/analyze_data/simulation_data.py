@@ -643,6 +643,20 @@ class SimulationData( generic_data.GenericData ):
 
     ########################################################################
 
+    def calc_velocity_magnitude( self ):
+        '''Calculate the velocity relative to an origin velocity
+        for a given particle.'''
+
+        self.data['Vmag'] = np.sqrt(
+            self.get_data( 'Vx' )**2. + \
+            self.get_data( 'Vy' )**2. + \
+            self.get_data( 'Vz' )**2.
+        )
+
+        return self.data['Vmag']
+
+    ########################################################################
+
     def calc_rho_xy( self ):
         '''Calculate impact parameter in the xy-plane.
         '''
@@ -1230,7 +1244,6 @@ class TimeData( SimulationData ):
                 processed_data /= self.hubble_param**scale_h_power
 
             if sl is not None:
-                # DEBUG
                 try:
                     data_to_div_by = data_to_div_by[sl]
                 # For when we're getting a slice of a single snapshot

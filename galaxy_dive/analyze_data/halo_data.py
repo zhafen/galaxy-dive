@@ -178,7 +178,12 @@ class HaloData( generic_data.GenericData ):
 
         # For converting coordinates
         if a_power is not None:
-            mt_data *= ( 1. + self.get_mt_data( 'redshift', mt_halo_id ) )**-a_power
+            redshift = self.get_mt_data(
+                'redshift',
+                mt_halo_id,
+                return_values_only = False
+            )
+            mt_data *= ( 1. + redshift )**-a_power
 
         if snums is not None:
             mt_data = mt_data.loc[snums]
@@ -198,7 +203,7 @@ class HaloData( generic_data.GenericData ):
         mt_halo_id = 0,
         a_power = None,
     ):
-        '''Get halo data for a specific merger tree.
+        '''Get halo data for a specific halo
 
         Args:
             data_key (str):
@@ -230,9 +235,12 @@ class HaloData( generic_data.GenericData ):
         # Load the necessary data
         self.data_reader.get_profiles( snum )
 
+        # Replace the merger tree halo ID with the relevant redshift halo ID
+        halo_id = self.get_mt_data( 'ID', snums=[snum] )[0]
+
         # Get the profile for the right halo
-        start_ind = self.profile_id_mapping[mt_halo_id]
-        end_ind = self.profile_id_mapping[mt_halo_id+1]
+        start_ind = self.profile_id_mapping[halo_id]
+        end_ind = self.profile_id_mapping[halo_id+1]
         halo_profile = self.profiles.loc[start_ind:end_ind-1]
 
         # Find the valid regime
@@ -251,10 +259,71 @@ class HaloData( generic_data.GenericData ):
 
         # For converting coordinates
         if a_power is not None:
-            z = self.get_mt_data( 'redshift', mt_halo_id, snums=snum )
+            z = self.get_mt_data( 'redshift', mt_halo_id, snums=snum )[0]
             data *= ( 1. + z )**-a_power
 
         return data
+
+    ########################################################################
+
+    def get_enclosed_mass(
+        self,
+        positions,
+        snum,
+        hubble_param,
+        mt_halo_id = 0,
+    ):
+        '''Get the mass enclosed at the positions given.
+        Particles must be inside a halo, and the enclosed mass is only the mass
+        of that halo.
+
+        Args:
+            positions (array-like, (n_positions,3)):
+                Positions in physical kpc you would like to
+                find the mass interior to. Positions should be relative to
+                the simulation box coordinates.
+
+            snum (int):
+                Snapshot at which to get the enclosed mass.
+
+            hubble_param (float):
+                The hubble parameter, H0/100, needed for converting to and from
+                AHF's units.
+            
+            mt_halo_id (int):
+                Merger tree halo ID for the halo you want to use for finding
+                the enclosed mass.
+
+        Returns:
+            array-like, (n_positions,):
+                The mass of Merger Traced halo `mt_halo_id` interior to
+                the positions given. A value of np.nan indicates that the
+                position is either outside the halo or too far in (and the
+                results aren't converged).
+        '''
+
+        # Find the radii
+        origin = np.array([
+            self.get_mt_data( 'Xc', a_power=1., snums=[snum], mt_halo_id=mt_halo_id )[0],
+            self.get_mt_data( 'Yc', a_power=1., snums=[snum], mt_halo_id=mt_halo_id )[0],
+            self.get_mt_data( 'Zc', a_power=1., snums=[snum], mt_halo_id=mt_halo_id )[0],
+        ]) / hubble_param
+        centered_positions = positions - origin
+        r = np.sqrt( (centered_positions**2. ).sum( axis=1 ) )
+
+        # Convert to comoving kpc/h
+        z = self.get_mt_data( 'redshift', mt_halo_id, snums=[snum] )[0]
+        r *= hubble_param * ( 1. + z )
+
+        # Get the profile data out
+        enclosed_mass = self.get_profile_data(
+            'M_in_r',
+            snum,
+            r,
+            mt_halo_id = mt_halo_id,
+        )
+
+        return enclosed_mass / hubble_param
 
     ########################################################################
 
