@@ -40,3 +40,40 @@ class TestDataProducts( unittest.TestCase ):
         npt.assert_allclose( expected, actual.values )
             
     ########################################################################
+
+    def test_tidal_tensor_data_grudic_no_matching_ids( self ):
+        '''Test what happens when no IDs match.
+        '''
+
+        actual = data_products.tidal_tensor_data_grudic(
+            100,
+            ids = np.array([ 1111111111111, 1111111111112, 1111111111113 ]),
+        )
+        # From manually looking at the data
+        expected = np.array([
+            [ np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, ],
+            [ np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, ],
+            [ np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, ],
+        ])
+
+        npt.assert_allclose( expected, actual.values )
+            
+    ########################################################################
+
+    def test_tidal_tensor_data_grudic_no_data( self ):
+        '''Test what happens when a file doesn't exist
+        '''
+
+        actual = data_products.tidal_tensor_data_grudic(
+            10000,
+            ids = np.array([ 48850256, 9550185, 1111111111111 ]),
+        )
+        # From manually looking at the data
+        expected = np.array([
+            [ np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, ],
+            [ np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, ],
+            [ np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, ],
+        ])
+
+        npt.assert_allclose( expected, actual.values )
+            

@@ -6,6 +6,7 @@
 @status: Development
 '''
 
+import copy
 import numpy as np
 import os
 import pandas as pd
@@ -33,10 +34,37 @@ def tidal_tensor_data_grudic(
             returns NaN values for that ID.
     '''
 
+    def invalid_data_result():
+        '''Results when the data is invalid in some form.'''
+        base_arr = np.full( len( ids ), np.nan )
+        standin_data = {}
+        data_keys = [
+            'ID',
+            'Txx',
+            'Tyy',
+            'Tzz',
+            'Txy',
+            'Tyz',
+            'Tzx',
+            'sigma_v',
+            'r_search',
+            'cond_num',
+        ]
+        for key in data_keys:
+            standin_data[key] = copy.deepcopy( base_arr )
+        standin_data['ID'] = ids
+        df = pd.DataFrame( standin_data )
+        df = df.set_index( 'ID' )
+
+        return df
+
     # Load the data
     filename = 'tidal_tensor_{}.npy'.format( snum )
     file_path = os.path.join( data_dir, filename )
-    full_arr = np.load( file_path )
+    try:
+        full_arr = np.load( file_path )
+    except FileNotFoundError:
+        return invalid_data_result()
     
     # Convert to a pandas data frame to get the selected IDs out.
     data = {
@@ -56,6 +84,9 @@ def tidal_tensor_data_grudic(
 
     # Select on IDs
     if ids is not None:
-        df = df.loc[ids]
+        try:
+            df = df.loc[ids]
+        except KeyError:
+            return invalid_data_result()
 
     return df
