@@ -423,6 +423,36 @@ class TestCalc( unittest.TestCase ):
 
     ########################################################################
 
+    def test_calc_time_until_not_classification( self ):
+        '''Calculate the time spent as a certain classification.
+        '''
+
+        # Set up test data
+        self.t_data.data = {}
+        self.t_data.data['is_A'] = np.array([
+            [ 1, 1, 1, ],
+            [ 1, 0, 1, ],
+            [ 1, 1, 0, ],
+            [ 0, 1, 1, ],
+        ]).astype( bool )
+        self.t_data.data['dt'] = np.array([
+            1.0, 2.0, 3.0,
+        ])
+
+        self.t_data.calc_time_until_not_classification( 'time_until_not_A' )
+
+        actual = self.t_data.data['time_until_not_A']
+        expected = np.array([
+            [ 0., 1., 3., ],
+            [ 0., 0., 2., ],
+            [ 0., 1., 0., ],
+            [ 0., 1., 3., ],
+        ])
+
+        npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
     def test_calc_radial_velocity( self ):
 
         # Setup Mock Data

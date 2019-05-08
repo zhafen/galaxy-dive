@@ -1140,6 +1140,8 @@ class TimeData( SimulationData ):
             getattr( self, method_str )()
         elif self.calc_time_as_classification( data_key ):
             return
+        elif self.calc_time_until_not_classification( data_key ):
+            return
 
         else:
             super( TimeData, self ).handle_data_key_error( data_key )
@@ -1457,6 +1459,55 @@ class TimeData( SimulationData ):
                 time_as_classification[i, start:end] = cumtime_region
 
         self.data[data_key] = time_as_classification
+
+        return True
+
+    ########################################################################
+
+    def calc_time_until_not_classification( self, data_key ):
+
+        # Check if we should be running this function (does the provided
+        # data_key even match the format we want to parse?)
+        if data_key[:14] != 'time_until_not':
+            return False
+
+        # Get the data key for the classification
+        classification_data_key = 'is_{}'.format( data_key[15:] )
+
+        # Get out the classification data itself
+        classification = self.get_data( classification_data_key )
+
+        # Get out the time intervals, and tile them for formatting
+        dt = self.get_data( 'dt' )
+
+        # dt[i] = time difference between i and i+1, so time until is 0
+        # if the the particle changes the next snapshot
+        dt =  np.insert( dt, 0, 0. )
+        
+        # Fill in the array row by row
+        time_un_classification = np.zeros( classification.shape )
+        for i, row in enumerate( classification ):
+
+            # Identify regions of contiguous classification
+            contiguous_regions = data_operations.contiguous_regions( row )
+
+            # Find the cumulative time in specified regions
+            for start, end in contiguous_regions:
+
+                dt_region = dt[start:end]
+
+                # We need to flip when we sum because we want a reverse sum
+                # (due to data formatting, t=0 is at j=-1)
+                cumtime_region = np.cumsum( dt_region )
+
+                # Store that time
+                try:
+                    time_un_classification[i, start:end] = cumtime_region
+                except:
+                    #DEBUG
+                    import pdb; pdb.set_trace()
+
+        self.data[data_key] = time_un_classification
 
         return True
 
