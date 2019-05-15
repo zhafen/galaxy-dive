@@ -1,4 +1,4 @@
-https://travis-ci.com/zhafen/galaxy-dive.svg?branch=master
+[https://travis-ci.com/zhafen/galaxy-dive.svg?branch=master]
 
 # Galaxy Dive #
 
