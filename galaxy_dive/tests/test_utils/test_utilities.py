@@ -80,6 +80,26 @@ class TestGetCodeVersion( unittest.TestCase ):
 
         assert actual == expected
 
+    ########################################################################
+
+    def test_doesnt_change_dir_upon_failing( self ):
+
+        true_cwd = os.getcwd()
+
+        # Change to a dir that should not be a repository
+        os.chdir( os.path.expanduser( '~' ) )
+
+        cwd = os.getcwd()
+
+        result = utilities.get_code_version( self )
+
+        now_cwd = os.getcwd()
+
+        assert cwd == now_cwd
+
+        # Change back
+        os.chdir( true_cwd )
+
 ########################################################################
 ########################################################################
 
