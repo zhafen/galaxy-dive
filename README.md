@@ -14,7 +14,12 @@ Using pip to install is easiest:
 pip install galaxy-dive
 ```
 
-Otherwise, clone the repository and add it to your paths.
+If you would like to install the latest release via git (which also makes it easier to modify), install via
+```
+git clone git@github.com:zhafen/galaxy-dive.git
+cd galaxy-dive
+pip install -e .
+```
 
 ### Contribution guidelines ###
 
