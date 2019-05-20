@@ -65,7 +65,7 @@
 <span class="c1">########################################################################</span>
 
 
-<div class="viewcode-block" id="SimulationData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData">[docs]</a><span class="k">class</span> <span class="nc">SimulationData</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">GenericData</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData">[docs]</a><span class="k">class</span> <span class="nc">SimulationData</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">GenericData</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Class for handling simulation data.</span>
 
 <span class="sd">    Args:</span>
@@ -146,7 +146,7 @@
         <span class="n">data_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">halo_data_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ahf_index</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">averaging_frac</span> <span class="o">=</span> <span class="mf">5.</span><span class="p">,</span>
+        <span class="n">averaging_frac</span> <span class="o">=</span> <span class="mf">4.</span><span class="p">,</span>
         <span class="n">length_scale_used</span> <span class="o">=</span> <span class="s1">&#39;Rstar0.5&#39;</span><span class="p">,</span>
         <span class="n">z_sun</span> <span class="o">=</span> <span class="n">constants</span><span class="o">.</span><span class="n">Z_MASSFRAC_SUN</span><span class="p">,</span>
         <span class="n">halo_data_retrieved</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -387,7 +387,7 @@
     <span class="c1"># Overall changes to the data</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.center_coords"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.center_coords">[docs]</a>    <span class="k">def</span> <span class="nf">center_coords</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.center_coords"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.center_coords">[docs]</a>    <span class="k">def</span> <span class="nf">center_coords</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Change the location of the origin, if the data isn&#39;t already centered.</span>
 
 <span class="sd">        Modifies:</span>
@@ -416,7 +416,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.center_vel_coords"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.center_vel_coords">[docs]</a>    <span class="k">def</span> <span class="nf">center_vel_coords</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.center_vel_coords"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.center_vel_coords">[docs]</a>    <span class="k">def</span> <span class="nf">center_vel_coords</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get velocity coordinates to center on the main halo.</span>
 
 <span class="sd">        Modifies:</span>
@@ -444,7 +444,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.add_hubble_flow"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.add_hubble_flow">[docs]</a>    <span class="k">def</span> <span class="nf">add_hubble_flow</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.add_hubble_flow"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.add_hubble_flow">[docs]</a>    <span class="k">def</span> <span class="nf">add_hubble_flow</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Correct for hubble flow movement.</span>
 
 <span class="sd">        Modifies:</span>
@@ -468,7 +468,7 @@
     <span class="c1"># Get Data</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.get_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.get_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get the data from within the class. Only for getting the data. No post-processing or changing the data</span>
 <span class="sd">        (putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,</span>
 <span class="sd">        hence a whole function for getting the data.</span>
@@ -528,7 +528,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.get_position_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.get_position_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_position_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.get_position_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.get_position_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_position_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get position data (assuming the data starts with an &#39;R&#39;)</span>
 
 <span class="sd">        Args:</span>
@@ -554,7 +554,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.get_velocity_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.get_velocity_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_velocity_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.get_velocity_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.get_velocity_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_velocity_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get position data (assuming the data starts with a &#39;V&#39;)</span>
 
 <span class="sd">        Args:</span>
@@ -581,7 +581,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.handle_data_key_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.handle_data_key_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;When get_data() fails to data_key in self.data, it passes the data_key to try and generate that data.</span>
 
 <span class="sd">        Args:</span>
@@ -636,7 +636,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.get_distance_to_point"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.get_distance_to_point">[docs]</a>    <span class="k">def</span> <span class="nf">get_distance_to_point</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">point</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.get_distance_to_point"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.get_distance_to_point">[docs]</a>    <span class="k">def</span> <span class="nf">get_distance_to_point</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">point</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;This is *not* unit tested.</span>
 
 <span class="sd">        Args:</span>
@@ -649,7 +649,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.get_potential"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.get_potential">[docs]</a>    <span class="k">def</span> <span class="nf">get_potential</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">point</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.get_potential"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.get_potential">[docs]</a>    <span class="k">def</span> <span class="nf">get_potential</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">point</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;This is *not* unit tested.</span>
 
 <span class="sd">        Args:</span>
@@ -668,21 +668,75 @@
     <span class="c1"># Full calculations based on the data</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SimulationData.calc_radial_distance"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SimulationData.calc_radial_distance">[docs]</a>    <span class="k">def</span> <span class="nf">calc_radial_distance</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="SimulationData.calc_radial_distance"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.calc_radial_distance">[docs]</a>    <span class="k">def</span> <span class="nf">calc_radial_distance</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the distance from the origin for a given particle.&#39;&#39;&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> \
             <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> \
             <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span>
 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">]</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SimulationData.calc_velocity_magnitude"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.calc_velocity_magnitude">[docs]</a>    <span class="k">def</span> <span class="nf">calc_velocity_magnitude</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Calculate the velocity relative to an origin velocity</span>
+<span class="sd">        for a given particle.&#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Vmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Vx&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Vy&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Vz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Vmag&#39;</span><span class="p">]</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SimulationData.calc_rho_xy"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.calc_rho_xy">[docs]</a>    <span class="k">def</span> <span class="nf">calc_rho_xy</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Calculate impact parameter in the xy-plane.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rho_xy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rho_xy&#39;</span><span class="p">]</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SimulationData.calc_rho_xz"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.calc_rho_xz">[docs]</a>    <span class="k">def</span> <span class="nf">calc_rho_xz</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Calculate impact parameter in the xz-plane.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rho_xz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rx&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rho_xz&#39;</span><span class="p">]</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="SimulationData.calc_rho_yz"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SimulationData.calc_rho_yz">[docs]</a>    <span class="k">def</span> <span class="nf">calc_rho_yz</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Calculate impact parameter in the yz-plane.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rho_yz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Ry&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Rz&#39;</span> <span class="p">)</span><span class="o">**</span><span class="mf">2.</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rho_yz&#39;</span><span class="p">]</span></div></div>
 
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
 
-<div class="viewcode-block" id="SnapshotData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData">[docs]</a><span class="k">class</span> <span class="nc">SnapshotData</span><span class="p">(</span> <span class="n">SimulationData</span> <span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData">[docs]</a><span class="k">class</span> <span class="nc">SnapshotData</span><span class="p">(</span> <span class="n">SimulationData</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Class for analysis of a single snapshot of data.&#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
@@ -699,7 +753,7 @@
     <span class="c1"># Get Additional Data</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.retrieve_halo_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.retrieve_halo_data">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_halo_data</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.retrieve_halo_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.retrieve_halo_data">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_halo_data</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data_retrieved</span><span class="p">:</span>
             <span class="k">return</span>
@@ -836,7 +890,7 @@
     <span class="c1"># Full calculations of the data</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_velocity_magnitude"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_velocity_magnitude">[docs]</a>    <span class="k">def</span> <span class="nf">calc_velocity_magnitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_velocity_magnitude"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_velocity_magnitude">[docs]</a>    <span class="k">def</span> <span class="nf">calc_velocity_magnitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the radial velocity.&#39;&#39;&#39;</span>
 
         <span class="c1"># Center velocity and radius</span>
@@ -852,7 +906,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_radial_velocity"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_radial_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_radial_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_radial_velocity"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_radial_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_radial_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the radial velocity.&#39;&#39;&#39;</span>
 
         <span class="c1"># Center velocity and radius</span>
@@ -864,7 +918,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_tangential_velocity"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_tangential_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_tangential_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_tangential_velocity"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_tangential_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_tangential_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the radial velocity.&#39;&#39;&#39;</span>
 
         <span class="c1"># Center velocity and radius</span>
@@ -876,7 +930,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_inds"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_inds">[docs]</a>    <span class="k">def</span> <span class="nf">calc_inds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_inds"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_inds">[docs]</a>    <span class="k">def</span> <span class="nf">calc_inds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the indices the data are located at, prior to any masks.&#39;&#39;&#39;</span>
 
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;TODO: Test this&quot;</span> <span class="p">)</span>
@@ -889,7 +943,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_ang_momentum"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_ang_momentum">[docs]</a>    <span class="k">def</span> <span class="nf">calc_ang_momentum</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_ang_momentum"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_ang_momentum">[docs]</a>    <span class="k">def</span> <span class="nf">calc_ang_momentum</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the angular momentum.&#39;&#39;&#39;</span>
 
         <span class="n">m_mult</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">),</span> <span class="p">]</span> <span class="o">*</span> <span class="mi">3</span> <span class="p">)</span>
@@ -904,7 +958,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_phi</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">normal_vector</span><span class="o">=</span><span class="s1">&#39;total ang momentum&#39;</span> <span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_phi</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">normal_vector</span><span class="o">=</span><span class="s1">&#39;total ang momentum&#39;</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the angle (in degrees) from some vector.</span>
 <span class="sd">        By default the vector is the total angular momentum.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -931,7 +985,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_abs_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_abs_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_abs_phi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="s1">&#39;total gas ang momentum&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_abs_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_abs_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_abs_phi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="s1">&#39;total gas ang momentum&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;The angle (in degrees) from some vector, but don&#39;t mirror</span>
 <span class="sd">        it around 90 degrees (e.g. 135 -&gt; 45 degrees, 180 -&gt; 0 degrees).&#39;&#39;&#39;</span>
 
@@ -944,14 +998,14 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_num_den"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_num_den">[docs]</a>    <span class="k">def</span> <span class="nf">calc_num_den</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_num_den"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_num_den">[docs]</a>    <span class="k">def</span> <span class="nf">calc_num_den</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the number density (it&#39;s just a simple conversion...).&#39;&#39;&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;NumDen&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Den&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">UNITDENSITY_IN_NUMDEN</span></div>
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_H_den"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_H_den">[docs]</a>    <span class="k">def</span> <span class="nf">calc_H_den</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_H_den"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_H_den">[docs]</a>    <span class="k">def</span> <span class="nf">calc_H_den</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the H density in cgs (cm^-3). Assume the H fraction is ~0.75&#39;&#39;&#39;</span>
 
         <span class="c1"># Assume Hydrogen makes up 75% of the gas</span>
@@ -961,7 +1015,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_HI_den"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_HI_den">[docs]</a>    <span class="k">def</span> <span class="nf">calc_HI_den</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_HI_den"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_HI_den">[docs]</a>    <span class="k">def</span> <span class="nf">calc_HI_den</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the HI density in cgs (cm^-3).&#39;&#39;&#39;</span>
 
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;TODO: Test this&quot;</span> <span class="p">)</span>
@@ -978,7 +1032,7 @@
     <span class="c1"># Non-Altering Calculations</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.dist_to_point"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.dist_to_point">[docs]</a>    <span class="k">def</span> <span class="nf">dist_to_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.dist_to_point"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.dist_to_point">[docs]</a>    <span class="k">def</span> <span class="nf">dist_to_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the distance to a point for all particles.</span>
 
 <span class="sd">        point : np array that gives the point</span>
@@ -1002,7 +1056,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="SnapshotData.calc_mu"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData.calc_mu">[docs]</a>    <span class="k">def</span> <span class="nf">calc_mu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotData.calc_mu"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.SnapshotData.calc_mu">[docs]</a>    <span class="k">def</span> <span class="nf">calc_mu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the mean molecular weight. &#39;&#39;&#39;</span>
 
         <span class="n">y_helium</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Z_Species&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Get the mass fraction of helium</span>
@@ -1013,7 +1067,7 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData">[docs]</a><span class="k">class</span> <span class="nc">TimeData</span><span class="p">(</span> <span class="n">SimulationData</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData">[docs]</a><span class="k">class</span> <span class="nc">TimeData</span><span class="p">(</span> <span class="n">SimulationData</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Class for analysis of a time series data, e.g. the worldlines of a number of particles.&#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
@@ -1055,7 +1109,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.retrieve_halo_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.retrieve_halo_data">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_halo_data</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.retrieve_halo_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.retrieve_halo_data">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_halo_data</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data_retrieved</span><span class="p">:</span>
             <span class="k">return</span>
@@ -1090,7 +1144,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.calc_radial_velocity"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.calc_radial_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_radial_velocity</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.calc_radial_velocity"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_radial_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">calc_radial_velocity</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the distance from the origin for a given particle.&#39;&#39;&#39;</span>
 
         <span class="n">v_all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;V&#39;</span> <span class="p">)</span>
@@ -1117,12 +1171,14 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.handle_data_key_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.handle_data_key_error">[docs]</a>    <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
 
         <span class="n">method_str</span> <span class="o">=</span> <span class="s1">&#39;calc_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">method_str</span> <span class="p">):</span>
             <span class="nb">getattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">method_str</span> <span class="p">)()</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_time_as_classification</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_time_until_not_classification</span><span class="p">(</span> <span class="n">data_key</span> <span class="p">):</span>
             <span class="k">return</span>
 
         <span class="k">else</span><span class="p">:</span>
@@ -1131,7 +1187,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.get_processed_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.get_processed_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_processed_data</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeData.get_processed_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.get_processed_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_processed_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_key</span><span class="p">,</span>
         <span class="n">sl</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1228,7 +1284,6 @@
                 <span class="n">processed_data</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble_param</span><span class="o">**</span><span class="n">scale_h_power</span>
 
             <span class="k">if</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># DEBUG</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">data_to_div_by</span> <span class="o">=</span> <span class="n">data_to_div_by</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span>
                 <span class="c1"># For when we&#39;re getting a slice of a single snapshot</span>
@@ -1273,7 +1328,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.get_selected_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.get_selected_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data_over_time</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.get_selected_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.get_selected_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data_over_time</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Wrapper for geting masked data as a function of time.&#39;&#39;&#39;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">get_selected_data_over_time</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
@@ -1296,7 +1351,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.calc_ang_momentum"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.calc_ang_momentum">[docs]</a>    <span class="k">def</span> <span class="nf">calc_ang_momentum</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.calc_ang_momentum"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_ang_momentum">[docs]</a>    <span class="k">def</span> <span class="nf">calc_ang_momentum</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;The angular momentum (in the standard coordinates).</span>
 
 <span class="sd">        Modifies:</span>
@@ -1326,7 +1381,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.calc_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.calc_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_phi</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">normal_vector</span><span class="o">=</span><span class="s1">&#39;total ang momentum&#39;</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.calc_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_phi</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">normal_vector</span><span class="o">=</span><span class="s1">&#39;total ang momentum&#39;</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the angle (in degrees) from some vector.</span>
 <span class="sd">        By default the vector is the total angular momentum.</span>
 
@@ -1376,7 +1431,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.calc_abs_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.calc_abs_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_abs_phi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normal_vector</span><span class="o">=</span><span class="s1">&#39;total ang momentum&#39;</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.calc_abs_phi"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_abs_phi">[docs]</a>    <span class="k">def</span> <span class="nf">calc_abs_phi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normal_vector</span><span class="o">=</span><span class="s1">&#39;total ang momentum&#39;</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the angle (in degrees) from some vector, but mirror</span>
 <span class="sd">        values past 90 degrees (e.g. 135 -&gt; 45 degrees, 180 -&gt; 0 degrees).</span>
 <span class="sd">        This is useful when there&#39;s symmetry above and below 90.</span>
@@ -1406,7 +1461,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.calc_time_as_classification"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.calc_time_as_classification">[docs]</a>    <span class="k">def</span> <span class="nf">calc_time_as_classification</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.calc_time_as_classification"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_time_as_classification">[docs]</a>    <span class="k">def</span> <span class="nf">calc_time_as_classification</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
 
         <span class="c1"># Check if we should be running this function (does the provided</span>
         <span class="c1"># data_key even match the format we want to parse?)</span>
@@ -1447,7 +1502,56 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.calc_metal_mass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.calc_metal_mass">[docs]</a>    <span class="k">def</span> <span class="nf">calc_metal_mass</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.calc_time_until_not_classification"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_time_until_not_classification">[docs]</a>    <span class="k">def</span> <span class="nf">calc_time_until_not_classification</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+
+        <span class="c1"># Check if we should be running this function (does the provided</span>
+        <span class="c1"># data_key even match the format we want to parse?)</span>
+        <span class="k">if</span> <span class="n">data_key</span><span class="p">[:</span><span class="mi">14</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;time_until_not&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Get the data key for the classification</span>
+        <span class="n">classification_data_key</span> <span class="o">=</span> <span class="s1">&#39;is_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">data_key</span><span class="p">[</span><span class="mi">15</span><span class="p">:]</span> <span class="p">)</span>
+
+        <span class="c1"># Get out the classification data itself</span>
+        <span class="n">classification</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="n">classification_data_key</span> <span class="p">)</span>
+
+        <span class="c1"># Get out the time intervals, and tile them for formatting</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;dt&#39;</span> <span class="p">)</span>
+
+        <span class="c1"># dt[i] = time difference between i and i+1, so time until is 0</span>
+        <span class="c1"># if the the particle changes the next snapshot</span>
+        <span class="n">dt</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">dt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.</span> <span class="p">)</span>
+        
+        <span class="c1"># Fill in the array row by row</span>
+        <span class="n">time_un_classification</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="n">classification</span><span class="o">.</span><span class="n">shape</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="n">classification</span> <span class="p">):</span>
+
+            <span class="c1"># Identify regions of contiguous classification</span>
+            <span class="n">contiguous_regions</span> <span class="o">=</span> <span class="n">data_operations</span><span class="o">.</span><span class="n">contiguous_regions</span><span class="p">(</span> <span class="n">row</span> <span class="p">)</span>
+
+            <span class="c1"># Find the cumulative time in specified regions</span>
+            <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">contiguous_regions</span><span class="p">:</span>
+
+                <span class="n">dt_region</span> <span class="o">=</span> <span class="n">dt</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+
+                <span class="c1"># We need to flip when we sum because we want a reverse sum</span>
+                <span class="c1"># (due to data formatting, t=0 is at j=-1)</span>
+                <span class="n">cumtime_region</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span> <span class="n">dt_region</span> <span class="p">)</span>
+
+                <span class="c1"># Store that time</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">time_un_classification</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">cumtime_region</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="c1">#DEBUG</span>
+                    <span class="kn">import</span> <span class="nn">pdb</span><span class="p">;</span> <span class="n">pdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_un_classification</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TimeData.calc_metal_mass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_metal_mass">[docs]</a>    <span class="k">def</span> <span class="nf">calc_metal_mass</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the metal mass held by each resolution element.</span>
 
 <span class="sd">        Modifies:</span>
@@ -1461,7 +1565,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeData.calc_enriched_metal_mass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeData.calc_enriched_metal_mass">[docs]</a>    <span class="k">def</span> <span class="nf">calc_enriched_metal_mass</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeData.calc_enriched_metal_mass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeData.calc_enriched_metal_mass">[docs]</a>    <span class="k">def</span> <span class="nf">calc_enriched_metal_mass</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Calculate the metal mass that comes from enrichment for</span>
 <span class="sd">        each resolution element, not counting mass that&#39;s at the metallicity</span>
 <span class="sd">        floor. Assumes that the there will always be at least one resolution</span>
@@ -1485,7 +1589,7 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeDataMasker"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeDataMasker">[docs]</a><span class="k">class</span> <span class="nc">TimeDataMasker</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">DataMasker</span> <span class="p">):</span>
+<div class="viewcode-block" id="TimeDataMasker"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeDataMasker">[docs]</a><span class="k">class</span> <span class="nc">TimeDataMasker</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">DataMasker</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Data masker for worldline data.&#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">time_data</span> <span class="p">):</span>
@@ -1494,7 +1598,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="TimeDataMasker.get_selected_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.TimeDataMasker.get_selected_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data_over_time</span><span class="p">(</span>
+<div class="viewcode-block" id="TimeDataMasker.get_selected_data_over_time"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.gridded_data.TimeDataMasker.get_selected_data_over_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data_over_time</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_key</span><span class="p">,</span>
         <span class="n">snum</span><span class="p">,</span>

@@ -45,6 +45,12 @@
 <em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.ahf_updater.</code><code class="descname">HaloUpdater</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf_updater.html#HaloUpdater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData" title="galaxy_dive.analyze_data.halo_data.HaloData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.halo_data.HaloData</span></code></a></p>
 <p>Class for updating Halo data (smoothing, adding in additional columns, etc)</p>
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.base_data_shape">
+<code class="descname">base_data_shape</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.base_data_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_accurate_redshift">
 <code class="descname">get_accurate_redshift</code><span class="sig-paren">(</span><em>metafile_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf_updater.html#HaloUpdater.get_accurate_redshift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_accurate_redshift" title="Permalink to this definition">¶</a></dt>
@@ -154,6 +160,31 @@ inside galaxy_cut*length scale around a galaxy.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>snum</em>, <em>units=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get halo data at a specific snapshot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to get.</li>
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What snapshot to open.</li>
+<li><strong>units</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If not None, convert data to these units.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_enclosed_mass">
 <code class="descname">get_enclosed_mass</code><span class="sig-paren">(</span><em>simulation_data_dir</em>, <em>ptype</em>, <em>galaxy_cut</em>, <em>length_scale</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf_updater.html#HaloUpdater.get_enclosed_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_enclosed_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the mass inside galaxy_cut*length_scale for each Halo halo.</p>
@@ -173,6 +204,26 @@ inside galaxy_cut*length scale around a galaxy.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">mass_inside_all_halos (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_halos">
+<code class="descname">get_halos</code><span class="sig-paren">(</span><em>snum</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get halo data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What snapshot to get the halo data for.</li>
+<li><strong>**kwargs</strong> – Additional arguments for loading the data.
+In the event of conflict with those provided when constructing
+the instance, arguments provided here will be preferred.</li>
+</ul>
 </td>
 </tr>
 </tbody>
@@ -207,20 +258,207 @@ contains a fraction mass_fractions[i] of M_sum_j.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_mt_data">
+<code class="descname">get_mt_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>mt_halo_id=0</em>, <em>snums=None</em>, <em>a_power=None</em>, <em>return_values_only=True</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_mt_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get halo data for a specific merger tree.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to get.</li>
+<li><strong>mt_halo_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What merger tree halo ID to select.</li>
+<li><strong>snums</strong> (<em>array-like</em>) – If specified, get the values at these snapshots.</li>
+<li><strong>a_power</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – If given, multiply the result by the scale factor 1/(1 + redshift) to this power.</li>
+<li><strong>return_values_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, get rid of pandas data formatting</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">mt_data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_mtree_halos">
+<code class="descname">get_mtree_halos</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_mtree_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get halo data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What snapshot to get the halo data for.</li>
+<li><strong>**kwargs</strong> – Additional arguments for loading the data.
+In the event of conflict with those provided when constructing
+the instance, arguments provided here will be preferred.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_n_halos">
+<code class="descname">get_n_halos</code><span class="sig-paren">(</span><em>snum</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_n_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of halos (non-tracked) at a given redshift.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_processed_data">
+<code class="descname">get_processed_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>data_method=&lt;object object&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_processed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get post-processed data. (Accounting for fractions, log-space, etc.).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to get.</li>
+<li><strong>data_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What method to use for getting the data itself. Defaults to using self.get_data</li>
+<li><strong>**kwargs</strong> (<em>*args</em><em>,</em>) – <p>Passed to get_data()</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data, including formatting.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">processed_data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_profile_data">
+<code class="descname">get_profile_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>snum</em>, <em>r</em>, <em>mt_halo_id=0</em>, <em>a_power=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_profile_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get halo data for a specific halo</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to get.</li>
+<li><strong>snum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What snapshot to open.</li>
+<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><em>arr of floats</em>) – What radii (in comoving kpc/h) to get data at.</li>
+<li><strong>mt_halo_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – What merger tree halo ID to select.</li>
+<li><strong>a_power</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – If given, multiply the result by the scale factor
+1/(1 + redshift) to this power.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_selected_data">
+<code class="descname">get_selected_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.get_selected_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for getting masked data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.halos_path">
+<code class="descname">halos_path</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.halos_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location of the last loaded halo file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.handle_data_key_error">
+<code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for attempting to generate data on the fly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Type of data to attempt to generate data for.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.include_halos_to_mtree_halos">
 <code class="descname">include_halos_to_mtree_halos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf_updater.html#HaloUpdater.include_halos_to_mtree_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.include_halos_to_mtree_halos" title="Permalink to this definition">¶</a></dt>
-<dd><p>While most of the halofile data are contained in <a href="#id3"><span class="problematic" id="id4">*</span></a>.AHF_halos files, some quantities are stored in
-<a href="#id5"><span class="problematic" id="id6">*</span></a>.AHF_halos files. These are usually computed manually, external to what’s inherent in AHF. This routine adds
+<dd><p>While most of the halofile data are contained in <a href="#id5"><span class="problematic" id="id6">*</span></a>.AHF_halos files, some quantities are stored in
+<a href="#id7"><span class="problematic" id="id8">*</span></a>.AHF_halos files. These are usually computed manually, external to what’s inherent in AHF. This routine adds
 on the the information from these files to the loaded merger tree data (which don’t usually include them, because
 they’re not inherent to AHF.</p>
 <dl class="docutils">
 <dt>Modifies:</dt>
 <dd><dl class="first last docutils">
 <dt>self.mtree_halos (dict of pd.DataFrames) :</dt>
-<dd>Adds additional columns contained in <a href="#id7"><span class="problematic" id="id8">*</span></a>.AHF_halos_add files.</dd>
+<dd>Adds additional columns contained in <a href="#id9"><span class="problematic" id="id10">*</span></a>.AHF_halos_add files.</dd>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.iterate_over_method">
+<code class="descname">iterate_over_method</code><span class="sig-paren">(</span><em>method_str</em>, <em>iter_arg</em>, <em>iter_values</em>, <em>method_args</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.iterate_over_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over a specified method, and get the results out.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which method to use.</li>
+<li><strong>iter_arg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which argument of the method to iterate over.</li>
+<li><strong>iter_values</strong> (<em>list of values</em>) – Which values to change.</li>
+<li><strong>method_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Default args to pass to the method</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[ method( <a href="#id11"><span class="problematic" id="id12">**</span></a>used_args ) for used_args in all_variations_of_used_args ]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">results (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.length_scale">
+<code class="descname">length_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.length_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial length scale. By default, is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.mask_data">
+<code class="descname">mask_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.mask_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for masking data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.metallicity_scale">
+<code class="descname">metallicity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.metallicity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial metallicity scale. By default is z_sun
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.mtree_halos">
+<code class="descname">mtree_halos</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.mtree_halos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attribute for accessing merger tree data.</p>
 </dd></dl>
 
 <dl class="method">
@@ -251,7 +489,7 @@ length of halo_ids</li>
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_halos_add">
 <code class="descname">save_halos_add</code><span class="sig-paren">(</span><em>snum, include_analytic_concentration=True, include_mass_radii=True, include_enclosed_mass=True, include_average_quantity_inside_galaxy=False, include_v_circ=True, metafile_dir=None, simulation_data_dir=None, mass_radii_kwargs={'galaxy_cut': 0.15, 'length_scale': 'Rvir', 'mass_fractions': [0.5, 0.75, 0.9]}, enclosed_mass_ptypes=['gas', 'DM', 'lowresDM', 'star'], enclosed_mass_kwargs={'galaxy_cut': 5.0, 'length_scale': 'Rstar0.5'}, average_quantity_data_keys=['Vx', 'Vy', 'Vz'], average_quantity_inside_galaxy_kwargs={'galaxy_cut': 5.0, 'length_scale': 'Rstar0.5', 'ptype': 'star'}, v_circ_kwargs={'galaxy_cut': 5.0, 'length_scale': 'Rstar0.5'}, verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf_updater.html#HaloUpdater.save_halos_add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_halos_add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save additional columns that would be part of <a href="#id9"><span class="problematic" id="id10">*</span></a>.AHF_halos files, if that didn’t break AHF.</p>
+<dd><p>Save additional columns that would be part of <a href="#id13"><span class="problematic" id="id14">*</span></a>.AHF_halos files, if that didn’t break AHF.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -297,8 +535,8 @@ the new file will be ‘/path/to/file/halo_00000_{}.dat’.format( tag )</td>
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_multiple_halos_adds">
 <code class="descname">save_multiple_halos_adds</code><span class="sig-paren">(</span><em>metafile_dir</em>, <em>snum_start</em>, <em>snum_end</em>, <em>snum_step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf_updater.html#HaloUpdater.save_multiple_halos_adds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.save_multiple_halos_adds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save additional columns that would be part of <a href="#id11"><span class="problematic" id="id12">*</span></a>.AHF_halos files, if that didn’t break AHF.
-Do this for every <a href="#id13"><span class="problematic" id="id14">*</span></a>.AHF_halos file in self.data_dir.</p>
+<dd><p>Save additional columns that would be part of <a href="#id15"><span class="problematic" id="id16">*</span></a>.AHF_halos files, if that didn’t break AHF.
+Do this for every <a href="#id17"><span class="problematic" id="id18">*</span></a>.AHF_halos file in self.data_dir.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -337,6 +575,16 @@ halo concentration.</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.shift">
+<code class="descname">shift</code><span class="sig-paren">(</span><em>data</em>, <em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.</p>
+<p>data : data to be shifted
+data_key : Data key for the parameters to be shifted
+Parameters are a subdictionary of self.kwargs
+‘data_key’ : What data key the data is shifted for</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.smooth_mtree_halos">
 <code class="descname">smooth_mtree_halos</code><span class="sig-paren">(</span><em>metafile_dir</em>, <em>keys_to_smooth=[]</em>, <em>smooth_kwargs={'window': 'flat'</em>, <em>'window_len': 20}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf_updater.html#HaloUpdater.smooth_mtree_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.smooth_mtree_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make Rvir and Mvir monotonically increasing, to help mitigate artifacts in the Halo-calculated merger tree.
@@ -367,6 +615,14 @@ done, when also smoothing for specific keys.</dd>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf_updater.HaloUpdater.velocity_scale">
+<code class="descname">velocity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf_updater.HaloUpdater.velocity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial velocity scale. By default is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
 </dd></dl>
 
 </dd></dl>

@@ -42,7 +42,7 @@
 &#64;status: Development</p>
 <dl class="class">
 <dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker">
-<em class="property">class </em><code class="descclassname">galaxy_dive.galaxy_linker.linker.</code><code class="descname">GalaxyLinker</code><span class="sig-paren">(</span><em>particle_positions</em>, <em>redshift</em>, <em>snum</em>, <em>hubble</em>, <em>galaxy_cut</em>, <em>length_scale</em>, <em>mt_length_scale=None</em>, <em>halo_length_scale='Rvir'</em>, <em>particle_masses=None</em>, <em>minimum_criteria='n_star'</em>, <em>minimum_value=10</em>, <em>ids_to_return=None</em>, <em>halo_data=None</em>, <em>halo_finder='AHF'</em>, <em>halo_data_dir=None</em>, <em>halo_file_tag=None</em>, <em>mtree_halos_index=None</em>, <em>main_mt_halo_id=None</em>, <em>low_memory_mode=True</em>, <em>memory_mode_divisions=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">galaxy_dive.galaxy_linker.linker.</code><code class="descname">GalaxyLinker</code><span class="sig-paren">(</span><em>particle_positions</em>, <em>redshift</em>, <em>snum</em>, <em>hubble</em>, <em>galaxy_cut</em>, <em>length_scale</em>, <em>mt_length_scale=None</em>, <em>halo_length_scale='Rvir'</em>, <em>particle_masses=None</em>, <em>minimum_criteria='n_star'</em>, <em>minimum_value=10</em>, <em>ids_to_return=None</em>, <em>ids_with_supplementary_data=[]</em>, <em>supplementary_data_keys=[]</em>, <em>halo_data=None</em>, <em>halo_finder='AHF'</em>, <em>halo_data_dir=None</em>, <em>halo_file_tag=None</em>, <em>mtree_halos_index=None</em>, <em>main_mt_halo_id=None</em>, <em>low_memory_mode=True</em>, <em>memory_mode_divisions=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Find the association with galaxies and halos for a given set of particles
 at a given redshift.</p>
@@ -110,7 +110,7 @@ halos containing a galaxy (in pkpc).</td>
 
 <dl class="method">
 <dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_containing_halos">
-<code class="descname">find_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_containing_halos" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em>, <em>length_scale=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_containing_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find which halos our particles are inside of some radial cut of.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -132,17 +132,19 @@ halos containing a galaxy (in pkpc).</td>
 
 <dl class="method">
 <dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_gal">
-<code class="descname">find_d_gal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_d_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_gal" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_d_gal</code><span class="sig-paren">(</span><em>supplementary_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_d_gal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_gal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the distance to the center of the closest halo that contains a
 galaxy.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">For particle i, d_gal[i] is the distance in
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>supplementary_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, extract additional data about the closest galaxy</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">For particle i, d_gal[i] is the distance in
 pkpc to the center of the nearest galaxy.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">d_gal (np.ndarray)</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">d_gal (np.ndarray)</td>
 </tr>
 </tbody>
 </table>
@@ -170,7 +172,7 @@ center of the nearest galaxy, besides the main galaxy.</td>
 
 <dl class="method">
 <dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_halo_id">
-<code class="descname">find_halo_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em>, <em>type_of_halo_id='halo_id'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_halo_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_halo_id" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_halo_id</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em>, <em>type_of_halo_id='halo_id'</em>, <em>length_scale=None</em>, <em>supplementary_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_halo_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_halo_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the smallest halos our particles are inside of some radial cut
 of (we define this as the halo ID). In the case of using MT halo ID,
 we actually find the most massive halo our particles are inside some
@@ -184,6 +186,9 @@ radial cut of.</p>
 <li><strong>type_of_halo_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If ‘halo_id’ then this is the halo_id at a given snapshot.
 If ‘mt_halo_id’ then this is the halo_id according to the
 merger tree.</li>
+<li><strong>length_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If using a custom length scale for the halo ID, what scale?</li>
+<li><strong>supplementary_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, also return supplementary data according to the keys
+in self.supplementary_data_keys</li>
 </ul>
 </td>
 </tr>
@@ -275,7 +280,7 @@ part of.</td>
 
 <dl class="method">
 <dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_mt_containing_halos">
-<code class="descname">find_mt_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_mt_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_mt_containing_halos" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_mt_containing_halos</code><span class="sig-paren">(</span><em>radial_cut_fraction=1.0</em>, <em>length_scale=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/galaxy_linker/linker.html#GalaxyLinker.find_mt_containing_halos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_mt_containing_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find which MergerTrace halos our particles are inside of some
 radial cut of.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -405,6 +410,23 @@ for containing a galaxy.</div></blockquote>
 <tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Returns</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Type:</th><td class="field-body">valid_halo_inds (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.galaxy_linker.linker.GalaxyLinker.valid_halo_pos">
+<code class="descname">valid_halo_pos</code><a class="headerlink" href="#galaxy_dive.galaxy_linker.linker.GalaxyLinker.valid_halo_pos" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Positions in proper kpc of positions we would like to link to.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Returns</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Type:</th><td class="field-body">valid_halo_pos (np.ndarray)</td>
 </tr>
 </tbody>
 </table>

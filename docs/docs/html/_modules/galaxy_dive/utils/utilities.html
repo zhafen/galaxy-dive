@@ -244,14 +244,16 @@
     <span class="c1"># Get the code version</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">code_version</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span> <span class="p">[</span> <span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;--always&#39;</span> <span class="p">]</span> <span class="p">)</span>
+
     <span class="c1"># If we fail, don&#39;t break the code.</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;failed to get version&#39;</span>
+        <span class="n">code_version</span> <span class="o">=</span> <span class="s1">&#39;failed to get version&#39;</span>
 
     <span class="c1"># Change back</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="n">cwd</span> <span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="n">cwd</span> <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">code_version</span></div>
+        <span class="k">return</span> <span class="n">code_version</span></div>
 
 <span class="c1">########################################################################</span>
 

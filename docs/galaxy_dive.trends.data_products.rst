@@ -1,7 +1,7 @@
-galaxy\_dive.galaxy\_finder.finder module
+galaxy\_dive.trends.data\_products module
 =========================================
 
-.. automodule:: galaxy_dive.galaxy_linker.linker
+.. automodule:: galaxy_dive.trends.data_products
     :members:
     :undoc-members:
     :show-inheritance:

@@ -44,6 +44,12 @@
 <dt id="galaxy_dive.analyze_data.los_data.LOSData">
 <em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.los_data.</code><code class="descname">LOSData</code><span class="sig-paren">(</span><em>data_p</em>, <em>**kw_args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/los_data.html#LOSData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData" title="galaxy_dive.analyze_data.generic_data.GenericData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.generic_data.GenericData</span></code></a></p>
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.base_data_shape">
+<code class="descname">base_data_shape</code><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.base_data_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.los_data.LOSData.calc_mass">
 <code class="descname">calc_mass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/los_data.html#LOSData.calc_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.calc_mass" title="Permalink to this definition">¶</a></dt>
@@ -57,9 +63,147 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>sl=None</em>, <em>data_storage=&lt;object object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the data from within the class. Only for getting the data. No post-processing or changing the data
+(putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
+hence a whole function for getting the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key in the data dictionary for the key we want to get</li>
+<li><strong>sl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.7)"><em>slice</em></a>) – Slice of the data, if requested.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.get_processed_data">
+<code class="descname">get_processed_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>data_method=&lt;object object&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.get_processed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get post-processed data. (Accounting for fractions, log-space, etc.).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to get.</li>
+<li><strong>data_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What method to use for getting the data itself. Defaults to using self.get_data</li>
+<li><strong>**kwargs</strong> (<em>*args</em><em>,</em>) – <p>Passed to get_data()</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data, including formatting.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">processed_data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.get_selected_data">
+<code class="descname">get_selected_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.get_selected_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for getting masked data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.handle_data_key_error">
+<code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for attempting to generate data on the fly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Type of data to attempt to generate data for.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.iterate_over_method">
+<code class="descname">iterate_over_method</code><span class="sig-paren">(</span><em>method_str</em>, <em>iter_arg</em>, <em>iter_values</em>, <em>method_args</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.iterate_over_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over a specified method, and get the results out.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which method to use.</li>
+<li><strong>iter_arg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which argument of the method to iterate over.</li>
+<li><strong>iter_values</strong> (<em>list of values</em>) – Which values to change.</li>
+<li><strong>method_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Default args to pass to the method</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[ method( <a href="#id3"><span class="problematic" id="id4">**</span></a>used_args ) for used_args in all_variations_of_used_args ]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">results (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.length_scale">
+<code class="descname">length_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.length_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial length scale. By default, is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.mask_data">
+<code class="descname">mask_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.mask_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for masking data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.metallicity_scale">
+<code class="descname">metallicity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.metallicity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial metallicity scale. By default is z_sun
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.los_data.LOSData.retrieve_data">
 <code class="descname">retrieve_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/los_data.html#LOSData.retrieve_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.retrieve_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.shift">
+<code class="descname">shift</code><span class="sig-paren">(</span><em>data</em>, <em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.</p>
+<p>data : data to be shifted
+data_key : Data key for the parameters to be shifted
+Parameters are a subdictionary of self.kwargs
+‘data_key’ : What data key the data is shifted for</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.los_data.LOSData.velocity_scale">
+<code class="descname">velocity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.los_data.LOSData.velocity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial velocity scale. By default is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
 
 </dd></dl>
 

@@ -45,6 +45,146 @@
 <em class="property">class </em><code class="descclassname">galaxy_dive.plot_data.ahf.</code><code class="descname">HaloPlotter</code><span class="sig-paren">(</span><em>data_object</em>, <em>label=None</em>, <em>color='black'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/ahf.html#HaloPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="galaxy_dive.plot_data.generic_plotter.html#galaxy_dive.plot_data.generic_plotter.GenericPlotter" title="galaxy_dive.plot_data.generic_plotter.GenericPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.plot_data.generic_plotter.GenericPlotter</span></code></a></p>
 <dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.histogram">
+<code class="descname">histogram</code><span class="sig-paren">(</span><em>data_key</em>, <em>provided_data=None</em>, <em>provided_hist=None</em>, <em>weight_key=None</em>, <em>slices=None</em>, <em>ax=None</em>, <em>fix_invalid=False</em>, <em>mask_zeros=False</em>, <em>invalid_fix_method=None</em>, <em>bins=32</em>, <em>normed=True</em>, <em>norm_type='probability'</em>, <em>scaling=None</em>, <em>smooth=False</em>, <em>smoothing_window_length=9</em>, <em>smoothing_polyorder=3</em>, <em>histogram_style='step'</em>, <em>color='black'</em>, <em>linestyle='-'</em>, <em>linewidth=3.5</em>, <em>alpha=1.0</em>, <em>x_range=None</em>, <em>y_range=None</em>, <em>x_label=None</em>, <em>y_label=None</em>, <em>add_x_label=True</em>, <em>add_y_label=True</em>, <em>add_plot_label=True</em>, <em>plot_label=None</em>, <em>line_label=None</em>, <em>label_fontsize=24</em>, <em>x_scale='linear'</em>, <em>y_scale='linear'</em>, <em>cdf=False</em>, <em>vertical_line=None</em>, <em>vertical_line_kwargs={'color': 'k'</em>, <em>'linestyle': '--'</em>, <em>'linewidth': 3}</em>, <em>return_dist=False</em>, <em>assert_contains_all_data=True</em>, <em>data_kwargs={}</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a histogram of the data. Extra arguments are passed to
+self.data_object.get_selected_data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data key to plot.</li>
+<li><strong>weight_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data key for data to use as a weight. By None, no weight.</li>
+<li><strong>slices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><em>tuple of slices</em>) – How to slices the data.</li>
+<li><strong>ax</strong> (<em>axis</em>) – What axis to use. By default creates a figure and places the axis on it.</li>
+<li><strong>fix_invalid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Throw away invalid values?</li>
+<li><strong>invalid_fix_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – How to handle invalid values. By None throw them away. Providing a value to this argument instead replaces
+them with that value.</li>
+<li><strong>bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><em>array-like</em>) – bins argument to be passed to np.histogram</li>
+<li><strong>normed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Normalize the histogram?</li>
+<li><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Color of histogram.</li>
+<li><strong>linestyle</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Linestyle of histogram.</li>
+<li><strong>linewidth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Linewidth for histogram.</li>
+<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Alpha value for histogram</li>
+<li><strong>y_range</strong> (<em>x_range</em><em>,</em>) – What are the minimum and maximum x- and y- values to include?
+Defaults to matplotlib’s automatic choices</li>
+<li><strong>ylabel</strong> (<em>x_label</em><em>,</em>) – Axes labels. Defaults to the data_key for the x-axis and “Normalized Histogram” for the y-axis.</li>
+<li><strong>add_y_label</strong> (<em>add_x_label</em><em>,</em>) – Include axes labels?</li>
+<li><strong>plot_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – What to label the plot with. By None, uses self.label.</li>
+<li><strong>line_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What label to give the line.</li>
+<li><strong>label_fontsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Fontsize for the labels.</li>
+<li><strong>y_scale</strong> (<em>x_scale</em><em>,</em>) – What scales to use for the x and y axes.</li>
+<li><strong>cdf</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Plot a CDF instead.</li>
+<li><strong>vertical_line</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Plot a vertical line at this value on the x-axis, if true.</li>
+<li><strong>vertical_line_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Arguments to pass to ax.plot( for the vertical line.</li>
+<li><strong>return_dist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, return the data values and the edges for the histogram.</li>
+<li><strong>assert_contains_all_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, make sure that the histogram plots all selected data.</li>
+<li><strong>**kwargs</strong> (<em>*args</em><em>,</em>) – <p>Extra arguments to pass to self.data_object.get_selected_data()</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.histogram2d">
+<code class="descname">histogram2d</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_key</em>, <em>x_data=None</em>, <em>y_data=None</em>, <em>weight_key=None</em>, <em>x_data_args={}</em>, <em>y_data_args={}</em>, <em>weight_data_args={}</em>, <em>slices=None</em>, <em>ax=None</em>, <em>x_range=None</em>, <em>y_range=None</em>, <em>x_scale='linear'</em>, <em>y_scale='linear'</em>, <em>z_scale='log'</em>, <em>n_bins=128</em>, <em>average=False</em>, <em>normed=False</em>, <em>hist_div_arr=None</em>, <em>conditional_y=False</em>, <em>y_div_function=None</em>, <em>vmin=None</em>, <em>vmax=None</em>, <em>min_bin_value_displayed=None</em>, <em>zorder=0</em>, <em>add_colorbar=True</em>, <em>cmap=&lt;matplotlib.colors.ListedColormap object&gt;</em>, <em>colorbar_args=None</em>, <em>x_label=None</em>, <em>y_label=None</em>, <em>add_x_label=True</em>, <em>add_y_label=True</em>, <em>plot_label=None</em>, <em>outline_plot_label=False</em>, <em>label_galaxy_cut=False</em>, <em>label_redshift=False</em>, <em>label_fontsize=24</em>, <em>tick_param_args=None</em>, <em>out_dir=None</em>, <em>save_file=None</em>, <em>close_plot_after_saving=True</em>, <em>fix_invalid=True</em>, <em>line_slope=None</em>, <em>cdf=False</em>, <em>horizontal_line=None</em>, <em>vertical_line=None</em>, <em>horizontal_line_kwargs={'color': '#337DB8'</em>, <em>'linestyle': '--'</em>, <em>'linewidth': 5}</em>, <em>vertical_line_kwargs={'color': '#337DB8'</em>, <em>'linestyle': '--'</em>, <em>'linewidth': 5}</em>, <em>return_dist=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.histogram2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a 2D histogram of the data. Extra arguments are passed to get_selected_data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>y_key</strong> (<em>x_key</em><em>,</em>) – Data keys to plot.</li>
+<li><strong>weight_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data key for data to use as a weight. By None, no weight.</li>
+<li><strong>y_data_args</strong> (<em>x_data_args</em><em>,</em>) – Keyword arguments to be passed only to x or y.</li>
+<li><strong>slices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><em>tuple of slices</em>) – How to slices the data.</li>
+<li><strong>ax</strong> (<em>axis</em>) – What axis to use. By None creates a figure and places the axis on it.</li>
+<li><strong>y_range</strong> (<em>x_range</em><em>,</em>) – Histogram edges. If None, all data is enclosed. If list, set manually.
+If float, is +- x_range*length scale at that snapshot.</li>
+<li><strong>n_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of bins in the histogram.</li>
+<li><strong>vmax</strong> (<em>vmin</em><em>,</em>) – Limits for the colorbar.</li>
+<li><strong>aspect</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What should the aspect ratio of the plot be?</li>
+<li><strong>plot_halos</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not to plot merger tree halos on top of the histogram.
+Only makes sense for when dealing with positions.</li>
+<li><strong>add_colorbar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add a colorbar to colorbar_args</li>
+<li><strong>colorbar_args</strong> (<em>axis</em>) – What axis to add the colorbar to. By None, is ax.</li>
+<li><strong>ylabel</strong> (<em>x_label</em><em>,</em>) – Axes labels.</li>
+<li><strong>add_y_label</strong> (<em>add_x_label</em><em>,</em>) – Include axes labels?</li>
+<li><strong>plot_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – What to label the plot with. By None, uses self.label.
+Can also pass a dict of full args.</li>
+<li><strong>outline_plot_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add an outline around the plot label.</li>
+<li><strong>label_galaxy_cut</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If true, add a label that indicates how the galaxy was defined.</li>
+<li><strong>label_redshift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add a label indicating the redshift.</li>
+<li><strong>label_fontsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Fontsize for the labels.</li>
+<li><strong>tick_param_args</strong> (<em>args</em>) – Arguments to pass to ax.tick_params. By None, don’t change inherent defaults.</li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If given, where to save the file.</li>
+<li><strong>fix_invalid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Fix invalid values.</li>
+<li><strong>line_slope</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – If given, draw a line with the given slope.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.make_multiple_plots">
+<code class="descname">make_multiple_plots</code><span class="sig-paren">(</span><em>plotting_method_str</em>, <em>iter_args_key</em>, <em>iter_args</em>, <em>n_processors=1</em>, <em>out_dir=None</em>, <em>make_out_dir_subdir=True</em>, <em>make_movie=False</em>, <em>clear_data=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.make_multiple_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make multiple plots of a selected type. <a href="#id3"><span class="problematic" id="id4">*</span></a>args and <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs are passed to plotting_method_str.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plotting_method_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What plotting method to use.</li>
+<li><strong>iter_args_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the argument to iterate over.</li>
+<li><strong>iter_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of argument values to change.</li>
+<li><strong>n_processors</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of processors to use. Should only be used when saving the data.</li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Where to save the data.</li>
+<li><strong>make_movie</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Make a movie out of the plots, if True.</li>
+<li><strong>clear_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, clear memory of the data after making the plots.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.panel_plot">
+<code class="descname">panel_plot</code><span class="sig-paren">(</span><em>panel_plotting_method_str, defaults, variations, slices=None, n_rows=2, n_columns=2, plot_locations=[(0, 0), (0, 1), (1, 0), (1, 1)], figsize=(10, 9), plot_label=None, outline_plot_label=False, label_galaxy_cut=False, label_redshift=True, label_fontsize=24, subplot_label_args={'color': 'k', 'fontsize': 20, 'xy': (0.075, 0.88), 'xycoords': 'axes fraction'}, subplot_spacing_args={'hspace': 0.0001, 'wspace': 0.0001}, out_dir=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.panel_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a multi panel plot of the type of your choosing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>panel_plotting_method_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What type of plot to make.</li>
+<li><strong>defaults</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Default arguments to pass to panel_plotting_method.</li>
+<li><strong>variations</strong> (<em>dict of dicts</em>) – Differences in plotting arguments per subplot.</li>
+<li><strong>slices</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.7)"><em>slice</em></a>) – What slices to select. By None, this doesn’t pass any slices argument to panel_plotting_method</li>
+<li><strong>plot_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – What to label the plot with. By None, uses self.label.
+Can also pass a dict of full args.</li>
+<li><strong>outline_plot_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add an outline around the plot label.</li>
+<li><strong>label_galaxy_cut</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If true, add a label that indicates how the galaxy was defined.</li>
+<li><strong>label_redshift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add a label indicating the redshift.</li>
+<li><strong>label_fontsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Fontsize for the labels.</li>
+<li><strong>subplot_label_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Label arguments to pass to each subplot for the label for the subplot.
+The actual label string itself corresponds to the keys in variations.</li>
+<li><strong>subplot_spacing_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – How to space the subplots.</li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If given, where to save the file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.plot_data.ahf.HaloPlotter.plot_halos_snapshot">
 <code class="descname">plot_halos_snapshot</code><span class="sig-paren">(</span><em>snum</em>, <em>ax=&lt;object object&gt;</em>, <em>type_of_halo_id='ahf_halos'</em>, <em>color='w'</em>, <em>linestyle='solid'</em>, <em>linewidth=2</em>, <em>outline=True</em>, <em>center=True</em>, <em>hubble_param=&lt;object object&gt;</em>, <em>radius_fraction=1.0</em>, <em>length_scale='Rstar0.5'</em>, <em>n_halos_plotted=100</em>, <em>show_valid_halos=True</em>, <em>minimum_criteria='n_star'</em>, <em>minimum_value=10</em>, <em>show_halo_id=False</em>, <em>x_range=None</em>, <em>y_range=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/ahf.html#HaloPlotter.plot_halos_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.plot_halos_snapshot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the halos as circles at their respective locations.</p>
@@ -81,6 +221,86 @@
 <dl class="method">
 <dt id="galaxy_dive.plot_data.ahf.HaloPlotter.plot_mt_halo_time">
 <code class="descname">plot_mt_halo_time</code><span class="sig-paren">(</span><em>y_key, custom_y_data=None, y_scale=&lt;object object&gt;, hubble_param=&lt;object object&gt;, conversion_factor=&lt;object object&gt;, convert_to_physical=False, convert_to_comoving=False, y_data_div_key=&lt;object object&gt;, ax=&lt;object object&gt;, halo_ids_to_plot=[0], color='k', linestyle='-', y_label=&lt;object object&gt;, label=&lt;object object&gt;, plot_change_in_halo_id=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/plot_data/ahf.html#HaloPlotter.plot_mt_halo_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.plot_mt_halo_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.plot_stacked_data">
+<code class="descname">plot_stacked_data</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_keys</em>, <em>colors</em>, <em>ax=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.plot_stacked_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.plot_time_dependent_data">
+<code class="descname">plot_time_dependent_data</code><span class="sig-paren">(</span><em>ax=None, x_range=[0.0, 0.9030899869919435], y_range=None, y_scale='log', x_label=None, y_label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.plot_time_dependent_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a plot like the top panel of Fig. 3 in Angles-Alcazar+17</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ax</strong> (<em>axis object</em>) – What axis to put the plot on. By None, create a new one on a separate figure.</li>
+<li><strong>y_range</strong> (<em>x_range</em><em>,</em>) – [ x_min, x_max ] or [ y_min, y_max ] for the displayed range.</li>
+<li><strong>y_label</strong> (<em>x_label</em><em>,</em>) – Labels for axis. By None, redshift and f(M_star), respectively.</li>
+<li><strong>plot_dividing_line</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not to plot a line at the edge between stacked regions.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.same_axis_plot">
+<code class="descname">same_axis_plot</code><span class="sig-paren">(</span><em>axis_plotting_method_str</em>, <em>variations</em>, <em>ax=None</em>, <em>figsize=(11</em>, <em>5)</em>, <em>out_dir=None</em>, <em>add_line_label=False</em>, <em>legend_args={'fontsize': 20</em>, <em>'loc': 'upper right'</em>, <em>'prop': {'size': 16.5}}</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.same_axis_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.scatter">
+<code class="descname">scatter</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_key</em>, <em>slices=None</em>, <em>n_subsample=None</em>, <em>ax=None</em>, <em>marker_size=100</em>, <em>color='k'</em>, <em>marker='.'</em>, <em>zorder=-100</em>, <em>x_range=None</em>, <em>y_range=None</em>, <em>x_label=None</em>, <em>y_label=None</em>, <em>add_x_label=True</em>, <em>add_y_label=True</em>, <em>plot_label=None</em>, <em>outline_plot_label=False</em>, <em>label_galaxy_cut=False</em>, <em>label_redshift=False</em>, <em>label_fontsize=24</em>, <em>tick_param_args=None</em>, <em>out_dir=None</em>, <em>fix_invalid=True</em>, <em>line_slope=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a 2D scatter plot of the data. Extra arguments are passed to get_selected_data.
+:param x_key, y_key: Data keys to plot.
+:type x_key, y_key: str
+:param weight_key: Data key for data to use as a weight. By None, no weight.
+:type weight_key: str
+:param slices: How to slices the data.
+:type slices: int or tuple of slices
+:param ax: What axis to use. By None creates a figure and places the axis on it.
+:type ax: axis
+:param x_range, y_range: Histogram edges. If None, all data is enclosed. If list, set manually.</p>
+<blockquote>
+<div>If float, is +- x_range*length scale at that snapshot.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of bins in the histogram.</li>
+<li><strong>vmax</strong> (<em>vmin</em><em>,</em>) – Limits for the colorbar.</li>
+<li><strong>plot_halos</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether or not to plot merger tree halos on top of the histogram.
+Only makes sense for when dealing with positions.</li>
+<li><strong>add_colorbar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add a colorbar to colorbar_args</li>
+<li><strong>colorbar_args</strong> (<em>axis</em>) – What axis to add the colorbar to. By None, is ax.</li>
+<li><strong>ylabel</strong> (<em>x_label</em><em>,</em>) – Axes labels.</li>
+<li><strong>add_y_label</strong> (<em>add_x_label</em><em>,</em>) – Include axes labels?</li>
+<li><strong>plot_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – What to label the plot with. By None, uses self.label.
+Can also pass a dict of full args.</li>
+<li><strong>outline_plot_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add an outline around the plot label.</li>
+<li><strong>label_galaxy_cut</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If true, add a label that indicates how the galaxy was defined.</li>
+<li><strong>label_redshift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – If True, add a label indicating the redshift.</li>
+<li><strong>label_fontsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Fontsize for the labels.</li>
+<li><strong>tick_param_args</strong> (<em>args</em>) – Arguments to pass to ax.tick_params. By None, don’t change inherent defaults.</li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If given, where to save the file.</li>
+<li><strong>fix_invalid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Fix invalid values.</li>
+<li><strong>line_slope</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – If given, draw a line with the given slope.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.plot_data.ahf.HaloPlotter.statistic_and_interval">
+<code class="descname">statistic_and_interval</code><span class="sig-paren">(</span><em>x_key</em>, <em>y_key</em>, <em>x_data=None</em>, <em>y_data=None</em>, <em>weights=None</em>, <em>statistic='median'</em>, <em>lower_percentile=16</em>, <em>upper_percentile=84</em>, <em>plot_interval=True</em>, <em>x_data_args={}</em>, <em>y_data_args={}</em>, <em>ax=None</em>, <em>slices=None</em>, <em>fix_invalid=False</em>, <em>bins=64</em>, <em>linewidth=3</em>, <em>linestyle='-'</em>, <em>color='k'</em>, <em>label=None</em>, <em>zorder=100</em>, <em>alpha=0.5</em>, <em>plot_label=None</em>, <em>add_plot_label=True</em>, <em>plot_label_kwargs={'fontsize': 22</em>, <em>'va': 'bottom'</em>, <em>'xy': (0.0</em>, <em>1.0)</em>, <em>'xycoords': 'axes fraction'}</em>, <em>return_values=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.plot_data.ahf.HaloPlotter.statistic_and_interval" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

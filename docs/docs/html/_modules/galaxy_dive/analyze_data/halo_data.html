@@ -50,6 +50,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">unyt</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span>
 
 <span class="kn">import</span> <span class="nn">galaxy_dive.read_data.ahf</span> <span class="k">as</span> <span class="nn">read_ahf</span>
 <span class="kn">import</span> <span class="nn">galaxy_dive.read_data.rockstar</span> <span class="k">as</span> <span class="nn">read_rockstar</span>
@@ -60,7 +61,7 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData">[docs]</a><span class="k">class</span> <span class="nc">HaloData</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">GenericData</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData">[docs]</a><span class="k">class</span> <span class="nc">HaloData</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">GenericData</span> <span class="p">):</span>
 
     <span class="nd">@utilities</span><span class="o">.</span><span class="n">store_parameters</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
@@ -114,6 +115,8 @@
             <span class="s1">&#39;mtree_halo_filepaths&#39;</span><span class="p">,</span>
             <span class="s1">&#39;index&#39;</span><span class="p">,</span> 
             <span class="s1">&#39;tag&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;profiles&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;profile_id_mapping&#39;</span><span class="p">,</span>
         <span class="p">]</span>
 
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">data_reader_used_attrs</span><span class="p">:</span>
@@ -146,7 +149,7 @@
     <span class="c1"># Data Retrieval</span>
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloData.get_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloData.get_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get halo data at a specific snapshot.</span>
 
 <span class="sd">        Args:</span>
@@ -188,7 +191,14 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloData.get_mt_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData.get_mt_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_mt_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">mt_halo_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">snums</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">a_power</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_values_only</span><span class="o">=</span><span class="kc">True</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloData.get_mt_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_mt_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_mt_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_key</span><span class="p">,</span>
+        <span class="n">mt_halo_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">snums</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">a_power</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_values_only</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get halo data for a specific merger tree.</span>
 
 <span class="sd">        Args:</span>
@@ -206,7 +216,12 @@
 
         <span class="c1"># For converting coordinates</span>
         <span class="k">if</span> <span class="n">a_power</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">mt_data</span> <span class="o">*=</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span> <span class="s1">&#39;redshift&#39;</span><span class="p">,</span> <span class="n">mt_halo_id</span> <span class="p">)</span> <span class="p">)</span><span class="o">**-</span><span class="n">a_power</span>
+            <span class="n">redshift</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span>
+                <span class="s1">&#39;redshift&#39;</span><span class="p">,</span>
+                <span class="n">mt_halo_id</span><span class="p">,</span>
+                <span class="n">return_values_only</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">mt_data</span> <span class="o">*=</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">redshift</span> <span class="p">)</span><span class="o">**-</span><span class="n">a_power</span>
 
         <span class="k">if</span> <span class="n">snums</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mt_data</span> <span class="o">=</span> <span class="n">mt_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">snums</span><span class="p">]</span>
@@ -218,7 +233,139 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloData.get_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData.get_halos">[docs]</a>    <span class="k">def</span> <span class="nf">get_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloData.get_profile_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_profile_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_profile_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_key</span><span class="p">,</span>
+        <span class="n">snum</span><span class="p">,</span>
+        <span class="n">r</span><span class="p">,</span>
+        <span class="n">mt_halo_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">a_power</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get halo data for a specific halo</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_key (str):</span>
+<span class="sd">                What data to get.</span>
+
+<span class="sd">            snum (int):</span>
+<span class="sd">                What snapshot to open.</span>
+
+<span class="sd">            r (float or arr of floats):</span>
+<span class="sd">                What radii (in comoving kpc/h) to get data at.</span>
+
+<span class="sd">            mt_halo_id (int):</span>
+<span class="sd">                What merger tree halo ID to select.</span>
+
+<span class="sd">            a_power (float):</span>
+<span class="sd">                If given, multiply the result by the scale factor</span>
+<span class="sd">                1/(1 + redshift) to this power.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            data (np.ndarray) : Requested data.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Cast as an array for easier manipulation</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">r</span> <span class="p">)</span>
+
+        <span class="c1"># Set up the base result</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span> <span class="n">r</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="p">)</span>
+
+        <span class="c1"># Load the necessary data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">get_profiles</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span>
+
+        <span class="c1"># Replace the merger tree halo ID with the relevant redshift halo ID</span>
+        <span class="n">halo_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="n">snums</span><span class="o">=</span><span class="p">[</span><span class="n">snum</span><span class="p">]</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Get the profile for the right halo</span>
+        <span class="n">start_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_id_mapping</span><span class="p">[</span><span class="n">halo_id</span><span class="p">]</span>
+        <span class="n">end_ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_id_mapping</span><span class="p">[</span><span class="n">halo_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">halo_profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profiles</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start_ind</span><span class="p">:</span><span class="n">end_ind</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Find the valid regime</span>
+        <span class="n">halo_r_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span> <span class="n">halo_profile</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">halo_r_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span> <span class="n">halo_profile</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="p">)</span>
+        <span class="n">r_not_too_small</span> <span class="o">=</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="n">halo_r_min</span>
+        <span class="n">r_not_too_large</span> <span class="o">=</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">halo_r_max</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">r_not_too_small</span> <span class="o">&amp;</span> <span class="n">r_not_too_large</span>
+
+        <span class="c1"># Get the results out</span>
+        <span class="n">interp_fn</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span>
+            <span class="n">halo_profile</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">halo_profile</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">valid</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_fn</span><span class="p">(</span> <span class="n">r</span><span class="p">[</span><span class="n">valid</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="c1"># For converting coordinates</span>
+        <span class="k">if</span> <span class="n">a_power</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span> <span class="s1">&#39;redshift&#39;</span><span class="p">,</span> <span class="n">mt_halo_id</span><span class="p">,</span> <span class="n">snums</span><span class="o">=</span><span class="n">snum</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">*=</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span> <span class="p">)</span><span class="o">**-</span><span class="n">a_power</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloData.get_enclosed_mass"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_enclosed_mass">[docs]</a>    <span class="k">def</span> <span class="nf">get_enclosed_mass</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">positions</span><span class="p">,</span>
+        <span class="n">snum</span><span class="p">,</span>
+        <span class="n">hubble_param</span><span class="p">,</span>
+        <span class="n">mt_halo_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the mass enclosed at the positions given.</span>
+<span class="sd">        Particles must be inside a halo, and the enclosed mass is only the mass</span>
+<span class="sd">        of that halo.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            positions (array-like, (n_positions,3)):</span>
+<span class="sd">                Positions in physical kpc you would like to</span>
+<span class="sd">                find the mass interior to. Positions should be relative to</span>
+<span class="sd">                the simulation box coordinates.</span>
+
+<span class="sd">            snum (int):</span>
+<span class="sd">                Snapshot at which to get the enclosed mass.</span>
+
+<span class="sd">            hubble_param (float):</span>
+<span class="sd">                The hubble parameter, H0/100, needed for converting to and from</span>
+<span class="sd">                AHF&#39;s units.</span>
+<span class="sd">            </span>
+<span class="sd">            mt_halo_id (int):</span>
+<span class="sd">                Merger tree halo ID for the halo you want to use for finding</span>
+<span class="sd">                the enclosed mass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array-like, (n_positions,):</span>
+<span class="sd">                The mass of Merger Traced halo `mt_halo_id` interior to</span>
+<span class="sd">                the positions given. A value of np.nan indicates that the</span>
+<span class="sd">                position is either outside the halo or too far in (and the</span>
+<span class="sd">                results aren&#39;t converged).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Find the radii</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span> <span class="s1">&#39;Xc&#39;</span><span class="p">,</span> <span class="n">a_power</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">snums</span><span class="o">=</span><span class="p">[</span><span class="n">snum</span><span class="p">],</span> <span class="n">mt_halo_id</span><span class="o">=</span><span class="n">mt_halo_id</span> <span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span> <span class="s1">&#39;Yc&#39;</span><span class="p">,</span> <span class="n">a_power</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">snums</span><span class="o">=</span><span class="p">[</span><span class="n">snum</span><span class="p">],</span> <span class="n">mt_halo_id</span><span class="o">=</span><span class="n">mt_halo_id</span> <span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span> <span class="s1">&#39;Zc&#39;</span><span class="p">,</span> <span class="n">a_power</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">snums</span><span class="o">=</span><span class="p">[</span><span class="n">snum</span><span class="p">],</span> <span class="n">mt_halo_id</span><span class="o">=</span><span class="n">mt_halo_id</span> <span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="p">])</span> <span class="o">/</span> <span class="n">hubble_param</span>
+        <span class="n">centered_positions</span> <span class="o">=</span> <span class="n">positions</span> <span class="o">-</span> <span class="n">origin</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">centered_positions</span><span class="o">**</span><span class="mf">2.</span> <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="c1"># Convert to comoving kpc/h</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mt_data</span><span class="p">(</span> <span class="s1">&#39;redshift&#39;</span><span class="p">,</span> <span class="n">mt_halo_id</span><span class="p">,</span> <span class="n">snums</span><span class="o">=</span><span class="p">[</span><span class="n">snum</span><span class="p">]</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">r</span> <span class="o">*=</span> <span class="n">hubble_param</span> <span class="o">*</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="n">z</span> <span class="p">)</span>
+
+        <span class="c1"># Get the profile data out</span>
+        <span class="n">enclosed_mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_profile_data</span><span class="p">(</span>
+            <span class="s1">&#39;M_in_r&#39;</span><span class="p">,</span>
+            <span class="n">snum</span><span class="p">,</span>
+            <span class="n">r</span><span class="p">,</span>
+            <span class="n">mt_halo_id</span> <span class="o">=</span> <span class="n">mt_halo_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">enclosed_mass</span> <span class="o">/</span> <span class="n">hubble_param</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="HaloData.get_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_halos">[docs]</a>    <span class="k">def</span> <span class="nf">get_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">snum</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get halo data.</span>
 
 <span class="sd">        Args:</span>
@@ -246,7 +393,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloData.get_mtree_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData.get_mtree_halos">[docs]</a>    <span class="k">def</span> <span class="nf">get_mtree_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloData.get_mtree_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_mtree_halos">[docs]</a>    <span class="k">def</span> <span class="nf">get_mtree_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get halo data.</span>
 
 <span class="sd">        Args:</span>
@@ -269,7 +416,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloData.get_n_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData.get_n_halos">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">snum</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloData.get_n_halos"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_n_halos">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">snum</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get the number of halos (non-tracked) at a given redshift.&#39;&#39;&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">get_halos</span><span class="p">(</span> <span class="n">snum</span> <span class="p">)</span>
@@ -278,7 +425,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloData.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloData.get_selected_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloData.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloData.get_selected_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">(</span> <span class="n">HaloData</span><span class="p">,</span> <span class="bp">self</span> <span class="p">)</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span>
             <span class="n">mask_multidim_data</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -288,9 +435,9 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloKeyParser"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloKeyParser">[docs]</a><span class="k">class</span> <span class="nc">HaloKeyParser</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">DataKeyParser</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloKeyParser"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloKeyParser">[docs]</a><span class="k">class</span> <span class="nc">HaloKeyParser</span><span class="p">(</span> <span class="n">generic_data</span><span class="o">.</span><span class="n">DataKeyParser</span> <span class="p">):</span>
 
-<div class="viewcode-block" id="HaloKeyParser.get_radius_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloKeyParser.get_radius_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_radius_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloKeyParser.get_radius_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloKeyParser.get_radius_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_radius_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get a key for Halo data, based on a length scale and a multiple of it.</span>
 
 <span class="sd">        Args:</span>
@@ -314,7 +461,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloKeyParser.get_enclosed_mass_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloKeyParser.get_enclosed_mass_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_enclosed_mass_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloKeyParser.get_enclosed_mass_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloKeyParser.get_enclosed_mass_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_enclosed_mass_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get a key for Halo data, corresponding to a data column that records an enclosed mass.</span>
 
 <span class="sd">        Args:</span>
@@ -335,7 +482,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloKeyParser.get_average_quantity_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloKeyParser.get_average_quantity_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_average_quantity_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloKeyParser.get_average_quantity_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloKeyParser.get_average_quantity_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_average_quantity_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get a key for Halo data, corresponding to a data column that records the average quantity inside a galaxy.</span>
 
 <span class="sd">        Args:</span>
@@ -360,7 +507,7 @@
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="HaloKeyParser.get_velocity_at_radius_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.halo_data.HaloKeyParser.get_velocity_at_radius_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_velocity_at_radius_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">velocity_key</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
+<div class="viewcode-block" id="HaloKeyParser.get_velocity_at_radius_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.halo_data.html#galaxy_dive.analyze_data.ahf_updater.HaloKeyParser.get_velocity_at_radius_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_velocity_at_radius_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">velocity_key</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="n">length_scale</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get a key for Halo data, corresponding to a data column that records the velocity at at a specified radius</span>
 
 <span class="sd">            velocity_key (str) :</span>

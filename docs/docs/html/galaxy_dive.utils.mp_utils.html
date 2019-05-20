@@ -48,9 +48,1229 @@
 from a forked multiprocessing child
 From <a class="reference external" href="https://stackoverflow.com/a/23654936">https://stackoverflow.com/a/23654936</a></p>
 <dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.bp_commands">
+<code class="descname">bp_commands</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.bp_commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call every command that was set for the current active breakpoint
+(if there is one).</p>
+<p>Returns True if the normal interaction function must be called,
+False otherwise.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.break_anywhere">
+<code class="descname">break_anywhere</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.break_anywhere" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is any breakpoint for frame’s filename.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.break_here">
+<code class="descname">break_here</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.break_here" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is an effective breakpoint for this line.</p>
+<p>Check for line or function breakpoint and if in effect.
+Delete temporary breakpoints if effective() says to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.canonic">
+<code class="descname">canonic</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.canonic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return canonical form of filename.</p>
+<p>For real filenames, the canonical form is a case-normalized (on
+case insenstive filesystems) absolute path.  ‘Filenames’ with
+angle brackets, such as “&lt;stdin&gt;”, generated in interactive
+mode, are returned unchanged.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.checkline">
+<code class="descname">checkline</code><span class="sig-paren">(</span><em>filename</em>, <em>lineno</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.checkline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether specified line seems to be executable.</p>
+<p>Return <cite>lineno</cite> if it is, 0 if not (e.g. a docstring, comment, blank
+line or EOF). Warning: testing is not comprehensive.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.clear_all_breaks">
+<code class="descname">clear_all_breaks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.clear_all_breaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all existing breakpoints.</p>
+<p>If none were set, return an error message.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.clear_all_file_breaks">
+<code class="descname">clear_all_file_breaks</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.clear_all_file_breaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all breakpoints in filename.</p>
+<p>If none were set, return an error message.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.clear_bpbynumber">
+<code class="descname">clear_bpbynumber</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.clear_bpbynumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a breakpoint by its index in Breakpoint.bpbynumber.</p>
+<p>If arg is invalid, return an error message.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.clear_break">
+<code class="descname">clear_break</code><span class="sig-paren">(</span><em>filename</em>, <em>lineno</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.clear_break" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete breakpoints for filename:lineno.</p>
+<p>If no breakpoints were set, return an error message.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.cmdloop">
+<code class="descname">cmdloop</code><span class="sig-paren">(</span><em>intro=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.cmdloop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeatedly issue a prompt, accept input, parse an initial prefix
+off the received input, and dispatch to action methods, passing them
+the remainder of the line as argument.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.columnize">
+<code class="descname">columnize</code><span class="sig-paren">(</span><em>list</em>, <em>displaywidth=80</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.columnize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a list of strings as a compact set of columns.</p>
+<p>Each column is only as wide as necessary.
+Columns are separated by two spaces (one was not legible enough).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.commands_resuming">
+<code class="descname">commands_resuming</code><em class="property"> = ['do_continue', 'do_step', 'do_next', 'do_return', 'do_quit', 'do_jump']</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.commands_resuming" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete">
+<code class="descname">complete</code><span class="sig-paren">(</span><em>text</em>, <em>state</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the next possible completion for ‘text’.</p>
+<p>If a command has not been entered, then complete against command list.
+Otherwise try to call complete_&lt;command&gt; to get list of completions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_b">
+<code class="descname">complete_b</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_b" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_break">
+<code class="descname">complete_break</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_break" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_cl">
+<code class="descname">complete_cl</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_cl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_clear">
+<code class="descname">complete_clear</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_commands">
+<code class="descname">complete_commands</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_commands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_condition">
+<code class="descname">complete_condition</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_condition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_debug">
+<code class="descname">complete_debug</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_debug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_disable">
+<code class="descname">complete_disable</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_disable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_display">
+<code class="descname">complete_display</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_display" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_enable">
+<code class="descname">complete_enable</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_enable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_help">
+<code class="descname">complete_help</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_ignore">
+<code class="descname">complete_ignore</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_ignore" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_p">
+<code class="descname">complete_p</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_p" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_pp">
+<code class="descname">complete_pp</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_pp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_print">
+<code class="descname">complete_print</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_source">
+<code class="descname">complete_source</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_tbreak">
+<code class="descname">complete_tbreak</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_tbreak" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_unalias">
+<code class="descname">complete_unalias</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_unalias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_undisplay">
+<code class="descname">complete_undisplay</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_undisplay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.complete_whatis">
+<code class="descname">complete_whatis</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.complete_whatis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.completedefault">
+<code class="descname">completedefault</code><span class="sig-paren">(</span><em>*ignored</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.completedefault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method called to complete an input line when no command-specific
+complete_*() method is available.</p>
+<p>By default, it returns an empty list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.completenames">
+<code class="descname">completenames</code><span class="sig-paren">(</span><em>text</em>, <em>*ignored</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.completenames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.default">
+<code class="descname">default</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on an input line when the command prefix is not recognized.</p>
+<p>If this method is not overridden, it prints an error message and
+returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.defaultFile">
+<code class="descname">defaultFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.defaultFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a reasonable default.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_call">
+<code class="descname">dispatch_call</code><span class="sig-paren">(</span><em>frame</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoke user function and return trace function for call event.</p>
+<p>If the debugger stops on this function call, invoke
+self.user_call(). Raise BbdQuit if self.quitting is set.
+Return self.trace_dispatch to continue tracing in this scope.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_exception">
+<code class="descname">dispatch_exception</code><span class="sig-paren">(</span><em>frame</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_exception" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoke user function and return trace function for exception event.</p>
+<p>If the debugger stops on this exception, invoke
+self.user_exception(). Raise BdbQuit if self.quitting is set.
+Return self.trace_dispatch to continue tracing in this scope.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_line">
+<code class="descname">dispatch_line</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoke user function and return trace function for line event.</p>
+<p>If the debugger stops on the current line, invoke
+self.user_line(). Raise BdbQuit if self.quitting is set.
+Return self.trace_dispatch to continue tracing in this scope.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_return">
+<code class="descname">dispatch_return</code><span class="sig-paren">(</span><em>frame</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.dispatch_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoke user function and return trace function for return event.</p>
+<p>If the debugger stops on this function return, invoke
+self.user_return(). Raise BdbQuit if self.quitting is set.
+Return self.trace_dispatch to continue tracing in this scope.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.displayhook">
+<code class="descname">displayhook</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.displayhook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom displayhook for the exec in default(), which prevents
+assignment of the _ variable in the builtins.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_EOF">
+<code class="descname">do_EOF</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_EOF" title="Permalink to this definition">¶</a></dt>
+<dd><p>EOF
+Handles the receipt of EOF as a command.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_a">
+<code class="descname">do_a</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_a" title="Permalink to this definition">¶</a></dt>
+<dd><p>a(rgs)
+Print the argument list of the current function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_alias">
+<code class="descname">do_alias</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_alias" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias [name [command [parameter parameter …] ]]
+Create an alias called ‘name’ that executes ‘command’.  The
+command must <em>not</em> be enclosed in quotes.  Replaceable
+parameters can be indicated by %1, %2, and so on, while %* is
+replaced by all the parameters.  If no command is given, the
+current alias for name is shown. If no name is given, all
+aliases are listed.</p>
+<p>Aliases may be nested and can contain anything that can be
+legally typed at the pdb prompt.  Note!  You <em>can</em> override
+internal pdb commands with aliases!  Those internal commands
+are then hidden until the alias is removed.  Aliasing is
+recursively applied to the first word of the command line; all
+other words in the line are left alone.</p>
+<p>As an example, here are two useful aliases (especially when
+placed in the .pdbrc file):</p>
+<p># Print instance variables (usage “pi classInst”)
+alias pi for k in %1.__dict__.keys(): print(“%1.”,k,”=”,%1.__dict__[k])
+# Print instance variables in self
+alias ps pi self</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_args">
+<code class="descname">do_args</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>a(rgs)
+Print the argument list of the current function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_b">
+<code class="descname">do_b</code><span class="sig-paren">(</span><em>arg</em>, <em>temporary=0</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>b(reak) [ ([filename:]lineno | function) [, condition] ]
+Without argument, list all breaks.</p>
+<p>With a line number argument, set a break at this line in the
+current file.  With a function name, set a break at the first
+executable line of that function.  If a second argument is
+present, it is a string specifying an expression which must
+evaluate to true before the breakpoint is honored.</p>
+<p>The line number may be prefixed with a filename and a colon,
+to specify a breakpoint in another file (probably one that
+hasn’t been loaded yet).  The file is searched for on
+sys.path; the .py suffix may be omitted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_break">
+<code class="descname">do_break</code><span class="sig-paren">(</span><em>arg</em>, <em>temporary=0</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_break" title="Permalink to this definition">¶</a></dt>
+<dd><p>b(reak) [ ([filename:]lineno | function) [, condition] ]
+Without argument, list all breaks.</p>
+<p>With a line number argument, set a break at this line in the
+current file.  With a function name, set a break at the first
+executable line of that function.  If a second argument is
+present, it is a string specifying an expression which must
+evaluate to true before the breakpoint is honored.</p>
+<p>The line number may be prefixed with a filename and a colon,
+to specify a breakpoint in another file (probably one that
+hasn’t been loaded yet).  The file is searched for on
+sys.path; the .py suffix may be omitted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_bt">
+<code class="descname">do_bt</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_bt" title="Permalink to this definition">¶</a></dt>
+<dd><p>w(here)
+Print a stack trace, with the most recent frame at the bottom.
+An arrow indicates the “current frame”, which determines the
+context of most commands.  ‘bt’ is an alias for this command.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_c">
+<code class="descname">do_c</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_c" title="Permalink to this definition">¶</a></dt>
+<dd><p>c(ont(inue))
+Continue execution, only stop when a breakpoint is encountered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_cl">
+<code class="descname">do_cl</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_cl" title="Permalink to this definition">¶</a></dt>
+<dd><p>cl(ear) filename:lineno
+cl(ear) [bpnumber [bpnumber…]]</p>
+<blockquote>
+<div>With a space separated list of breakpoint numbers, clear
+those breakpoints.  Without argument, clear all breaks (but
+first ask confirmation).  With a filename:lineno argument,
+clear all breaks at that line in that file.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_clear">
+<code class="descname">do_clear</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>cl(ear) filename:lineno
+cl(ear) [bpnumber [bpnumber…]]</p>
+<blockquote>
+<div>With a space separated list of breakpoint numbers, clear
+those breakpoints.  Without argument, clear all breaks (but
+first ask confirmation).  With a filename:lineno argument,
+clear all breaks at that line in that file.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_commands">
+<code class="descname">do_commands</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>commands [bpnumber]
+(com) …
+(com) end
+(Pdb)</p>
+<p>Specify a list of commands for breakpoint number bpnumber.
+The commands themselves are entered on the following lines.
+Type a line containing just ‘end’ to terminate the commands.
+The commands are executed when the breakpoint is hit.</p>
+<p>To remove all commands from a breakpoint, type commands and
+follow it immediately with end; that is, give no commands.</p>
+<p>With no bpnumber argument, commands refers to the last
+breakpoint set.</p>
+<p>You can use breakpoint commands to start your program up
+again.  Simply use the continue command, or step, or any other
+command that resumes execution.</p>
+<p>Specifying any command resuming execution (currently continue,
+step, next, return, jump, quit and their abbreviations)
+terminates the command list (as if that command was
+immediately followed by end).  This is because any time you
+resume execution (even with a simple next or step), you may
+encounter another breakpoint – which could have its own
+command list, leading to ambiguities about which list to
+execute.</p>
+<p>If you use the ‘silent’ command in the command list, the usual
+message about stopping at a breakpoint is not printed.  This
+may be desirable for breakpoints that are to print a specific
+message and then continue.  If none of the other commands
+print anything, you will see no sign that the breakpoint was
+reached.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_condition">
+<code class="descname">do_condition</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>condition bpnumber [condition]
+Set a new condition for the breakpoint, an expression which
+must evaluate to true before the breakpoint is honored.  If
+condition is absent, any existing condition is removed; i.e.,
+the breakpoint is made unconditional.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_cont">
+<code class="descname">do_cont</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_cont" title="Permalink to this definition">¶</a></dt>
+<dd><p>c(ont(inue))
+Continue execution, only stop when a breakpoint is encountered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_continue">
+<code class="descname">do_continue</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_continue" title="Permalink to this definition">¶</a></dt>
+<dd><p>c(ont(inue))
+Continue execution, only stop when a breakpoint is encountered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_d">
+<code class="descname">do_d</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>d(own) [count]
+Move the current frame count (default one) levels down in the
+stack trace (to a newer frame).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_debug">
+<code class="descname">do_debug</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>debug code
+Enter a recursive debugger that steps through the code
+argument (which is an arbitrary expression or statement to be
+executed in the current environment).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_disable">
+<code class="descname">do_disable</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_disable" title="Permalink to this definition">¶</a></dt>
+<dd><p>disable bpnumber [bpnumber …]
+Disables the breakpoints given as a space separated list of
+breakpoint numbers.  Disabling a breakpoint means it cannot
+cause the program to stop execution, but unlike clearing a
+breakpoint, it remains in the list of breakpoints and can be
+(re-)enabled.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_display">
+<code class="descname">do_display</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_display" title="Permalink to this definition">¶</a></dt>
+<dd><p>display [expression]</p>
+<p>Display the value of the expression if it changed, each time execution
+stops in the current frame.</p>
+<p>Without expression, list all display expressions for the current frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_down">
+<code class="descname">do_down</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>d(own) [count]
+Move the current frame count (default one) levels down in the
+stack trace (to a newer frame).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_enable">
+<code class="descname">do_enable</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_enable" title="Permalink to this definition">¶</a></dt>
+<dd><p>enable bpnumber [bpnumber …]
+Enables the breakpoints given as a space separated list of
+breakpoint numbers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_exit">
+<code class="descname">do_exit</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>q(uit)
+exit</p>
+<blockquote>
+<div>Quit from the debugger. The program being executed is aborted.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_h">
+<code class="descname">do_h</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_h" title="Permalink to this definition">¶</a></dt>
+<dd><p>h(elp)
+Without argument, print the list of available commands.
+With a command name as argument, print help about that command.
+“help pdb” shows the full pdb documentation.
+“help exec” gives help on the ! command.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_help">
+<code class="descname">do_help</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>h(elp)
+Without argument, print the list of available commands.
+With a command name as argument, print help about that command.
+“help pdb” shows the full pdb documentation.
+“help exec” gives help on the ! command.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_ignore">
+<code class="descname">do_ignore</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_ignore" title="Permalink to this definition">¶</a></dt>
+<dd><p>ignore bpnumber [count]
+Set the ignore count for the given breakpoint number.  If
+count is omitted, the ignore count is set to 0.  A breakpoint
+becomes active when the ignore count is zero.  When non-zero,
+the count is decremented each time the breakpoint is reached
+and the breakpoint is not disabled and any associated
+condition evaluates to true.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_interact">
+<code class="descname">do_interact</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_interact" title="Permalink to this definition">¶</a></dt>
+<dd><p>interact</p>
+<p>Start an interactive interpreter whose global namespace
+contains all the (global and local) names found in the current scope.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_j">
+<code class="descname">do_j</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_j" title="Permalink to this definition">¶</a></dt>
+<dd><p>j(ump) lineno
+Set the next line that will be executed.  Only available in
+the bottom-most frame.  This lets you jump back and execute
+code again, or jump forward to skip code that you don’t want
+to run.</p>
+<p>It should be noted that not all jumps are allowed – for
+instance it is not possible to jump into the middle of a
+for loop or out of a finally clause.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_jump">
+<code class="descname">do_jump</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_jump" title="Permalink to this definition">¶</a></dt>
+<dd><p>j(ump) lineno
+Set the next line that will be executed.  Only available in
+the bottom-most frame.  This lets you jump back and execute
+code again, or jump forward to skip code that you don’t want
+to run.</p>
+<p>It should be noted that not all jumps are allowed – for
+instance it is not possible to jump into the middle of a
+for loop or out of a finally clause.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_l">
+<code class="descname">do_l</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_l" title="Permalink to this definition">¶</a></dt>
+<dd><p>l(ist) [first [,last] | .]</p>
+<p>List source code for the current file.  Without arguments,
+list 11 lines around the current line or continue the previous
+listing.  With . as argument, list 11 lines around the current
+line.  With one argument, list 11 lines starting at that line.
+With two arguments, list the given range; if the second
+argument is less than the first, it is a count.</p>
+<p>The current line in the current frame is indicated by “-&gt;”.
+If an exception is being debugged, the line where the
+exception was originally raised or propagated is indicated by
+“&gt;&gt;”, if it differs from the current line.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_list">
+<code class="descname">do_list</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>l(ist) [first [,last] | .]</p>
+<p>List source code for the current file.  Without arguments,
+list 11 lines around the current line or continue the previous
+listing.  With . as argument, list 11 lines around the current
+line.  With one argument, list 11 lines starting at that line.
+With two arguments, list the given range; if the second
+argument is less than the first, it is a count.</p>
+<p>The current line in the current frame is indicated by “-&gt;”.
+If an exception is being debugged, the line where the
+exception was originally raised or propagated is indicated by
+“&gt;&gt;”, if it differs from the current line.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_ll">
+<code class="descname">do_ll</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_ll" title="Permalink to this definition">¶</a></dt>
+<dd><p>longlist | ll
+List the whole source code for the current function or frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_longlist">
+<code class="descname">do_longlist</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_longlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>longlist | ll
+List the whole source code for the current function or frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_n">
+<code class="descname">do_n</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_n" title="Permalink to this definition">¶</a></dt>
+<dd><p>n(ext)
+Continue execution until the next line in the current function
+is reached or it returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_next">
+<code class="descname">do_next</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>n(ext)
+Continue execution until the next line in the current function
+is reached or it returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_p">
+<code class="descname">do_p</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>p expression
+Print the value of the expression.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_pp">
+<code class="descname">do_pp</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_pp" title="Permalink to this definition">¶</a></dt>
+<dd><p>pp expression
+Pretty-print the value of the expression.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_q">
+<code class="descname">do_q</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_q" title="Permalink to this definition">¶</a></dt>
+<dd><p>q(uit)
+exit</p>
+<blockquote>
+<div>Quit from the debugger. The program being executed is aborted.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_quit">
+<code class="descname">do_quit</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_quit" title="Permalink to this definition">¶</a></dt>
+<dd><p>q(uit)
+exit</p>
+<blockquote>
+<div>Quit from the debugger. The program being executed is aborted.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_r">
+<code class="descname">do_r</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_r" title="Permalink to this definition">¶</a></dt>
+<dd><p>r(eturn)
+Continue execution until the current function returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_restart">
+<code class="descname">do_restart</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>run [args…]
+Restart the debugged python program. If a string is supplied
+it is split with “shlex”, and the result is used as the new
+sys.argv.  History, breakpoints, actions and debugger options
+are preserved.  “restart” is an alias for “run”.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_return">
+<code class="descname">do_return</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>r(eturn)
+Continue execution until the current function returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_retval">
+<code class="descname">do_retval</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_retval" title="Permalink to this definition">¶</a></dt>
+<dd><p>retval
+Print the return value for the last return of a function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_run">
+<code class="descname">do_run</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>run [args…]
+Restart the debugged python program. If a string is supplied
+it is split with “shlex”, and the result is used as the new
+sys.argv.  History, breakpoints, actions and debugger options
+are preserved.  “restart” is an alias for “run”.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_rv">
+<code class="descname">do_rv</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_rv" title="Permalink to this definition">¶</a></dt>
+<dd><p>retval
+Print the return value for the last return of a function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_s">
+<code class="descname">do_s</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_s" title="Permalink to this definition">¶</a></dt>
+<dd><p>s(tep)
+Execute the current line, stop at the first possible occasion
+(either in a function that is called or in the current
+function).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_source">
+<code class="descname">do_source</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>source expression
+Try to get source code for the given object and display it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_step">
+<code class="descname">do_step</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>s(tep)
+Execute the current line, stop at the first possible occasion
+(either in a function that is called or in the current
+function).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_tbreak">
+<code class="descname">do_tbreak</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_tbreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>tbreak [ ([filename:]lineno | function) [, condition] ]
+Same arguments as break, but sets a temporary breakpoint: it
+is automatically deleted when first hit.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_u">
+<code class="descname">do_u</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>u(p) [count]
+Move the current frame count (default one) levels up in the
+stack trace (to an older frame).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_unalias">
+<code class="descname">do_unalias</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_unalias" title="Permalink to this definition">¶</a></dt>
+<dd><p>unalias name
+Delete the specified alias.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_undisplay">
+<code class="descname">do_undisplay</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_undisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>undisplay [expression]</p>
+<p>Do not display the expression any more in the current frame.</p>
+<p>Without expression, clear all display expressions for the current frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_unt">
+<code class="descname">do_unt</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_unt" title="Permalink to this definition">¶</a></dt>
+<dd><p>unt(il) [lineno]
+Without argument, continue execution until the line with a
+number greater than the current one is reached.  With a line
+number, continue execution until a line with a number greater
+or equal to that is reached.  In both cases, also stop when
+the current frame returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_until">
+<code class="descname">do_until</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_until" title="Permalink to this definition">¶</a></dt>
+<dd><p>unt(il) [lineno]
+Without argument, continue execution until the line with a
+number greater than the current one is reached.  With a line
+number, continue execution until a line with a number greater
+or equal to that is reached.  In both cases, also stop when
+the current frame returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_up">
+<code class="descname">do_up</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>u(p) [count]
+Move the current frame count (default one) levels up in the
+stack trace (to an older frame).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_w">
+<code class="descname">do_w</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_w" title="Permalink to this definition">¶</a></dt>
+<dd><p>w(here)
+Print a stack trace, with the most recent frame at the bottom.
+An arrow indicates the “current frame”, which determines the
+context of most commands.  ‘bt’ is an alias for this command.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_whatis">
+<code class="descname">do_whatis</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_whatis" title="Permalink to this definition">¶</a></dt>
+<dd><p>whatis arg
+Print the type of the argument.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.do_where">
+<code class="descname">do_where</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.do_where" title="Permalink to this definition">¶</a></dt>
+<dd><p>w(here)
+Print a stack trace, with the most recent frame at the bottom.
+An arrow indicates the “current frame”, which determines the
+context of most commands.  ‘bt’ is an alias for this command.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.doc_header">
+<code class="descname">doc_header</code><em class="property"> = 'Documented commands (type help &lt;topic&gt;):'</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.doc_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.doc_leader">
+<code class="descname">doc_leader</code><em class="property"> = ''</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.doc_leader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.emptyline">
+<code class="descname">emptyline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.emptyline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when an empty line is entered in response to the prompt.</p>
+<p>If this method is not overridden, it repeats the last nonempty
+command entered.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.error">
+<code class="descname">error</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.execRcLines">
+<code class="descname">execRcLines</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.execRcLines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.forget">
+<code class="descname">forget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.forget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.format_stack_entry">
+<code class="descname">format_stack_entry</code><span class="sig-paren">(</span><em>frame_lineno</em>, <em>lprefix=': '</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.format_stack_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string with information about a stack entry.</p>
+<p>The stack entry frame_lineno is a (frame, lineno) tuple.  The
+return string contains the canonical filename, the function name
+or ‘&lt;lambda&gt;’, the input arguments, the return value, and the
+line of code (if it exists).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.get_all_breaks">
+<code class="descname">get_all_breaks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.get_all_breaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all breakpoints that are set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.get_bpbynumber">
+<code class="descname">get_bpbynumber</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.get_bpbynumber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a breakpoint by its index in Breakpoint.bybpnumber.</p>
+<p>For invalid arg values or if the breakpoint doesn’t exist,
+raise a ValueError.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.get_break">
+<code class="descname">get_break</code><span class="sig-paren">(</span><em>filename</em>, <em>lineno</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.get_break" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if there is a breakpoint for filename:lineno.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.get_breaks">
+<code class="descname">get_breaks</code><span class="sig-paren">(</span><em>filename</em>, <em>lineno</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.get_breaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all breakpoints for filename:lineno.</p>
+<p>If no breakpoints are set, return an empty list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.get_file_breaks">
+<code class="descname">get_file_breaks</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.get_file_breaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all lines with breakpoints for filename.</p>
+<p>If no breakpoints are set, return an empty list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.get_names">
+<code class="descname">get_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.get_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.get_stack">
+<code class="descname">get_stack</code><span class="sig-paren">(</span><em>f</em>, <em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.get_stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of (frame, lineno) in a stack trace and a size.</p>
+<p>List starts with original calling frame, if there is one.
+Size may be number of frames above or below f.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.handle_command_def">
+<code class="descname">handle_command_def</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.handle_command_def" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles one command line during command list definition.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.help_exec">
+<code class="descname">help_exec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.help_exec" title="Permalink to this definition">¶</a></dt>
+<dd><p>(!) statement
+Execute the (one-line) statement in the context of the current
+stack frame.  The exclamation point can be omitted unless the
+first word of the statement resembles a debugger command.  To
+assign to a global variable you must always prefix the command
+with a ‘global’ command, e.g.:
+(Pdb) global list_options; list_options = [‘-l’]
+(Pdb)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.help_pdb">
+<code class="descname">help_pdb</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.help_pdb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.identchars">
+<code class="descname">identchars</code><em class="property"> = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.identchars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.utils.mp_utils.ForkedPdb.interaction">
 <code class="descname">interaction</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/utils/mp_utils.html#ForkedPdb.interaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.interaction" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.intro">
+<code class="descname">intro</code><em class="property"> = None</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.intro" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.is_skipped_module">
+<code class="descname">is_skipped_module</code><span class="sig-paren">(</span><em>module_name</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.is_skipped_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if module_name matches any skip pattern.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.lastcmd">
+<code class="descname">lastcmd</code><em class="property"> = ''</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.lastcmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.lineinfo">
+<code class="descname">lineinfo</code><span class="sig-paren">(</span><em>identifier</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.lineinfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.lookupmodule">
+<code class="descname">lookupmodule</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.lookupmodule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for break/clear parsing – may be overridden.</p>
+<p>lookupmodule() translates (possibly incomplete) file or module name
+into an absolute file name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.message">
+<code class="descname">message</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.misc_header">
+<code class="descname">misc_header</code><em class="property"> = 'Miscellaneous help topics:'</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.misc_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.nohelp">
+<code class="descname">nohelp</code><em class="property"> = '*** No help on %s'</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.nohelp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.onecmd">
+<code class="descname">onecmd</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.onecmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpret the argument as though it had been typed in response
+to the prompt.</p>
+<p>Checks whether this line is typed at the normal prompt or in
+a breakpoint command list definition.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.parseline">
+<code class="descname">parseline</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.parseline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the line into a command name and a string containing
+the arguments.  Returns a tuple containing (command, args, line).
+‘command’ and ‘args’ may be None if the line couldn’t be parsed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.postcmd">
+<code class="descname">postcmd</code><span class="sig-paren">(</span><em>stop</em>, <em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.postcmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method executed just after a command dispatch is finished.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.postloop">
+<code class="descname">postloop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.postloop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method executed once when the cmdloop() method is about to
+return.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.precmd">
+<code class="descname">precmd</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.precmd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle alias expansion and ‘;;’ separator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.preloop">
+<code class="descname">preloop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.preloop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method executed once when the cmdloop() method is called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.print_stack_entry">
+<code class="descname">print_stack_entry</code><span class="sig-paren">(</span><em>frame_lineno</em>, <em>prompt_prefix='\n-&gt; '</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.print_stack_entry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.print_stack_trace">
+<code class="descname">print_stack_trace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.print_stack_trace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.print_topics">
+<code class="descname">print_topics</code><span class="sig-paren">(</span><em>header</em>, <em>cmds</em>, <em>cmdlen</em>, <em>maxcol</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.print_topics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.prompt">
+<code class="descname">prompt</code><em class="property"> = '(Cmd) '</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.prompt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set values of attributes as ready to start debugging.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.ruler">
+<code class="descname">ruler</code><em class="property"> = '='</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.ruler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>cmd</em>, <em>globals=None</em>, <em>locals=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug a statement executed via the exec() function.</p>
+<p>globals defaults to __main__.dict; locals defaults to globals.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.runcall">
+<code class="descname">runcall</code><span class="sig-paren">(</span><em>func</em>, <em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.runcall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug a single function call.</p>
+<p>Return the result of the function call.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.runctx">
+<code class="descname">runctx</code><span class="sig-paren">(</span><em>cmd</em>, <em>globals</em>, <em>locals</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.runctx" title="Permalink to this definition">¶</a></dt>
+<dd><p>For backwards-compatibility.  Defers to run().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.runeval">
+<code class="descname">runeval</code><span class="sig-paren">(</span><em>expr</em>, <em>globals=None</em>, <em>locals=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.runeval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug an expression executed via the eval() function.</p>
+<p>globals defaults to __main__.dict; locals defaults to globals.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_break">
+<code class="descname">set_break</code><span class="sig-paren">(</span><em>filename</em>, <em>lineno</em>, <em>temporary=False</em>, <em>cond=None</em>, <em>funcname=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_break" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a new breakpoint for filename:lineno.</p>
+<p>If lineno doesn’t exist for the filename, return an error message.
+The filename should be in canonical form.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_continue">
+<code class="descname">set_continue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_continue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop only at breakpoints or when finished.</p>
+<p>If there are no breakpoints, set the system trace function to None.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_next">
+<code class="descname">set_next</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop on the next line in or below the given frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_quit">
+<code class="descname">set_quit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_quit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set quitting attribute to True.</p>
+<p>Raises BdbQuit exception in the next call to a dispatch_*() method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_return">
+<code class="descname">set_return</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop when returning from the given frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_step">
+<code class="descname">set_step</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop after one line of code.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_trace">
+<code class="descname">set_trace</code><span class="sig-paren">(</span><em>frame=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start debugging from frame.</p>
+<p>If frame is not specified, debugging starts from caller’s frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.set_until">
+<code class="descname">set_until</code><span class="sig-paren">(</span><em>frame</em>, <em>lineno=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.set_until" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop when the line with the lineno greater than the current one is
+reached or when returning from current frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.setup">
+<code class="descname">setup</code><span class="sig-paren">(</span><em>f</em>, <em>tb</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.sigint_handler">
+<code class="descname">sigint_handler</code><span class="sig-paren">(</span><em>signum</em>, <em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.sigint_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.stop_here">
+<code class="descname">stop_here</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.stop_here" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if frame is below the starting frame in the stack.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.trace_dispatch">
+<code class="descname">trace_dispatch</code><span class="sig-paren">(</span><em>frame</em>, <em>event</em>, <em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.trace_dispatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatch a trace function for debugged frames based on the event.</p>
+<p>This function is installed as the trace function for debugged
+frames. Its return value is the new trace function, which is
+usually itself. The default implementation decides how to
+dispatch a frame, depending on the type of event (passed in as a
+string) that is about to be executed.</p>
+<dl class="docutils">
+<dt>The event can be one of the following:</dt>
+<dd><p class="first">line: A new line of code is going to be executed.
+call: A function is about to be called or another code block</p>
+<blockquote>
+<div>is entered.</div></blockquote>
+<p class="last">return: A function or other code block is about to return.
+exception: An exception has occurred.
+c_call: A C function is about to be called.
+c_return: A C function has returned.
+c_exception: A C function has raised an exception.</p>
+</dd>
+</dl>
+<p>For the Python events, specialized functions (see the dispatch_*()
+methods) are called.  For the C events, no action is taken.</p>
+<p>The arg parameter depends on the previous event.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.undoc_header">
+<code class="descname">undoc_header</code><em class="property"> = 'Undocumented commands:'</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.undoc_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.use_rawinput">
+<code class="descname">use_rawinput</code><em class="property"> = 1</em><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.use_rawinput" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.user_call">
+<code class="descname">user_call</code><span class="sig-paren">(</span><em>frame</em>, <em>argument_list</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.user_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is called when there is the remote possibility
+that we ever need to stop in this function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.user_exception">
+<code class="descname">user_exception</code><span class="sig-paren">(</span><em>frame</em>, <em>exc_info</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.user_exception" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called if an exception occurs,
+but only if we are to stop at or just below this level.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.user_line">
+<code class="descname">user_line</code><span class="sig-paren">(</span><em>frame</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.user_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called when we stop or break at this line.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.utils.mp_utils.ForkedPdb.user_return">
+<code class="descname">user_return</code><span class="sig-paren">(</span><em>frame</em>, <em>return_value</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.utils.mp_utils.ForkedPdb.user_return" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called when a return trap is set here.</p>
+</dd></dl>
 
 </dd></dl>
 

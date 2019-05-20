@@ -62,7 +62,7 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData">[docs]</a><span class="k">class</span> <span class="nc">GenericData</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData">[docs]</a><span class="k">class</span> <span class="nc">GenericData</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;Very generic data class, with getting and masking functionality.</span>
 
 <span class="sd">    Args:</span>
@@ -155,7 +155,7 @@
   <span class="c1"># Data Retrieval</span>
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData.get_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_storage</span><span class="o">=</span><span class="n">default</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.get_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData.get_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">sl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_storage</span><span class="o">=</span><span class="n">default</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Get the data from within the class. Only for getting the data. No post-processing or changing the data</span>
 <span class="sd">    (putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,</span>
 <span class="sd">    hence a whole function for getting the data.</span>
@@ -209,7 +209,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData.get_processed_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_processed_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_processed_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">data_method</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.get_processed_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData.get_processed_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_processed_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span><span class="p">,</span> <span class="n">data_method</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Get post-processed data. (Accounting for fractions, log-space, etc.).</span>
 
 <span class="sd">    Args:</span>
@@ -263,19 +263,19 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.get_selected_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData.get_selected_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Wrapper for getting masked data.&#39;&#39;&#39;</span>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">get_selected_data</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
 
-<div class="viewcode-block" id="GenericData.mask_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.mask_data">[docs]</a>  <span class="k">def</span> <span class="nf">mask_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.mask_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData.mask_data">[docs]</a>  <span class="k">def</span> <span class="nf">mask_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Wrapper for masking data.&#39;&#39;&#39;</span>
 
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_masker</span><span class="o">.</span><span class="n">mask_data</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span></div>
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData.shift"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.shift">[docs]</a>  <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.shift"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData.shift">[docs]</a>  <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.</span>
 
 <span class="sd">    data : data to be shifted</span>
@@ -303,7 +303,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.handle_data_key_error">[docs]</a>  <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.handle_data_key_error"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData.handle_data_key_error">[docs]</a>  <span class="k">def</span> <span class="nf">handle_data_key_error</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Method for attempting to generate data on the fly.</span>
 
 <span class="sd">    Args:</span>
@@ -316,7 +316,7 @@
   <span class="c1"># Meta Methods (for doing generic things with class methods)</span>
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GenericData.iterate_over_method"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData.iterate_over_method">[docs]</a>  <span class="k">def</span> <span class="nf">iterate_over_method</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">method_str</span><span class="p">,</span> <span class="n">iter_arg</span><span class="p">,</span> <span class="n">iter_values</span><span class="p">,</span> <span class="n">method_args</span> <span class="p">):</span>
+<div class="viewcode-block" id="GenericData.iterate_over_method"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.GenericData.iterate_over_method">[docs]</a>  <span class="k">def</span> <span class="nf">iterate_over_method</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">method_str</span><span class="p">,</span> <span class="n">iter_arg</span><span class="p">,</span> <span class="n">iter_values</span><span class="p">,</span> <span class="n">method_args</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Iterate over a specified method, and get the results out.</span>
 
 <span class="sd">    Args:</span>
@@ -352,12 +352,12 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataKeyParser"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser">[docs]</a><span class="k">class</span> <span class="nc">DataKeyParser</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataKeyParser"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataKeyParser">[docs]</a><span class="k">class</span> <span class="nc">DataKeyParser</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
   <span class="sd">&#39;&#39;&#39;Class for parsing data_keys provided to SimulationData.&#39;&#39;&#39;</span>
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataKeyParser.is_position_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_position_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_position_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataKeyParser.is_position_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataKeyParser.is_position_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_position_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Checks if the data key deals with position primarily.</span>
 
 <span class="sd">    Args:</span>
@@ -371,7 +371,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataKeyParser.is_velocity_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_velocity_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_velocity_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataKeyParser.is_velocity_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataKeyParser.is_velocity_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_velocity_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Checks if the data key deals with velocity primarily.</span>
 
 <span class="sd">    Args:</span>
@@ -386,7 +386,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataKeyParser.is_fraction_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_fraction_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_fraction_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataKeyParser.is_fraction_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataKeyParser.is_fraction_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_fraction_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Check if the data should be some fraction of its relevant scale.</span>
 
 <span class="sd">    Args:</span>
@@ -405,7 +405,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataKeyParser.is_log_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataKeyParser.is_log_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_log_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataKeyParser.is_log_key"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataKeyParser.is_log_key">[docs]</a>  <span class="k">def</span> <span class="nf">is_log_key</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_key</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Check if the data key indicates the data should be put in log scale.</span>
 
 <span class="sd">    Args:</span>
@@ -425,7 +425,7 @@
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataMasker"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker">[docs]</a><span class="k">class</span> <span class="nc">DataMasker</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataMasker"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataMasker">[docs]</a><span class="k">class</span> <span class="nc">DataMasker</span><span class="p">(</span> <span class="nb">object</span> <span class="p">):</span>
 
   <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">data_object</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Class for masking data.</span>
@@ -441,7 +441,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataMasker.mask_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.mask_data">[docs]</a>  <span class="k">def</span> <span class="nf">mask_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="DataMasker.mask_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataMasker.mask_data">[docs]</a>  <span class="k">def</span> <span class="nf">mask_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
     <span class="n">data_key</span><span class="p">,</span>
     <span class="n">data_min</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
     <span class="n">data_max</span> <span class="o">=</span> <span class="n">default</span><span class="p">,</span>
@@ -544,7 +544,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataMasker.get_total_mask"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.get_total_mask">[docs]</a>  <span class="k">def</span> <span class="nf">get_total_mask</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">optional_masks</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataMasker.get_total_mask"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataMasker.get_total_mask">[docs]</a>  <span class="k">def</span> <span class="nf">get_total_mask</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">optional_masks</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Get the result of combining all masks in the data.</span>
 
 <span class="sd">    Args:</span>
@@ -569,7 +569,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataMasker.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.get_selected_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="DataMasker.get_selected_data"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataMasker.get_selected_data">[docs]</a>  <span class="k">def</span> <span class="nf">get_selected_data</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span>
     <span class="n">data_key</span><span class="p">,</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="s1">&#39;total&#39;</span><span class="p">,</span>
     <span class="n">optional_masks</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -646,7 +646,7 @@
 
   <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="DataMasker.clear_masks"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.DataMasker.clear_masks">[docs]</a>  <span class="k">def</span> <span class="nf">clear_masks</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">clear_optional_masks</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+<div class="viewcode-block" id="DataMasker.clear_masks"><a class="viewcode-back" href="../../../galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.ahf.DataMasker.clear_masks">[docs]</a>  <span class="k">def</span> <span class="nf">clear_masks</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">clear_optional_masks</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Reset the masks in total to nothing.</span>
 
 <span class="sd">    Modifies:</span>

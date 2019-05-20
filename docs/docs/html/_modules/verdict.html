@@ -1,0 +1,953 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>verdict &#8212; galaxy-dive 0.8.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for verdict</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="sd">&#39;&#39;&#39;Version of Python dictionary with extended functionality.</span>
+
+<span class="sd">@author: Zach Hafen</span>
+<span class="sd">@contact: zachary.h.hafen@gmail.com</span>
+<span class="sd">@status: Development</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">six</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">collections.abc</span> <span class="k">as</span> <span class="nn">collections</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="c1">########################################################################</span>
+<span class="c1">########################################################################</span>
+
+<span class="k">class</span> <span class="nc">Dict</span><span class="p">(</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Replacement for dictionary that allows easier access to the attributes</span>
+<span class="sd">    and methods of the dictionary components. For example, if one has a smart</span>
+<span class="sd">    dictionary of TestClassA objects, each of which has a TestClassB attribute,</span>
+<span class="sd">    which in turn have a foo method, then smart_dict.test_class_b.foo(2) would</span>
+<span class="sd">    be a dict with foo calculated for each. In other words, it would be</span>
+<span class="sd">    equivalent to the following code:</span>
+
+<span class="sd">    results = {}</span>
+<span class="sd">    for key in smart_dict.keys():</span>
+<span class="sd">        results[key] = smart_dict[key].test_class_b.foo( 2 )</span>
+<span class="sd">    return results</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="c1"># Convert contained dicts to Dicts</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="nb">dict</span> <span class="p">):</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">item</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">depth</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Depth of the Dict.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            level (int):</span>
+<span class="sd">                A level of N means this Dict is contained in N-1 other Dict.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">depths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span> <span class="p">):</span>
+                <span class="n">depths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">item</span><span class="o">.</span><span class="n">depth</span><span class="p">(</span> <span class="n">level</span><span class="o">+</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">level</span>
+
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span> <span class="n">depths</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">key</span> <span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">out_str</span> <span class="o">=</span> <span class="s2">&quot;Dict, {</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="k">def</span> <span class="nf">get_print_obj</span><span class="p">(</span> <span class="n">obj</span> <span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">print_obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">print_obj</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="k">return</span> <span class="n">print_obj</span>
+
+            <span class="n">out_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">get_print_obj</span><span class="p">(</span> <span class="n">key</span> <span class="p">),</span>
+                <span class="n">get_print_obj</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="n">out_str</span> <span class="o">+=</span> <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">return</span> <span class="n">out_str</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">attr</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">attr</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">](</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">call_custom_kwargs</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">default_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Perform call, but using custom keyword arguments per dictionary tag.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kwargs (dict) : Custom keyword arguments to pass.</span>
+<span class="sd">            default_kwargs (dict) : Defaults shared between keyword arguments.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            results (dict) : Dictionary of results.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">used_kwargs</span> <span class="o">=</span> <span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">default_kwargs</span><span class="p">,</span> <span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Calling for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">key</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">](</span> <span class="o">**</span><span class="n">used_kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">call_iteratively</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">args_list</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">inner_results</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">args_list</span><span class="p">:</span>
+
+                <span class="n">inner_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">](</span> <span class="n">args</span> <span class="p">)</span>
+                <span class="n">inner_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">inner_result</span> <span class="p">)</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">inner_results</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># For handling when the Smart Dict contains dictionaries</span>
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">inner_item</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;When Dict is a dictionary of dicts themselves,</span>
+<span class="sd">        this can be used to get an item from those dictionaries.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">item</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inner_keys</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Populate results dictionary</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">inner_key</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">inner_key</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="n">inner_key</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">inner_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">inner_key</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="n">inner_key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Operation Methods</span>
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+</span> <span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="fm">__radd__</span> <span class="o">=</span> <span class="fm">__add__</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rsub__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">*</span><span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">*</span><span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="fm">__rmul__</span> <span class="o">=</span> <span class="fm">__mul__</span>
+
+    <span class="k">def</span> <span class="nf">__div__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__truediv__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__floordiv__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">//</span><span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">//</span><span class="n">other</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rdiv__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rtruediv__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rfloordiv__</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">other</span> <span class="p">):</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">other</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">//</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">other</span><span class="o">//</span><span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Other operations</span>
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">sum_contents</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get the sum of all the contents inside the Dict.&#39;&#39;&#39;</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">):</span>
+
+            <span class="c1"># To handle non-standard items</span>
+            <span class="c1"># (e.g. things that aren&#39;t ints or floats )</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">median</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">()</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">nanmedian</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">()</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">percentile</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">q</span> <span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">(),</span> <span class="n">q</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">nanpercentile</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">q</span> <span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">(),</span> <span class="n">q</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">keymax</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">item_max</span> <span class="o">&lt;</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">item_max</span> <span class="o">=</span> <span class="n">item</span>
+                    <span class="n">key_max</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                <span class="n">item_max</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="n">key_max</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="k">return</span> <span class="n">key_max</span><span class="p">,</span> <span class="n">item_max</span>
+
+    <span class="k">def</span> <span class="nf">keymin</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">item_min</span> <span class="o">&gt;</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">item_min</span> <span class="o">=</span> <span class="n">item</span>
+                    <span class="n">key_min</span> <span class="o">=</span> <span class="n">key</span>
+            <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+                <span class="n">item_min</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="n">key_min</span> <span class="o">=</span> <span class="n">key</span>
+
+        <span class="k">return</span> <span class="n">key_min</span><span class="p">,</span> <span class="n">item_min</span>
+
+    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Apply some function to each item in the smart dictionary, and</span>
+<span class="sd">        return the results as a Dict.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fn</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">results</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">split_by_key_slice</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">sl</span><span class="p">,</span> <span class="n">str_to_match</span><span class="o">=</span><span class="kc">None</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Break the smart dictionary into smaller smart dictionaries according</span>
+<span class="sd">        to a subset of the key.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sl (slice) :</span>
+<span class="sd">                Part of the key to use to make subsets.</span>
+
+<span class="sd">            str_to_match (str) :</span>
+<span class="sd">                If True, split into broad categories that match this string</span>
+<span class="sd">                in the given slice or don&#39;t.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">str_to_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">results</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+            <span class="n">results</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">key_slice</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">str_to_match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">str_matches</span> <span class="o">=</span> <span class="n">key_slice</span> <span class="o">==</span> <span class="n">str_to_match</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">str_matches</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+            
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">key_slice</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">key_slice</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">key_slice</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="k">def</span> <span class="nf">split_by_dict</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Break the smart dictionary into smaller smart dictionaries according</span>
+<span class="sd">        to their label provided by a dictionary</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            d (dict):</span>
+<span class="sd">                Dictionary to use to split into smaller dictionaries</span>
+
+<span class="sd">            return_list (bool) :</span>
+<span class="sd">                If True, return a list of arrays.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result_subkey</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">result_subkey</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">result_subkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">result_subkey</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s1">&#39;no label&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s1">&#39;no label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="p">{}</span> <span class="p">)</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s1">&#39;no label&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">return_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">results</span>
+
+        <span class="n">final_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">final_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">item</span><span class="o">.</span><span class="n">array</span><span class="p">()</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_results</span>
+
+    <span class="k">def</span> <span class="nf">log10</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Wrapper for np.log10&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_empty_items</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Look for empty items and delete them.&#39;&#39;&#39;</span>
+
+        <span class="n">keys_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">item</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">keys_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">key</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_to_delete</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="c1">########################################################################</span>
+    <span class="c1"># Methods for converting to and from other formats.</span>
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">array</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns a np.ndarray of values with unique order (sorted keys )&#39;&#39;&#39;</span>
+
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="p">)</span> <span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">values</span> <span class="p">)</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">keys_array</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns a np.ndarray of keys with unique order (sorted keys )&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="nb">sorted</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">to_df</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Join the innermost Dict classes into a pandas</span>
+<span class="sd">        DataFrame, where the keys in the innermost dictionaries are the index</span>
+<span class="sd">        and the keys for the innermost dictionaries are the column headers.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">right_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">right_depth</span><span class="p">:</span>
+            <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="c1"># Make the dataframe for each dictionary</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span> <span class="n">item</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">),</span>
+                    <span class="n">key</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span> <span class="n">item</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="p">),</span>
+                <span class="p">}</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span> <span class="n">data</span> <span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">df</span> <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span> <span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="k">def</span> <span class="nf">to_hdf5</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">,</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overwrite_existing_file</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">condensed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Save the contents as a HDF5 file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str):</span>
+<span class="sd">                Location to save the hdf5 file at.</span>
+
+<span class="sd">            attributes (dict):</span>
+<span class="sd">                Dictionary of attributes to store as attributes for the HDF5</span>
+<span class="sd">                file.</span>
+
+<span class="sd">            overwrite_existing_file (boolean):</span>
+<span class="sd">                If True and a file already exists at filepath, delete it prior</span>
+<span class="sd">                to saving.</span>
+
+<span class="sd">            condensed (boolean):</span>
+<span class="sd">                If True, combine the innermost dictionaries into a condensed</span>
+<span class="sd">                DataFrame/array-like format.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">overwrite_existing_file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span> <span class="n">filepath</span> <span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span> <span class="n">filepath</span> <span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w-&#39;</span> <span class="p">)</span>
+
+        <span class="c1"># Store attributes</span>
+        <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+        <span class="k">def</span> <span class="nf">recursive_save</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;Function for recursively saving to an hdf5 file.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                current_path (str):</span>
+<span class="sd">                    Current location in the hdf5 file.</span>
+
+<span class="sd">                key (str):</span>
+<span class="sd">                    Key to save.</span>
+
+<span class="sd">                item:</span>
+<span class="sd">                    Item to save.</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+
+            <span class="c1"># Update path</span>
+            <span class="n">current_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">key</span> <span class="p">)</span> 
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="n">Dict</span> <span class="p">):</span>
+
+                <span class="c1"># Make space for the data set</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span> <span class="n">current_path</span> <span class="p">)</span>
+
+                <span class="c1"># Save in condensed format</span>
+                <span class="k">if</span> <span class="n">condensed</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">depth</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
+
+                    <span class="n">recursive_save</span><span class="p">(</span>
+                        <span class="n">current_path</span><span class="p">,</span>
+                        <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="nb">str</span> <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">c_name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                        <span class="n">recursive_save</span><span class="p">(</span>
+                            <span class="n">current_path</span><span class="p">,</span>
+                            <span class="n">c_name</span><span class="p">,</span>
+                            <span class="n">df</span><span class="p">[</span><span class="n">c_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                        <span class="p">)</span>
+                                        
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Recurse</span>
+                    <span class="k">for</span> <span class="n">inner_key</span><span class="p">,</span> <span class="n">inner_item</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">recursive_save</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">inner_key</span><span class="p">,</span> <span class="n">inner_item</span> <span class="p">)</span>
+
+            <span class="c1"># Save data if the inner item isn&#39;t a Dict</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">item</span> <span class="p">)</span>
+                <span class="c1"># Accounts for h5py not recognizing unicode. This is fixed</span>
+                <span class="c1"># in h5py 2.9.0, with PR #1032.</span>
+                <span class="c1"># The fix used here is exactly what the PR does.</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                        <span class="n">item</span><span class="p">,</span>
+                        <span class="n">dtype</span><span class="o">=</span><span class="n">h5py</span><span class="o">.</span><span class="n">special_dtype</span><span class="p">(</span> <span class="n">vlen</span><span class="o">=</span><span class="n">six</span><span class="o">.</span><span class="n">text_type</span> <span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span> <span class="p">)</span>
+
+        <span class="c1"># Shallow dictionary condensed edge case</span>
+        <span class="n">shallow_condensed_save</span> <span class="o">=</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="p">)</span> <span class="ow">and</span> <span class="n">condensed</span>
+
+        <span class="c1"># Actual save</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shallow_condensed_save</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">recursive_save</span><span class="p">(</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="p">)</span>
+
+        <span class="c1"># For relatively shallow dictionaries</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_df</span><span class="p">()</span>
+
+            <span class="n">recursive_save</span><span class="p">(</span>
+                <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="nb">str</span> <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">c_name</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">recursive_save</span><span class="p">(</span>
+                    <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">c_name</span><span class="p">,</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">c_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                <span class="p">)</span>
+
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_hdf5</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">load_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Load a HDF5 file as a verdict Dict.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath (str):</span>
+<span class="sd">                Location to load the hdf5 file from.</span>
+
+<span class="sd">            load_attributes (boolean):</span>
+<span class="sd">                If True, load attributes stored in the hdf5 file&#39;s .attrs keys</span>
+<span class="sd">                and return as a separate dictionary.</span>
+
+<span class="sd">            unpack (boolean):</span>
+<span class="sd">                If True and the inner-most groups are combined into a condensed</span>
+<span class="sd">                DataFrame/array-like format, unpack them into a traditional</span>
+<span class="sd">                structure.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span> <span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span> <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">recursive_retrieve</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">key</span> <span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;Function for recursively loading from an hdf5 file.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                current_path (str):</span>
+<span class="sd">                    Current location in the hdf5 file.</span>
+
+<span class="sd">                key (str):</span>
+<span class="sd">                    Key to load.</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+
+            <span class="c1"># Update path</span>
+            <span class="n">current_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">key</span> <span class="p">)</span> 
+
+            <span class="n">item</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">current_path</span><span class="p">]</span>
+        
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span> <span class="p">):</span>
+
+                <span class="n">group</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">current_path</span><span class="p">]</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+
+                <span class="c1"># Sometimes the data is saved in a condensed, DataFrame-like,</span>
+                <span class="c1"># format. But when we load it we may want it back in the</span>
+                <span class="c1"># usual format.</span>
+                <span class="k">if</span> <span class="n">unpack</span> <span class="ow">and</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">i_key</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                        <span class="k">if</span> <span class="n">i_key</span> <span class="o">==</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                    
+                        <span class="n">i_result</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="n">ii_items</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">],</span> <span class="n">group</span><span class="p">[</span><span class="n">i_key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">ii_key</span><span class="p">,</span> <span class="n">ii_item</span> <span class="ow">in</span> <span class="n">ii_items</span><span class="p">:</span>
+                            <span class="n">i_result</span><span class="p">[</span><span class="n">ii_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ii_item</span>
+
+                        <span class="n">result</span><span class="p">[</span><span class="n">i_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">i_result</span> <span class="p">)</span>
+
+                    <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">result</span> <span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i_key</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">recursive_retrieve</span><span class="p">(</span> <span class="n">current_path</span><span class="p">,</span> <span class="n">i_key</span> <span class="p">)</span>
+
+                    <span class="k">return</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">result</span> <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Dataset</span> <span class="p">):</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">item</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">recursive_retrieve</span><span class="p">(</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">key</span> <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">result</span> <span class="p">)</span>
+
+        <span class="c1"># For shallow save files</span>
+        <span class="k">if</span> <span class="n">unpack</span> <span class="ow">and</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">true_result</span> <span class="o">=</span> <span class="p">{}</span>
+            
+            <span class="k">for</span> <span class="n">i_key</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">i_key</span> <span class="o">==</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            
+                <span class="n">i_result</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">ii_items</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="n">i_key</span><span class="p">]</span> <span class="p">)</span>
+                <span class="k">for</span> <span class="n">ii_key</span><span class="p">,</span> <span class="n">ii_item</span> <span class="ow">in</span> <span class="n">ii_items</span><span class="p">:</span>
+                    <span class="n">i_result</span><span class="p">[</span><span class="n">ii_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ii_item</span>
+
+                <span class="n">true_result</span><span class="p">[</span><span class="n">i_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span> <span class="n">i_result</span> <span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">true_result</span>
+
+        <span class="c1"># Load (or don&#39;t) attributes and return</span>
+        <span class="k">if</span> <span class="n">load_attributes</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">attrs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_class_and_args</span><span class="p">(</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">contained_cls</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">default_args</span><span class="o">=</span><span class="p">{},</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Alternate constructor. Creates a Dict of contained_cls objects,</span>
+<span class="sd">        with arguments passed to it from the dictionary created by</span>
+<span class="sd">        defaults and variations.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            contained_cls (type of object/constructor):</span>
+<span class="sd">                What class should the smart dict consist of?</span>
+
+<span class="sd">            args (dict/other):</span>
+<span class="sd">                Arguments that should be passed to contained_cls. If not a</span>
+<span class="sd">                dict, assumed to be the first and only argument for</span>
+<span class="sd">                the constructor.</span>
+
+<span class="sd">            default_args:</span>
+<span class="sd">                Default arguments to fill in args</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict:</span>
+<span class="sd">                The constructed instance.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">default_args</span><span class="p">,</span> <span class="n">args</span> <span class="p">)</span>
+
+        <span class="n">storage</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span> <span class="p">):</span>
+                <span class="n">storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">contained_cls</span><span class="p">(</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">storage</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">contained_cls</span><span class="p">(</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span> <span class="n">storage</span> <span class="p">)</span>
+
+<span class="c1">########################################################################</span>
+
+<span class="k">def</span> <span class="nf">merge_two_dicts</span><span class="p">(</span> <span class="n">dict_a</span><span class="p">,</span> <span class="n">dict_b</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Merges two dictionaries into a shallow copy.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dict_a (dict): First dictionary to merge.</span>
+<span class="sd">        dict_b (dict): Second dictionary to merge.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict:</span>
+<span class="sd">            Dictionary including elements from both.</span>
+<span class="sd">            dict_a&#39;s entries take priority over dict_b.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">merged_dict</span> <span class="o">=</span> <span class="n">dict_b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">merged_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">dict_a</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">merged_dict</span>
+
+<span class="c1">########################################################################</span>
+
+<span class="k">def</span> <span class="nf">dict_from_defaults_and_variations</span><span class="p">(</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">variations</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Create a dictionary of dictionaries from a default dictionary</span>
+<span class="sd">        and variations on it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        defaults (dict):</span>
+<span class="sd">            Default dictionary. What each individual dictionary should</span>
+<span class="sd">            default to.</span>
+
+<span class="sd">        variations (dict of dicts):</span>
+<span class="sd">            Each dictionary contains what should be different. The key for</span>
+<span class="sd">            each dictionary should be a label for it.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict of dicts:</span>
+<span class="sd">            The results is basically variations, where each child dict</span>
+<span class="sd">            is merged with defaults.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">defaults</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">variations</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">variations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+        <span class="n">defaults_copy</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">defaults_copy</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">variations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span>
+
+        <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaults_copy</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">galaxy-dive 0.8.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Zachary Hafen.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.2.
+    </div>
+  </body>
+</html>

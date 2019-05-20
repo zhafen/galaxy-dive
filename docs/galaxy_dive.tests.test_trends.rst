@@ -7,6 +7,7 @@ Submodules
 .. toctree::
 
    galaxy_dive.tests.test_trends.test_cgm
+   galaxy_dive.tests.test_trends.test_data_products
 
 Module contents
 ---------------

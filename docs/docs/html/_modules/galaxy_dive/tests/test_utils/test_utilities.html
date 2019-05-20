@@ -116,7 +116,27 @@
 
         <span class="n">expected</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span> <span class="p">[</span> <span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;--always&#39;</span><span class="p">]</span> <span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span></div></div>
+        <span class="k">assert</span> <span class="n">actual</span> <span class="o">==</span> <span class="n">expected</span></div>
+
+    <span class="c1">########################################################################</span>
+
+<div class="viewcode-block" id="TestGetCodeVersion.test_doesnt_change_dir_upon_failing"><a class="viewcode-back" href="../../../../galaxy_dive.tests.test_utils.test_utilities.html#galaxy_dive.tests.test_utils.test_utilities.TestGetCodeVersion.test_doesnt_change_dir_upon_failing">[docs]</a>    <span class="k">def</span> <span class="nf">test_doesnt_change_dir_upon_failing</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">true_cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+        <span class="c1"># Change to a dir that should not be a repository</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span> <span class="s1">&#39;~&#39;</span> <span class="p">)</span> <span class="p">)</span>
+
+        <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">utilities</span><span class="o">.</span><span class="n">get_code_version</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+        <span class="n">now_cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="n">cwd</span> <span class="o">==</span> <span class="n">now_cwd</span>
+
+        <span class="c1"># Change back</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span> <span class="n">true_cwd</span> <span class="p">)</span></div></div>
 
 <span class="c1">########################################################################</span>
 <span class="c1">########################################################################</span>

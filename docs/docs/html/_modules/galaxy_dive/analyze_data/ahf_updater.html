@@ -532,11 +532,12 @@
                 <span class="n">columns_to_add</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
                 <span class="c1"># Now get the values to add</span>
-                <span class="n">full_ahf_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">halo_id</span><span class="p">:</span><span class="n">halo_id</span><span class="p">]</span> 
-                <span class="n">ahf_row</span> <span class="o">=</span> <span class="n">full_ahf_row</span><span class="p">[</span><span class="n">columns_to_add</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">full_ahf_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">halo_id</span><span class="p">:</span><span class="n">halo_id</span><span class="p">]</span> 
+                    <span class="n">ahf_row</span> <span class="o">=</span> <span class="n">full_ahf_row</span><span class="p">[</span><span class="n">columns_to_add</span><span class="p">]</span>
 
-                <span class="c1"># Check for edge case, where there isn&#39;t an AHF row with specified halo number</span>
-                <span class="k">if</span> <span class="n">ahf_row</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Check for edge case, where there isn&#39;t an AHF row with specified halo number or there are no more halos</span>
+                <span class="k">if</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halos</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span> <span class="n">ahf_row</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
                     
                     <span class="c1"># Borrow a previous row for formatting</span>
                     <span class="n">ahf_row</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span> <span class="n">ahf_frames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>

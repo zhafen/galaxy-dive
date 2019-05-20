@@ -168,6 +168,11 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 
+autodoc_default_flags = {
+    'show-inheritance': True,
+    'inherited-members': None
+}
+
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.

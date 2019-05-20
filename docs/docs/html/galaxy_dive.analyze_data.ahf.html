@@ -44,6 +44,12 @@
 <dt id="galaxy_dive.analyze_data.ahf.HaloData">
 <em class="property">class </em><code class="descclassname">galaxy_dive.analyze_data.ahf.</code><code class="descname">HaloData</code><span class="sig-paren">(</span><em>data_dir</em>, <em>tag=None</em>, <em>index=None</em>, <em>mt_kwargs={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf.html#HaloData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.generic_data.html#galaxy_dive.analyze_data.generic_data.GenericData" title="galaxy_dive.analyze_data.generic_data.GenericData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.generic_data.GenericData</span></code></a></p>
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.base_data_shape">
+<code class="descname">base_data_shape</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.base_data_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf.HaloData.get_data">
 <code class="descname">get_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>snum</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf.html#HaloData.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.get_data" title="Permalink to this definition">¶</a></dt>
@@ -96,15 +102,121 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.get_processed_data">
+<code class="descname">get_processed_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>data_method=&lt;object object&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.get_processed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get post-processed data. (Accounting for fractions, log-space, etc.).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to get.</li>
+<li><strong>data_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What method to use for getting the data itself. Defaults to using self.get_data</li>
+<li><strong>**kwargs</strong> (<em>*args</em><em>,</em>) – <p>Passed to get_data()</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data, including formatting.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">processed_data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.ahf.HaloData.get_selected_data">
 <code class="descname">get_selected_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/ahf.html#HaloData.get_selected_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.get_selected_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for getting masked data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.handle_data_key_error">
+<code class="descname">handle_data_key_error</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.handle_data_key_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for attempting to generate data on the fly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Type of data to attempt to generate data for.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.iterate_over_method">
+<code class="descname">iterate_over_method</code><span class="sig-paren">(</span><em>method_str</em>, <em>iter_arg</em>, <em>iter_values</em>, <em>method_args</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.iterate_over_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over a specified method, and get the results out.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which method to use.</li>
+<li><strong>iter_arg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which argument of the method to iterate over.</li>
+<li><strong>iter_values</strong> (<em>list of values</em>) – Which values to change.</li>
+<li><strong>method_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Default args to pass to the method</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[ method( <a href="#id3"><span class="problematic" id="id4">**</span></a>used_args ) for used_args in all_variations_of_used_args ]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">results (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.length_scale">
+<code class="descname">length_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.length_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial length scale. By default, is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.mask_data">
+<code class="descname">mask_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.mask_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for masking data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.metallicity_scale">
+<code class="descname">metallicity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.metallicity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial metallicity scale. By default is z_sun
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="galaxy_dive.analyze_data.ahf.HaloData.mt_halos">
 <code class="descname">mt_halos</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.mt_halos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attribute for accessing merger tree data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.shift">
+<code class="descname">shift</code><span class="sig-paren">(</span><em>data</em>, <em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.</p>
+<p>data : data to be shifted
+data_key : Data key for the parameters to be shifted
+Parameters are a subdictionary of self.kwargs
+‘data_key’ : What data key the data is shifted for</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.ahf.HaloData.velocity_scale">
+<code class="descname">velocity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloData.velocity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial velocity scale. By default is 1.
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
 </dd></dl>
 
 </dd></dl>
@@ -201,6 +313,78 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">velocity_at_radius_key (str)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloKeyParser.is_fraction_key">
+<code class="descname">is_fraction_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloKeyParser.is_fraction_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the data should be some fraction of its relevant scale.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data key to check.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the data should be scaled as a fraction of the relevant scale.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">is_fraction_key (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloKeyParser.is_log_key">
+<code class="descname">is_log_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloKeyParser.is_log_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the data key indicates the data should be put in log scale.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data key to check.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the data should be taken log10 of</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">is_log_key (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloKeyParser.is_position_key">
+<code class="descname">is_position_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloKeyParser.is_position_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the data key deals with position primarily.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data key to check.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if deals with position.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">is_position_key (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a>)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.ahf.HaloKeyParser.is_velocity_key">
+<code class="descname">is_velocity_key</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.ahf.HaloKeyParser.is_velocity_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the data key deals with velocity primarily.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Data key to check.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if deals with velocity.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">is_velocity_key (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a>)</td>
 </tr>
 </tbody>
 </table>

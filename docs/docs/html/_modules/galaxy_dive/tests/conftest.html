@@ -50,7 +50,9 @@
 
 <div class="viewcode-block" id="pytest_addoption"><a class="viewcode-back" href="../../../galaxy_dive.tests.conftest.html#galaxy_dive.tests.conftest.pytest_addoption">[docs]</a><span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">addoption</span><span class="p">(</span><span class="s2">&quot;--runslow&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;run slow tests&quot;</span><span class="p">)</span></div>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;run slow tests&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">addoption</span><span class="p">(</span><span class="s2">&quot;--runstampede&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;run tests unique to stampede&quot;</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

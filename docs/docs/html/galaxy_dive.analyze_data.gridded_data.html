@@ -46,6 +46,47 @@
 <dd><p>Bases: <a class="reference internal" href="galaxy_dive.analyze_data.simulation_data.html#galaxy_dive.analyze_data.simulation_data.SnapshotData" title="galaxy_dive.analyze_data.simulation_data.SnapshotData"><code class="xref py py-class docutils literal notranslate"><span class="pre">galaxy_dive.analyze_data.simulation_data.SnapshotData</span></code></a></p>
 <p>Class for handling data that forms a Cartesian grid.</p>
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.add_hubble_flow">
+<code class="descname">add_hubble_flow</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.add_hubble_flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correct for hubble flow movement.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd>self.data[‘V’] : Accounts for hubble flow, relative to origin</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.base_data_shape">
+<code class="descname">base_data_shape</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.base_data_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_HI_den">
+<code class="descname">calc_HI_den</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_HI_den" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the HI density in cgs (cm^-3).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_H_den">
+<code class="descname">calc_H_den</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_H_den" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the H density in cgs (cm^-3). Assume the H fraction is ~0.75</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_abs_phi">
+<code class="descname">calc_abs_phi</code><span class="sig-paren">(</span><em>vector='total gas ang momentum'</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_abs_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The angle (in degrees) from some vector, but don’t mirror
+it around 90 degrees (e.g. 135 -&gt; 45 degrees, 180 -&gt; 0 degrees).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_ang_momentum">
+<code class="descname">calc_ang_momentum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_ang_momentum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angular momentum.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_column_density">
 <code class="descname">calc_column_density</code><span class="sig-paren">(</span><em>key</em>, <em>face</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/gridded_data.html#GriddedData.calc_column_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_column_density" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the column density for a targeted key.</p>
@@ -68,15 +109,256 @@ key_col_den (np.array) : The column density in {key units}/cm^2. Assumes the gri
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_inds">
+<code class="descname">calc_inds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_inds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the indices the data are located at, prior to any masks.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_mass">
 <code class="descname">calc_mass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/gridded_data.html#GriddedData.calc_mass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the mass per grid cell.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_mu">
+<code class="descname">calc_mu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the mean molecular weight.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_num_den">
+<code class="descname">calc_num_den</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_num_den" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the number density (it’s just a simple conversion…).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_phi">
+<code class="descname">calc_phi</code><span class="sig-paren">(</span><em>normal_vector='total ang momentum'</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the angle (in degrees) from some vector.
+By default the vector is the total angular momentum.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_positions">
 <code class="descname">calc_positions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/gridded_data.html#GriddedData.calc_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the positions of gridcells.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_radial_distance">
+<code class="descname">calc_radial_distance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_radial_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance from the origin for a given particle.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_radial_velocity">
+<code class="descname">calc_radial_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_radial_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the radial velocity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_rho_xy">
+<code class="descname">calc_rho_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_rho_xy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate impact parameter in the xy-plane.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_rho_xz">
+<code class="descname">calc_rho_xz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_rho_xz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate impact parameter in the xz-plane.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_rho_yz">
+<code class="descname">calc_rho_yz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_rho_yz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate impact parameter in the yz-plane.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_tangential_velocity">
+<code class="descname">calc_tangential_velocity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_tangential_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the radial velocity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.calc_velocity_magnitude">
+<code class="descname">calc_velocity_magnitude</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.calc_velocity_magnitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the radial velocity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.center_coords">
+<code class="descname">center_coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.center_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the location of the origin, if the data isn’t already centered.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd>self.data[‘P’] : Shifts the coordinates to the center.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.center_vel_coords">
+<code class="descname">center_vel_coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.center_vel_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get velocity coordinates to center on the main halo.</p>
+<dl class="docutils">
+<dt>Modifies:</dt>
+<dd>self.data[‘V’] : Makes all velocities relative to self.vel_origin</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.central_mask">
+<code class="descname">central_mask</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.central_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>This mask is used when, for example, finding the velocity of the
+center of mass.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.dN_halo">
+<code class="descname">dN_halo</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.dN_halo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate dN_halo/dX/dlog10Mh or dN_halo/dz/dlog10Mh. X is absorption path length (see for example Ribaudo+11)</p>
+<dl class="docutils">
+<dt>time_units: ‘abs_length’- dN_halo/dX/dlog10Mh</dt>
+<dd>‘redshift’ - dN_halo/dz/dlog10Mh</dd>
+<dt>R_vir:      None - Default, assumes given.</dt>
+<dd>‘BN’ Calculates R_vir from the mass and redshift</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.dist_to_point">
+<code class="descname">dist_to_point</code><span class="sig-paren">(</span><em>point</em>, <em>units='default'</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.dist_to_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance to a point for all particles.</p>
+<p>point : np array that gives the point</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>sl=None</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the data from within the class. Only for getting the data. No post-processing or changing the data
+(putting it in particular units, etc.) The idea is to calculate necessary quantities as the need arises,
+hence a whole function for getting the data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key in the data dictionary for the key we want to get</li>
+<li><strong>sl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#slice" title="(in Python v3.7)"><em>slice</em></a>) – Slice of the data, if requested.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.get_distance_to_point">
+<code class="descname">get_distance_to_point</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.get_distance_to_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is <em>not</em> unit tested.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>point</strong> (<em>array-like of shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The point you want to find the distance to for each particle.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.get_position_data">
+<code class="descname">get_position_data</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.get_position_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get position data (assuming the data starts with an ‘R’)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key in the data dictionary for the key we want to get</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Requested data.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">data (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.get_potential">
+<code class="descname">get_potential</code><span class="sig-paren">(</span><em>point</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.get_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is <em>not</em> unit tested.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>point</strong> (<em>array-like of shape</em><em> (</em><em>3</em><em>,</em><em>)</em>) – The point you want to find the potential at</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.get_processed_data">
+<code class="descname">get_processed_data</code><span class="sig-paren">(</span><em>data_key</em>, <em>data_method=&lt;object object&gt;</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.get_processed_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get post-processed data. (Accounting for fractions, log-space, etc.).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What data to get.</li>
+<li><strong>data_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – What method to use for getting the data itself. Defaults to using self.get_data</li>
+<li><strong>**kwargs</strong> (<em>*args</em><em>,</em>) – <p>Passed to get_data()</p>
+</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Requested data, including formatting.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">processed_data (np.ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.get_selected_data">
+<code class="descname">get_selected_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.get_selected_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for getting masked data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.get_velocity_data">
+<code class="descname">get_velocity_data</code><span class="sig-paren">(</span><em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.get_velocity_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get position data (assuming the data starts with a ‘V’)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Key in the data dictionary for the key we want to get</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Requested data.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">data (np.ndarray)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.halo_data">
+<code class="descname">halo_data</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.halo_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Halo data used.</p>
 </dd></dl>
 
 <dl class="method">
@@ -97,10 +379,119 @@ key_col_den (np.array) : The column density in {key units}/cm^2. Assumes the gri
 </dl>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.hubble_z">
+<code class="descname">hubble_z</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.hubble_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for the hubble function at specified redshift.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.iterate_over_method">
+<code class="descname">iterate_over_method</code><span class="sig-paren">(</span><em>method_str</em>, <em>iter_arg</em>, <em>iter_values</em>, <em>method_args</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.iterate_over_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over a specified method, and get the results out.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which method to use.</li>
+<li><strong>iter_arg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Which argument of the method to iterate over.</li>
+<li><strong>iter_values</strong> (<em>list of values</em>) – Which values to change.</li>
+<li><strong>method_args</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Default args to pass to the method</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">[ method( <a href="#id3"><span class="problematic" id="id4">**</span></a>used_args ) for used_args in all_variations_of_used_args ]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">results (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.length_scale">
+<code class="descname">length_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.length_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial simulation length scale.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.mask_data">
+<code class="descname">mask_data</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.mask_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for masking data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.metallicity_scale">
+<code class="descname">metallicity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.metallicity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial metallicity scale. By default is z_sun
+However, a more advanced subclass might set this differently, or this might
+change in the future.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.r_scale">
+<code class="descname">r_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.r_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for scale radius.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.r_vir">
+<code class="descname">r_vir</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.r_vir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for virial radius.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.redshift">
+<code class="descname">redshift</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.redshift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for simulation redshift.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.retrieve_data">
 <code class="descname">retrieve_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/galaxy_dive/analyze_data/gridded_data.html#GriddedData.retrieve_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.retrieve_data" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.retrieve_halo_data">
+<code class="descname">retrieve_halo_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.retrieve_halo_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.shift">
+<code class="descname">shift</code><span class="sig-paren">(</span><em>data</em>, <em>data_key</em><span class="sig-paren">)</span><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift or multiply the data by some amount. Note that this is applied after logarithms are applied.</p>
+<p>data : data to be shifted
+data_key : Data key for the parameters to be shifted
+Parameters are a subdictionary of self.kwargs
+‘data_key’ : What data key the data is shifted for</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.total_ang_momentum">
+<code class="descname">total_ang_momentum</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.total_ang_momentum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the total angular momentum vector.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.v_c">
+<code class="descname">v_c</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.v_c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for circular velocity.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.v_com">
+<code class="descname">v_com</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.v_com" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for the velocity of the center of mass.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="galaxy_dive.analyze_data.gridded_data.GriddedData.velocity_scale">
+<code class="descname">velocity_scale</code><a class="headerlink" href="#galaxy_dive.analyze_data.gridded_data.GriddedData.velocity_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property for fiducial simulation velocity scale.</p>
+</dd></dl>
 
 </dd></dl>
 

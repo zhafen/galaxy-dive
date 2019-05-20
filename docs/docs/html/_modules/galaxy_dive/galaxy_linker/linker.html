@@ -77,6 +77,8 @@
         <span class="n">minimum_criteria</span> <span class="o">=</span> <span class="s1">&#39;n_star&#39;</span><span class="p">,</span>
         <span class="n">minimum_value</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">ids_to_return</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ids_with_supplementary_data</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">supplementary_data_keys</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">halo_data</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">halo_finder</span> <span class="o">=</span> <span class="s1">&#39;AHF&#39;</span><span class="p">,</span>
         <span class="n">halo_data_dir</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -135,6 +137,14 @@
 
 <span class="sd">            ids_to_return (list of strs, optional) :</span>
 <span class="sd">                The types of id you want to get out.</span>
+
+<span class="sd">            ids_with_supplementary_data (list of strs, optional) :</span>
+<span class="sd">                What types of IDs should include supplementary data pulled</span>
+<span class="sd">                from the halo files.</span>
+
+<span class="sd">            supplementary_data_keys (list of strs, optional) :</span>
+<span class="sd">                What data keys in the halo files should be accessed and</span>
+<span class="sd">                included as part of supplementary data.</span>
 
 <span class="sd">            halo_data (HaloData object, optional) :</span>
 <span class="sd">                An instance of an object that retrieves halo data</span>
@@ -230,6 +240,29 @@
     <span class="c1">########################################################################</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">valid_halo_pos</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            valid_halo_pos (np.ndarray) :</span>
+<span class="sd">               Positions in proper kpc of positions we would like to link to.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_valid_halo_pos&#39;</span> <span class="p">):</span>
+
+            <span class="c1"># Get the halo positions</span>
+            <span class="n">halo_pos_comov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kpc&#39;</span> <span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kpc&#39;</span> <span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kpc&#39;</span> <span class="p">),</span>
+            <span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="n">halo_pos</span> <span class="o">=</span> <span class="n">halo_pos_comov</span> <span class="o">/</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">redshift</span> <span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_valid_halo_pos</span> <span class="o">=</span> <span class="n">halo_pos</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_halo_inds</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_halo_pos</span>
+
+    <span class="c1">########################################################################</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dist_to_all_valid_halos</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns:</span>
@@ -257,20 +290,11 @@
 <span class="sd">                halos containing a galaxy (in pkpc).</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="c1"># Get the halo positions</span>
-        <span class="n">halo_pos_comov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kpc&#39;</span> <span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kpc&#39;</span> <span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;kpc&#39;</span> <span class="p">),</span>
-        <span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-        <span class="n">halo_pos</span> <span class="o">=</span> <span class="n">halo_pos_comov</span> <span class="o">/</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">redshift</span> <span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble</span>
-        <span class="n">halo_pos_selected</span> <span class="o">=</span> <span class="n">halo_pos</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_halo_inds</span><span class="p">]</span>
-
         <span class="c1"># Get the distances</span>
         <span class="c1"># Output is ordered such that dist[:,0] is the distance to the center of</span>
         <span class="c1"># halo 0 for each particle</span>
         <span class="k">return</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span>
-            <span class="n">particle_positions</span><span class="p">,</span> <span class="n">halo_pos_selected</span> <span class="p">)</span></div>
+            <span class="n">particle_positions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">valid_halo_pos</span> <span class="p">)</span></div>
 
     <span class="c1">########################################################################</span>
 
@@ -360,41 +384,62 @@
         <span class="c1"># Actually get the data</span>
         <span class="k">for</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_to_return</span><span class="p">:</span>
 
+            <span class="n">supplementary_data</span> <span class="o">=</span> <span class="n">id_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_with_supplementary_data</span>
+
             <span class="k">if</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;halo_id&#39;</span><span class="p">:</span>
-                <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;halo_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">()</span>
+                <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;halo_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">(</span> <span class="n">supplementary_data</span><span class="o">=</span><span class="n">supplementary_data</span> <span class="p">)</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;host_halo_id&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;host_halo_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_host_id</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;gal_id&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;gal_id&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">galaxy_cut</span> <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">galaxy_cut</span><span class="p">,</span> <span class="n">supplementary_data</span><span class="o">=</span><span class="n">supplementary_data</span>  <span class="p">)</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;host_gal_id&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;host_gal_id&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">find_host_id</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">galaxy_cut</span> <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">find_host_id</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">galaxy_cut</span><span class="p">,</span> <span class="p">)</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;mt_halo_id&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;mt_halo_id&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">(</span> <span class="n">type_of_halo_id</span><span class="o">=</span><span class="s1">&#39;mt_halo_id&#39;</span> <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">(</span> <span class="n">type_of_halo_id</span><span class="o">=</span><span class="s1">&#39;mt_halo_id&#39;</span><span class="p">,</span> <span class="n">supplementary_data</span><span class="o">=</span><span class="n">supplementary_data</span>  <span class="p">)</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;mt_gal_id&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;mt_gal_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">galaxy_cut</span><span class="p">,</span> <span class="n">type_of_halo_id</span><span class="o">=</span><span class="s1">&#39;mt_halo_id&#39;</span> <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">galaxy_cut</span><span class="p">,</span> <span class="n">type_of_halo_id</span><span class="o">=</span><span class="s1">&#39;mt_halo_id&#39;</span><span class="p">,</span>  <span class="p">)</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;d_gal&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;d_gal&#39;</span><span class="p">]</span> <span class="o">=</span> \
-                    <span class="bp">self</span><span class="o">.</span><span class="n">find_d_gal</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">find_d_gal</span><span class="p">(</span> <span class="n">supplementary_data</span><span class="o">=</span><span class="n">supplementary_data</span> <span class="p">)</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;d_other_gal&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;d_other_gal&#39;</span><span class="p">]</span> <span class="o">=</span> \
                     <span class="bp">self</span><span class="o">.</span><span class="n">find_d_other_gal</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">id_type</span> <span class="o">==</span> <span class="s1">&#39;d_other_gal_scaled&#39;</span><span class="p">:</span>
                 <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="s1">&#39;d_other_gal_scaled&#39;</span><span class="p">]</span> <span class="o">=</span> \
                     <span class="bp">self</span><span class="o">.</span><span class="n">find_d_other_gal</span><span class="p">(</span> <span class="n">scaled</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+            <span class="c1"># Custom scales</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;Unrecognized id_type, </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">id_type</span> <span class="p">)</span> <span class="p">)</span>
+                <span class="n">galaxy_cut</span><span class="p">,</span> <span class="n">length_scale</span> <span class="o">=</span> <span class="n">id_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span>
+                <span class="n">galaxy_cut</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span> <span class="n">galaxy_cut</span> <span class="p">)</span>
+
+                <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="n">id_type</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">find_halo_id</span><span class="p">(</span> <span class="n">galaxy_cut</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="n">length_scale</span> <span class="p">)</span>
+
+        <span class="c1"># Check for supplementary data and store it in a proper format</span>
+        <span class="n">galaxy_and_halo_ids_orig</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span> <span class="n">galaxy_and_halo_ids</span> <span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">galaxy_and_halo_ids_orig</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span> <span class="p">):</span>
+                <span class="n">arr</span><span class="p">,</span> <span class="n">s_data</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">arr</span>
+                <span class="k">for</span> <span class="n">s_key</span><span class="p">,</span> <span class="n">s_item</span> <span class="ow">in</span> <span class="n">s_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">stored_key</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">key</span><span class="p">,</span> <span class="n">s_key</span> <span class="p">)</span>
+                    <span class="n">galaxy_and_halo_ids</span><span class="p">[</span><span class="n">stored_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_item</span>
 
         <span class="k">return</span> <span class="n">galaxy_and_halo_ids</span></div>
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyLinker.find_d_gal"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_gal">[docs]</a>    <span class="k">def</span> <span class="nf">find_d_gal</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyLinker.find_d_gal"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_d_gal">[docs]</a>    <span class="k">def</span> <span class="nf">find_d_gal</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">supplementary_data</span><span class="o">=</span><span class="kc">False</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find the distance to the center of the closest halo that contains a</span>
 <span class="sd">        galaxy.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            supplementary_data (bool) :</span>
+<span class="sd">                If True, extract additional data about the closest galaxy</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            d_gal (np.ndarray) : For particle i, d_gal[i] is the distance in</span>
@@ -405,7 +450,26 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_n_halos</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
              <span class="k">return</span> <span class="o">-</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_particles</span><span class="p">,)</span> <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_to_all_valid_halos</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span></div>
+        <span class="n">min_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_to_all_valid_halos</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+        <span class="n">first_col_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_to_all_valid_halos</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">d_gal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_to_all_valid_halos</span><span class="p">[</span><span class="n">first_col_inds</span><span class="p">,</span><span class="n">min_inds</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">supplementary_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">d_gal</span>
+
+        <span class="c1"># When including supplementary_data</span>
+        <span class="n">s_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supplementary_data_keys</span><span class="p">:</span>
+
+            <span class="c1"># Handle when no halos exist.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_n_halos</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span> <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                 <span class="n">s_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_particles</span><span class="p">,)</span> <span class="p">)</span>
+
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="n">valid_data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_halo_inds</span><span class="p">]</span>
+            <span class="n">s_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">valid_data</span><span class="p">[</span><span class="n">min_inds</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">d_gal</span><span class="p">,</span> <span class="n">s_data</span></div>
 
     <span class="c1">########################################################################</span>
 
@@ -538,6 +602,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">radial_cut_fraction</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span>
         <span class="n">type_of_halo_id</span> <span class="o">=</span> <span class="s1">&#39;halo_id&#39;</span><span class="p">,</span>
+        <span class="n">length_scale</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">supplementary_data</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find the smallest halos our particles are inside of some radial cut</span>
 <span class="sd">        of (we define this as the halo ID). In the case of using MT halo ID,</span>
@@ -552,6 +618,13 @@
 <span class="sd">                If &#39;halo_id&#39; then this is the halo_id at a given snapshot.</span>
 <span class="sd">                If &#39;mt_halo_id&#39; then this is the halo_id according to the</span>
 <span class="sd">                merger tree.</span>
+
+<span class="sd">            length_scale (str):</span>
+<span class="sd">                If using a custom length scale for the halo ID, what scale?</span>
+
+<span class="sd">            supplementary_data (bool):</span>
+<span class="sd">                If True, also return supplementary data according to the keys</span>
+<span class="sd">                in self.supplementary_data_keys</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            halo_id (np.array of ints): Shape ( n_particles, ).</span>
@@ -600,7 +673,8 @@
 
         <span class="c1"># Get the cut</span>
         <span class="n">part_of_halo</span> <span class="o">=</span> <span class="n">find_containing_halos_fn</span><span class="p">(</span>
-            <span class="n">radial_cut_fraction</span> <span class="o">=</span> <span class="n">radial_cut_fraction</span>
+            <span class="n">radial_cut_fraction</span> <span class="o">=</span> <span class="n">radial_cut_fraction</span><span class="p">,</span>
+            <span class="n">length_scale</span> <span class="o">=</span> <span class="n">length_scale</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Mask the data</span>
@@ -609,10 +683,29 @@
 
         <span class="c1"># Take the extremum of the masked data</span>
         <span class="k">if</span> <span class="n">type_of_halo_id</span> <span class="o">==</span> <span class="s1">&#39;halo_id&#39;</span><span class="p">:</span>
+
             <span class="n">halo_inds</span> <span class="o">=</span> <span class="n">arg_extremum_fn</span><span class="p">(</span> <span class="n">tiled_m_vir_ma</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
+
+            <span class="c1"># Get the halo ID</span>
             <span class="n">all_halo_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span> <span class="p">)</span>
             <span class="n">halo_id</span> <span class="o">=</span> <span class="n">all_halo_ids</span><span class="p">[</span><span class="n">halo_inds</span><span class="p">]</span>
+
+            <span class="c1"># When including supplementary data</span>
+            <span class="k">if</span> <span class="n">supplementary_data</span><span class="p">:</span>
+                <span class="n">supplementary_data</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">data_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supplementary_data_keys</span><span class="p">:</span>
+                    <span class="n">full_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span> <span class="n">data_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">snum</span> <span class="p">)</span>
+
+                    <span class="c1"># Make sure it&#39;s a numpy array (instead of a unyt array)</span>
+                    <span class="n">full_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">full_data</span> <span class="p">)</span>
+
+                    <span class="n">supplementary_data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_data</span><span class="p">[</span><span class="n">halo_inds</span><span class="p">]</span>
+
         <span class="k">elif</span> <span class="n">type_of_halo_id</span> <span class="o">==</span> <span class="s1">&#39;mt_halo_id&#39;</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">supplementary_data</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="s2">&quot;Supplementary data not yet compatible with MT halo IDs.&quot;</span> <span class="p">)</span>
+
             <span class="n">halo_inds</span> <span class="o">=</span> <span class="n">arg_extremum_fn</span><span class="p">(</span> <span class="n">tiled_m_vir_ma</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span>
             <span class="n">halo_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="nb">sorted</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">mtree_halos</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="p">)</span> <span class="p">)</span>
             <span class="n">halo_id</span> <span class="o">=</span> <span class="n">halo_ids</span><span class="p">[</span><span class="n">halo_inds</span><span class="p">]</span>
@@ -621,11 +714,22 @@
         <span class="n">mask</span> <span class="o">=</span> <span class="n">extremum_fn</span><span class="p">(</span> <span class="n">tiled_m_vir_ma</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> <span class="p">)</span><span class="o">.</span><span class="n">mask</span>
         <span class="n">halo_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">halo_id</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">2</span> <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">halo_id</span></div>
+        <span class="c1"># Do the same for the supplementary data</span>
+        <span class="k">if</span> <span class="n">type_of_halo_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_with_supplementary_data</span><span class="p">:</span>
+            <span class="n">supplementary_data</span><span class="p">[</span><span class="n">data_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span> <span class="n">supplementary_data</span><span class="p">[</span><span class="n">data_key</span><span class="p">],</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span> <span class="p">),</span>
+                <span class="n">fill_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Return</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">supplementary_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">halo_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">halo_id</span><span class="p">,</span> <span class="n">supplementary_data</span></div>
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyLinker.find_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_containing_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyLinker.find_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_containing_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find which halos our particles are inside of some radial cut of.</span>
 
 <span class="sd">        Args:</span>
@@ -636,21 +740,50 @@
 <span class="sd">                If index [i, j] is True, then particle i is inside radial_cut_fraction*length_scale of the jth halo.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
+        <span class="k">if</span> <span class="n">length_scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">length_scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length_scale</span>
+
+        <span class="c1"># Get the relevant length scale</span>
+        <span class="k">if</span> <span class="n">length_scale</span> <span class="o">==</span> <span class="s1">&#39;r_scale&#39;</span><span class="p">:</span>
+            <span class="c1"># Get the scale radius</span>
+            <span class="n">r_vir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">halo_length_scale</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;kpc&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">length_scale_arr</span> <span class="o">=</span> <span class="n">r_vir</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
+                <span class="s1">&#39;cAnalytic&#39;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">length_scale_arr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span>
+                <span class="n">length_scale</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">snum</span><span class="p">,</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;kpc&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">halos_length_scale_pkpc</span> <span class="o">=</span> \
+            <span class="n">length_scale_arr</span> <span class="o">/</span> <span class="p">(</span> <span class="mf">1.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">redshift</span> <span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">hubble</span>
+
         <span class="c1"># Get the radial cut</span>
-        <span class="n">radial_cut</span> <span class="o">=</span> <span class="n">radial_cut_fraction</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">ahf_halos_length_scale_pkpc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_halo_inds</span><span class="p">]</span>
+        <span class="n">radial_cut</span> <span class="o">=</span> <span class="n">radial_cut_fraction</span><span class="o">*</span><span class="n">halos_length_scale_pkpc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_halo_inds</span><span class="p">]</span>
 
         <span class="c1"># Find the halos that our particles are part of (provided they passed the minimum cut)</span>
         <span class="n">part_of_halo_success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_to_all_valid_halos</span> <span class="o">&lt;</span> <span class="n">radial_cut</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,:]</span>
 
         <span class="c1"># Get the full array out</span>
-        <span class="n">part_of_halo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_particles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ahf_halos_length_scale_pkpc</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="nb">bool</span> <span class="p">)</span>
+        <span class="n">part_of_halo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_particles</span><span class="p">,</span> <span class="n">halos_length_scale_pkpc</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span> <span class="nb">bool</span> <span class="p">)</span>
         <span class="n">part_of_halo</span><span class="p">[:,</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_halo_inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">part_of_halo_success</span>
 
         <span class="k">return</span> <span class="n">part_of_halo</span></div>
 
     <span class="c1">########################################################################</span>
 
-<div class="viewcode-block" id="GalaxyLinker.find_mt_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_mt_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_mt_containing_halos</span><span class="p">(</span> <span class="bp">self</span><span class="p">,</span> <span class="n">radial_cut_fraction</span><span class="o">=</span><span class="mf">1.</span> <span class="p">):</span>
+<div class="viewcode-block" id="GalaxyLinker.find_mt_containing_halos"><a class="viewcode-back" href="../../../galaxy_dive.galaxy_linker.linker.html#galaxy_dive.galaxy_linker.linker.GalaxyLinker.find_mt_containing_halos">[docs]</a>    <span class="k">def</span> <span class="nf">find_mt_containing_halos</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">radial_cut_fraction</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span>
+        <span class="n">length_scale</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Find which MergerTrace halos our particles are inside of some</span>
 <span class="sd">        radial cut of.</span>
 
@@ -665,6 +798,10 @@
 <span class="sd">                radial_cut_fraction*length_scale of the jth halo, defined</span>
 <span class="sd">                via the MergerTrace ID.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">assert</span> <span class="n">length_scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> \
+            <span class="s2">&quot;find_mt_containing_halos has not yet been updated to accept&quot;</span> <span class="o">+</span> \
+            <span class="s2">&quot; a length_scale as an argument like find_containing_halos.&quot;</span>
 
         <span class="c1"># Load up the merger tree data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">halo_data</span><span class="o">.</span><span class="n">data_reader</span><span class="o">.</span><span class="n">get_mtree_halos</span><span class="p">(</span>
