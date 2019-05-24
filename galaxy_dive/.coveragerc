@@ -4,3 +4,6 @@ omit =
     tests/*
     # We don't care about plotting code, which is tested by using it.
     plot_data/*
+    # We don't care about the "trends" submodule, because this should just
+    # be very simple functions taken from other papers.
+    trends/*
