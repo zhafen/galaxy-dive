@@ -1,2 +1,6 @@
-[run]
-omit = tests/* plot_data/*
+[report]
+omit =
+    # Don't run coverage on tests
+    tests/*
+    # We don't care about plotting code, which is tested by using it.
+    plot_data/*
