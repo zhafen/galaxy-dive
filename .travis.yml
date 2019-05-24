@@ -11,6 +11,6 @@ install:
 # command to run tests
 script:
   - cd galaxy_dive
-  - pytest --runslow --cov=./
+  - pytest --runslow --cov=./ --cov-config=.coveragerc
 after_success:
   - codecov
