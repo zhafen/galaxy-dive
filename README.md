@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/zhafen/galaxy-dive.svg?branch=master)](https://travis-ci.com/zhafen/galaxy-dive)
 [![codecov](https://codecov.io/gh/zhafen/galaxy-dive/branch/master/graph/badge.svg)](https://codecov.io/gh/zhafen/galaxy-dive)
 
 # Galaxy Dive #
