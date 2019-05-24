@@ -7,3 +7,5 @@ omit =
     # We don't care about the "trends" submodule, because this should just
     # be very simple functions taken from other papers.
     trends/*
+    # Omit the transformations module, which was constructed independently
+    utils/transformations.py
