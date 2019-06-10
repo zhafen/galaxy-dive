@@ -13,6 +13,7 @@ import pandas as pd
 import scipy.interpolate as interp
 from scipy.optimize import newton
 import sys
+import verdict
 
 import galaxy_dive.config as gd_config
 import galaxy_dive.utils.constants as constants
@@ -68,7 +69,7 @@ def stellar_mass_metallicity_relation( m_star, apply_correction=True ):
 
     # Values from Table 2 of Gallazzi+2005
     m_star_gallazzi = 10.**np.arange( 8.91, 11.91 + .2, .2 )
-    z_data = utilities.SmartDict({
+    z_data = verdict.Dict({
         50 : 10.**np.array([
             -0.60,
             -0.61,
@@ -126,7 +127,7 @@ def stellar_mass_metallicity_relation( m_star, apply_correction=True ):
     })
 
     # Interpolate
-    z = utilities.SmartDict( {} )
+    z = verdict.Dict( {} )
     for key, item in z_data.items():
         z[key] = interp.interp1d( m_star_gallazzi, item )( m_star )
 
@@ -246,7 +247,7 @@ def galaxy_metal_mass(
 
             m_dust = ism_dust_mass( m_star )
 
-            m_z[mass_source] = utilities.SmartDict( {
+            m_z[mass_source] = verdict.Dict( {
                 16 : m_dust / 1.5,
                 50 : m_dust,
                 84 : m_dust * 1.5,
@@ -254,7 +255,7 @@ def galaxy_metal_mass(
 
     # Total
     # Create the array
-    m_z['total'] = utilities.SmartDict( {} )
+    m_z['total'] = verdict.Dict( {} )
     for key, item in m_z[mass_sources[0]].items():
         m_z['total'][key] = np.zeros( m_star.shape )
     # Sum up
@@ -408,11 +409,11 @@ def cold_gas_fraction(
 
     # Interpolate
     if m_star is not None:
-        f_g = utilities.SmartDict( {} )
+        f_g = verdict.Dict( {} )
         for key, item in f_g_data.items():
             f_g[key] = interp.interp1d( m_star_peeples, item )( m_star )
     else:
-        f_g = utilities.SmartDict( f_g_data )
+        f_g = verdict.Dict( f_g_data )
 
         return m_star_peeples, f_g
 

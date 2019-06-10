@@ -69,7 +69,8 @@ def box_plot(
         y_data = copy.copy( y_data )
 
         # Apply a floor
-        y_data[y_data<y_floor] = y_floor
+        if y_floor is not None:
+            y_data[y_data<y_floor] = y_floor
 
         # Put in logspace
         if x_scale == 'log':

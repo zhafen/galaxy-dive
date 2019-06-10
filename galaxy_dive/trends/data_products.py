@@ -16,7 +16,7 @@ import pandas as pd
 def tidal_tensor_data_grudic(
     snum,
     ids = None,
-    data_dir = '/work/03532/mgrudic/tidal_tensor',
+    data_dir = '/work/03532/mgrudic/tidal_tensor/tidal_tensor_data',
 ):
     '''Load data Mike Grudic processed that contains Tidal Tensor, velocity
     dispersion, and items used for calculating the aforementioned quantities.
