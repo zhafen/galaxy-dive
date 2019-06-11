@@ -1501,13 +1501,61 @@ class TimeData( SimulationData ):
                 cumtime_region = np.cumsum( dt_region )
 
                 # Store that time
-                try:
-                    time_un_classification[i, start:end] = cumtime_region
-                except:
-                    #DEBUG
-                    import pdb; pdb.set_trace()
+                time_un_classification[i, start:end] = cumtime_region
 
         self.data[data_key] = time_un_classification
+
+        return True
+
+    ########################################################################
+
+    def calc_next_time_as_classification( self, data_key ):
+        '''For a given classification calculate the time that will be spent
+        as that classification when the particle is next that classification.
+        Calculates `next_time_as_classification`, where the value at [i,j]
+        indicates for particle i at index j the amount of time as that
+        classification when the particle is next that classification (or if
+        it's already that classification the amount of time it will be that
+        classification).
+        
+        Returns:
+            bool:
+                True if the calculation was done, False if this isn't the right
+                function to call.
+        '''
+
+        # Check if we should be running this function (does the provided
+        # data_key even match the format we want to parse?)
+        if data_key[:12] != 'next_time_as':
+            return False
+
+        # Get the data key for the classification
+        classification_data_key = 'is_{}'.format( data_key[13:] )
+
+        # Get out the classification data itself
+        classification = self.get_data( classification_data_key )
+
+        # Get out the time intervals, and tile them for formatting
+        dt = self.get_data( 'dt' )
+        
+        # Fill in the array row by row
+        time_next = np.zeros( classification.shape )
+        for i, row in enumerate( classification ):
+
+            # Identify regions of contiguous classification
+            contiguous_regions = data_operations.contiguous_regions( row )
+
+            # Find the cumulative time in specified regions
+            for start, end in contiguous_regions:
+
+                dt_region = dt[start:end]
+
+                time_region = np.sum( dt_region )
+
+                # Store that time
+                time_next[i, start:] = time_region
+
+        self.data[data_key] = time_next
 
         return True
 

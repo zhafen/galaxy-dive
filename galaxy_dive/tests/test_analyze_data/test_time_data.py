@@ -424,7 +424,7 @@ class TestCalc( unittest.TestCase ):
     ########################################################################
 
     def test_calc_time_until_not_classification( self ):
-        '''Calculate the time spent as a certain classification.
+        '''Calculate the time until not a certain classification
         '''
 
         # Set up test data
@@ -447,6 +447,37 @@ class TestCalc( unittest.TestCase ):
             [ 0., 0., 2., ],
             [ 0., 1., 0., ],
             [ 0., 1., 3., ],
+        ])
+
+        npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
+    def test_calc_next_time_as_classification( self ):
+        '''When a particle next enters a classification calculate the time it
+        will spend as that classification.
+        '''
+
+        # Set up test data
+        self.t_data.data = {}
+        self.t_data.data['is_A'] = np.array([
+            [ 1, 1, 1, 0, ],
+            [ 1, 0, 0, 0, ],
+            [ 1, 0, 1, 0, ],
+            [ 0, 1, 1, 0, ],
+        ]).astype( bool )
+        self.t_data.data['dt'] = np.array([
+            1.0, 2.0, 3.0,
+        ])
+
+        self.t_data.calc_next_time_as_classification( 'next_time_as_A' )
+
+        actual = self.t_data.data['next_time_as_A']
+        expected = np.array([
+            [ 6., 6., 6., 6., ],
+            [ 1., 1., 1., 1., ],
+            [ 1., 1., 3., 3., ],
+            [ 0., 5., 5., 5., ],
         ])
 
         npt.assert_allclose( expected, actual )
