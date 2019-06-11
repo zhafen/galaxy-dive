@@ -1138,7 +1138,11 @@ class TimeData( SimulationData ):
         method_str = 'calc_{}'.format( data_key )
         if hasattr( self, method_str ):
             getattr( self, method_str )()
+        elif self.calc_inverse_classification( data_key ):
+            return
         elif self.calc_time_as_classification( data_key ):
+            return
+        elif self.calc_next_time_as_classification( data_key ):
             return
         elif self.calc_time_until_not_classification( data_key ):
             return
@@ -1420,6 +1424,21 @@ class TimeData( SimulationData ):
             phi,
             np.absolute( phi - 180.)
         )
+
+    ########################################################################
+
+    def calc_inverse_classification( self, data_key ):
+
+        if data_key[:3] == 'not':
+            c_key = data_key[4:]
+        elif data_key[:6] == 'is_not':
+            c_key = 'is_{}'.format( data_key[7:] )
+        else:
+            return False
+        
+        self.data[data_key] = np.invert( self.get_data( c_key ) )
+
+        return True
 
     ########################################################################
 

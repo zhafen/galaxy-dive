@@ -393,6 +393,40 @@ class TestCalc( unittest.TestCase ):
 
     ########################################################################
 
+    def test_inverse_classification( self ):
+        '''When a particle next enters a classification calculate the time it
+        will spend as that classification.
+        '''
+
+        # Set up test data
+        self.t_data.data = {}
+        self.t_data.data['is_A'] = np.array([
+            [ 1, 1, 1, 0, ],
+            [ 1, 0, 0, 0, ],
+            [ 1, 0, 1, 0, ],
+            [ 0, 1, 1, 0, ],
+        ]).astype( bool )
+
+        actual = self.t_data.get_data( 'not_is_A' )
+        expected = np.array([
+            [ 0, 0, 0, 1, ],
+            [ 0, 1, 1, 1, ],
+            [ 0, 1, 0, 1, ],
+            [ 1, 0, 0, 1, ],
+        ]).astype( bool )
+        npt.assert_allclose( expected, actual )
+
+        actual = self.t_data.get_data( 'is_not_A' )
+        expected = np.array([
+            [ 0, 0, 0, 1, ],
+            [ 0, 1, 1, 1, ],
+            [ 0, 1, 0, 1, ],
+            [ 1, 0, 0, 1, ],
+        ]).astype( bool )
+        npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
     def test_calc_time_as_classification( self ):
         '''Calculate the time spent as a certain classification.
         '''
