@@ -1146,6 +1146,8 @@ class TimeData( SimulationData ):
             return
         elif self.calc_time_until_not_classification( data_key ):
             return
+        elif self.calc_smoothed_classification( data_key ):
+            return
 
         else:
             super( TimeData, self ).handle_data_key_error( data_key )
@@ -1575,6 +1577,54 @@ class TimeData( SimulationData ):
                 time_next[i, start:] = time_region
 
         self.data[data_key] = time_next
+
+        return True
+
+    ########################################################################
+
+    def calc_smoothed_classification( self, data_key ):
+        '''Calculate a "smoothed" classification. Data keys should be in the
+        form `smoothed_is_A_t` where `is_A` is the classification and `t` is
+        how long a particle must not be A in order for smoothed_is_A_t to be
+        False.
+        
+        Returns:
+            bool:
+                True if the calculation was done, False if this isn't the right
+                function to call.
+        '''
+
+        # Check if we should be running this function (does the provided
+        # data_key even match the format we want to parse?)
+        if data_key[:8] != 'smoothed':
+            return False
+
+        t_str = data_key.split( '_' )[-1]
+        base_key = data_key[9:-len(t_str)-1]
+
+        # Get out the classification data itself
+        result = self.get_data( base_key )
+
+        # Get out the time intervals, and tile them for formatting
+        dt = self.get_data( 'dt' )
+        
+        for i, row in enumerate( np.invert( result ) ):
+
+            # Identify regions of contiguous classification
+            contiguous_regions = data_operations.contiguous_regions( row )
+
+            # Find the cumulative time in specified regions
+            for start, end in contiguous_regions:
+
+                dt_region = dt[start:end]
+
+                time_region = np.sum( dt_region )
+
+                # Change result if necessary
+                if time_region < float( t_str ):
+                    result[i, start:end] = True
+
+        self.data[data_key] = result
 
         return True
 

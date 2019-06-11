@@ -518,6 +518,32 @@ class TestCalc( unittest.TestCase ):
 
     ########################################################################
 
+    def test_calc_smoothed_classification( self ):
+
+        # Set up test data
+        self.t_data.data = {}
+        self.t_data.data['is_A'] = np.array([
+            [ 1, 1, 0, 0, ],
+            [ 1, 0, 0, 0, ],
+            [ 1, 0, 1, 0, ],
+            [ 0, 1, 1, 0, ],
+        ]).astype( bool )
+        self.t_data.data['dt'] = np.array([
+            0.5, 0.5, 0.5, 0.5,
+        ])
+
+        actual = self.t_data.get_data( 'smoothed_is_A_0.75' )
+        expected = np.array([
+            [ 1, 1, 0, 0, ],
+            [ 1, 0, 0, 0, ],
+            [ 1, 1, 1, 1, ],
+            [ 1, 1, 1, 1, ],
+        ]).astype( bool )
+
+        npt.assert_allclose( expected, actual )
+
+    ########################################################################
+
     def test_calc_radial_velocity( self ):
 
         # Setup Mock Data
