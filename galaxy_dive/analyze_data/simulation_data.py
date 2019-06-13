@@ -1550,9 +1550,6 @@ class TimeData( SimulationData ):
         if data_key[:12] != 'next_time_as':
             return False
 
-        #DEBUG
-        import pdb; pdb.set_trace()
-
         # Get the data key for the classification
         classification_data_key = 'is_{}'.format( data_key[13:] )
 
