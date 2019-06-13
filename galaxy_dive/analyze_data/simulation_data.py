@@ -1550,6 +1550,9 @@ class TimeData( SimulationData ):
         if data_key[:12] != 'next_time_as':
             return False
 
+        #DEBUG
+        import pdb; pdb.set_trace()
+
         # Get the data key for the classification
         classification_data_key = 'is_{}'.format( data_key[13:] )
 
@@ -1596,11 +1599,11 @@ class TimeData( SimulationData ):
 
         # Check if we should be running this function (does the provided
         # data_key even match the format we want to parse?)
-        if data_key[:8] != 'smoothed':
+        if data_key[:11] != 'is_smoothed':
             return False
 
         t_str = data_key.split( '_' )[-1]
-        base_key = data_key[9:-len(t_str)-1]
+        base_key = 'is_{}'.format( data_key[12:-len(t_str)-1] )
 
         # Get out the classification data itself
         result = self.get_data( base_key )

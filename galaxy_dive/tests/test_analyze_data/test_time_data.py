@@ -532,7 +532,7 @@ class TestCalc( unittest.TestCase ):
             0.5, 0.5, 0.5, 0.5,
         ])
 
-        actual = self.t_data.get_data( 'smoothed_is_A_0.75' )
+        actual = self.t_data.get_data( 'is_smoothed_A_0.75' )
         expected = np.array([
             [ 1, 1, 0, 0, ],
             [ 1, 0, 0, 0, ],
