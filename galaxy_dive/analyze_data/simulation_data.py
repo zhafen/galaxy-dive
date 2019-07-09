@@ -13,9 +13,11 @@ import numpy.testing as npt
 import pandas as pd
 import scipy
 import scipy.signal as signal
+import unyt
 
 # Imports from my own stuff
 import galaxy_dive.analyze_data.ahf as analyze_ahf
+import galaxy_dive.analyze_data.halo_data as halo_data
 import galaxy_dive.read_data.ahf as read_ahf
 import galaxy_dive.utils.astro as astro
 import galaxy_dive.utils.constants as constants
@@ -206,15 +208,30 @@ class SimulationData( generic_data.GenericData ):
 
     @property
     def halo_data( self ):
-        '''Halo data used.
+        '''Halo data (e.g. location of galaxy halos)
+
+        TODO:
+            Make it easier to get the parameters to use, without loading as
+            much superfluous data.
         '''
 
         if not hasattr( self, '_halo_data' ):
+            # Make sure we have the right properties first
+            if not hasattr( self, 'halo_file_tag' ):
+                self.halo_file_tag = self.ahf_tag
+                halo_finder = 'AHF'
+            if not hasattr( self, 'mtree_halos_index' ):
+                self.mtree_halos_index = self.ahf_index
+                halo_finder = 'AHF'
 
-            self._halo_data = analyze_ahf.HaloData(
-                self.halo_data_dir,
-                tag = self.ahf_tag,
-                index = self.ahf_index
+            self._halo_data = halo_data.HaloData(
+                data_dir = self.halo_data_dir,
+                tag = self.halo_file_tag,
+                mt_kwargs = {
+                    'tag': self.halo_file_tag,
+                    'index': self.mtree_halos_index,
+                },
+                halo_finder = 'AHF'
             )
 
         return self._halo_data
@@ -1664,6 +1681,45 @@ class TimeData( SimulationData ):
         enriched_metal_mass = self.get_data( 'M' ) * enrichment_fraction
 
         self.data['enriched_metal_mass'] = enriched_metal_mass
+
+    ########################################################################
+
+    def calc_simple_specific_energy( self ):
+        '''Get the specific energy under the assumption that this is in the
+        frame of the main halo and the potential energy is just -G*M_enc/r
+        '''
+
+        result = np.full( self.base_data_shape, np.nan )
+
+        # Get potential (in km^2/s^2)
+        r = self.get_data( 'R' ) * unyt.kpc
+        # Convert to comoving kpc/h for the function
+        r_co = r*( self.hubble_param * ( 1. + self.redshift ) )[np.newaxis,:]
+        for i, snum in enumerate( self.snums ): 
+
+            enclosed_mass = self.halo_data.get_profile_data(
+                'M_in_r',
+                snum,
+                r_co[:,i],
+                mt_halo_id = self.main_halo_id
+            ) / self.hubble_param * unyt.msun
+
+            part_result = -(
+                unyt.G *
+                enclosed_mass / 
+                r[:,i]
+            )
+            part_result = part_result.to( 'km**2/s**2' )
+
+            result[:,i] = part_result
+
+        # Add kinetic energy
+        v = self.get_data( 'Vmag' )
+        result += 0.5 * v**2.
+
+        self.data['simple_specific_energy'] = result
+
+        return self.data['simple_specific_energy']
 
 ########################################################################
 ########################################################################

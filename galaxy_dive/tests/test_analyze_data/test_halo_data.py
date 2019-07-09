@@ -129,6 +129,18 @@ class TestHaloData( unittest.TestCase ):
             r = 50.,
         )
 
+        # And this should work for higher redshifts
+        actual = self.halo_data.get_profile_data(
+            'M_in_r',
+            400,
+            r = self.halo_data.get_mt_data(
+                'Rvir',
+                snums = [ 400 ],
+            ),
+        )
+        expected = self.halo_data.get_mt_data( 'Mvir', snums=[ 400 ], )
+        npt.assert_allclose( expected, actual, rtol=0.1 )
+
     ########################################################################
 
     def test_get_enclosed_mass( self ):

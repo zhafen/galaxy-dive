@@ -45,6 +45,44 @@ def circular_velocity( r_vir, m_vir ):
   return v_c
 
 ########################################################################
+
+def dynamical_friction_time(
+        energy,
+        ang_mom,
+        mass,
+    ):
+    '''Dynamical friction time for a satellite in an isothermal halo
+    following Lacy&Cole1993, with updates listed in Pfeffer+2018.
+
+    Args:
+        energy (float or array-like):
+            Energy of the satellite.
+
+        ang_mom (float or array-like):
+            Angular momentum of the satellite.
+
+        mass (float or array-like):
+            Mass of the satellite.
+    '''
+
+    # Circular radius with the same energy
+    energy = 0.5 * mass * mag_vel**2.
+
+    # Orbital eccentricity factor
+    eps = ang_mom / ang_mom_circ
+    f_eps = eps ** 0.78
+
+    # Velocity dispersion
+    # Get sigma from AMIGA
+
+    t_DF = (
+        ( f_eps * np.sqrt( 2.) * sigma * r_c**2. ) /
+        ( 2. * B * G * mass * ln_Lambda )
+    )
+
+    return t_DF
+
+########################################################################
 # Metal Trends
 ########################################################################
 

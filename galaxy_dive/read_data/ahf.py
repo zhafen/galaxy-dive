@@ -286,7 +286,7 @@ class AHFReader( object ):
         '''
 
         # If the data's already loaded, don't load it again.
-        if hasattr( self, 'profiles' ):
+        if hasattr( self, 'profiles' ) and self.profiles_snum == snum:
             return self.profiles
 
         # Load the data
@@ -330,6 +330,9 @@ class AHFReader( object ):
         self.profile_id_mapping = profile_mapping(
             np.abs( self.profiles['r'].values )
         )
+
+        # Store the snum used
+        self.profiles_snum = snum
 
     ########################################################################
     # Utilities

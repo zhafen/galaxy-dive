@@ -6,6 +6,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import unittest
+import unyt
 
 import galaxy_dive.analyze_data.simulation_data as simulation_data
 import galaxy_dive.utils.astro as astro
@@ -148,7 +149,7 @@ class TestTimeData( unittest.TestCase ):
 
     ########################################################################
 
-    @mock.patch( 'galaxy_dive.analyze_data.ahf.HaloData.get_mt_data' )
+    @mock.patch( 'galaxy_dive.analyze_data.halo_data.HaloData.get_mt_data' )
     def test_get_processed_data( self, mock_get_mt_data ):
         '''Test that our processed data method works, especially when scaling data.'''
 
@@ -688,6 +689,63 @@ class TestCalc( unittest.TestCase ):
         # Check that we get the right value
         npt.assert_allclose( 15., actual[1,2] )
         npt.assert_allclose( 15., actual[2,2] )
+
+    ########################################################################
+
+    def test_calc_simple_specific_energy( self ):
+
+        # Mock data
+        self.t_data.centered = True
+        self.t_data.vel_centered = True
+        self.t_data.hubble_corrected = True
+        self.t_data.data = {
+            'M': np.random.randn( 4, 5 ),
+            'P': np.random.randn( 3, 4, 5 ),
+            'V': np.random.randn( 3, 4, 5 ),
+            'snum': np.array([ 600, 550, 500, 450, 400 ]),
+        }
+        # Particle 0, snapshot 600
+        self.t_data.data['P'][:,0,0] = (
+            np.array([ 0., 1., 0. ]) *
+            self.t_data.r_vir[600]
+        )
+        self.t_data.data['V'][:,0,0] = (
+            np.array([ 1., 0., 0. ]) * self.t_data.v_c[600]
+        )
+        # Particle 2, snapshot 550
+        self.t_data.data['P'][:,2,1] = (
+            np.array([ 1., 0., 0. ]) *
+            self.t_data.r_vir[550]
+        )
+        self.t_data.data['V'][:,2,1] = (
+            np.array([ 0., np.sqrt( 0.5), np.sqrt( 0.5) ])
+            * self.t_data.v_c[550]
+        )
+        # Particle 3, snapshot 400
+        self.t_data.data['P'][:,3,-1] = (
+            np.array([ 1., 0., 0. ]) *
+            self.t_data.r_vir[400]
+        )
+        self.t_data.data['V'][:,3,-1] = (
+            np.array([ 0., np.sqrt( 0.5), np.sqrt( 0.5) ])
+            * self.t_data.v_c[400]
+        )
+
+        # Actual calculation
+        self.t_data.calc_simple_specific_energy()
+
+        # Get the data
+        actual = self.t_data.get_data( 'simple_specific_energy' )
+
+        # Test that we get the right shape
+        assert self.t_data.data['P'][0].shape == actual.shape
+
+        # Check that we get the right result
+        exp = - 0.5 * self.t_data.v_c**2.
+
+        npt.assert_allclose( actual[0,0], exp[600], rtol=0.15 )
+        npt.assert_allclose( actual[2,1], exp[550], rtol=0.15 )
+        npt.assert_allclose( actual[3,-1], exp[400], rtol=0.15 )
 
     ########################################################################
 

@@ -45,6 +45,7 @@ def box_plot(
     linestyle = '-',
     line_x_min = None,
     line_x_max = None,
+    return_means = False,
 ):
 
     if ax is None:
@@ -205,6 +206,9 @@ def box_plot(
     ax.set_xscale( x_scale )
     ax.set_yscale( y_scale )
 
+    if return_means:
+        return means
+
 ########################################################################
 
 def errs_from_log_errs( log_mean, log_err, upper_limit=None, lower_limit=None ):
@@ -238,7 +242,8 @@ def add_redshift_to_axis(
         omega_matter,
         tick_redshifts = np.array(
             [ 0.1, 0.25, 0.4, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, ]
-        )
+        ),
+        tick_times = None,
     ):
     '''Add redshift labels to the top axis of plot that has age of the universe
     on the bottom axis.
@@ -252,13 +257,15 @@ def add_redshift_to_axis(
 
         tick_redshifts (array-like): Redshifts to plot ticks at.
     
+        tick_times (array-like): If passed, times of corresponding redshifts.
     '''
 
-    tick_times = astro_utils.age_of_universe(
-        tick_redshifts,
-        h = hubble,
-        omega_matter = omega_matter,
-    )
+    if tick_times is None:
+        tick_times = astro_utils.age_of_universe(
+            tick_redshifts,
+            h = hubble,
+            omega_matter = omega_matter,
+        )
 
     # Make sure we aren't trying to plot ticks that would go out of bounds,
     # because that breaks things
@@ -272,9 +279,9 @@ def add_redshift_to_axis(
 
     # Add a second axis for plotting
     ax2 = ax.twiny()
-    ax2.set_xlim( x_range )
     ax2.set_xticks( ax2_ticks )
     ax2.set_xticklabels( ax2_tick_labels )
+    ax2.set_xlim( x_range )
 
     return ax2
         
