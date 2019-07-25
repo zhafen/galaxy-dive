@@ -12,7 +12,9 @@ import os
 import pandas as pd
 import scipy.interpolate as interp
 from scipy.optimize import newton
+import scipy.special
 import sys
+import unyt
 import verdict
 
 import galaxy_dive.config as gd_config
@@ -47,9 +49,12 @@ def circular_velocity( r_vir, m_vir ):
 ########################################################################
 
 def dynamical_friction_time(
-        energy,
         ang_mom,
+        r_c,
+        v_c,
         mass,
+        sigma,
+        m_enc,
     ):
     '''Dynamical friction time for a satellite in an isothermal halo
     following Lacy&Cole1993, with updates listed in Pfeffer+2018.
@@ -65,19 +70,22 @@ def dynamical_friction_time(
             Mass of the satellite.
     '''
 
-    # Circular radius with the same energy
-    energy = 0.5 * mass * mag_vel**2.
-
     # Orbital eccentricity factor
+    ang_mom_circ = r_c * v_c
     eps = ang_mom / ang_mom_circ
     f_eps = eps ** 0.78
 
-    # Velocity dispersion
-    # Get sigma from AMIGA
+    # Get B
+    x = ( v_c / np.sqrt( 2. ) / sigma ).value
+    b = scipy.special.erf( x ) - 2. * x * np.exp( -x**2. ) / np.sqrt( np.pi )
 
+    # Get the Coulomb logarithm
+    ln_Lambda = np.log( 1. + m_enc / mass )
+
+    # Finish the calculation
     t_DF = (
         ( f_eps * np.sqrt( 2.) * sigma * r_c**2. ) /
-        ( 2. * B * G * mass * ln_Lambda )
+        ( 2. * b * unyt.G * mass * ln_Lambda )
     )
 
     return t_DF

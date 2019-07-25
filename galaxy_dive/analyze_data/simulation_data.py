@@ -1694,7 +1694,7 @@ class TimeData( SimulationData ):
         # Get potential (in km^2/s^2)
         r = self.get_data( 'R' ) * unyt.kpc
         # Convert to comoving kpc/h for the function
-        r_co = r*( self.hubble_param * ( 1. + self.redshift ) )[np.newaxis,:]
+        r_co = r * ( self.hubble_param * ( 1. + self.redshift ) )[np.newaxis,:]
         for i, snum in enumerate( self.snums ): 
 
             enclosed_mass = self.halo_data.get_profile_data(
@@ -1720,6 +1720,108 @@ class TimeData( SimulationData ):
         self.data['simple_specific_energy'] = result
 
         return self.data['simple_specific_energy']
+
+    ########################################################################
+
+    def calc_simple_circular_radius( self ):
+        '''Get the radius of the particle if it was on a circular orbit with
+        the same energy. Assumes the particle is in the frame of the main halo
+        and the potential energy is just -G*M_enc/r
+        '''
+
+        assert False, "Still failing tests."
+
+        result = np.full( self.base_data_shape, np.nan )
+
+        # Get prerequsites
+        s_e = self.get_data( 'simple_specific_energy' )
+        # r_all = self.get_data( 'R' )
+        G = unyt.G.to( 'km**2/s**2*kpc/msun' ).value
+        # Convert to comoving kpc/h for the function
+        for i, snum in enumerate( self.snums ):
+
+            h_a = ( self.hubble_param * ( 1. + self.redshift[snum] ) )
+
+            # Load profiles to set limits
+            pro_mvir, v_range = self.halo_data.get_profile_data(
+                'M_in_r',
+                snum,
+                np.array([ self.r_vir[snum] ]) * h_a,
+                mt_halo_id = self.main_halo_id,
+                return_valid_range = True,
+            )
+            # pro_mvir /= self.hubble_param
+            # v_range = [ v_range[0]*1.01, v_range[1]*0.99 ]
+
+            # for j in range( self.n_particles ):
+            #     s_e_sp = s_e[j,i]
+
+            #     def fn_to_minimize( r ):
+            #         '''Note that this solves for r in comoving coordinates.'''
+
+            #         r = np.array([ r ])
+
+            #         enclosed_mass = self.halo_data.get_profile_data(
+            #             'M_in_r',
+            #             snum,
+            #             r,
+            #             mt_halo_id = self.main_halo_id
+            #         ) / self.hubble_param
+
+            #         circ_energy = -0.5 * G * enclosed_mass / ( r / h_a )
+
+            #         return circ_energy - s_e_sp
+
+            #     if j==3 and r==3:
+
+            #         #DEBUG
+            #         import pdb; pdb.set_trace()
+
+            #     try:
+            #         o_r = scipy.optimize.root_scalar(
+            #             fn_to_minimize,
+            #             bracket = v_range,
+            #             method = 'brentq',
+            #         )
+            #         if o_r.converged:
+            #             result[j,i] = o_r.root / h_a
+
+            #     except ValueError:
+            #         # A value error can be thrown if there's no solution.
+            #         # In that case it's fine to continue, as the default is nan
+            #         result[j,i] = -2.
+
+            # Find the equivalent energy (just interpolation, making using of
+            # the monotonic nature of the energy
+            r_co_arr = np.linspace( v_range[0]*1.001, v_range[1]*0.999, 1024 )
+            r_arr = r_co_arr / h_a
+            enclosed_mass = self.halo_data.get_profile_data(
+                'M_in_r',
+                snum,
+                r_co_arr,
+                mt_halo_id = self.main_halo_id
+            ) / self.hubble_param
+            circ_energy = -0.5 * G * enclosed_mass / r_arr
+
+            result[:,i] = np.interp( s_e[:,i], circ_energy, r_arr )
+
+        self.data['simple_circular_radius'] = result
+
+        return self.data['simple_circular_radius']
+
+    ########################################################################
+
+    def calc_rc_iso_pot( self ):
+
+        v_vcirc = self.get_data( 'Vmag' ) / self.v_c.values
+        rc = (
+            self.get_data( 'R' ) *
+            np.exp( 0.5 - 0.5 * v_vcirc**2. )
+        )
+
+        self.data['rc_iso_pot'] = rc
+
+        return self.data['rc_iso_pot']
 
 ########################################################################
 ########################################################################

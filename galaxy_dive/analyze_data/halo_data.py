@@ -202,6 +202,7 @@ class HaloData( generic_data.GenericData ):
         r,
         mt_halo_id = 0,
         a_power = None,
+        return_valid_range = False,
     ):
         '''Get halo data for a specific halo
 
@@ -261,6 +262,9 @@ class HaloData( generic_data.GenericData ):
         if a_power is not None:
             z = self.get_mt_data( 'redshift', mt_halo_id, snums=snum )[0]
             data *= ( 1. + z )**-a_power
+
+        if return_valid_range:
+            return data, [ halo_r_min, halo_r_max ]
 
         return data
 

@@ -749,6 +749,135 @@ class TestCalc( unittest.TestCase ):
 
     ########################################################################
 
+    # def test_calc_simple_circular_radius( self ):
+
+    #     # Mock data
+    #     self.t_data.centered = True
+    #     self.t_data.vel_centered = True
+    #     self.t_data.hubble_corrected = True
+    #     self.t_data.data = {
+    #         'M': np.random.randn( 4, 5 ),
+    #         'P': np.random.randn( 3, 4, 5 ),
+    #         'V': np.random.randn( 3, 4, 5 ),
+    #         'snum': np.array([ 600, 550, 500, 450, 400 ]),
+    #     }
+    #     self.t_data.data['P'] *= 0.5 * self.t_data.r_vir[np.newaxis,np.newaxis,:]
+    #     self.t_data.data['V'] *= 0.5 * self.t_data.v_c[np.newaxis,np.newaxis,:]
+    #     # Particle 0, snapshot 600
+    #     self.t_data.data['P'][:,0,0] = (
+    #         np.array([ 0., 1., 0. ]) *
+    #         self.t_data.r_vir[600]
+    #     )
+    #     self.t_data.data['V'][:,0,0] = (
+    #         np.array([ 1., 0., 0. ]) *
+    #         np.sqrt(
+    #             unyt.G * 1.13125775e+12 * unyt.msun /
+    #             ( self.t_data.r_vir[600] * unyt.kpc )
+    #         ).to( 'km/s' )
+    #     )
+    #     # Particle 2, snapshot 550
+    #     self.t_data.data['P'][:,2,1] = (
+    #         np.array([ 1., 0., 0. ]) *
+    #         self.t_data.r_vir[550]
+    #     )
+    #     self.t_data.data['V'][:,2,1] = (
+    #         np.array([ 0., np.sqrt( 0.5), np.sqrt( 0.5) ])
+    #         * self.t_data.v_c[550]
+    #     )
+    #     # Particle 3, snapshot 400
+    #     self.t_data.data['P'][:,3,-1] = (
+    #         np.array([ 1., 0., 0. ]) *
+    #         self.t_data.r_vir[400]
+    #     )
+    #     self.t_data.data['V'][:,3,-1] = (
+    #         np.array([ 0., np.sqrt( 0.5), np.sqrt( 0.5) ]) *
+    #         self.t_data.v_c[400]
+    #     )
+
+    #     # Actual calculation
+    #     self.t_data.calc_simple_circular_radius()
+
+    #     # Get the data
+    #     actual = self.t_data.get_data( 'simple_circular_radius' )
+
+    #     # Test that we get the right shape
+    #     assert self.t_data.data['P'][0].shape == actual.shape
+
+    #     # Check that we get the right result
+    #     exp = self.t_data.r_vir
+
+    #     npt.assert_allclose( actual[0,0], exp[600], rtol=0.15 )
+    #     npt.assert_allclose( actual[2,1], exp[550], rtol=0.15 )
+    #     npt.assert_allclose( actual[3,-1], exp[400], rtol=0.15 )
+
+    ########################################################################
+
+    def test_calc_rc_iso_pot( self ):
+
+        # Mock data
+        self.t_data.centered = True
+        self.t_data.vel_centered = True
+        self.t_data.hubble_corrected = True
+        self.t_data.data = {
+            'M': np.random.randn( 4, 5 ),
+            'P': np.random.randn( 3, 4, 5 ),
+            'V': np.random.randn( 3, 4, 5 ),
+            'snum': np.array([ 600, 550, 500, 450, 400 ]),
+        }
+        self.t_data.data['P'] *= 0.5 * self.t_data.r_vir[np.newaxis,np.newaxis,:]
+        self.t_data.data['V'] *= 0.5 * self.t_data.v_c[np.newaxis,np.newaxis,:]
+        # Particle 0, snapshot 600
+        self.t_data.data['P'][:,0,0] = (
+            np.array([ 0., 1., 0. ]) *
+            self.t_data.r_vir[600]
+        )
+        self.t_data.data['V'][:,0,0] = (
+            np.array([ 1., 0., 0. ]) *
+            np.sqrt(
+                unyt.G * 1.13125775e+12 * unyt.msun /
+                ( self.t_data.r_vir[600] * unyt.kpc )
+            ).to( 'km/s' )
+        )
+        # Particle 2, snapshot 550
+        self.t_data.data['P'][:,2,1] = (
+            np.array([ 1., 0., 0. ]) *
+            self.t_data.r_vir[550]
+        )
+        self.t_data.data['V'][:,2,1] = (
+            np.array([ 0., np.sqrt( 0.5), np.sqrt( 0.5) ])
+            * self.t_data.v_c[550]
+        )
+        # Particle 3, snapshot 400
+        self.t_data.data['P'][:,3,-1] = (
+            np.array([ 1., 0., 0. ]) *
+            self.t_data.r_vir[400]
+        )
+        self.t_data.data['V'][:,3,-1] = (
+            np.array([ 0., np.sqrt( 0.5), np.sqrt( 0.5) ]) *
+            # * self.t_data.v_c[400]
+            np.sqrt(
+                unyt.G * 8.38542806e+11 * unyt.msun /
+                ( self.t_data.r_vir[400] * unyt.kpc )
+            ).to( 'km/s' )
+        )
+
+        # Actual calculation
+        self.t_data.calc_rc_iso_pot()
+
+        # Get the data
+        actual = self.t_data.get_data( 'rc_iso_pot' )
+
+        # Test that we get the right shape
+        assert self.t_data.data['P'][0].shape == actual.shape
+
+        # Check that we get the right result
+        exp = self.t_data.r_vir
+
+        npt.assert_allclose( actual[0,0], exp[600], rtol=0.15 )
+        npt.assert_allclose( actual[2,1], exp[550], rtol=0.15 )
+        npt.assert_allclose( actual[3,-1], exp[400], rtol=0.15 )
+
+    ########################################################################
     # TODO: If I want to do this, that is
     # def test_calc_h( self ):
 
