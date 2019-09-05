@@ -306,6 +306,27 @@ class SimulationData( generic_data.GenericData ):
     ########################################################################
 
     @property
+    def t_vir( self ):
+        '''Property for virial radius.'''
+
+        if not hasattr( self, '_t_vir' ):
+            self.retrieve_halo_data()
+
+        return self._t_vir
+
+    @t_vir.setter
+    def t_vir( self, value ):
+
+        # If we try to set it, make sure that if it already exists we don't change it.
+        if hasattr( self, '_t_vir' ):
+            npt.assert_allclose( value, self._t_vir )
+
+        else:
+            self._t_vir = value
+
+    ########################################################################
+
+    @property
     def r_scale( self ):
         '''Property for scale radius.'''
 
@@ -590,6 +611,8 @@ class SimulationData( generic_data.GenericData ):
             self.calc_inds()
         elif data_key == 'L':
             self.calc_ang_momentum()
+        elif data_key == 'Lmag':
+            self.calc_ang_momentum_magnitude()
         elif data_key == 'Phi':
             self.calc_phi()
         elif data_key == 'AbsPhi':
@@ -937,6 +960,16 @@ class SnapshotData( SimulationData ):
 
     ########################################################################
 
+    def calc_ang_momentum_magnitude( self ):
+        '''Calculate the magnitude of the angular momentum.
+        '''
+
+        self.data['Lmag'] = np.linalg.norm( self.get_data( 'L' ), axis=0 )
+
+        return self.data['Lmag']
+
+    ########################################################################
+
     def calc_phi( self, normal_vector='total ang momentum' ):
         '''Calculate the angle (in degrees) from some vector.
         By default the vector is the total angular momentum.
@@ -1115,6 +1148,14 @@ class TimeData( SimulationData ):
 
         # Calculate the circular velocity
         self.v_c = astro.circular_velocity( self.r_vir, self.m_vir )
+
+        # Calculate the virial temperature
+        mu = 0.6
+        t_vir = (
+            ( mu * unyt.mp * unyt.G * self.m_vir.values * unyt.msun ) /
+            ( 2. * self.r_vir.values * unyt.kpc * unyt.kb )
+        )
+        self.t_vir = pd.Series( t_vir.to( 'K' ).value, self.m_vir.index )
 
         self.halo_data_retrieved = True
 
@@ -1363,6 +1404,16 @@ class TimeData( SimulationData ):
             l_all[:,:,i] = l
 
         self.data['L'] = l_all
+
+    ########################################################################
+
+    def calc_ang_momentum_magnitude( self ):
+        '''Calculate the magnitude of the angular momentum.
+        '''
+
+        self.data['Lmag'] = np.linalg.norm( self.get_data( 'L' ), axis=0 )
+
+        return self.data['Lmag']
 
     ########################################################################
 
@@ -1822,6 +1873,18 @@ class TimeData( SimulationData ):
         self.data['rc_iso_pot'] = rc
 
         return self.data['rc_iso_pot']
+
+    ########################################################################
+
+    def calc_jc_iso_pot( self ):
+
+        self.data['jc_iso_pot'] = (
+            self.get_data( 'M' ) *
+            self.get_data( 'rc_iso_pot' ) *
+            self.v_c.values
+        )
+
+        return self.data['jc_iso_pot']
 
 ########################################################################
 ########################################################################
