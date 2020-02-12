@@ -372,6 +372,7 @@ class GenericPlotter( object ):
         slices = None,
         ax = None,
         x_range = None, y_range = None,
+        x_edges = None, y_edges = None,
         x_scale = 'linear', y_scale = 'linear', z_scale = 'log',
         n_bins = 128, n_bins_x = None, n_bins_y = None,
         average = False,
@@ -496,14 +497,16 @@ class GenericPlotter( object ):
         elif isinstance( y_range, float ):
             y_range = np.array( [ -y_range, y_range ])*self.data_object.length_scale[slices]
 
-        if x_scale == 'log':
-            x_edges = np.logspace( np.log10( x_range[0] ), np.log10( x_range[1] ), n_bins_x )
-        else:
-            x_edges = np.linspace( x_range[0], x_range[1], n_bins_x )
-        if y_scale == 'log':
-            y_edges = np.logspace( np.log10( y_range[0] ), np.log10( y_range[1] ), n_bins_y )
-        else:
-            y_edges = np.linspace( y_range[0], y_range[1], n_bins_y )
+        if x_edges is None:
+            if x_scale == 'log':
+                x_edges = np.logspace( np.log10( x_range[0] ), np.log10( x_range[1] ), n_bins_x )
+            else:
+                x_edges = np.linspace( x_range[0], x_range[1], n_bins_x )
+        if y_edges is None:
+            if y_scale == 'log':
+                y_edges = np.logspace( np.log10( y_range[0] ), np.log10( y_range[1] ), n_bins_y )
+            else:
+                y_edges = np.linspace( y_range[0], y_range[1], n_bins_y )
 
         # Make the histogram
         hist2d, x_edges, y_edges = np.histogram2d( x_data, y_data, [x_edges, y_edges], weights=weights, normed=normed )
