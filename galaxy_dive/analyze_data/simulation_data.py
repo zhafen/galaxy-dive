@@ -945,16 +945,17 @@ class SnapshotData( SimulationData ):
 
     ########################################################################
 
-    def calc_ang_momentum( self ):
+    def calc_ang_momentum( self, specific_ang_momentum=False ):
         '''Calculate the angular momentum.'''
-
-        m_mult = np.array( [ self.get_data('M'), ] * 3 )
 
         p = self.get_data('P')
         v = self.get_data('V')
 
         l = np.cross( p, v, 0, 0).transpose()
-        l *= m_mult
+
+        if not specific_ang_momentum:
+            m_mult = np.array( [ self.get_data('M'), ] * 3 )
+            l *= m_mult
 
         self.data['L'] = l
 
@@ -1377,7 +1378,7 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
-    def calc_ang_momentum( self ):
+    def calc_ang_momentum( self, specific_ang_momentum=False ):
         '''The angular momentum (in the standard coordinates).
 
         Modifies:
@@ -1385,7 +1386,8 @@ class TimeData( SimulationData ):
                 Angular momentum of each resolution element.
         '''
 
-        m_mult = np.array( [ self.get_data('M'), ] * 3 )
+        if not specific_ang_momentum:
+            m_mult = np.array( [ self.get_data('M'), ] * 3 )
 
         p_all = self.get_data('P')
         v_all = self.get_data('V')
@@ -1396,10 +1398,12 @@ class TimeData( SimulationData ):
                                                                                 
             v = v_all[:,:,i]                                                    
             p = p_all[:,:,i]                                                    
-            m = m_mult[:,:,i] 
 
             l = np.cross( p, v, 0, 0).transpose()
-            l *= m
+
+            if not specific_ang_momentum:
+                m = m_mult[:,:,i] 
+                l *= m
 
             l_all[:,:,i] = l
 
