@@ -131,7 +131,7 @@ class AHFReader( object ):
 
         # Raise an exception if there are no files to load
         if len( halo_filepaths ) == 0:
-            raise NameError( 'No files to load in {}'.format( self.data_dir ) )
+            raise NameError( 'No files ({}) to load in {}'.format( halo_filepaths, self.data_dir ) )
 
         # Set up the data storage
         self.mtree_halos = {}

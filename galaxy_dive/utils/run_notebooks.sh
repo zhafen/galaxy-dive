@@ -18,7 +18,7 @@ nbs_to_run=(*.ipynb)
 
 for nb in ${nbs_to_run[@]};
 do
-    # This doesn't work with Python2.7 (assumed default, so switch to Python 3)
+    # This doesn't work with Python2.7
     # module unload python
     # module load python3
 

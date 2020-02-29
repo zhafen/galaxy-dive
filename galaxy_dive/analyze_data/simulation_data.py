@@ -670,6 +670,28 @@ class SimulationData( generic_data.GenericData ):
     # Full calculations based on the data
     ########################################################################
 
+    def calc_volume( self ):
+        '''Calculate the volume of a particle in code units.'''
+
+        self.data['volume'] = self.get_data( 'M' ) / self.get_data( 'Den' )
+
+        return self.data['volume']
+
+    ########################################################################
+
+    def calc_entropy( self ):
+        '''Calculate the entropy of a particle in KeV cm^2.'''
+
+        self.data['entropy'] = (
+            unyt.kb *
+            self.get_data( 'T' ) * unyt.K *
+            ( self.get_data( 'HDen' ) * unyt.cm**-3. )**(-2./3.)
+        ).to( 'keV*cm**2' ).value
+
+        return self.data['entropy']
+
+    ########################################################################
+
     def calc_radial_distance( self ):
         '''Calculate the distance from the origin for a given particle.'''
 
