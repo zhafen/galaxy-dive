@@ -447,10 +447,13 @@ class HaloUpdater( halo_data.HaloData ):
 
                 original_data = copy.copy( mtree_halo[smooth_key].values )
 
-                smoothed_data = data_operations.smooth(
-                        original_data,
-                        **smooth_kwargs
-                )
+                try:
+                    smoothed_data = data_operations.smooth(
+                            original_data,
+                            **smooth_kwargs
+                    )
+                except ValueError:
+                    continue
 
                 # Replace NaN values with original values, where possible
                 smoothed_nan = np.isnan( smoothed_data )
