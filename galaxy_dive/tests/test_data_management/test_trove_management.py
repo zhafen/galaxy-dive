@@ -29,7 +29,7 @@ class TestTroveManagerInit( unittest.TestCase ):
         trove_manager = trove_management.TroveManager(
             file_format,
             data_dirs,
-            args_a, 
+            args_a,
             args_b,
         )
 
@@ -50,7 +50,7 @@ class TestTroveManager( unittest.TestCase ):
         self.trove_manager = trove_management.TroveManager(
             file_format2,
             data_dirs,
-            args_a, 
+            args_a,
             args_b,
             args_c,
         )
@@ -99,7 +99,7 @@ class TestTroveManager( unittest.TestCase ):
             ( './tests/data/trove_test_dir', 'b', 1, 6, ),
             ( './tests/data/trove_test_dir', 'b', 3, 6, ),
         ]
-        
+
         self.assertEqual( expected, actual )
 
     ########################################################################
@@ -113,7 +113,7 @@ class TestTroveManager( unittest.TestCase ):
             './tests/data/trove_test_dir/test_b_1_6.dat',
             './tests/data/trove_test_dir/test_b_3_6.dat',
         ]
-        
+
         self.assertEqual( expected, actual )
 
     ########################################################################
@@ -123,5 +123,19 @@ class TestTroveManager( unittest.TestCase ):
         actual = self.trove_manager.get_next_args_to_use()
 
         expected = ( './tests/data/trove_test_dir', 'a', 2, 6, )
+
+        self.assertEqual( expected, actual )
+
+    ########################################################################
+
+    def test_get_next_args_to_use_skipped_args( self ):
+
+        self.trove_manager.combinations_to_skip.append(
+            ( './tests/data/trove_test_dir', 'a', 2, 6, )
+        )
+
+        actual = self.trove_manager.get_next_args_to_use()
+
+        expected = ( './tests/data/trove_test_dir', 'b', 1, 6, )
 
         self.assertEqual( expected, actual )

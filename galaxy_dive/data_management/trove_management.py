@@ -33,13 +33,13 @@ class TroveManager( object ):
             TroveManager object.
         '''
 
-        pass
+        self.combinations_to_skip = []
 
     ########################################################################
 
     def get_file( self, *args ):
         '''Default method for getting the data filename.
-        
+
         Args:
             *args :
                 Arguments provided. Assumes args[0] is the data dir.
@@ -110,9 +110,8 @@ class TroveManager( object ):
     ########################################################################
 
     def get_next_args_to_use( self, when_done='return_last' ):
-        '''Is this necessary? No. This function is really a wrapper that in
-        essence provides documentation.
-
+        '''Determines next combination to use, accounting for combinations to
+        skip.
 
         Args:
             when_done (str) :
@@ -123,7 +122,12 @@ class TroveManager( object ):
             Next set of arguments to use.
         '''
 
-        incomplete_combinations = self.get_incomplete_combinations()
+        full_incomplete_combinations = self.get_incomplete_combinations()
+
+        incomplete_combinations = []
+        for c in full_incomplete_combinations:
+            if not c in self.combinations_to_skip:
+                incomplete_combinations.append( c )
 
         if len( incomplete_combinations ) == 0:
             if when_done == 'return_last':
@@ -131,4 +135,4 @@ class TroveManager( object ):
             elif when_done == 'return_0':
                 return 0
 
-        return self.get_incomplete_combinations()[0]
+        return incomplete_combinations[0]
