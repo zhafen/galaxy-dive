@@ -34,6 +34,7 @@ class TroveManager( object ):
         '''
 
         self.combinations_to_skip = []
+        self.combinations_order = None
 
     ########################################################################
 
@@ -54,6 +55,23 @@ class TroveManager( object ):
 
     ########################################################################
 
+    def set_order( self, value ):
+        '''Change the order in which the trove manager loops through the files.
+
+        Args:
+            value (list of ints):
+                New order, with one integer per argument provided to the file
+                format. The integer corresponds to the order in which you wish
+                to loop through the files, with lower values looping through
+                first.
+        '''
+
+        self.combinations_order = value
+
+        del self.combinations
+
+    ########################################################################
+
     @property
     def combinations( self ):
         '''Returns:
@@ -61,9 +79,30 @@ class TroveManager( object ):
         '''
 
         if not hasattr( self, '_combinations' ):
-            self._combinations = list( itertools.product( *self.args ) )
+
+            # Reorder
+            if self.combinations_order is not None:
+                args = [ self.args[i] for i in self.combinations_order[::-1] ]
+            else:
+                args = self.args
+
+            cs = list( itertools.product( *args ) )
+
+            # Reorder back
+            if self.combinations_order is not None:
+                self._combinations = []
+                for c in cs:
+                    self._combinations.append(
+                        tuple( [ c[i] for i in self.combinations_order[::-1] ] )
+                    )
+            else:
+                self._combinations = cs
 
         return self._combinations
+
+    @combinations.deleter
+    def combinations( self ):
+        del self._combinations
 
     ########################################################################
 
