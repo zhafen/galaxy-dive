@@ -94,6 +94,51 @@ class TestTroveManager( unittest.TestCase ):
 
         self.assertEqual( expected, actual )
 
+        self.trove_manager.set_order( [ 3, 2, 0, 1 ] )
+
+        actual = self.trove_manager.combinations
+
+        expected = [
+            ( './tests/data/trove_test_dir', 'a', 1, 6, ),
+            ( './tests/data/trove_test_dir', 'a', 2, 6, ),
+            ( './tests/data/trove_test_dir', 'a', 3, 6, ),
+            ( './tests/data/trove_test_dir', 'b', 1, 6, ),
+            ( './tests/data/trove_test_dir', 'b', 2, 6, ),
+            ( './tests/data/trove_test_dir', 'b', 3, 6, ),
+        ]
+
+        self.assertEqual( expected, actual )
+
+        tm = trove_management.TroveManager(
+            file_format2,
+            [ 'a', 'b', ],
+            [ 0, 1, ],
+            [ 10, 20, 30, ],
+        )
+
+        def get_file( self, *args ):
+            return self.file_format.format( *args )
+        tm.get_file = get_file
+
+        tm.set_order( [ 2, 0, 1,] )
+
+        actual = tm.combinations
+
+        expected = [
+            ( 'a', 0, 10 ),
+            ( 'a', 1, 10 ),
+            ( 'a', 0, 20 ),
+            ( 'a', 1, 20 ),
+            ( 'a', 0, 30 ),
+            ( 'a', 1, 30 ),
+            ( 'b', 0, 10 ),
+            ( 'b', 1, 10 ),
+            ( 'b', 0, 20 ),
+            ( 'b', 1, 20 ),
+            ( 'b', 0, 30 ),
+            ( 'b', 1, 30 ),
+        ]
+        self.assertEqual( expected, actual )
 
     ########################################################################
 

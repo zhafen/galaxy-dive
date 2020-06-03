@@ -82,7 +82,16 @@ class TroveManager( object ):
 
             # Reorder
             if self.combinations_order is not None:
-                args = [ self.args[i] for i in self.combinations_order[::-1] ]
+                order = [
+                    len( self.combinations_order ) - i
+                    for i in
+                    self.combinations_order
+                ]
+                args = [
+                    arg
+                    for _, arg in
+                    sorted( zip( order, self.args ) )
+                ]
             else:
                 args = self.args
 
@@ -92,9 +101,11 @@ class TroveManager( object ):
             if self.combinations_order is not None:
                 self._combinations = []
                 for c in cs:
-                    self._combinations.append(
-                        tuple( [ c[i] for i in self.combinations_order[::-1] ] )
-                    )
+                    ordered_c = tuple( [
+                        arg for _, arg in
+                        sorted( zip( order, c ) )
+                    ] )
+                    self._combinations.append( ordered_c )
             else:
                 self._combinations = cs
 
@@ -102,7 +113,8 @@ class TroveManager( object ):
 
     @combinations.deleter
     def combinations( self ):
-        del self._combinations
+        if hasattr( self, '_combinations' ):
+            del self._combinations
 
     ########################################################################
 
