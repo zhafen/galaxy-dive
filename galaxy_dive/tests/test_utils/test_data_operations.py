@@ -199,7 +199,6 @@ class TestAlignAxes(unittest.TestCase):
         self.default_args[1] = np.array([ 1., 0., 0. ])
         result = self.fn(*self.default_args)
 
-        #expected = np.array([0., 0., 1.])
         expected = np.array([0., 0., 1.])
 
         npt.assert_allclose(expected, result)

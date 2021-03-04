@@ -505,10 +505,15 @@ class HaloUpdater( halo_data.HaloData ):
                 if ( self.halos.index.size == 0 ) or ( ahf_row.size == 0 ):
                     
                     # Borrow a previous row for formatting
-                    ahf_row = copy.copy( ahf_frames[-1] )
+                    ahf_row = copy.copy( ahf_frames[0] )
 
-                    # Drop the previous row
-                    ahf_row = ahf_row.drop( ahf_row.index[0] )
+                    try:
+                        # Drop the previous row
+                        ahf_row = ahf_row.drop( ahf_row.index[0] )
+                    except:
+
+                        #DEBUG
+                        import pdb; pdb.set_trace()
 
                     # Turn all the values to np.nan, so we know that they're invalid, but the format still works.
                     [ ahf_row.set_value( halo_id, column_name, np.nan ) for column_name in columns_to_add ]
@@ -518,7 +523,12 @@ class HaloUpdater( halo_data.HaloData ):
             custom_mtree_halo = pd.concat( ahf_frames )
 
             # Add in the snapshots, and use them as the index
-            custom_mtree_halo['snum'] = snums
+            try:
+                custom_mtree_halo['snum'] = snums
+            except:
+
+                #DEBUG
+                import pdb; pdb.set_trace()
             custom_mtree_halo = custom_mtree_halo.set_index( 'snum', )
 
             # Now merge onto the mtree_halo DataFram
