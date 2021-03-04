@@ -28,12 +28,6 @@ data_sdir2 = './tests/data/sdir2'
 
 ########################################################################
 
-# Decorator for skipping slow tests
-slow = pytest.mark.skipif(
-        not pytest.config.getoption("--runslow"),
-        reason="need --runslow option to run"
-)
-
 class SaneEqualityArray(np.ndarray):
     '''Numpy array subclass that allows you to test if two arrays are equal.'''
 

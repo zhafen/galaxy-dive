@@ -19,14 +19,6 @@ import galaxy_dive.read_data.snapshot as read_snapshot
 
 ########################################################################
 
-# Decorator for skipping slow tests
-slow = pytest.mark.skipif(
-    not pytest.config.getoption("--runslow"),
-    reason="need --runslow option to run"
-)
-
-########################################################################
-
 class TestGetSnapshotFilepath( unittest.TestCase ):
 
   def test_get_single_file( self ):

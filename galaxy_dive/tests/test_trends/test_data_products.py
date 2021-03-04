@@ -20,13 +20,7 @@ import galaxy_dive.trends.data_products as data_products
 ########################################################################
 ########################################################################
 
-# Decorator for skipping tests unique to stampede
-stampede = pytest.mark.skipif(
-    not pytest.config.getoption("--runstampede"),
-    reason="need --runstampede option to run"
-)
-
-@stampede
+@pytest.mark.stampede
 class TestDataProducts( unittest.TestCase ):
 
     def test_tidal_tensor_data_grudic( self ):

@@ -26,13 +26,6 @@ data_sdir2 = './tests/data/sdir2'
 
 ########################################################################
 
-# Decorator for skipping slow tests
-slow = pytest.mark.skipif(
-    not pytest.config.getoption("--runslow"),
-    reason="need --runslow option to run"
-)
-
-
 class SaneEqualityArray(np.ndarray):
     '''Numpy array subclass that allows you to test if two arrays are equal.'''
 
@@ -195,7 +188,7 @@ class TestHaloUpdater( unittest.TestCase ):
 
     ########################################################################
 
-    @slow
+    @pytest.mark.slow
     def test_save_smooth_mtree_halos( self ):
 
         # Get the results
@@ -226,7 +219,7 @@ class TestHaloUpdater( unittest.TestCase ):
 
     ########################################################################
 
-    @slow
+    @pytest.mark.slow
     def test_save_smooth_mtree_halos_different_snum( self ):
 
         # Pass it the right directory
@@ -330,7 +323,7 @@ class TestHaloUpdater( unittest.TestCase ):
 
     ########################################################################
 
-    @slow
+    @pytest.mark.slow
     def test_get_analytic_concentration_mtree_halos( self ):
 
         # Load the saved files
@@ -344,7 +337,7 @@ class TestHaloUpdater( unittest.TestCase ):
 
     ########################################################################
 
-    @slow
+    @pytest.mark.slow
     def test_save_and_load_halos_add( self ):
 
         # Save halos_add

@@ -19,14 +19,6 @@ import galaxy_dive.read_data.rockstar as read_rockstar
 import galaxy_dive.utils.utilities as utilities
 
 ########################################################################
-
-# Decorator for skipping slow tests
-slow = pytest.mark.skipif(
-    not pytest.config.getoption("--runslow"),
-    reason="need --runslow option to run"
-)
-
-########################################################################
 ########################################################################
 
 class TestRockstarReader( unittest.TestCase ):

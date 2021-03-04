@@ -24,14 +24,6 @@ data_sdir = './tests/data/sdir'
 data_sdir2 = './tests/data/sdir2'
 
 ########################################################################
-
-# Decorator for skipping slow tests
-slow = pytest.mark.skipif(
-        not pytest.config.getoption("--runslow"),
-        reason="need --runslow option to run"
-)
-
-########################################################################
 ########################################################################
 
 class TestAHFReader( unittest.TestCase ):
