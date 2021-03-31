@@ -14,6 +14,7 @@ import pandas as pd
 import scipy
 import scipy.signal as signal
 import unyt
+import warnings
 
 # Imports from my own stuff
 import galaxy_dive.analyze_data.ahf as analyze_ahf
@@ -795,7 +796,10 @@ class SnapshotData( SimulationData ):
         self.halo_coords = halo_coords_comoving / (1. + self.redshift) / self.data_attrs['hubble']
         self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
         self.r_vir = mtree_halo['Rvir'] / (1. + self.redshift) / self.data_attrs['hubble']
-        self.r_scale = self.r_vir / mtree_halo['cAnalytic']
+        try:
+            self.r_scale = self.r_vir / mtree_halo['cAnalytic']
+        except KeyError:
+            warnings.warn( 'Tried to calculate r_scale but cAnalytic was not available in the AHF_halos_add file.' )
         self.m_vir = mtree_halo['Mvir'] / self.data_attrs['hubble']
         self.m_gas = mtree_halo['M_gas'] / self.data_attrs['hubble']
         self.m_star = mtree_halo['M_star'] / self.data_attrs['hubble']
