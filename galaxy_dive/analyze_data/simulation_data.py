@@ -1168,7 +1168,10 @@ class TimeData( SimulationData ):
         self.halo_coords = halo_coords_comoving * scale_factor_and_hinv[np.newaxis, :]
         self.halo_velocity = np.array( [ mtree_halo['VXc'], mtree_halo['VYc'], mtree_halo['VZc'] ] )
         self.r_vir = mtree_halo['Rvir'] * scale_factor_and_hinv
-        self.r_scale = self.r_vir / mtree_halo['cAnalytic']
+        try:
+            self.r_scale = self.r_vir / mtree_halo['cAnalytic']
+        except KeyError:
+            warnings.warn( 'cAnalytic not in halo files, skipping r_scale.' )
         self.m_vir = mtree_halo['Mvir'] / self.hubble_param
         self.m_gas = mtree_halo['M_gas'] / self.hubble_param
         self.m_star = mtree_halo['M_star'] / self.hubble_param
