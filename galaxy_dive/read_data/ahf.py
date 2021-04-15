@@ -306,9 +306,9 @@ class AHFReader( object ):
         self.profiles.rename( columns={'#r': 'r'}, inplace=True )
 
         # Get the mapping for where the halo IDs are in the profile data
-        @numba.jit( 'i8[:](f8[:])', nopython=True )
+        @numba.jit( 'int64[:](float64[:])', nopython=True )
         def profile_mapping( r ):
-            
+                        
             ind_mapping = [ 0, ]
             for i, r_i in enumerate( r ):
 
@@ -328,7 +328,7 @@ class AHFReader( object ):
 
         # Run the function
         self.profile_id_mapping = profile_mapping(
-            np.abs( self.profiles['r'].values )
+            np.abs( self.profiles['r'].values ),
         )
 
         # Store the snum used
