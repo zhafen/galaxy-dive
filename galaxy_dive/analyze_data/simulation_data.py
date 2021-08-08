@@ -162,10 +162,10 @@ class SimulationData( generic_data.GenericData ):
         else:
             return self.halo_data.get_mt_data(
                 self.length_scale_used,
-                snums = self.snum,
+                snums = [ self.snum, ],
                 return_values_only = False, # This is because we're only getting one value out
                 a_power = 1.,
-            ) / self.data_attrs['hubble']
+            ).values[0] / self.data_attrs['hubble']
 
     ########################################################################
 
