@@ -186,7 +186,7 @@ class HaloData( generic_data.GenericData ):
             mt_data *= ( 1. + redshift )**-a_power
 
         if snums is not None:
-            mt_data = mt_data.loc[snums]
+            mt_data = mt_data.reindex( snums )
 
         if return_values_only:
           mt_data = mt_data.values

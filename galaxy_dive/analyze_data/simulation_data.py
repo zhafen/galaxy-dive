@@ -162,10 +162,10 @@ class SimulationData( generic_data.GenericData ):
         else:
             return self.halo_data.get_mt_data(
                 self.length_scale_used,
-                snums = self.snum,
+                snums = [ self.snum, ],
                 return_values_only = False, # This is because we're only getting one value out
                 a_power = 1.,
-            ) / self.data_attrs['hubble']
+            ).values[0] / self.data_attrs['hubble']
 
     ########################################################################
 
@@ -1002,9 +1002,7 @@ class SnapshotData( SimulationData ):
         By default the vector is the total angular momentum.
         '''
 
-        raise Exception( "TODO: Test this" )
-
-        if vector == 'total ang momentum':
+        if normal_vector == 'total ang momentum':
             # Calculate the total angular momentum vector, if it's not calculated yet
             self.normal_vector = self.calc_total_ang_momentum()
         else:
@@ -1158,7 +1156,9 @@ class TimeData( SimulationData ):
         ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
         # Select the main halo at the right redshift
-        mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].loc[self.snums]
+        mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].reindex(
+            self.snums
+        )
 
         # Add the halo data to the class.
         self.redshift = mtree_halo['redshift']
@@ -1857,9 +1857,6 @@ class TimeData( SimulationData ):
             #         return circ_energy - s_e_sp
 
             #     if j==3 and r==3:
-
-            #         #DEBUG
-            #         import pdb; pdb.set_trace()
 
             #     try:
             #         o_r = scipy.optimize.root_scalar(
