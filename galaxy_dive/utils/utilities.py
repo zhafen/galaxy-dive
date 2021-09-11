@@ -276,7 +276,7 @@ def store_parameters( constructor ):
 
 ########################################################################
 
-def save_parameters( instance, f ):
+def save_parameters( instance, f, skip=[] ):
     '''Save parameters to a hdf5 file.
 
     Args:
@@ -287,6 +287,9 @@ def save_parameters( instance, f ):
         f (open h5py file object) :
             File to save the parameters to.
 
+        skip (list of strs) :
+            Parameters to not save.
+
     Returns:
         param_grp (h5py group) :
             Group containing the parameters as attributes.
@@ -294,6 +297,9 @@ def save_parameters( instance, f ):
 
     param_grp = f.create_group( 'parameters' )
     for parameter_str in instance.stored_parameters:
+
+        if parameter_str in skip:
+            continue
 
         parameter = getattr( instance, parameter_str )
 
