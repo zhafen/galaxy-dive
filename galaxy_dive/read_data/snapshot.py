@@ -188,7 +188,17 @@ def readsnap( sdir, snum, ptype, load_additional_ids=0, snapshot_name='snapshot'
                         metal_t=np.transpose(metal_t)
                 else:
                     metal_t=np.reshape(np.array(metal_t),(np.array(metal_t).size,1))
-                metal[nL:nR,:]=metal_t
+                try:
+                    metal[nL:nR,:]=metal_t
+                except ValueError:
+                    print(
+                        'Corrupt snapshot: sdir={}, snum={}, ptype={}'.format(
+                            sdir, snum, ptype,
+                        ),
+                        'Use with caution.'
+                    )
+                    metal=np.zeros([npartTotal[ptype],metal_t.shape[1]],dtype=float)
+                    metal[nL:nR,:]=metal_t
             if (ptype==4) and (flag_sfr>0) and (flag_stellarage>0):
                 stellage[nL:nR]=input_struct[bname+"StellarFormationTime"]
             if (ptype==5) and (skip_bh==0):

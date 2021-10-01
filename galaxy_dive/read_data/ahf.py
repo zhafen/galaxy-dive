@@ -65,7 +65,7 @@ class AHFReader( object ):
     # Load Data
     ########################################################################
 
-    def get_mtree_halos( self, index=None, tag=None, adjust_default_labels=default, ):
+    def get_mtree_halos( self, index=None, tag=None, adjust_default_labels=default, included='all' ):
         '''Get halo files (e.g. halo_00000.dat) in a dictionary of pandas DataFrames.
 
         Args:
@@ -160,6 +160,10 @@ class AHFReader( object ):
             if tag is not None:
                 halo_num_str = halo_num_str.split( '_' )[0]
             halo_num = int( halo_num_str.split( '.' )[0] )
+
+            if included != 'all':
+                if halo_num not in included:
+                    continue
 
             if index == 'range':
                 pass
