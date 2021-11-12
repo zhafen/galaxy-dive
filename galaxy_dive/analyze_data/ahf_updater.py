@@ -504,20 +504,11 @@ class HaloUpdater( halo_data.HaloData ):
                 # Check for edge case, where there isn't an AHF row with specified halo number or there are no more halos
                 if ( self.halos.index.size == 0 ) or ( ahf_row.size == 0 ):
                     
-                    # Borrow a previous row for formatting
-                    ahf_row = copy.copy( ahf_frames[0] )
-
-                    try:
-                        # Drop the previous row
-                        ahf_row = ahf_row.drop( ahf_row.index[0] )
-                    except:
-
-                        #DEBUG
-                        import pdb; pdb.set_trace()
-
-                    # Turn all the values to np.nan, so we know that they're invalid, but the format still works.
-                    [ ahf_row.set_value( halo_id, column_name, np.nan ) for column_name in columns_to_add ]
-
+                    empty_data = {}
+                    for column_name in columns_to_add:
+                        empty_data[column_name] = [ np.nan, ]
+                    ahf_row = pd.DataFrame( empty_data, index=[ halo_id, ], )
+                
                 ahf_frames.append( ahf_row )
 
             custom_mtree_halo = pd.concat( ahf_frames )
