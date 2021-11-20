@@ -614,6 +614,12 @@ class SimulationData( generic_data.GenericData ):
             self.calc_ang_momentum()
         elif data_key == 'Lmag':
             self.calc_ang_momentum_magnitude()
+        elif data_key == 'J':
+            self.calc_ang_momentum( specific_ang_momentum=True )
+        elif data_key == 'Jmag':
+            self.calc_ang_momentum_magnitude( specific_ang_momentum=True )
+        elif data_key == 'Jz/J':
+            self.calc_ang_momentum_alignment()
         elif data_key == 'Phi':
             self.calc_phi()
         elif data_key == 'AbsPhi':
@@ -1415,6 +1421,11 @@ class TimeData( SimulationData ):
                 Angular momentum of each resolution element.
         '''
 
+        if specific_ang_momentum:
+            key = 'J'
+        else:
+            key = 'L'
+
         if not specific_ang_momentum:
             m_mult = np.array( [ self.get_data('M'), ] * 3 )
 
@@ -1436,17 +1447,48 @@ class TimeData( SimulationData ):
 
             l_all[:,:,i] = l
 
-        self.data['L'] = l_all
+        self.data[key] = l_all
 
     ########################################################################
 
-    def calc_ang_momentum_magnitude( self ):
+    def calc_ang_momentum_magnitude( self, specific_ang_momentum=False ):
         '''Calculate the magnitude of the angular momentum.
         '''
 
-        self.data['Lmag'] = np.linalg.norm( self.get_data( 'L' ), axis=0 )
+        if specific_ang_momentum:
+            key = 'J'
+        else:
+            key = 'L'
 
-        return self.data['Lmag']
+        mag_key = key + 'mag'
+        self.data[mag_key] = np.linalg.norm( self.get_data( key ), axis=0 )
+
+        return self.data[mag_key]
+
+    ########################################################################
+
+    def calc_ang_momentum_alignment( self, normal_vector='total ang momentum' ):
+        '''Calculate the magnitude of the angular momentum.
+        '''
+
+        # Doesn't matter which one we use
+        key = 'J'
+        mag_key = key + 'mag'
+
+        # Set up the normal vector
+        if normal_vector == 'total ang momentum':
+            self.normal_vector = self.total_ang_momentum
+        else:
+            self.normal_vector = normal_vector
+        self.normal_vector /= np.linalg.norm( self.normal_vector )
+
+        j = self.get_data( key )
+        jz = np.array([
+            np.dot( j[:,:,i].transpose(), self.normal_vector )
+            for i in range( self.n_snaps )
+        ]).transpose()
+
+        self.data['Jz/J'] = jz / self.get_data( mag_key )
 
     ########################################################################
 

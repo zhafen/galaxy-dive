@@ -625,6 +625,53 @@ class TestCalc( unittest.TestCase ):
 
     ########################################################################
 
+    def test_calc_JzJ( self ):
+
+        # Mock data
+        expected_phi = 180. - 15. # in degrees
+        phi_r = expected_phi * np.pi / 180. # in radians
+        theta = 50. * np.pi / 180.
+        self.t_data.data = {
+            'M': np.random.randn( 4, 5 ),
+            'P': np.random.randn( 3, 4, 5 ),
+            'V': np.random.randn( 3, 4, 5 ),
+        }
+        # Mock data for particle index 1 in the 3rd snapshot
+        self.t_data.data['M'][1,2] = 2.
+        self.t_data.data['P'][:,1,2] = np.array([ 1., 2., 3. ])
+        self.t_data.data['V'][:,1,2] = np.array([ 3., 5., 6. ])
+
+        # Make sure we don't do automatic calculations not relevant
+        self.t_data.centered = True
+        self.t_data.vel_centered = True
+        self.t_data.hubble_corrected = True
+
+        # Normal vector will just be in the z-direction
+        normal_vector = np.array([ 0., 0., 2. ])
+        self.t_data.total_ang_momentum = normal_vector
+
+        self.t_data.calc_ang_momentum_magnitude( specific_ang_momentum=True )
+        self.t_data.data['J'][:,1,2] = np.array([
+            5. * np.cos( theta ) * np.sin( phi_r ),
+            5. * np.sin( theta ) * np.sin( phi_r ),
+            5. * np.cos( phi_r ),
+        ])
+        self.t_data.data['Jmag'][1,2] = 5.
+
+        # Actual calculation
+        self.t_data.calc_ang_momentum_alignment()
+
+        # Get the data
+        actual = self.t_data.data['Jz/J']
+
+        # Make sure we get the general right shape
+        assert self.t_data.data['M'].shape == actual.shape
+
+        # Check that we get the right value
+        npt.assert_allclose( np.cos( phi_r ), actual[1,2] )
+
+    ########################################################################
+
     def test_calc_phi( self ):
 
         # Mock data
