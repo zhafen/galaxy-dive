@@ -1510,23 +1510,20 @@ class TimeData( SimulationData ):
 
         assert specific_ang_momentum, "Lc not implemented."
 
-        j_circ_all = []
-        for i, snum in enumerate( tqdm.tqdm( self.get_data( 'snum' )) ):
+        j_circ_all = np.full( self.base_data_shape, np.nan )
+        for i, snum in enumerate( tqdm.tqdm( self.get_data( 'snum' ) ) ):
 
             # Commonly used values
-            r_vir = self.r_vir[snum]
-            m_vir = self.m_vir[snum]
-            redshift = self.redshift[snum]
+            try:
+                r_vir = self.r_vir[snum]
+                m_vir = self.m_vir[snum]
+                redshift = self.redshift[snum]
+            except IndexError:
+                continue
 
-            # Retrieve star masses enclosed
+            # Retrieve particle masses enclosed
             r = self.get_data( 'R' )[:,i]
             r[r > r_vir] = np.nan
-            # r_ckpc = r / ( self.hubble_param * ( 1. + redshift ) )
-            # M_enc_star = self.halo_data.get_profile_data(
-            #     'M_in_r',
-            #     snum,
-            #     r_ckpc
-            # ) / self.hubble_param
 
             # Get grid masses enclose
             r_grid = np.linspace( 0.00001, r_vir, 1024 )
@@ -1571,9 +1568,9 @@ class TimeData( SimulationData ):
             ) / self.hubble_param
             j_circ = np.sqrt( unyt.G * M_enc_circ * unyt.Msun * r_circ * unyt.kpc)
 
-            j_circ_all.append( j_circ )
+            j_circ_all[:,i] = j_circ
 
-        self.data['Jcirc'] = np.array( j_circ_all ).transpose()
+        self.data['Jcirc'] = j_circ_all
         
         return self.data['Jcirc']
 
