@@ -1513,13 +1513,13 @@ class TimeData( SimulationData ):
         j_circ_all = np.full( self.base_data_shape, np.nan )
         for i, snum in enumerate( tqdm.tqdm( self.get_data( 'snum' ) ) ):
 
-            # Commonly used values
-            try:
-                r_vir = self.r_vir[snum]
-                m_vir = self.m_vir[snum]
-                redshift = self.redshift[snum]
-            except IndexError:
+            if snum not in self.r_vir.index:
                 continue
+
+            # Commonly used values
+            r_vir = self.r_vir[snum]
+            m_vir = self.m_vir[snum]
+            redshift = self.redshift[snum]
 
             # Retrieve particle masses enclosed
             r = self.get_data( 'R' )[:,i]
