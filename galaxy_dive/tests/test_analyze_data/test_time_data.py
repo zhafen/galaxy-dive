@@ -672,6 +672,37 @@ class TestCalc( unittest.TestCase ):
 
     ########################################################################
 
+    def test_calc_j_circ( self ):
+
+        # Mock data
+        self.t_data.data = {
+            'M': np.random.randn( 4, 5 ),
+            'P': np.random.randn( 3, 4, 5 ),
+            'V': np.random.randn( 3, 4, 5 ),
+            'snum': np.array([ 600, 550, 500, 450, 400 ]),
+        }
+        self.t_data.data_attrs = {
+            'hubble': 0.70199999999999996,
+            'omega_matter': 0.272,
+            'omega_lambda': 0.728,
+        }
+
+        # Make sure we don't do automatic calculations not relevant
+        self.t_data.centered = True
+        self.t_data.vel_centered = True
+        self.t_data.hubble_corrected = True
+
+        # Actual calculation
+        self.t_data.calc_circular_ang_momentum()
+
+        # Get the data
+        actual = self.t_data.data['Jcirc']
+
+        # Make sure we get the right shape
+        assert self.t_data.data['M'].shape == actual.shape
+
+    ########################################################################
+
     def test_calc_phi( self ):
 
         # Mock data

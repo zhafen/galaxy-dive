@@ -13,6 +13,7 @@ import numpy.testing as npt
 import pandas as pd
 import scipy
 import scipy.signal as signal
+import tqdm
 import unyt
 import warnings
 
@@ -1464,6 +1465,80 @@ class TimeData( SimulationData ):
         self.data[mag_key] = np.linalg.norm( self.get_data( key ), axis=0 )
 
         return self.data[mag_key]
+
+    ########################################################################
+
+    def calc_circular_ang_momentum( self ):
+        '''Calculate the angular momentum for a particle with the same energy
+        on a circular orbit.
+        '''
+
+        j_circ_all = []
+        for i, snum in enumerate( tqdm.tqdm( self.get_data( 'snum' )) ):
+
+            # Commonly used values
+            r_vir = self.r_vir[snum]
+            m_vir = self.m_vir[snum]
+            redshift = self.redshift[snum]
+
+            # Retrieve star masses enclosed
+            r = self.get_data( 'R' )[:,i]
+            r[r > r_vir] = np.nan
+            # r_ckpc = r / ( self.hubble_param * ( 1. + redshift ) )
+            # M_enc_star = self.halo_data.get_profile_data(
+            #     'M_in_r',
+            #     snum,
+            #     r_ckpc
+            # ) / self.hubble_param
+
+            # Get grid masses enclose
+            r_grid = np.linspace( 0.00001, r_vir, 1024 )
+            r_grid_ckpc = r_grid / ( self.hubble_param * ( 1. + redshift ) )
+            M_enc_grid = self.halo_data.get_profile_data(
+                'M_in_r',
+                snum,
+                r_grid_ckpc
+            ) / self.hubble_param
+            M_enc_grid[np.isnan(M_enc_grid)] = 0.
+            M_enc_grid[np.arange(M_enc_grid.size)>np.argmax(M_enc_grid)] = M_enc_grid.max()
+
+            # Get potential energy
+            pot_grid = unyt.G * scipy.integrate.cumtrapz(
+                M_enc_grid/r_grid**2.,
+                r_grid,
+                initial = 0
+            ) * unyt.Msun / unyt.kpc
+            pot_grid -= pot_grid[-1]
+            pot_grid -= unyt.G * m_vir * unyt.Msun / ( r_vir * unyt.kpc )
+            pot_grid = pot_grid.to( 'm**2/s**2' )
+            pot_fn = lambda x : scipy.interpolate.interp1d( r_grid, pot_grid )( x ) * unyt.m**2. / unyt.s**2.
+
+            # Get energy for a grid, using virial theorem
+            spec_e_grid = pot_grid + 0.5 * unyt.G * M_enc_grid * unyt.Msun / ( r_grid * unyt.kpc )
+
+            # Particle potential energy, specific energy
+            pot = pot_fn( r )
+            v = self.get_data( 'Vmag' )[:,i] * unyt.km / unyt.s
+            spec_e =  pot +  0.5 * v**2.
+
+            # What radii particles would be at if they were circular with the same energy
+            spec_e[spec_e>spec_e_grid.max()] = np.nan
+            r_circ = scipy.interpolate.interp1d( spec_e_grid, r_grid )( spec_e )
+
+            # Circular momentum
+            r_circ_ckpc = r_circ / ( self.hubble_param * ( 1. + redshift ) )
+            M_enc_circ = self.halo_data.get_profile_data(
+                'M_in_r',
+                snum,
+                r_circ_ckpc
+            ) / self.hubble_param
+            j_circ = np.sqrt( unyt.G * M_enc_circ * unyt.Msun * r_circ * unyt.kpc)
+
+            j_circ_all.append( j_circ )
+
+        self.data['Jcirc'] = np.array( j_circ_all ).transpose()
+        
+        return self.data['Jcirc']
 
     ########################################################################
 
