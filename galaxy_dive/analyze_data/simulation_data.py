@@ -617,10 +617,16 @@ class SimulationData( generic_data.GenericData ):
             self.calc_ang_momentum_magnitude()
         elif data_key == 'J':
             self.calc_ang_momentum( specific_ang_momentum=True )
+        elif data_key == 'Jz':
+            self.calc_aligned_ang_momentum( specific_ang_momentum=True )
         elif data_key == 'Jmag':
             self.calc_ang_momentum_magnitude( specific_ang_momentum=True )
-        elif data_key == 'Jz/J':
+        elif data_key == 'Jcirc':
+            self.calc_circular_ang_momentum( specific_ang_momentum=True )
+        elif data_key == 'Jz/Jmag':
             self.calc_ang_momentum_alignment()
+        elif data_key == 'Jz/Jcirc':
+            self.calc_circularity()
         elif data_key == 'Phi':
             self.calc_phi()
         elif data_key == 'AbsPhi':
@@ -1452,6 +1458,35 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
+    def calc_aligned_ang_momentum( self, specific_ang_momentum=False, normal_vector='total ang momentum' ):
+        '''Calculate the magnitude of the angular momentum.
+        '''
+
+        # Doesn't matter which one we use
+        if specific_ang_momentum:
+            key = 'J'
+        else:
+            key = 'L'
+
+        # Set up the normal vector
+        if normal_vector == 'total ang momentum':
+            self.normal_vector = self.total_ang_momentum
+        else:
+            self.normal_vector = normal_vector
+        self.normal_vector /= np.linalg.norm( self.normal_vector )
+
+        ang = self.get_data( key )
+        ang_z = np.array([
+            np.dot( ang[:,:,i].transpose(), self.normal_vector )
+            for i in range( self.n_snaps )
+        ]).transpose()
+
+        self.data['Jz'] = ang_z
+
+        return ang_z
+
+    ########################################################################
+
     def calc_ang_momentum_magnitude( self, specific_ang_momentum=False ):
         '''Calculate the magnitude of the angular momentum.
         '''
@@ -1468,10 +1503,12 @@ class TimeData( SimulationData ):
 
     ########################################################################
 
-    def calc_circular_ang_momentum( self ):
+    def calc_circular_ang_momentum( self, specific_ang_momentum=True ):
         '''Calculate the angular momentum for a particle with the same energy
         on a circular orbit.
         '''
+
+        assert specific_ang_momentum, "Lc not implemented."
 
         j_circ_all = []
         for i, snum in enumerate( tqdm.tqdm( self.get_data( 'snum' )) ):
@@ -1546,24 +1583,24 @@ class TimeData( SimulationData ):
         '''Calculate the magnitude of the angular momentum.
         '''
 
-        # Doesn't matter which one we use
-        key = 'J'
-        mag_key = key + 'mag'
+        jz = self.calc_aligned_ang_momentum( specific_ang_momentum=True, normal_vector=normal_vector )
 
-        # Set up the normal vector
-        if normal_vector == 'total ang momentum':
-            self.normal_vector = self.total_ang_momentum
-        else:
-            self.normal_vector = normal_vector
-        self.normal_vector /= np.linalg.norm( self.normal_vector )
+        self.data['Jz/Jmag'] = jz / self.get_data( 'Jmag' )
 
-        j = self.get_data( key )
-        jz = np.array([
-            np.dot( j[:,:,i].transpose(), self.normal_vector )
-            for i in range( self.n_snaps )
-        ]).transpose()
+        return self.data['Jz/Jmag']
 
-        self.data['Jz/J'] = jz / self.get_data( mag_key )
+    ########################################################################
+
+    def calc_circularity( self, normal_vector='total ang momentum' ):
+        '''Calculate the magnitude of the angular momentum.
+        '''
+
+        self.data['Jz/Jcirc'] = (
+            self.calc_aligned_ang_momentum( specific_ang_momentum=True, normal_vector=normal_vector ) / 
+            self.get_data( 'Jcirc' )
+        )
+
+        return self.data['Jz/Jcirc']
 
     ########################################################################
 
