@@ -1528,11 +1528,14 @@ class TimeData( SimulationData ):
             # Get grid masses enclose
             r_grid = np.linspace( 0.00001, r_vir, 1024 )
             r_grid_ckpc = r_grid / ( self.hubble_param * ( 1. + redshift ) )
-            M_enc_grid = self.halo_data.get_profile_data(
-                'M_in_r',
-                snum,
-                r_grid_ckpc
-            ) / self.hubble_param
+            try:
+                M_enc_grid = self.halo_data.get_profile_data(
+                    'M_in_r',
+                    snum,
+                    r_grid_ckpc
+                ) / self.hubble_param
+            except ( IndexError, NameError ) as e:
+                continue
             M_enc_grid[np.isnan(M_enc_grid)] = 0.
             M_enc_grid[np.arange(M_enc_grid.size)>np.argmax(M_enc_grid)] = M_enc_grid.max()
 
@@ -1568,7 +1571,7 @@ class TimeData( SimulationData ):
             ) / self.hubble_param
             j_circ = np.sqrt( unyt.G * M_enc_circ * unyt.Msun * r_circ * unyt.kpc)
 
-            j_circ_all[:,i] = j_circ
+            j_circ_all[:,i] = j_circ.to( 'kpc * km / s' )
 
         self.data['Jcirc'] = j_circ_all
         
