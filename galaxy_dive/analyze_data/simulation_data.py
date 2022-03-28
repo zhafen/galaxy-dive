@@ -1527,7 +1527,7 @@ class TimeData( SimulationData ):
 
             # Get grid masses enclose
             r_grid = np.linspace( 0.00001, r_vir, 1024 )
-            r_grid_ckpc = r_grid / ( self.hubble_param * ( 1. + redshift ) )
+            r_grid_ckpc = r_grid * ( self.hubble_param * ( 1. + redshift ) )
             try:
                 M_enc_grid = self.halo_data.get_profile_data(
                     'M_in_r',
@@ -1563,7 +1563,7 @@ class TimeData( SimulationData ):
             r_circ = scipy.interpolate.interp1d( spec_e_grid, r_grid )( spec_e )
 
             # Circular momentum
-            r_circ_ckpc = r_circ / ( self.hubble_param * ( 1. + redshift ) )
+            r_circ_ckpc = r_circ * ( self.hubble_param * ( 1. + redshift ) )
             M_enc_circ = self.halo_data.get_profile_data(
                 'M_in_r',
                 snum,
