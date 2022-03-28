@@ -1534,7 +1534,7 @@ class TimeData( SimulationData ):
                     snum,
                     r_grid_ckpc
                 ) / self.hubble_param
-            except ( IndexError, NameError ) as e:
+            except ( IndexError, NameError, TypeError ) as e:
                 continue
             M_enc_grid[np.isnan(M_enc_grid)] = 0.
             M_enc_grid[np.arange(M_enc_grid.size)>np.argmax(M_enc_grid)] = M_enc_grid.max()
