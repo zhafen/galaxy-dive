@@ -483,6 +483,8 @@ class AHFReader( object ):
 
             # Get the part
             if type_of_halo_id == 'merger_tree':
+                if not pd.api.types.is_list_like( inds ):
+                    inds = [ inds, ]
                 p_or_v_part = self.mtree_halos[ halo_id ][ key ].reindex( inds )
             elif type_of_halo_id == 'halos':
                 p_or_v_part = self.halos[ key ][ halo_id ]

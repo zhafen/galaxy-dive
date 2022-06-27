@@ -183,7 +183,7 @@ class TestAHFReader( unittest.TestCase ):
     def test_get_pos_or_vel( self ):
 
         # Snap 550, mt halo 0, position
-        expected = np.array([ 29372.26565053,  30929.16894187,  32415.81701217])
+        expected = np.array([[ 29372.26565053,  30929.16894187,  32415.81701217]])
 
         # Get the values
         self.ahf_reader.get_mtree_halos( 'snum' )

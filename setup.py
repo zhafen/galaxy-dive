@@ -28,6 +28,7 @@ setuptools.setup(
         'numba>=0.43.1',
         'scipy>=1.2.1',
         'verdict>=1.1.3',
+        'tqdm',
     ],
     include_package_data=True,
 )

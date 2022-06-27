@@ -801,7 +801,9 @@ class SnapshotData( SimulationData ):
         ahf_reader.get_mtree_halos( index=self.ahf_index, tag=self.ahf_tag )
 
         # Select the main halo at the right redshift
-        mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].reindex( self.snum )
+        mtree_halo = ahf_reader.mtree_halos[self.main_halo_id].reindex([
+            self.snum,
+        ]).loc[self.snum]
 
         # Add the halo data to the class.
         self.redshift = mtree_halo['redshift']
