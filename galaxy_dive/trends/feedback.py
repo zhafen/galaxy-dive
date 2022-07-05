@@ -254,6 +254,11 @@ def radiation_light_to_mass( age, band='bolometric' ):
         return LperM_ion
 
     elif band == 'NUV':
+        bands = [
+            'optical/near IR',
+            'photo-electric FUV',
+            'ionizing',
+        ]
         LperM_NUV = radiation_bolometric_light_to_mass( age )
         for band_i in bands:
             LperM_NUV -= radiation_light_to_mass( age, band=band_i )
@@ -323,7 +328,7 @@ def feedback_specific_energy_rate(
     if feedback_source == 'all':
         result = (
             feedback_specific_energy_rate( age, 'mechanical', *args, **kwargs ) +
-            feedback_specific_energy_rate( age, 'radiaton', *args, **kwargs )
+            feedback_specific_energy_rate( age, 'radiation', *args, **kwargs )
         )
         return result
     elif feedback_source == 'mechanical':
