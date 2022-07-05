@@ -6,8 +6,8 @@
 @status: Development
 '''
 
-from tkinter import W
 import numpy as np
+import tqdm
 
 ########################################################################
 ########################################################################
@@ -312,7 +312,7 @@ def feedback_specific_energy_rate(
 
     Returns:
         edot (np.ndarray)
-            Supernova energy rate per stellar mass, in units of Lsun/Msun.
+            Energy rate per stellar mass, in units of Lsun/Msun.
     '''
 
     radiation_bands = [
@@ -367,3 +367,77 @@ def feedback_specific_energy_rate(
         return radiation_light_to_mass( age, band=radiation_band, *args, **kwargs )
     else:
         raise KeyError( 'Unrecognized feedback source, feedback_source={}'.format( feedback_source ) )
+
+########################################################################
+
+def feedback_energy_rate_given_sfh(
+    time,
+    sfh,
+    feedback_source = 'mechanical',
+    *args,
+    **kwargs
+):
+    '''Energy deposition rate for a given feedback source.
+    
+    Args:
+        time (np.ndarray):
+            time in Myr.
+
+        sfh (np.ndarray):
+            SFR in Msun/yr at each time.
+        
+        feedback_source (str):
+            What type of feedback. Options are...
+                'all'
+                'mechanical'
+                'radiation'
+                'heating and ionizing radiation'
+                'SNe'
+                'SNe Ia'
+                'SNe II'
+                'stellar wind'
+                'bolometric radiation'
+                'mid/far IR radiation'
+                'optical/near IR radiation'
+                'photo-electric FUV radiation'
+                'ionizing radiation'
+                'NUV radiation'
+
+        *args, **kwargs:
+            Passed to specific energy function for the feedback source.
+
+    Returns:
+        Edot (np.ndarray)
+            Energy rate, in units of Lsun.
+    '''
+
+    result = []
+    for i, time_i in enumerate( tqdm.tqdm( time ) ):
+        if i == 0:
+            result.append( 0. )
+            continue
+
+        # Get data used.
+        used_history = time < time_i
+        used_time = time[used_history] # In Myr
+        used_sfh = sfh[used_history] # In Msun/yr
+
+        # Get feedback specific energy rate
+        # in Lsun / Msun
+        age = time_i - used_time
+        edot_fb =  feedback_specific_energy_rate(
+            age,
+            feedback_source = feedback_source,
+            *args,
+            **kwargs
+        )
+
+        # Integrate
+        result_i = np.trapz( edot_fb * used_sfh, used_time, )
+
+        result.append( result_i )
+
+    # Convert from Lsun * Myr / yr to Lsun
+    result = np.array( result ) * 1e3
+
+    return result
