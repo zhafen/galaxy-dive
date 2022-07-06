@@ -24,7 +24,7 @@ def rate_Ia( age ):
             Supernova rate at each age in units of SNe / Myr / Msun.
     '''
 
-    result = np.full( age.shape, 0. )
+    result = np.zeros( age.shape )
 
     SNe_occur = age > 37.53
     result[SNe_occur] = (
@@ -48,7 +48,7 @@ def rate_II( age ):
             Supernova rate at each age in units of SNe / Myr / Msun.
     '''
 
-    result = np.full( age.shape, 0. )
+    result = np.zeros( age.shape )
 
     first_stage = ( 3.401 < age ) & ( age < 10.37 )
     result[first_stage] = 5.408e-4
@@ -145,7 +145,7 @@ def wind_kinetic_light_to_mass( age, metallicity ):
     ) * 0.01646436
 
     # Wind mass loss fraction in star mass per Gyr
-    f_wind = np.full( age.shape, np.nan )
+    f_wind = np.zeros( age.shape )
     stage_1 = age < 1.
     f_wind[stage_1] = 4.763 * ( 0.01 + metallicity[stage_1] )
     stage_2 = ( 1. < age ) & ( age < 3.5 )
@@ -182,7 +182,7 @@ def radiation_bolometric_light_to_mass( age ):
             Radiation luminosity per stellar mass, in units of Lsun/Msun.
     '''
 
-    result = np.full( age.shape, 0. )
+    result = np.zeros( age.shape )
 
     stage_1 = age < 3.5
     result[stage_1] = 1136.59
@@ -221,7 +221,7 @@ def radiation_light_to_mass( age, band='bolometric' ):
         return np.zeros( age.shape )
 
     elif band == 'optical/near IR':
-        f_opt = np.full( age.shape, np.nan )
+        f_opt = np.zeros( age.shape )
         stage_1 = age < 2.5
         f_opt[stage_1] = 0.09
         stage_2 = ( 2.5 < age ) & ( age < 6. )
@@ -233,7 +233,7 @@ def radiation_light_to_mass( age, band='bolometric' ):
         return f_opt * LperM_bol
 
     elif band == 'photo-electric FUV':
-        LperM_FUV = np.full( age.shape, np.nan )
+        LperM_FUV = np.zeros( age.shape )
         stage_1 = age < 3.4
         LperM_FUV[stage_1] = 271. * ( 1 + ( age[stage_1] / 3.4 )**2 )
         stage_2 = 3.4 < age
