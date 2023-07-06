@@ -9,5 +9,5 @@ colossus==1.2.2
 matplotlib==2.0.2
 h5py==2.7.0
 numba==0.43.1
-scipy==1.2.1
+scipy==1.10.0
 verdict==1.1.3
